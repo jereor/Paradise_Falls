@@ -4,7 +4,5 @@ using UnityEngine;
 
 public class PlayerCollision : MonoBehaviour
 {
-    [SerializeField] private Player playerScript;
-
-
+    // This script will handle player collisions
 }

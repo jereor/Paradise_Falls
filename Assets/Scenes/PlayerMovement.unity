@@ -274,7 +274,7 @@ GameObject:
   - component: {fileID: 459309094}
   - component: {fileID: 459309095}
   - component: {fileID: 459309096}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Test Floor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -383,7 +383,7 @@ GameObject:
   - component: {fileID: 485849272}
   - component: {fileID: 485849273}
   - component: {fileID: 485849274}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Floating Floor 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -643,7 +643,7 @@ GameObject:
   - component: {fileID: 729320506}
   - component: {fileID: 729320512}
   - component: {fileID: 729320511}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -660,7 +660,8 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 1521851661}
   m_Father: {fileID: 547708081}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -727,7 +728,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a2326c2882773248ae846876415799b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerScript: {fileID: 729320510}
 --- !u!114 &729320508
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -740,9 +740,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a4032a91d94c2344b9bc31b27f842ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerScript: {fileID: 729320510}
   inputScript: {fileID: 729320509}
   movementVelocity: 5
+  jumpForce: 16
+  isGrounded: 0
+  feetPos: {fileID: 1521851661}
+  checkRadius: 0.35
+  whatIsGround:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!114 &729320509
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -755,7 +761,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa040c41075db584999b42d4e3f745d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerScript: {fileID: 729320510}
 --- !u!114 &729320510
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -812,12 +817,12 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 5
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!114 &729320513
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -880,6 +885,36 @@ MonoBehaviour:
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!1 &1521851660
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1521851661}
+  m_Layer: 0
+  m_Name: FeetPos
+  m_TagString: Untagged
+  m_Icon: {fileID: 5132851093641282708, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1521851661
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1521851660}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.56, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 729320505}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1723023083
 GameObject:
   m_ObjectHideFlags: 0
@@ -891,7 +926,7 @@ GameObject:
   - component: {fileID: 1723023084}
   - component: {fileID: 1723023085}
   - component: {fileID: 1723023086}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Floating Floor 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
