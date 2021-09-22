@@ -9,14 +9,11 @@ public class Player : MonoBehaviour
     [SerializeField] private PlayerMovement movementScript;
     [SerializeField] private PlayerCollision collisionScript;
 
-    [Header("Player Properties")]
-    [SerializeField] private float movementSpeed;
-
-    [Header("Component References")]
+    // Component references
     private Animator animator;
     private Rigidbody2D rb;
 
-    [Header("Other References")]
+    // Other references
     private string currentState;
 
 
