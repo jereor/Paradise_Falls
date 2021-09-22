@@ -1,20 +1,15 @@
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour
+public class rbMovement : MonoBehaviour
 {
 
-    public float speed = 10;
-    public float runSpeed;
-    public float jumpForce = 5;
-    public float gravity = 9.81f;
+    [Range(1, 10)] public float speed = 10;
 
-    public bool grounded = false;
-
-
+    [Range(1, 10)] public float jumpVelocity;
     // Start is called before the first frame update
     void Start()
     {
-        runSpeed = speed * 1.5f;
+
     }
 
     // Update is called once per frame
@@ -29,10 +24,9 @@ public class PlayerMovement : MonoBehaviour
         {
             transform.Translate(Vector2.left * speed * Time.deltaTime);
         }
-
-        if (grounded && Input.GetKeyDown("space"))
+        if (Input.GetButtonDown("Jump"))
         {
-
+            GetComponent<Rigidbody2D>().velocity = Vector2.up * jumpVelocity;
         }
     }
 }
