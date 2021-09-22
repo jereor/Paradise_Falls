@@ -20,6 +20,7 @@ public class SettingsController : MonoBehaviour
 
     }
 
+    //Opens the settings menu as a popup window while disabling the main menu buttons.
     public void OpenSettings()
     {
         //_resSpot = PlayerPrefs.GetInt("Res");
@@ -36,6 +37,8 @@ public class SettingsController : MonoBehaviour
             .DOAnchorPos(Vector2.zero, .3f)
             .SetUpdate(true);
     }
+
+    //Closes the settings while enabling the main menu buttons again.
     public void CloseSettings()
     {
         buttons

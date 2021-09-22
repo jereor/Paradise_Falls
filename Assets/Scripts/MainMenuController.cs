@@ -24,17 +24,32 @@ public class MainMenuController : MonoBehaviour
         
     }
 
+    //Starts new game file while asking to delete the old one if it exists.
     public void StartGame()
     {
+        //if(nosavedata) {Start game immediately} else {WarningPopUpWindow = active}
         SceneManager.LoadScene(1);
     }
 
+    //Continues the game from the last save.
     public void ContinueGame()
     {
 
     }
 
+    //Button action for deleting all save data.
+    public void WarningPopUpYes()
+    {
+        //Delete all save data here.
+    }
 
+    //Button action for closing the Warning popup for deleting save data.
+    public void WarningPopUpNo()
+    {
+
+    }
+
+    //Opens the credits panel
     public void OpenCredits()
     {
         buttons
@@ -44,6 +59,8 @@ public class MainMenuController : MonoBehaviour
             .DOAnchorPos(Vector2.zero, .3f)
             .SetUpdate(true);
     }
+
+    //Closes the credits panel
     public void CloseCredits()
     {
         buttons
@@ -54,6 +71,7 @@ public class MainMenuController : MonoBehaviour
             .SetUpdate(true);
     }
 
+    //Closes the application.
     public void QuitGame()
     {
         Debug.Log("Application closed.");
