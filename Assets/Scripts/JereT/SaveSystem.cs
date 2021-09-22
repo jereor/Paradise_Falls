@@ -110,16 +110,18 @@ public static class SaveSystem
      * Checks path with getSavePath() and if File is found Log info else LogError
      * FOR DEBUGGING
      */
-    public static void CheckIfFileExists()
+    public static bool CheckIfFileExists()
     {
         string path = getSavePath();
         if (File.Exists(path))
         {
             Debug.Log("Found a file");
+            return true;
         }
         else
         {
             Debug.LogError("Save file not found in: " + path);
+            return false;
         }
     }
 }

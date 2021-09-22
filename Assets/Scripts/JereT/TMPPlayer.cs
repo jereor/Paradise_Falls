@@ -49,8 +49,8 @@ public class TMPPlayer : MonoBehaviour
         SaveSystem.DeleteSave();
     }
 
-    public void CheckData()
+    public bool CheckData()
     {
-        SaveSystem.CheckIfFileExists();
+        return SaveSystem.CheckIfFileExists();
     }
 }
