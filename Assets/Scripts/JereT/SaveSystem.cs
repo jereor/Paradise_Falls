@@ -11,11 +11,19 @@ public static class SaveSystem
     private static string getSavePath()
     {
         //Debug.Log(Application.persistentDataPath);    //path should be: C:/Users/user/AppData/LocalLow/DefaultCompany/Paradise_Falls
-        return Application.persistentDataPath + "/savedata.haha"; ;
+        return Application.persistentDataPath + "/savedata.haha";
     }
 
     /*
      * Check if there is file in path and Overwrite or create new file depending if file is found
+     * 
+     * Route to save:
+     * - this function called from other Script with SaveSystem.SaveData(objectContaining info to save)
+     * - check path
+     * - open stream to path
+     * - create new SaveData object with costructor with given object, !!! Check SaveData script for what variables are being saved
+     * - Formate created SaveData from JSON?(doesn't really matter what type of data it is here) to binary file
+     * - close stream
      */
     public static void SaveData(TMPPlayer player)
     {
@@ -48,6 +56,14 @@ public static class SaveSystem
 
     /*
      * Checks file path if there is file return SaveData object else LogError
+     * Route to load:
+     * - this function called from other Script with SaveSystem.LoadData()
+     * - check path
+     * - open stream to path
+     * - create new SaveData object with costructor with given object, !!! Check SaveData script for what variables are being saved
+     * - Formate data found to SaveData object
+     * - close stream
+     * - return SaveData object 
      */
     public static SaveData LoadData()
     {
@@ -78,6 +94,7 @@ public static class SaveSystem
     public static void DeleteSave()
     {
         Debug.Log("Delete saved data");
+
         string path = getSavePath();
         if (File.Exists(path))
         {

@@ -1,11 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class TMPPlayer : MonoBehaviour
 {
-
-
     // Update is called once per frame
     void Update()
     {
@@ -36,6 +32,7 @@ public class TMPPlayer : MonoBehaviour
     public void LoadPlayer()
     {
         SaveData data = SaveSystem.LoadData();
+
         if (data != null)
         {
             Vector2 position = new Vector2(data.position[0], data.position[1]);
@@ -43,7 +40,7 @@ public class TMPPlayer : MonoBehaviour
         }
         else
         {
-            Debug.LogError("No data to insert");
+            Debug.LogError("No file found or data to insert");
         }
     }
 
