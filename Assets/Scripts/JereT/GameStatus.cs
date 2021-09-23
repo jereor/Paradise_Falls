@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class GameStatus : MonoBehaviour
@@ -9,11 +7,12 @@ public class GameStatus : MonoBehaviour
     // This SaveData will be initialized on loading game scene as loadedData(no data loss if player saves game).
     // Its parameters will be changed via funtions in this class that contain Update...().
     // Updates for parameters should happen when game is saved and other script (TMPLevel) keeps track of parameter values when eq. boss is killed or item received
-    public SaveData dataToSave;
+    [SerializeField] private SaveData dataToSave;
 
     // This is updated on Load() DO NOT MODIFY ITS PARAMETERS VIA CODE 
     // Parameters will be updated when Save has happened and Load is done
-    public SaveData loadedData;
+    [SerializeField] private SaveData loadedData;
+    public SaveData getLoadedData() { return loadedData;}
 
     void Start()
     {
@@ -22,7 +21,7 @@ public class GameStatus : MonoBehaviour
             DontDestroyOnLoad(gameObject);
             status = this;
         }
-        // Should't happen ever :)
+        // Should not happen ever :)
         else
         {
             Debug.Log("Destroyed gamestatus");
@@ -56,6 +55,8 @@ public class GameStatus : MonoBehaviour
     public void Save()
     {
         SaveSystem.SaveData(dataToSave);
+
+        Load();
     }
 
     public bool Load()
@@ -97,6 +98,7 @@ public class GameStatus : MonoBehaviour
      */
     public void ResetDataToSave()
     {
+        //dataToSave = loadedData.Clone();
         dataToSave = loadedData;
     }
 

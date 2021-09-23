@@ -2,6 +2,10 @@ using UnityEngine;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
+
+/*
+ * If you have to modify saving, please check GameStatus and SaveData first this script should work as is
+ */
 public static class SaveSystem 
 {
     /*

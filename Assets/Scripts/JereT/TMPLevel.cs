@@ -1,20 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class TMPLevel : MonoBehaviour
 {
+    [Header("Player Objects")]
     public GameObject playerPrefab;
-
     public GameObject playerObject;
 
-    public GameObject bossObject;
+    [Header("Boss Objects")]
+    public GameObject firstBossObject;
+    public bool firstBossKilled;
 
-    public bool boss1;
-
-
-    public GameObject savePointsContainer;
-    private List<GameObject> savePoints = new List<GameObject>();
+    [Header("Savepoints")]
+    public GameObject savePointsParent;
+    [SerializeField] private List<GameObject> savePoints = new List<GameObject>();
 
     /*
      * GameScene loads initialize player and bosses
@@ -23,22 +24,24 @@ public class TMPLevel : MonoBehaviour
     {
         if (GameStatus.status != null)
         {
-            // SCENE INITIALIZATION
-            playerObject = Respawn(playerPrefab, new Vector2(GameStatus.status.loadedData.position[0], GameStatus.status.loadedData.position[1]));
+            // SCENE INITIALIZATION --- could be done in Awake too test which is better
+            playerObject = Respawn(playerPrefab, new Vector2(GameStatus.status.getLoadedData().position[0], GameStatus.status.getLoadedData().position[1]));
 
-            if (GameStatus.status.loadedData.bossesDefeated[0] == true)
+            if (GameStatus.status.getLoadedData().bossesDefeated[0] == true)
             {
-                Destroy(bossObject);
+                Destroy(firstBossObject);
+                firstBossKilled = GameStatus.status.getLoadedData().bossesDefeated[0];
             }
 
-            for(int i = 0; i < savePointsContainer.transform.childCount; i++)
+            // Make list of savePoints
+            for(int i = 0; i < savePointsParent.transform.childCount; i++)
             {
-                savePoints.Add(savePointsContainer.transform.GetChild(i).gameObject);
+                savePoints.Add(savePointsParent.transform.GetChild(i).gameObject);
             }
         }
         else
         {
-            Debug.LogError("No GameStatus object in scene");
+            Debug.Log("No GameStatus object in scene if testing: either start from MainMenu or drag player prefab to scene");
         }
     }
 
@@ -54,34 +57,38 @@ public class TMPLevel : MonoBehaviour
                 // Here update dataToSave 
                 GameStatus.status.UpdatePlayerPosition(playerObject.transform.position.x, playerObject.transform.position.y);
 
-                GameStatus.status.UpdateBossKilled(0, boss1);
+                GameStatus.status.UpdateBossKilled(0, firstBossKilled);
 
                 GameStatus.status.Save();
             }
             else
             {
-                Debug.Log("Not close to save point");
+                Debug.Log("Not close to any savePoint");
             }
         }
-        // FOR DEBUGGING
+
+
+        // FOR DEBUGGING -- Kill BOSS
         if (Input.GetKeyDown(KeyCode.B))
         {
-            Destroy(bossObject);
-            boss1 = true;
+            Destroy(firstBossObject);
+            firstBossKilled = true;
         }
-        // FOR DEBUGGING
+        // FOR DEBUGGING -- Respawn 
         if (Input.GetKeyDown(KeyCode.R))
         {
-            Destroy(playerObject);
-            playerObject = Respawn(playerPrefab, new Vector2(GameStatus.status.loadedData.position[0], GameStatus.status.loadedData.position[1]));
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
     }
 
+    /*
+     * Checks if player has activated TriggerEnter on any savepoint to allow saving
+     */
     private bool CheckIfPlayerAtSavePoint()
     {
         foreach (GameObject savePoint in savePoints)
         {
-            if (savePoint.GetComponent<SavePoint>().playerIsClose == true)
+            if (savePoint.GetComponent<SavePoint>().getPlayerIsClose() == true)
             {
                 return true;
             }

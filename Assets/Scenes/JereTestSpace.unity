@@ -186,9 +186,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerPrefab: {fileID: 2646993275326716545, guid: 4154d57994558ff489a9180c3151e624, type: 3}
   playerObject: {fileID: 0}
-  bossObject: {fileID: 1425105035}
-  boss1: 0
-  savePointsContainer: {fileID: 76910474}
+  firstBossObject: {fileID: 1425105035}
+  firstBossKilled: 0
+  savePointsParent: {fileID: 76910474}
+  savePoints: []
 --- !u!4 &188635583
 Transform:
   m_ObjectHideFlags: 0
