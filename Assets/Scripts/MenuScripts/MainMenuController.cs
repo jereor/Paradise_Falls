@@ -10,7 +10,7 @@ public class MainMenuController : MonoBehaviour
     public RectTransform credits;
     public CanvasGroup fader, buttons, popUp;
     public GameObject settingsMenu;
-    public TMPPlayer saveData;
+    //public TMPPlayer saveData;
     public GameObject warningPopUp;
     // Start is called before the first frame update
     void Start()
@@ -31,7 +31,8 @@ public class MainMenuController : MonoBehaviour
     public void StartGame()
     {
         //if(nosavedata) {Start game} else {WarningPopUpWindow = active}
-        if(saveData.CheckData())
+        //if(saveData.CheckData())
+        if (GameStatus.status.CheckData())
         {
             buttons
                 .DOFade(0, .3f)
@@ -43,6 +44,8 @@ public class MainMenuController : MonoBehaviour
         {
             //Aloitetaan peli alusta.
             Debug.Log("New game started.");
+
+            StartCoroutine(LoadAsynchronously(1));
         }
         
     }
@@ -50,14 +53,24 @@ public class MainMenuController : MonoBehaviour
     //Continues the game from the last save.
     public void ContinueGame()
     {
-        saveData.LoadPlayer();
+        //saveData.LoadPlayer();
+        // Load completed no errors
+        if (GameStatus.status.Load() == true)
+        {
+            StartCoroutine(LoadAsynchronously(1));
+        }
+        // Loading had errors don't open scene
+        else
+        {
+            Debug.LogError("Loading had errors");
+        }
     }
 
     //Button action for deleting all save data.
     public void WarningPopUpYes()
     {
         //Delete all save data here.
-        saveData.DeleteSave();
+        GameStatus.status.DeleteSave();
         Debug.Log("Save data deleted through main menu.");
         popUp
             .DOFade(0, .2f)
@@ -102,5 +115,19 @@ public class MainMenuController : MonoBehaviour
     {
         Debug.Log("Application closed.");
         Application.Quit();
+    }
+
+    // Brackeys tutorial:  https://www.youtube.com/watch?v=YMj2qPq9CP8
+    IEnumerator LoadAsynchronously(int sceneIndex)
+    {
+        AsyncOperation operation = SceneManager.LoadSceneAsync(sceneIndex);
+
+        while (!operation.isDone)
+        {
+            float progress = Mathf.Clamp01(operation.progress / 0.9f);
+            Debug.Log("Loading: " + progress);
+
+            yield return null;
+        }
     }
 }
