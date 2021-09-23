@@ -105,11 +105,11 @@ public class GroundEnemyAI : MonoBehaviour
         }
 
         //Used for turning the enemy sprite into the direction it is currently going towards to
-        if (forceX.x >= 0.01f)
+        if (forceX.x >= 50f)
         {
             transform.localScale = new Vector3(-1f, 1f, 1f);
         }
-        else if (forceX.x <= -0.01f)
+        else if (forceX.x <= -50f)
         {
             transform.localScale = new Vector3(1f, 1f, 1f);
         }
