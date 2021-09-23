@@ -23,7 +23,7 @@ public class GroundEnemyAI : MonoBehaviour
 
     private bool canMove = true;
     private bool canJump = true;
-    private int layerMask = 1 << 8;
+    private int layerMask = 1 << 6;
 
     Path path;
     int currentWaypoint = 0;
@@ -105,13 +105,13 @@ public class GroundEnemyAI : MonoBehaviour
         }
 
         //Used for turning the enemy sprite into the direction it is currently going towards to
-        if (rb.velocity.x >= 0.01f)
+        if (forceX.x >= 0.01f)
         {
-            transform.localScale = new Vector2(-1f, 1f);
+            transform.localScale = new Vector3(-1f, 1f, 1f);
         }
-        else if (rb.velocity.x <= -0.01f)
+        else if (forceX.x <= -0.01f)
         {
-            transform.localScale = new Vector2(1f, 1f);
+            transform.localScale = new Vector3(1f, 1f, 1f);
         }
 
         //if (canMove)
@@ -123,10 +123,10 @@ public class GroundEnemyAI : MonoBehaviour
 
         //CURRENTLY NOT WORKING. Trying to raycast and check if there's an obstacle in front of the enemy unit and performing a jump over it.
         RaycastHit2D hit = Physics2D.Raycast(transform.position, transform.forward, 1, layerMask);
-
+        Debug.DrawRay(transform.position, transform.right, Color.red);
         if (hit.collider != null && canJump)
         {
-            rb.AddForce(Vector3.up * 100);
+            rb.AddForce(Vector3.up * 500);
             StartCoroutine(JumpCoolDown());
         }
 

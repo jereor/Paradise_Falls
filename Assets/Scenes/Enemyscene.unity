@@ -1479,8 +1479,8 @@ MonoBehaviour:
   walkStepInterval: 1
   runStepInterval: 0.5
   state: roam
-  roamingRange: 5
-  aggroDistance: 5
+  roamingRange: 10
+  aggroDistance: 7
   punchingDistance: 1.5
 --- !u!61 &1704650331
 BoxCollider2D:
@@ -1523,7 +1523,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 1
   m_AngularDrag: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 3
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
