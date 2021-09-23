@@ -1,3 +1,4 @@
+using UnityEngine;
 
 [System.Serializable]
 public class SaveData
@@ -9,17 +10,17 @@ public class SaveData
      * int skillsOpened[]
      * float/int health
      */
-  
+
     public float[] position;    // 0 = X and 1 = Y, easier to save
 
+    public bool[] bossesDefeated;             // 
     /*
      *  Constructor for creating SaveData from given object.
      *  Personalize data when needed. 
      */
-    public SaveData(TMPPlayer player)
+    public SaveData()
     {
         position = new float[2];
-        position[0] = player.transform.position.x;
-        position[1] = player.transform.position.y;
+        bossesDefeated = new bool[1];
     }
 }

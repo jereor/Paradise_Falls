@@ -25,9 +25,9 @@ public static class SaveSystem
      * - Formate created SaveData from JSON?(doesn't really matter what type of data it is here) to binary file
      * - close stream
      */
-    public static void SaveData(TMPPlayer player)
+    public static void SaveData(SaveData dataToSave)
     {
-        Debug.Log("Saving data for: " + player.gameObject.name);
+        //Debug.Log("Saving data for: " + player.gameObject.name);
 
         string path = getSavePath();
         if (File.Exists(path))
@@ -37,8 +37,8 @@ public static class SaveSystem
             BinaryFormatter formatter = new BinaryFormatter();
             FileStream stream = new FileStream(path, FileMode.Create);
 
-            SaveData data = new SaveData(player);
-            formatter.Serialize(stream, data);
+            //SaveData data = new SaveData(player);
+            formatter.Serialize(stream, dataToSave);
             stream.Close();
         }
         else
@@ -48,8 +48,8 @@ public static class SaveSystem
             BinaryFormatter formatter = new BinaryFormatter();
             FileStream stream = new FileStream(path, FileMode.Create);
 
-            SaveData data = new SaveData(player);
-            formatter.Serialize(stream, data);
+            //SaveData data = new SaveData(player);
+            formatter.Serialize(stream, dataToSave);
             stream.Close();
         }
     }
@@ -120,7 +120,7 @@ public static class SaveSystem
         }
         else
         {
-            Debug.LogError("Save file not found in: " + path);
+            Debug.Log("Save file not found in: " + path);
             return false;
         }
     }

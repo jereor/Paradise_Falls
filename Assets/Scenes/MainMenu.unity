@@ -5109,6 +5109,59 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1442899557}
   m_CullTransparentMesh: 1
+--- !u!1 &1462657394
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1462657396}
+  - component: {fileID: 1462657395}
+  m_Layer: 0
+  m_Name: GameStatus
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1462657395
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1462657394}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cabf2fcc2607c484787922db516cc4ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dataToSave:
+    position:
+    - 0
+    - 0
+    bossesDefeated: 00
+  loadedData:
+    position:
+    - 0
+    - 0
+    bossesDefeated: 00
+--- !u!4 &1462657396
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1462657394}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1557091273
 GameObject:
   m_ObjectHideFlags: 0
@@ -5776,7 +5829,6 @@ MonoBehaviour:
   buttons: {fileID: 534335097}
   popUp: {fileID: 1236359177}
   settingsMenu: {fileID: 0}
-  saveData: {fileID: 831848110}
   warningPopUp: {fileID: 1236359174}
 --- !u!1 &1720510970
 GameObject:

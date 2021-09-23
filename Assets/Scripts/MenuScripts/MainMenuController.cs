@@ -10,7 +10,7 @@ public class MainMenuController : MonoBehaviour
     public RectTransform credits;
     public CanvasGroup fader, buttons, popUp;
     public GameObject settingsMenu;
-    public TMPPlayer saveData;
+    //public TMPPlayer saveData;
     public GameObject warningPopUp;
     // Start is called before the first frame update
     void Start()
@@ -31,7 +31,8 @@ public class MainMenuController : MonoBehaviour
     public void StartGame()
     {
         //if(nosavedata) {Start game} else {WarningPopUpWindow = active}
-        if(saveData.CheckData())
+        //if(saveData.CheckData())
+        if (GameStatus.status.CheckData())
         {
             buttons
                 .DOFade(0, .3f)
@@ -43,6 +44,8 @@ public class MainMenuController : MonoBehaviour
         {
             //Aloitetaan peli alusta.
             Debug.Log("New game started.");
+
+            SceneManager.LoadSceneAsync("JereTestSpace");
         }
         
     }
@@ -50,14 +53,17 @@ public class MainMenuController : MonoBehaviour
     //Continues the game from the last save.
     public void ContinueGame()
     {
-        saveData.LoadPlayer();
+        //saveData.LoadPlayer();
+        GameStatus.status.Load();
+
+        SceneManager.LoadSceneAsync("JereTestSpace");
     }
 
     //Button action for deleting all save data.
     public void WarningPopUpYes()
     {
         //Delete all save data here.
-        saveData.DeleteSave();
+        GameStatus.status.DeleteSave();
         Debug.Log("Save data deleted through main menu.");
         popUp
             .DOFade(0, .2f)
