@@ -45,7 +45,7 @@ public class MainMenuController : MonoBehaviour
             //Aloitetaan peli alusta.
             Debug.Log("New game started.");
 
-            SceneManager.LoadSceneAsync("JereTestSpace");
+            StartCoroutine(LoadAsynchronously(1));
         }
         
     }
@@ -54,9 +54,16 @@ public class MainMenuController : MonoBehaviour
     public void ContinueGame()
     {
         //saveData.LoadPlayer();
-        GameStatus.status.Load();
-
-        SceneManager.LoadSceneAsync("JereTestSpace");
+        // Load completed no errors
+        if (GameStatus.status.Load() == true)
+        {
+            StartCoroutine(LoadAsynchronously(1));
+        }
+        // Loading had errors don't open scene
+        else
+        {
+            Debug.LogError("Loading had errors");
+        }
     }
 
     //Button action for deleting all save data.
@@ -108,5 +115,19 @@ public class MainMenuController : MonoBehaviour
     {
         Debug.Log("Application closed.");
         Application.Quit();
+    }
+
+    // Brackeys tutorial:  https://www.youtube.com/watch?v=YMj2qPq9CP8
+    IEnumerator LoadAsynchronously(int sceneIndex)
+    {
+        AsyncOperation operation = SceneManager.LoadSceneAsync(sceneIndex);
+
+        while (!operation.isDone)
+        {
+            float progress = Mathf.Clamp01(operation.progress / 0.9f);
+            Debug.Log(progress);
+
+            yield return null;
+        }
     }
 }

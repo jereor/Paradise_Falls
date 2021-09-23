@@ -19,12 +19,17 @@ public class TMPLevel : MonoBehaviour
     {
         if (GameStatus.status != null)
         {
+            // SCENE INITIALIZATION
             playerObject = Respawn(playerPrefab, new Vector2(GameStatus.status.loadedData.position[0], GameStatus.status.loadedData.position[1]));
 
             if (GameStatus.status.loadedData.bossesDefeated[0] == true)
             {
                 Destroy(bossObject);
             }
+        }
+        else
+        {
+            Debug.LogError("No GameStatus object in scene");
         }
     }
 
@@ -33,18 +38,16 @@ public class TMPLevel : MonoBehaviour
     {
 
         // Later from interaction
-        if (Input.GetKeyDown(KeyCode.S))
+        if (Input.GetKeyDown(KeyCode.Alpha0))
         {
             // Here update dataToSave 
-           
-
             GameStatus.status.UpdatePlayerPosition(playerObject.transform.position.x ,playerObject.transform.position.y);
 
             GameStatus.status.UpdateBossKilled(0, boss1);
 
             GameStatus.status.Save();
         }
-
+        // FOR DEBUGGING
         if (Input.GetKeyDown(KeyCode.R))
         {
             Destroy(playerObject);

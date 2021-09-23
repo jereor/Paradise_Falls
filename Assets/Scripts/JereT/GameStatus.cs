@@ -1,56 +1,42 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class GameStatus : MonoBehaviour
 {
     public static GameStatus status;
 
+    // This SaveData will be initialized on loading game scene as loadedData(no data loss if player saves game).
+    // Its parameters will be changed via funtions in this class that contain Update...().
+    // Updates for parameters should happen when game is saved and other script (TMPLevel) keeps track of parameter values when eq. boss is killed or item received
     public SaveData dataToSave;
 
+    // This is updated on Load() DO NOT MODIFY ITS PARAMETERS VIA CODE 
+    // Parameters will be updated when Save has happened and Load is done
     public SaveData loadedData;
 
-   // public GameObject test;
-
-    // Start is called before the first frame update
     void Start()
     {
-        // We go to main menu we need reset for loadedData !!! NOT THE BEST PLACE TO DO THIS
-        //if (SceneManager.GetActiveScene().name.Equals("MainMenu"))
-        //{
-        //    loadedData = new SaveData();
-        //}
         if (status == null)
         {
             DontDestroyOnLoad(gameObject);
             status = this;
         }
+        // Should't happen ever :)
         else
         {
             Debug.Log("Destroyed gamestatus");
             Destroy(gameObject);
         }
 
+        // These initializations help with occasional errors
         dataToSave = new SaveData();
         loadedData = new SaveData();
-
-        //Load();
-
-        //Instantiate(test, test.transform.position, Quaternion.identity);
     }
 
     private void Update()
     {
-        //if (Input.GetKeyDown(KeyCode.S) && playerObject != null)
-        //{
-        //    Save();
-        //}
-        //else
-        //{
-        //    Debug.LogError("Cannot save due to playerObject is null");
-        //}
-
+        // FOR DEBUGGING
         if (Input.GetKeyDown(KeyCode.Alpha7))
         {
             Load();
@@ -65,13 +51,14 @@ public class GameStatus : MonoBehaviour
         }
     }
 
-    // Funtions to Save / Load / Delete / Check 
+    // --- FUNCTIONS FOR Save / Load / Delete / Check ---
+
     public void Save()
     {
         SaveSystem.SaveData(dataToSave);
     }
 
-    public void Load()
+    public bool Load()
     {
         loadedData = SaveSystem.LoadData();
 
@@ -81,10 +68,12 @@ public class GameStatus : MonoBehaviour
             ResetDataToSave();
 
             Debug.Log("Save loaded");
+            return true;
         }
         else
         {
             Debug.LogError("No file found or data to insert");
+            return false;
         }
     }
 
@@ -99,8 +88,9 @@ public class GameStatus : MonoBehaviour
     }
 
 
-    // Functions to update SaveData dataToSave
-    // loadedData doesn't need updates we get them from loading
+    // FUNCTIONS THAT UPDATE dataToSave 
+    // Best call place: just before SAVING
+    // loadedData doesn't need updates we get them from LOADING
 
     /*
      * Function to be used for example in death event
@@ -110,7 +100,6 @@ public class GameStatus : MonoBehaviour
         dataToSave = loadedData;
     }
 
-    // Unity 2D transform.position returns Vector 3 and we use only x and y components
     public void UpdatePlayerPosition(float x, float y)
     {
         dataToSave.position[0] = x;
