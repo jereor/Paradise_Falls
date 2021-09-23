@@ -1,48 +1,65 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] private PlayerInput inputScript;
 
     [Header("Player Variables")]
+    [SerializeField] private float horizontal;
     [SerializeField] private float movementVelocity;
     [SerializeField] private float jumpForce;
-    /*[SerializeField] private float jumpTimeCounter;
-    [SerializeField] private float jumpTime;
-    [SerializeField] private bool isJumping;*/
+    [SerializeField] private bool isFacingRight = true;
 
     [Header("Ground Check")]
-    [SerializeField] private bool isGrounded;
-    [SerializeField] private Transform feetPos;
+    [SerializeField] private Transform groundCheck;
     [SerializeField] private float checkRadius;
-    [SerializeField] LayerMask whatIsGround;
+    [SerializeField] LayerMask groundLayer;
 
     // References
     private Rigidbody2D rb;
-    public InputActions controls;
 
     private void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
-
-        controls = inputScript.controls;
-        controls.Player.Jump.performed += _ => Jump();
+        rb = gameObject.GetComponent<Rigidbody2D>();
     }
 
     private void Update()
     {
-        isGrounded = Physics2D.OverlapCircle(feetPos.position, checkRadius, whatIsGround);
+        rb.velocity = new Vector2(horizontal * movementVelocity, rb.velocity.y);
 
-        float movement = controls.Player.Movement.ReadValue<float>();
-        if (movement < 0) transform.Translate(Vector2.left * Time.deltaTime * movementVelocity);
-        if (movement > 0) transform.Translate(Vector2.right * Time.deltaTime * movementVelocity);
+        if (!isFacingRight && horizontal > 0f)
+            Flip();
+        else if (isFacingRight && horizontal < 0f)
+            Flip();
     }
 
-    public void Jump()
+    private bool IsGrounded()
     {
-        if (isGrounded)
-            rb.velocity = Vector2.up * jumpForce;
+        return Physics2D.OverlapCircle(groundCheck.position, checkRadius, groundLayer);
+    }
+
+    private void Flip()
+    {
+        isFacingRight = !isFacingRight;
+        Vector3 localScale = transform.localScale;
+        localScale.x *= -1f;
+        transform.localScale = localScale;
+    }
+
+    public void Move(InputAction.CallbackContext context)
+    {
+        horizontal = context.ReadValue<Vector2>().x;
+    }
+
+    public void Jump(InputAction.CallbackContext context)
+    {
+        if (context.performed && IsGrounded())
+            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+
+        if (context.canceled && rb.velocity.y > 0f)
+            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
     }
 }
