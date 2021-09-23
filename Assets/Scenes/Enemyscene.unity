@@ -1476,9 +1476,10 @@ MonoBehaviour:
   speed: 200
   nextWaypointDistance: 1
   pathUpdateInterval: 0.5
-  stepSpeed: 1
+  walkStepInterval: 1
+  runStepInterval: 0.5
   state: roam
-  roamingRange: 2
+  roamingRange: 5
   aggroDistance: 5
   punchingDistance: 1.5
 --- !u!61 &1704650331
