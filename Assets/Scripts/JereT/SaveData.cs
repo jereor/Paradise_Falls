@@ -30,7 +30,7 @@ public class SaveData
     public SaveData()
     {
         // If problems arise with arrays hardcode initialize sizes here
-        //position = new float[2];
-        //bossesDefeated = new bool[1];
+        position = new float[2];
+        bossesDefeated = new bool[1];
     }
 }
