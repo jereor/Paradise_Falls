@@ -1,48 +1,66 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
-    [SerializeField] private PlayerInput inputScript;
-
     [Header("Player Variables")]
-    [SerializeField] private float movementVelocity;
-    [SerializeField] private float jumpForce;
-    /*[SerializeField] private float jumpTimeCounter;
-    [SerializeField] private float jumpTime;
-    [SerializeField] private bool isJumping;*/
+    [SerializeField] private float horizontal; // Tracks horizontal input direction
+    [SerializeField] private float movementVelocity; // Movement speed variable
+    [SerializeField] private float jumpForce; // Jump height variable
+    [SerializeField] private bool isFacingRight = true; // Tracks player sprite direction
 
     [Header("Ground Check")]
-    [SerializeField] private bool isGrounded;
-    [SerializeField] private Transform feetPos;
-    [SerializeField] private float checkRadius;
-    [SerializeField] LayerMask whatIsGround;
+    [SerializeField] private Transform groundCheck; // GameObject attached to player that checks if touching ground
+    [SerializeField] private float checkRadius; // Radius for ground checks
+    [SerializeField] LayerMask groundLayer; // Chosen layer that is recognized as ground in ground checks
 
     // References
     private Rigidbody2D rb;
-    public InputActions controls;
 
     private void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
-
-        controls = inputScript.controls;
-        controls.Player.Jump.performed += _ => Jump();
+        rb = gameObject.GetComponent<Rigidbody2D>();
     }
 
     private void Update()
     {
-        isGrounded = Physics2D.OverlapCircle(feetPos.position, checkRadius, whatIsGround);
+        rb.velocity = new Vector2(horizontal * movementVelocity, rb.velocity.y); // Moves the player by horizontal input
 
-        float movement = controls.Player.Movement.ReadValue<float>();
-        if (movement < 0) transform.Translate(Vector2.left * Time.deltaTime * movementVelocity);
-        if (movement > 0) transform.Translate(Vector2.right * Time.deltaTime * movementVelocity);
+        if (!isFacingRight && horizontal > 0f) // Flip when turning right
+            Flip();
+        else if (isFacingRight && horizontal < 0f) // Flip when turning left
+            Flip();
     }
 
-    public void Jump()
+    // Returns true if ground check detects ground
+    private bool IsGrounded()
     {
-        if (isGrounded)
-            rb.velocity = Vector2.up * jumpForce;
+        return Physics2D.OverlapCircle(groundCheck.position, checkRadius, groundLayer);
+    }
+
+    // Flips player by changing localScale
+    private void Flip()
+    {
+        isFacingRight = !isFacingRight;
+        Vector3 localScale = transform.localScale;
+        localScale.x *= -1f;
+        transform.localScale = localScale;
+    }
+
+    // Move action: Called when the Move Action Button is pressed
+    public void Move(InputAction.CallbackContext context) // Context tells the function when the action is triggered
+    {
+        horizontal = context.ReadValue<Vector2>().x; // Updates the horizontal input direction
+    }
+
+    public void Jump(InputAction.CallbackContext context) // Context tells the function when the action is triggered
+    {
+        if (context.performed && IsGrounded()) // If button was pressed
+            rb.velocity = new Vector2(rb.velocity.x, jumpForce); // Keep player in upwards motion
+
+        if (context.canceled && rb.velocity.y > 0f) // If button was released
+            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f); // Slow down player
     }
 }
