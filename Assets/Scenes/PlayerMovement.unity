@@ -897,6 +897,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 2646993275326716549, guid: 4154d57994558ff489a9180c3151e624, type: 3}
+      propertyPath: coyoteTime
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2646993275326716549, guid: 4154d57994558ff489a9180c3151e624, type: 3}
+      propertyPath: checkRadius
+      value: 0.35
+      objectReference: {fileID: 0}
     - target: {fileID: 2646993275326716550, guid: 4154d57994558ff489a9180c3151e624, type: 3}
       propertyPath: m_Material
       value: 
