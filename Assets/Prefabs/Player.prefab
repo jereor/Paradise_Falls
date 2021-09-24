@@ -177,6 +177,7 @@ GameObject:
   - component: {fileID: 2646993275326716548}
   - component: {fileID: 2646993275326716549}
   - component: {fileID: 2646993275326716546}
+  - component: {fileID: -4342889769223962116}
   - component: {fileID: 2646993275326716664}
   - component: {fileID: 2646993275326716547}
   - component: {fileID: 2646993275326716665}
@@ -220,6 +221,7 @@ MonoBehaviour:
   inputScript: {fileID: 2646993275326716548}
   movementScript: {fileID: 2646993275326716549}
   collisionScript: {fileID: 2646993275326716546}
+  interactionsScript: {fileID: -4342889769223962116}
 --- !u!114 &2646993275326716548
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -264,6 +266,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a2326c2882773248ae846876415799b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &-4342889769223962116
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2646993275326716545}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7fd4628f468124247a46572daccfff08, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  canInteract: 0
+  objectToInteract: {fileID: 0}
 --- !u!114 &2646993275326716664
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -321,6 +337,22 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: a8c30c08-4c52-4749-82c8-b943ab156f08
     m_ActionName: Player/New action
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: -4342889769223962116}
+        m_TargetAssemblyTypeName: PlayerInteractions, Assembly-CSharp
+        m_MethodName: Interact
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 0d9c82d3-6aa6-4c98-8370-10938d6b9c0c
+    m_ActionName: Player/Interact[/Keyboard/f]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
