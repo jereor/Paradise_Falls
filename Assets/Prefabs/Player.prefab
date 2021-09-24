@@ -244,11 +244,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a4032a91d94c2344b9bc31b27f842ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inputScript: {fileID: 2646993275326716548}
-  horizontal: 0
   movementVelocity: 5
   jumpForce: 16
-  isFacingRight: 1
+  coyoteTime: 0.2
   groundCheck: {fileID: 2646993277219195828}
   checkRadius: 0.35
   groundLayer:
@@ -409,7 +407,7 @@ BoxCollider2D:
   m_GameObject: {fileID: 2646993275326716545}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 8d64ee7d4dc64924db8f19d655bb6788, type: 2}
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0

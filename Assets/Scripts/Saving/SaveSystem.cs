@@ -71,7 +71,7 @@ public static class SaveSystem
      */
     public static SaveData LoadData()
     {
-        Debug.Log("Loading data...");
+        //Debug.Log("Loading data...");
         string path = getSavePath();
         if (File.Exists(path))
         {
@@ -97,12 +97,13 @@ public static class SaveSystem
      */
     public static void DeleteSave()
     {
-        Debug.Log("Delete saved data");
+        //Debug.Log("Delete saved data");
 
         string path = getSavePath();
         if (File.Exists(path))
         {
             File.Delete(path);
+            Debug.Log("Deleted saved file");
         }
         else
         {
