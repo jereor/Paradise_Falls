@@ -1562,7 +1562,7 @@ MonoBehaviour:
   runStepInterval: 0.5
   state: roam
   roamingRange: 10
-  aggroDistance: 7
+  aggroDistance: 10
   punchingDistance: 1.5
 --- !u!61 &1704650331
 BoxCollider2D:
