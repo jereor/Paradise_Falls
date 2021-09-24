@@ -199,6 +199,63 @@ public class @InputActions : IInputActionCollection, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""GameUI"",
+            ""id"": ""b7df2b10-b9ea-439f-ae20-8904a15f26c0"",
+            ""actions"": [
+                {
+                    ""name"": ""Pause"",
+                    ""type"": ""Button"",
+                    ""id"": ""be8516e8-0f09-4a32-a0ec-3579cac9dc6f"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""Map"",
+                    ""type"": ""Button"",
+                    ""id"": ""8f0f6181-6114-4dcd-a121-0ccd035b4762"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""6a51360f-1e3a-4010-a437-f8de733e55fb"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Pause"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9a83413e-6010-471a-b1c3-9ab745e18a1a"",
+                    ""path"": ""<Gamepad>/start"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Pause"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9aaca787-e5d7-4506-819f-6b9d6125a963"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Map"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -208,6 +265,10 @@ public class @InputActions : IInputActionCollection, IDisposable
         m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
         m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
         m_Player_Interact = m_Player.FindAction("Interact", throwIfNotFound: true);
+        // GameUI
+        m_GameUI = asset.FindActionMap("GameUI", throwIfNotFound: true);
+        m_GameUI_Pause = m_GameUI.FindAction("Pause", throwIfNotFound: true);
+        m_GameUI_Map = m_GameUI.FindAction("Map", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -302,10 +363,56 @@ public class @InputActions : IInputActionCollection, IDisposable
         }
     }
     public PlayerActions @Player => new PlayerActions(this);
+
+    // GameUI
+    private readonly InputActionMap m_GameUI;
+    private IGameUIActions m_GameUIActionsCallbackInterface;
+    private readonly InputAction m_GameUI_Pause;
+    private readonly InputAction m_GameUI_Map;
+    public struct GameUIActions
+    {
+        private @InputActions m_Wrapper;
+        public GameUIActions(@InputActions wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Pause => m_Wrapper.m_GameUI_Pause;
+        public InputAction @Map => m_Wrapper.m_GameUI_Map;
+        public InputActionMap Get() { return m_Wrapper.m_GameUI; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(GameUIActions set) { return set.Get(); }
+        public void SetCallbacks(IGameUIActions instance)
+        {
+            if (m_Wrapper.m_GameUIActionsCallbackInterface != null)
+            {
+                @Pause.started -= m_Wrapper.m_GameUIActionsCallbackInterface.OnPause;
+                @Pause.performed -= m_Wrapper.m_GameUIActionsCallbackInterface.OnPause;
+                @Pause.canceled -= m_Wrapper.m_GameUIActionsCallbackInterface.OnPause;
+                @Map.started -= m_Wrapper.m_GameUIActionsCallbackInterface.OnMap;
+                @Map.performed -= m_Wrapper.m_GameUIActionsCallbackInterface.OnMap;
+                @Map.canceled -= m_Wrapper.m_GameUIActionsCallbackInterface.OnMap;
+            }
+            m_Wrapper.m_GameUIActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+                @Pause.started += instance.OnPause;
+                @Pause.performed += instance.OnPause;
+                @Pause.canceled += instance.OnPause;
+                @Map.started += instance.OnMap;
+                @Map.performed += instance.OnMap;
+                @Map.canceled += instance.OnMap;
+            }
+        }
+    }
+    public GameUIActions @GameUI => new GameUIActions(this);
     public interface IPlayerActions
     {
         void OnMove(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
         void OnInteract(InputAction.CallbackContext context);
+    }
+    public interface IGameUIActions
+    {
+        void OnPause(InputAction.CallbackContext context);
+        void OnMap(InputAction.CallbackContext context);
     }
 }
