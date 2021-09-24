@@ -8,7 +8,8 @@ using UnityEngine.InputSystem;
 
 public class PauseMenuController : MonoBehaviour
 {
-    public static bool GameIsPaused;
+    // Info if game is paused default false
+    public static bool GameIsPaused = false;
 
     public CanvasGroup fader, buttons, popUp;
     public GameObject pauseMenuUI;
@@ -19,9 +20,11 @@ public class PauseMenuController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        // Set this here so we are 100% sure we are following the right camera
         gameObject.GetComponent<Canvas>().worldCamera = Camera.main;
     }
 
+    // Input event Pause is triggered
     public void Pause(InputAction.CallbackContext context)
     {     
         if (GameIsPaused)
@@ -36,6 +39,7 @@ public class PauseMenuController : MonoBehaviour
         }
     }
 
+    // Resume and close pauseMenuUI, called from Pause input and button press event from button ResumeButton
     public void Resume()
     {
         pauseMenuUI.SetActive(false);
@@ -45,6 +49,7 @@ public class PauseMenuController : MonoBehaviour
         GameIsPaused = false;
     }
 
+    // Pause and open pauseMenuUI, called from Pause input
     private void Pause()
     {
         pauseMenuUI.SetActive(true);
@@ -66,7 +71,7 @@ public class PauseMenuController : MonoBehaviour
         QuitToMenu();
     }
 
-    //Button action for continueing game
+    //Button action for continuing game
     public void WarningPopUpNo()
     {
         warningPopUp.SetActive(false);
@@ -92,10 +97,13 @@ public class PauseMenuController : MonoBehaviour
         else
         {
             Debug.Log("Leaving to Main Menu");
-            Time.timeScale = 1f;
-            pauseMenuUI.SetActive(false);
+
+            // Set timescale back to normal before loading Main Menu timescale is global in Unity
+            // Close pauseMenuUI just to be sure it will be closed when we arrive back to game
+            Resume();   // If Resume() act funky do timescale default and Paused bool false here instead
+            
             warningAnswered = false;
-            SceneManager.LoadScene(0);
+            SceneManager.LoadScene(0); // MainMenu or intro scene should be at buildindex 0
         }
     }
 }
