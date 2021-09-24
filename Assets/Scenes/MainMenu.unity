@@ -5785,6 +5785,7 @@ MonoBehaviour:
   fader: {fileID: 0}
   buttons: {fileID: 534335097}
   popUp: {fileID: 1236359177}
+  continueButton: {fileID: 25304866}
   settingsMenu: {fileID: 0}
   warningPopUp: {fileID: 1236359174}
 --- !u!1 &1720510970

@@ -26,7 +26,7 @@ public class Level01Loader : MonoBehaviour
         if (GameStatus.status != null)
         {
             // SCENE INITIALIZATION --- could be done in Awake too test which is better
-
+            Debug.Log("Binds for save tests(alpha keys): 0 save, 9 checksave, 8 delete, 7 load, O respawn, P kill boss");
             Debug.Log("Player spawning to: " + GameStatus.status.getLoadedData().position[0] + ", " + GameStatus.status.getLoadedData().position[1]);
             playerObject = Respawn(playerPrefab, new Vector2(GameStatus.status.getLoadedData().position[0], GameStatus.status.getLoadedData().position[1]));
  
@@ -73,14 +73,14 @@ public class Level01Loader : MonoBehaviour
 
 
         // FOR DEBUGGING -- Kill BOSS
-        if (Input.GetKeyDown(KeyCode.B))
+        if (Input.GetKeyDown(KeyCode.P))
         {
             Debug.Log("Instakill bouss");
             Destroy(firstBossObject);
             firstBossKilled = true;
         }
         // FOR DEBUGGING -- Respawn 
-        if (Input.GetKeyDown(KeyCode.R))
+        if (Input.GetKeyDown(KeyCode.O))
         {
             Debug.Log("Respawning, atm loading scene with loaded save");
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);

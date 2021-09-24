@@ -9,6 +9,7 @@ public class MainMenuController : MonoBehaviour
 {
     public RectTransform credits;
     public CanvasGroup fader, buttons, popUp;
+    public GameObject continueButton;
     public GameObject settingsMenu;
     //public TMPPlayer saveData;
     public GameObject warningPopUp;
@@ -16,7 +17,16 @@ public class MainMenuController : MonoBehaviour
     void Start()
     {
         gameObject.GetComponent<Canvas>().worldCamera = Camera.main;
-        
+
+        // If game finds save file show continue button
+        if (GameStatus.status.CheckData())
+        {
+            continueButton.SetActive(true);
+        }
+        else
+        {
+            continueButton.SetActive(false);
+        }
         //fader.alpha = 1;
         //fader.DOFade(0, 1).SetUpdate(true);
     }
@@ -62,7 +72,7 @@ public class MainMenuController : MonoBehaviour
         // Loading had errors don't open scene
         else
         {
-            Debug.LogError("Loading had errors");
+            Debug.Log("Loading had errors");
         }
     }
 
