@@ -80,6 +80,10 @@ public class GameStatus : MonoBehaviour
 
     public void DeleteSave()
     {
+        // Replace old SaveData with new aka Delete loaded save data from unity
+        loadedData = new SaveData();
+
+        // Delete file
         SaveSystem.DeleteSave();
     }
 
