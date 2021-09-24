@@ -5,6 +5,8 @@ using UnityEngine.SceneManagement;
 
 public class Level01Loader : MonoBehaviour
 {
+    public static Level01Loader levelLoaderInstance;
+
     [Header("Player Objects")]
     public GameObject playerPrefab;
     public GameObject playerObject;
@@ -23,6 +25,7 @@ public class Level01Loader : MonoBehaviour
      */
     private void Start()
     {
+        levelLoaderInstance = this;
         if (GameStatus.status != null)
         {
             // SCENE INITIALIZATION --- could be done in Awake too test which is better
@@ -56,19 +59,7 @@ public class Level01Loader : MonoBehaviour
         // Later from interaction
         if (Input.GetKeyDown(KeyCode.Alpha0))
         {
-            if (CheckIfPlayerAtSavePoint())
-            {
-                // Here update dataToSave 
-                GameStatus.status.UpdatePlayerPosition(respawnPoint.x, respawnPoint.y);
-
-                GameStatus.status.UpdateBossKilled(0, firstBossKilled);
-
-                GameStatus.status.Save();
-            }
-            else
-            {
-                Debug.Log("Not close to any savePoint");
-            }
+            Save();
         }
 
 
@@ -84,6 +75,23 @@ public class Level01Loader : MonoBehaviour
         {
             Debug.Log("Respawning, atm loading scene with loaded save");
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
+    }
+
+    public void Save()
+    {
+        if (CheckIfPlayerAtSavePoint())
+        {
+            // Here update dataToSave 
+            GameStatus.status.UpdatePlayerPosition(respawnPoint.x, respawnPoint.y);
+
+            GameStatus.status.UpdateBossKilled(0, firstBossKilled);
+
+            GameStatus.status.Save();
+        }
+        else
+        {
+            Debug.Log("Not close to any savePoint");
         }
     }
 

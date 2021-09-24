@@ -96,6 +96,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c5eab3b7d58cce44b73804acfc57773, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  itemEvent:
+    m_PersistentCalls:
+      m_Calls: []
   playerIsClose: 0
 --- !u!58 &4240992959880559732
 CircleCollider2D:
