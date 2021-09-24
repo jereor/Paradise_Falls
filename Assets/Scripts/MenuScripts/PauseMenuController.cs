@@ -29,7 +29,7 @@ public class PauseMenuController : MonoBehaviour
     {     
         if (GameIsPaused)
         {
-            Debug.Log("Opening Pause Menu");
+            Debug.Log("Closing Pause Menu");
             Resume();
         }
         else
