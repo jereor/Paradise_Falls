@@ -247,7 +247,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   movementVelocity: 5
-  jumpForce: 16
+  jumpForce: 22
   coyoteTime: 0.2
   groundCheck: {fileID: 2646993277219195828}
   checkRadius: 0.35
@@ -353,6 +353,14 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 0d9c82d3-6aa6-4c98-8370-10938d6b9c0c
     m_ActionName: Player/Interact[/Keyboard/f]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: be8516e8-0f09-4a32-a0ec-3579cac9dc6f
+    m_ActionName: GameUI/Pause[/Keyboard/escape]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 8f0f6181-6114-4dcd-a121-0ccd035b4762
+    m_ActionName: GameUI/Map
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
