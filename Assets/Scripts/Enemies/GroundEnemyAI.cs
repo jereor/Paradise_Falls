@@ -11,6 +11,8 @@ public class GroundEnemyAI : MonoBehaviour
     public Transform enemyGFX;
     private Vector2 spawnPosition;
 
+    public Rigidbody2D playerRB;
+
     [Header("Ground Check")]
     [SerializeField] private Transform groundCheck; // GameObject attached to player that checks if touching ground
     [SerializeField] private float checkRadius; // Radius for ground checks
@@ -22,11 +24,13 @@ public class GroundEnemyAI : MonoBehaviour
     public float pathUpdateInterval = 1f;
     public float walkStepInterval = 1f;
     public float runStepInterval = 0.5f;
+
     public string state = "roam";
     public float roamingRange = 2f;
     public float aggroDistance = 5f;
     public float punchingDistance = 3f;
-
+    public float wallCheckDistance = 2f;
+    public float knockbackForce = 5f;
 
     private bool isFacingRight = true;
     private bool canMove = true;
@@ -48,6 +52,8 @@ public class GroundEnemyAI : MonoBehaviour
         seeker = GetComponent<Seeker>();
         rb = GetComponent<Rigidbody2D>();
         spawnPosition = transform.position;
+
+        Physics2D.IgnoreLayerCollision(3, 7);
 
         //Updates the path repeatedly with a chosen time interval
         InvokeRepeating("UpdatePath", 0f, 0.5f);
@@ -156,27 +162,44 @@ public class GroundEnemyAI : MonoBehaviour
         canPunch = true;
     }
 
+    private IEnumerator JumpForceForward(float jumpDirection)
+    {
+        yield return new WaitForSeconds(0.4f);
+
+        Debug.Log("enemyJUMP");
+        rb.AddForce(new Vector2(100 * jumpDirection, 0));
+    }
+
     //Trying to raycast and check if there's an obstacle in front of the enemy unit and performing a jump over it.
     private void ObstacleCheck()
     {           
         RaycastHit2D hit;
+        float jumpDirection;
+        Vector2 force;
 
         //Casts a ray in the direction enemy unit is facing
         if (isFacingRight)
         {
-            hit = Physics2D.Raycast(transform.position, transform.right, 1, groundLayer);
-            Debug.DrawRay(transform.position, transform.right, Color.red);
+            hit = Physics2D.Raycast(transform.position, transform.right, wallCheckDistance, groundLayer);
+            Debug.DrawRay(transform.position, transform.right * wallCheckDistance, Color.red);
+            jumpDirection = 1;
         }
         else
         {
-            hit = Physics2D.Raycast(transform.position, -transform.right, 1, groundLayer);
-            Debug.DrawRay(transform.position, -transform.right, Color.red);
+            hit = Physics2D.Raycast(transform.position, -transform.right, wallCheckDistance, groundLayer);
+            Debug.DrawRay(transform.position, -transform.right * wallCheckDistance, Color.red);
+            jumpDirection = -1;
         }
+        force = new Vector2(jumpDirection, jumpHeight);
         //If the ray collides with ground layer, unit is grounded and jump is not on cooldown, performs a jump.
         if (hit.collider != null && IsGrounded() && canJump)
         {
-            rb.AddForce(Vector3.up * jumpHeight);
+            rb.AddForce(force, ForceMode2D.Impulse);  
+
+            StartCoroutine(JumpForceForward(jumpDirection));
+
             StartCoroutine(JumpCoolDown());
+            
         }
     }
 
@@ -195,7 +218,7 @@ public class GroundEnemyAI : MonoBehaviour
             case "roam":
                 Debug.Log("Roaming.");
                 //If the enemy unit tries to go outside of the given area parameters, it turns around.
-                if (transform.position.x >= (spawnPosition.x + roamingRange) && canMove)
+                if (transform.position.x >= (spawnPosition.x + roamingRange) && canMove && IsGrounded())
                 {
                     //rb.AddForce(forceX);
                     //StartCoroutine(WalkCoolDown());
@@ -206,7 +229,7 @@ public class GroundEnemyAI : MonoBehaviour
                     StartCoroutine(WalkCoolDown());
                     break;
                 }
-                else if (transform.position.x <= (spawnPosition.x - roamingRange) && canMove)
+                else if (transform.position.x <= (spawnPosition.x - roamingRange) && canMove && IsGrounded())
                 {
                     //rb.AddForce(forceX);
                     //StartCoroutine(WalkCoolDown());
@@ -223,7 +246,7 @@ public class GroundEnemyAI : MonoBehaviour
                     state = "charge";
                     break;
                 }
-                if(transform.position.x <= (spawnPosition.x + roamingRange) && transform.position.x >= (spawnPosition.x - roamingRange) && canMove)
+                if(transform.position.x <= (spawnPosition.x + roamingRange) && transform.position.x >= (spawnPosition.x - roamingRange) && canMove && IsGrounded())
                 {
                     rb.AddForce(new Vector2(transform.localScale.x * speed, 0));
                     StartCoroutine(WalkCoolDown());
@@ -259,6 +282,7 @@ public class GroundEnemyAI : MonoBehaviour
                 if (canPunch)
                 {
                     Debug.Log("PUNCH!");
+                    //PlayerPushback();
                     StartCoroutine(PunchCoolDown());
                 }
 
@@ -276,6 +300,12 @@ public class GroundEnemyAI : MonoBehaviour
 
                 break;
         }
+    }
+
+    void PlayerPushback()
+    {
+        Vector2 knockbackDirection = ((target.transform.position) - transform.position).normalized;
+        playerRB.AddForce(knockbackDirection * knockbackForce);
     }
 
 }
