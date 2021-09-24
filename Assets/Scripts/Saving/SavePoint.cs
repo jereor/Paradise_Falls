@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class SavePoint : Interactable
 {
@@ -27,9 +28,18 @@ public class SavePoint : Interactable
     public override void Interact()
     {
         Debug.Log("Saving game with interaction...");
-        Level01Loader.levelLoaderInstance.Save();    
-        
-        // aseta pelaajan hp
+
+        // Main Game Scene
+        if (SceneManager.GetActiveScene().name.Contains("01"))
+        {
+            Level01Loader.levelLoaderInstance.Save();
+        }
+        if (SceneManager.GetActiveScene().name.Contains("Demo"))
+        {
+            DemoLoader.levelLoaderInstance.Save();
+        }
+
+
     }
 
     public bool getPlayerIsClose()

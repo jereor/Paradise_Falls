@@ -55,7 +55,10 @@ public class MainMenuController : MonoBehaviour
             //Aloitetaan peli alusta.
             Debug.Log("New game started.");
 
-            StartCoroutine(LoadAsynchronously(1));
+            // Opening Main Game Scene
+            //StartCoroutine(LoadAsynchronously(1));
+            // Opening demo scene
+            StartCoroutine(LoadAsynchronously(SceneManager.sceneCountInBuildSettings - 1));
         }
         
     }
@@ -67,7 +70,10 @@ public class MainMenuController : MonoBehaviour
         // Load completed no errors
         if (GameStatus.status.Load() == true)
         {
-            StartCoroutine(LoadAsynchronously(1));
+            // Opening Main Game Scene
+            //StartCoroutine(LoadAsynchronously(1));
+            // Opening demo scene
+            StartCoroutine(LoadAsynchronously(SceneManager.sceneCountInBuildSettings - 1));
         }
         // Loading had errors don't open scene
         else
