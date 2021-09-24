@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class Level01Loader : MonoBehaviour
+public class DemoLoader : MonoBehaviour
 {
-    public static Level01Loader levelLoaderInstance;
+    public static DemoLoader levelLoaderInstance;
 
     [Header("Player Objects")]
     public GameObject playerPrefab;
@@ -31,8 +31,15 @@ public class Level01Loader : MonoBehaviour
             // SCENE INITIALIZATION --- could be done in Awake too test which is better
             Debug.Log("Binds for save tests(alpha keys): 0 save, 9 checksave, 8 delete, 7 load, O respawn, P kill boss");
             Debug.Log("Player spawning to: " + GameStatus.status.getLoadedData().position[0] + ", " + GameStatus.status.getLoadedData().position[1]);
-            playerObject = Respawn(playerPrefab, new Vector2(GameStatus.status.getLoadedData().position[0], GameStatus.status.getLoadedData().position[1]));
- 
+            if (GameObject.Find("Player").activeInHierarchy)
+            {
+                playerObject = GameObject.Find("Player");
+                playerObject.transform.position = new Vector2(GameStatus.status.getLoadedData().position[0], GameStatus.status.getLoadedData().position[1]);
+            }
+            else
+            {
+                playerObject = Respawn(playerPrefab, new Vector2(GameStatus.status.getLoadedData().position[0], GameStatus.status.getLoadedData().position[1]));
+            }
 
             if (firstBossObject != null && GameStatus.status.getLoadedData().bossesDefeated[0] == true)
             {

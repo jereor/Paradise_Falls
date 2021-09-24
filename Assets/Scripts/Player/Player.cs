@@ -8,6 +8,7 @@ public class Player : MonoBehaviour
     [SerializeField] private PlayerInput inputScript;
     [SerializeField] private PlayerMovement movementScript;
     [SerializeField] private PlayerCollision collisionScript;
+    [SerializeField] private PlayerInteractions interactionsScript;
 
     // Component references
     private Animator animator;

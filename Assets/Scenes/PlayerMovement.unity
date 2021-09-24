@@ -153,7 +153,7 @@ Transform:
   m_LocalScale: {x: 18.594242, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 547708081}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
 --- !u!212 &83694984
 SpriteRenderer:
@@ -259,6 +259,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
+  - {fileID: 729320505}
   - {fileID: 1933420242}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -293,7 +294,7 @@ Transform:
   m_LocalScale: {x: 18.594242, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 547708081}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &459309095
 SpriteRenderer:
@@ -402,7 +403,7 @@ Transform:
   m_LocalScale: {x: 1.8486229, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 547708081}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &485849273
 SpriteRenderer:
@@ -511,7 +512,7 @@ Transform:
   m_LocalScale: {x: 18.594242, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 547708081}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
 --- !u!212 &520216298
 SpriteRenderer:
@@ -617,7 +618,6 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 729320505}
   - {fileID: 459309094}
   - {fileID: 485849272}
   - {fileID: 1723023084}
@@ -661,7 +661,7 @@ Transform:
   m_LocalScale: {x: 1.8486229, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 547708081}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &1723023085
 SpriteRenderer:
@@ -821,14 +821,14 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 368704289}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &2646993275714197177
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    m_TransformParent: {fileID: 547708081}
+    m_TransformParent: {fileID: 368704289}
     m_Modifications:
     - target: {fileID: 2646993275326716544, guid: 4154d57994558ff489a9180c3151e624, type: 3}
       propertyPath: m_RootOrder
