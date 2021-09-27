@@ -1648,6 +1648,7 @@ GameObject:
   - component: {fileID: 1450510006}
   - component: {fileID: 1450510007}
   - component: {fileID: 1450510008}
+  - component: {fileID: 1450510009}
   m_Layer: 0
   m_Name: CM Player
   m_TagString: Untagged
@@ -1722,6 +1723,18 @@ MonoBehaviour:
   m_BoundingShape2D: {fileID: 522457045}
   m_ConfineScreenEdges: 1
   m_Damping: 0
+--- !u!114 &1450510009
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1450510005}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8fda54cb4c1b80641b7c593c4f684870, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1649168264
 GameObject:
   m_ObjectHideFlags: 0
