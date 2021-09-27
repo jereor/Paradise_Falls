@@ -18,7 +18,7 @@ public class DemoLoader : MonoBehaviour
     [Header("Savepoints")]
     public GameObject savePointsParent;
     [SerializeField] private List<GameObject> savePoints = new List<GameObject>();
-    [SerializeField] private Vector2 respawnPoint;
+    [SerializeField] public Vector2 respawnPoint;
 
     /*
      * GameScene loads initialize player and bosses
@@ -31,14 +31,16 @@ public class DemoLoader : MonoBehaviour
             // SCENE INITIALIZATION --- could be done in Awake too test which is better
             Debug.Log("Binds for save tests(alpha keys): 0 save, 9 checksave, 8 delete, 7 load, O respawn, P kill boss");
             Debug.Log("Player spawning to: " + GameStatus.status.getLoadedData().position[0] + ", " + GameStatus.status.getLoadedData().position[1]);
+            // Set respawn point as loaded position
+            respawnPoint = new Vector2(GameStatus.status.getLoadedData().position[0], GameStatus.status.getLoadedData().position[1]);
             if (GameObject.Find("Player").activeInHierarchy)
             {
                 playerObject = GameObject.Find("Player");
-                playerObject.transform.position = new Vector2(GameStatus.status.getLoadedData().position[0], GameStatus.status.getLoadedData().position[1]);
+                playerObject.transform.position = respawnPoint;
             }
             else
             {
-                playerObject = Respawn(playerPrefab, new Vector2(GameStatus.status.getLoadedData().position[0], GameStatus.status.getLoadedData().position[1]));
+                playerObject = Respawn(playerPrefab, respawnPoint);
             }
 
             if (firstBossObject != null && GameStatus.status.getLoadedData().bossesDefeated[0] == true)
