@@ -95,6 +95,7 @@ GameObject:
   - component: {fileID: 8401565248732910208}
   - component: {fileID: 8401565248732910212}
   - component: {fileID: 8401565248732910209}
+  - component: {fileID: 2085753358315985748}
   m_Layer: 7
   m_Name: GroundEnemyOne
   m_TagString: Untagged
@@ -207,9 +208,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5423c9748d8c6194ab4391113e8374e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 2646993275326716544, guid: 4154d57994558ff489a9180c3151e624, type: 3}
+  target: {fileID: 0}
   enemyGFX: {fileID: 8401565248790612542}
-  playerRB: {fileID: 2646993275326716665, guid: 4154d57994558ff489a9180c3151e624, type: 3}
+  playerRB: {fileID: 0}
   groundCheck: {fileID: 8401565248830553074}
   checkRadius: 0.45
   groundLayer:
@@ -226,7 +227,24 @@ MonoBehaviour:
   aggroDistance: 10
   punchingDistance: 1.5
   wallCheckDistance: 1.5
-  knockbackForce: 5
+  knockbackForce: 1000
+--- !u!114 &2085753358315985748
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8401565248732910210}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e85f99a78ea71c14bb56436ea514cc78, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 3
+  destroyWhenDead: 1
+  onDie:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &8401565248790612543
 GameObject:
   m_ObjectHideFlags: 0

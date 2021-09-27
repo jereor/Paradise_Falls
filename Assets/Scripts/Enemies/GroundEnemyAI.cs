@@ -7,6 +7,8 @@ using Pathfinding;
 
 public class GroundEnemyAI : MonoBehaviour
 {
+    private Health _targetHealth;
+
     public Transform target;
     public Transform enemyGFX;
     private Vector2 spawnPosition;
@@ -51,6 +53,7 @@ public class GroundEnemyAI : MonoBehaviour
     {
         seeker = GetComponent<Seeker>();
         rb = GetComponent<Rigidbody2D>();
+        _targetHealth = GetComponent<Health>();
         spawnPosition = transform.position;
 
         Physics2D.IgnoreLayerCollision(3, 7);
@@ -166,7 +169,7 @@ public class GroundEnemyAI : MonoBehaviour
     {
         yield return new WaitForSeconds(0.4f);
 
-        Debug.Log("enemyJUMP");
+        //Debug.Log("enemyJUMP");
         rb.AddForce(new Vector2(100 * jumpDirection, 0));
     }
 
@@ -216,13 +219,13 @@ public class GroundEnemyAI : MonoBehaviour
         {
             //Roams in a specified area given to the enemy unit and stays inside of it.
             case "roam":
-                Debug.Log("Roaming.");
+                //Debug.Log("Roaming.");
                 //If the enemy unit tries to go outside of the given area parameters, it turns around.
                 if (transform.position.x >= (spawnPosition.x + roamingRange) && canMove && IsGrounded())
                 {
                     //rb.AddForce(forceX);
                     //StartCoroutine(WalkCoolDown());
-                    Debug.Log("Left");
+                    //Debug.Log("Left");
                     transform.localScale = new Vector3(-1f, 1f, 1f);
                     isFacingRight = false;
                     rb.AddForce(new Vector2(transform.localScale.x * speed, 0));
@@ -233,7 +236,7 @@ public class GroundEnemyAI : MonoBehaviour
                 {
                     //rb.AddForce(forceX);
                     //StartCoroutine(WalkCoolDown());
-                    Debug.Log("Right");
+                    //Debug.Log("Right");
                     transform.localScale = new Vector3(1f, 1f, 1f);
                     isFacingRight = true;
                     rb.AddForce(new Vector2(transform.localScale.x * speed, 0));
@@ -255,7 +258,7 @@ public class GroundEnemyAI : MonoBehaviour
 
             //Here enemy charges the player. Checks if player is inside enemy unit's roaming range.
             case "charge":
-                Debug.Log("Charging!");
+                //Debug.Log("Charging!");
                 if (path.GetTotalLength() > aggroDistance || (target.transform.position.x <= (spawnPosition.x - roamingRange) || target.transform.position.x > (spawnPosition.x + roamingRange)))
                 {
                     state = "roam";
@@ -281,8 +284,9 @@ public class GroundEnemyAI : MonoBehaviour
                 //Do damage to player here
                 if (canPunch)
                 {
-                    Debug.Log("PUNCH!");
-                    //PlayerPushback();
+                    Debug.Log("Player hit");
+                    _targetHealth.TakeDamage(1);
+                    PlayerPushback();
                     StartCoroutine(PunchCoolDown());
                 }
 
@@ -294,7 +298,7 @@ public class GroundEnemyAI : MonoBehaviour
                 else if (path.GetTotalLength() > punchingDistance)
                 {
                     state = "charge";
-                    Debug.Log("Charge again!");
+                    //Debug.Log("Charge again!");
                     break;
                 }
 
@@ -304,7 +308,8 @@ public class GroundEnemyAI : MonoBehaviour
 
     void PlayerPushback()
     {
-        Vector2 knockbackDirection = ((target.transform.position) - transform.position).normalized;
+        float pushbackX = target.transform.position.x - transform.position.x;
+        Vector2 knockbackDirection = new Vector2((pushbackX), pushbackX / 2).normalized;
         playerRB.AddForce(knockbackDirection * knockbackForce);
     }
 
