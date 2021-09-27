@@ -7,6 +7,8 @@ using Pathfinding;
 
 public class GroundEnemyAI : MonoBehaviour
 {
+    private Health _targetHealth;
+
     public Transform target;
     public Transform enemyGFX;
     private Vector2 spawnPosition;
@@ -51,6 +53,7 @@ public class GroundEnemyAI : MonoBehaviour
     {
         seeker = GetComponent<Seeker>();
         rb = GetComponent<Rigidbody2D>();
+        _targetHealth = GetComponent<Health>();
         spawnPosition = transform.position;
 
         Physics2D.IgnoreLayerCollision(3, 7);
@@ -282,6 +285,7 @@ public class GroundEnemyAI : MonoBehaviour
                 if (canPunch)
                 {
                     Debug.Log("Player hit");
+                    _targetHealth.TakeDamage(1);
                     PlayerPushback();
                     StartCoroutine(PunchCoolDown());
                 }
