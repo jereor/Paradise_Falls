@@ -13,6 +13,7 @@ public class Interactable : MonoBehaviour
     [Tooltip("Child text object of this item")]
     public TMP_Text floatingText;       // This can later be changed to be static text field for all info popups in Main Canvas if need be
     [SerializeField] private bool showFloatingText = true;
+    [SerializeField] private bool updateTextOnInteract = true;
 
     // These should be edited in inspector of desired item
     [SerializeField] private string textToShow = "Press F to interact";
@@ -20,11 +21,11 @@ public class Interactable : MonoBehaviour
 
     private void Start()
     {
+        // These two sets should/can be done regardless of showFloatingText being false
         // Set text at start
         floatingText.text = textToShow;
-
         // Hide text as default
-        HideFloatingText();
+        floatingText.gameObject.SetActive(false);
 
         // If item event is not set we set new UnityEvent and AddListener to Interact.
         // Interact() is called in PlayerInteractions when pressed F as a Event with Invoke()
@@ -36,7 +37,7 @@ public class Interactable : MonoBehaviour
         itemEvent.AddListener(Interact);
     }
 
-    // Makes text object visible 
+    // Makes text object visible, called from item script when player comes close
     public virtual void ShowFloatingText()
     {
         if (showFloatingText)
@@ -49,7 +50,7 @@ public class Interactable : MonoBehaviour
             floatingText.gameObject.SetActive(true);
         }
     }
-
+    // Makes text object hidden, called from item script when player leaves triggerarea
     public virtual void HideFloatingText()
     {
         if (showFloatingText)
@@ -63,7 +64,16 @@ public class Interactable : MonoBehaviour
     {
         if (showFloatingText)
         {
-            floatingText.text = interactedText;     // Interacted
+            // If we want to update text or no
+            if (updateTextOnInteract)
+            {
+                floatingText.text = interactedText;     // Interacted
+            }
+            // Best default case is to hide text as item can be pick up (override if need be in item script)
+            else
+            {
+                HideFloatingText();
+            }
         }
     }
 

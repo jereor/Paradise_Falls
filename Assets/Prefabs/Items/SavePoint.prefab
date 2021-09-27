@@ -117,7 +117,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1579612445
 RectTransform:
   m_ObjectHideFlags: 0
@@ -335,11 +335,12 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   floatingText: {fileID: 1579612446}
+  showFloatingText: 1
+  updateTextOnInteract: 1
   textToShow: Press F to Save
   interactedText: Game Saved
   playerIsClose: 0
   saveProtector: 0
-  showFloatingText: 1
 --- !u!58 &4240992959880559732
 CircleCollider2D:
   m_ObjectHideFlags: 0
