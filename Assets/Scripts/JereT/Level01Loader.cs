@@ -31,8 +31,18 @@ public class Level01Loader : MonoBehaviour
             // SCENE INITIALIZATION --- could be done in Awake too test which is better
             Debug.Log("Binds for save tests(alpha keys): 0 save, 9 checksave, 8 delete, 7 load, O respawn, P kill boss");
             Debug.Log("Player spawning to: " + GameStatus.status.getLoadedData().position[0] + ", " + GameStatus.status.getLoadedData().position[1]);
-            playerObject = Respawn(playerPrefab, new Vector2(GameStatus.status.getLoadedData().position[0], GameStatus.status.getLoadedData().position[1]));
- 
+            // Set respawn point
+            respawnPoint = new Vector2(GameStatus.status.getLoadedData().position[0], GameStatus.status.getLoadedData().position[1]);
+            if (GameObject.Find("Player").activeInHierarchy)
+            {
+                playerObject = GameObject.Find("Player");
+                playerObject.transform.position = respawnPoint;
+            }
+            else
+            {
+                playerObject = Respawn(playerPrefab, respawnPoint);
+            }
+
 
             if (firstBossObject != null && GameStatus.status.getLoadedData().bossesDefeated[0] == true)
             {
