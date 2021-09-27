@@ -346,9 +346,9 @@ CircleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0, y: -0.00000018348712}
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 0.52372843
 --- !u!114 &7004985351230670900
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -381,19 +381,15 @@ MonoBehaviour:
   target: {fileID: 0}
   enemyGFX: {fileID: 674690727670028638}
   playerRB: {fileID: 0}
-  groundCheck: {fileID: 0}
-  checkRadius: 0
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
-  speed: 20
-  jumpHeight: 0
+  speed: 5
   nextWaypointDistance: 3
   pathUpdateInterval: 1
-  walkStepInterval: 1
-  runStepInterval: 0.5
   state: roam
   roamingRange: 10
   aggroDistance: 10
-  punchingDistance: 3
+  punchingDistance: 1
+  wallCheckDistance: 1.5
   knockbackForce: 5

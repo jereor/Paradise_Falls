@@ -1923,10 +1923,6 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 208985480462589908, guid: 41c2fc79220733a4abc856ee861da9f2, type: 3}
-      propertyPath: speed
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 208985480462589908, guid: 41c2fc79220733a4abc856ee861da9f2, type: 3}
       propertyPath: target
       value: 
       objectReference: {fileID: 729320505}
@@ -1934,26 +1930,6 @@ PrefabInstance:
       propertyPath: playerRB
       value: 
       objectReference: {fileID: 1198132382}
-    - target: {fileID: 208985480462589908, guid: 41c2fc79220733a4abc856ee861da9f2, type: 3}
-      propertyPath: aggroDistance
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 208985480462589908, guid: 41c2fc79220733a4abc856ee861da9f2, type: 3}
-      propertyPath: punchingDistance
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 208985480462589908, guid: 41c2fc79220733a4abc856ee861da9f2, type: 3}
-      propertyPath: wallCheckDistance
-      value: 1.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 404030986026735725, guid: 41c2fc79220733a4abc856ee861da9f2, type: 3}
-      propertyPath: m_Radius
-      value: 0.52372843
-      objectReference: {fileID: 0}
-    - target: {fileID: 404030986026735725, guid: 41c2fc79220733a4abc856ee861da9f2, type: 3}
-      propertyPath: m_Offset.y
-      value: -0.00000018348712
-      objectReference: {fileID: 0}
     - target: {fileID: 674690728015036898, guid: 41c2fc79220733a4abc856ee861da9f2, type: 3}
       propertyPath: m_Name
       value: FlyingEnemyOne
