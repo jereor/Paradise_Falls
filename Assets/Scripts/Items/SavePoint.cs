@@ -6,7 +6,6 @@ public class SavePoint : Interactable
     [Header("Variables from This script")]
     [SerializeField] private bool playerIsClose;
     [SerializeField] private bool saveProtector;    // Checks if player has allready saved game and wont allow save again until leaves proximity
-    [SerializeField] private bool showFloatingText = true;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -18,10 +17,8 @@ public class SavePoint : Interactable
             // Mark for this item that player is close (easier to track interactions when debugging)
             playerIsClose = true;
 
-            if (showFloatingText)
-            {
-                ShowFloatingText();
-            }
+
+             ShowFloatingText();
         }
     }
 
@@ -36,10 +33,8 @@ public class SavePoint : Interactable
             // Player leaves items proximity so we can allow saving again when Player comes back to this item
             saveProtector = false;
 
-            if (showFloatingText)
-            {
-                HideFloatingText();
-            }
+
+            HideFloatingText();
         }
     }
 
@@ -50,10 +45,7 @@ public class SavePoint : Interactable
         {
             Debug.Log("Saving game with interaction...");
 
-            if (showFloatingText)
-            {
-                InteractedTextUpdate();
-            }
+            InteractedTextUpdate();
 
             // We need to find levelLoaderInstance of this scene all scenes should have personalized LevelLoaders (different map aka positions of items and enemies)
             // Main Game Scene
