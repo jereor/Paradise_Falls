@@ -27,13 +27,13 @@ public class FlyingEnemyAI : MonoBehaviour
     public float wallCheckDistance = 2f;
     public float knockbackForce = 5f;
 
-    private bool isFacingRight = true;
+    //private bool isFacingRight = true;
     //private bool canMove = true;
     //private bool canJump = true;
     private bool returningFromChase = false;
     private bool canPunch = true;
     private float punchCooldown = 1.5f;
-    private int layerMask = 1 << 6;
+    //private int layerMask = 1 << 6;
 
     Path path;
     int currentWaypoint = 0;
@@ -108,12 +108,12 @@ public class FlyingEnemyAI : MonoBehaviour
         if (rb.velocity.x >= 0.1f)
         {
             transform.localScale = new Vector3(1f, 1f, 1f);
-            isFacingRight = true;
+            //isFacingRight = true;
         }
         else if (rb.velocity.x <= -0.1f)
         {
             transform.localScale = new Vector3(-1f, 1f, 1f);
-            isFacingRight = false;
+            //isFacingRight = false;
         }
 
         ObstacleCheck();
@@ -220,7 +220,7 @@ public class FlyingEnemyAI : MonoBehaviour
                     //StartCoroutine(WalkCoolDown());
                     //Debug.Log("Left");
                     transform.localScale = new Vector3(-1f, 1f, 1f);
-                    isFacingRight = false;
+                    //isFacingRight = false;
                     rb.AddForce(new Vector2(transform.localScale.x * speed, 0));
                     //StartCoroutine(WalkCoolDown());
                     
@@ -231,7 +231,7 @@ public class FlyingEnemyAI : MonoBehaviour
                     //StartCoroutine(WalkCoolDown());
                     //Debug.Log("Right");
                     transform.localScale = new Vector3(1f, 1f, 1f);
-                    isFacingRight = true;
+                    //isFacingRight = true;
                     rb.AddForce(new Vector2(transform.localScale.x * speed, 0));
                     //StartCoroutine(WalkCoolDown());
                     

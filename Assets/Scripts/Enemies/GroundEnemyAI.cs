@@ -12,7 +12,7 @@ public class GroundEnemyAI : MonoBehaviour
     public Transform target;
     public Transform enemyGFX;
     private Vector2 spawnPosition;
-    private Collider2D _collider;
+    //private Collider2D _collider;
 
     public Rigidbody2D playerRB;
 
@@ -38,13 +38,12 @@ public class GroundEnemyAI : MonoBehaviour
     public float knockbackForce = 5f;
 
     private bool isFacingRight = true;
-    private int jumpCount = 0;
     private bool canMove = true;
     private bool canJump = true;
     private bool canPunch = true;
     private float punchCooldown = 1.5f;
 
-    private int layerMask = 1 << 6;
+    //private int layerMask = 1 << 6;
 
     Path path;
     int currentWaypoint = 0;
@@ -59,7 +58,7 @@ public class GroundEnemyAI : MonoBehaviour
         seeker = GetComponent<Seeker>();
         rb = GetComponent<Rigidbody2D>();
         _targetHealth = GetComponent<Health>();
-        _collider = GetComponent<Collider2D>();
+        //_collider = GetComponent<Collider2D>();
         spawnPosition = transform.position;
 
         Physics2D.IgnoreLayerCollision(3, 7);
@@ -307,6 +306,11 @@ public class GroundEnemyAI : MonoBehaviour
 
             //Does damage to target if close enough. Otherwise goes to roam or charge state.
             case "punch":
+                //Add a function that turns the enemy sprite towards the player here...
+
+
+
+
                 //Do damage to player here
                 if (canPunch)
                 {
@@ -316,6 +320,7 @@ public class GroundEnemyAI : MonoBehaviour
                     StartCoroutine(PunchCoolDown());
                 }
 
+                //If target goes out of enemy's bounds, return to "roam" state
                 if (target.transform.position.x <= (spawnPosition.x - roamingRange) || target.transform.position.x > (spawnPosition.x + roamingRange))
                 {
                     state = "roam";

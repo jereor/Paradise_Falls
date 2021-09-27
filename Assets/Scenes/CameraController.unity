@@ -1340,6 +1340,10 @@ PrefabInstance:
       propertyPath: target
       value: 
       objectReference: {fileID: 729320505}
+    - target: {fileID: 8401565248732910209, guid: 77600955bab6e9a42b33ced08062f9d5, type: 3}
+      propertyPath: playerRB
+      value: 
+      objectReference: {fileID: 1859845175}
     - target: {fileID: 8401565248732910210, guid: 77600955bab6e9a42b33ced08062f9d5, type: 3}
       propertyPath: m_Name
       value: GroundEnemyOne
@@ -1754,6 +1758,11 @@ Transform:
   m_Father: {fileID: 368704289}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!50 &1859845175 stripped
+Rigidbody2D:
+  m_CorrespondingSourceObject: {fileID: 2646993275326716665, guid: 4154d57994558ff489a9180c3151e624, type: 3}
+  m_PrefabInstance: {fileID: 2646993275714197177}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1926141601
 GameObject:
   m_ObjectHideFlags: 0
