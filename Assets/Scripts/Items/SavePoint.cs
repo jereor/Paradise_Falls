@@ -5,7 +5,7 @@ public class SavePoint : Interactable
 {
     [Header("Variables from This script")]
     [SerializeField] private bool playerIsClose;
-    [SerializeField] private bool saveProtector;    // Checks if player has allready saved game and wont allow save again until leaves proximity
+    [SerializeField] private bool saveBuffer;    // Checks if player has allready saved game and wont allow save again until leaves proximity
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -18,7 +18,7 @@ public class SavePoint : Interactable
             playerIsClose = true;
 
 
-             ShowFloatingText();
+            ShowFloatingText();
         }
     }
 
@@ -31,7 +31,7 @@ public class SavePoint : Interactable
             collision.GetComponent<PlayerInteractions>().GiveGameObject(null);
             playerIsClose = false;
             // Player leaves items proximity so we can allow saving again when Player comes back to this item
-            saveProtector = false;
+            saveBuffer = false;
 
 
             HideFloatingText();
@@ -41,7 +41,7 @@ public class SavePoint : Interactable
     public override void Interact()
     {
         // Check if player has saved with this item if not allow save if yes disable saving until Player leaves proximity
-        if (!saveProtector)
+        if (!saveBuffer)
         {
             Debug.Log("Saving game with interaction...");
 
@@ -57,7 +57,7 @@ public class SavePoint : Interactable
             {
                 DemoLoader.levelLoaderInstance.Save();
             }
-            saveProtector = true;
+            saveBuffer = true;
         }
         else
         {

@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 using TMPro;
+using UnityEngine.InputSystem;
 
 // This class is inherited by items that are interactable in game examples health pick up, savepoint, levers, doors, etc.
 // Virtual functions are inherited by all items that inherit this class and can be overridden if need be
@@ -14,13 +15,18 @@ public class Interactable : MonoBehaviour
     public TMP_Text floatingText;       // This can later be changed to be static text field for all info popups in Main Canvas if need be
     [SerializeField] private bool showFloatingText = true;
     [SerializeField] private bool updateTextOnInteract = true;
+    [SerializeField] private InputActionAsset inputActions;
 
     // These should be edited in inspector of desired item
-    [SerializeField] private string textToShow = "Press F to interact";
+    [Tooltip("# is placeholder char for actual interact input binding key")]
+    [SerializeField] private string textToShow = "Press # to interact";
     [SerializeField] private string interactedText = "Interacted";
 
     private void Start()
     {
+        // Get the input key for interact action
+        textToShow = textToShow.Replace("#", inputActions.FindAction("Interact").controls.ToArray()[0].name);
+     
         // These two sets should/can be done regardless of showFloatingText being false
         // Set text at start
         floatingText.text = textToShow;

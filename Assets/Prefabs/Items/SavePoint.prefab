@@ -337,10 +337,11 @@ MonoBehaviour:
   floatingText: {fileID: 1579612446}
   showFloatingText: 1
   updateTextOnInteract: 1
-  textToShow: Press F to Save
+  inputActions: {fileID: -944628639613478452, guid: 206544e4602af98409f32e57ede731cb, type: 3}
+  textToShow: Press # to Save
   interactedText: Game Saved
   playerIsClose: 0
-  saveProtector: 0
+  saveBuffer: 0
 --- !u!58 &4240992959880559732
 CircleCollider2D:
   m_ObjectHideFlags: 0
