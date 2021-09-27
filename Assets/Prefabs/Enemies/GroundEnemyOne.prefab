@@ -207,9 +207,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5423c9748d8c6194ab4391113e8374e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 2646993275326716544, guid: 4154d57994558ff489a9180c3151e624, type: 3}
+  target: {fileID: 0}
   enemyGFX: {fileID: 8401565248790612542}
-  playerRB: {fileID: 2646993275326716665, guid: 4154d57994558ff489a9180c3151e624, type: 3}
+  playerRB: {fileID: 0}
   groundCheck: {fileID: 8401565248830553074}
   checkRadius: 0.45
   groundLayer:
@@ -226,7 +226,7 @@ MonoBehaviour:
   aggroDistance: 10
   punchingDistance: 1.5
   wallCheckDistance: 1.5
-  knockbackForce: 5
+  knockbackForce: 1000
 --- !u!1 &8401565248790612543
 GameObject:
   m_ObjectHideFlags: 0
