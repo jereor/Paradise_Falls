@@ -112,7 +112,7 @@ Transform:
   m_GameObject: {fileID: 8401565248732910210}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 7.3, y: -1.16, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: -1, y: 1, z: 1}
   m_Children:
   - {fileID: 8401565248830553074}
   - {fileID: 8401565248790612542}
@@ -223,10 +223,9 @@ MonoBehaviour:
   walkStepInterval: 1
   runStepInterval: 0.5
   state: roam
-  roamingRange: 10
-  aggroDistance: 10
+  roamingRange: 3
+  aggroDistance: 2
   punchingDistance: 1.5
-  wallCheckDistance: 1.5
   knockbackForce: 1000
 --- !u!114 &2085753358315985748
 MonoBehaviour:
