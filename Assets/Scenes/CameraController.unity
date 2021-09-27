@@ -2183,7 +2183,8 @@ PrefabInstance:
       propertyPath: m_CollisionDetection
       value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 2646993275326716548, guid: 4154d57994558ff489a9180c3151e624, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 4154d57994558ff489a9180c3151e624, type: 3}
 --- !u!1001 &6094102677189529783
 PrefabInstance:
