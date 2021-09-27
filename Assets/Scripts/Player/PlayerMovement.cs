@@ -34,6 +34,9 @@ public class PlayerMovement : MonoBehaviour
         // Movement
         rb.velocity = new Vector2(horizontal * movementVelocity, rb.velocity.y); // Moves the player by horizontal input
 
+        // Camera offset based on input direction
+        CameraEffects.Instance.ChangeOffset(.3f, horizontal * 2);
+
         // Coyote Time
         if (IsGrounded())
         {
