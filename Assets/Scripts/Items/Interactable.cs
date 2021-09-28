@@ -19,19 +19,16 @@ public class Interactable : MonoBehaviour
 
     // These should be edited in inspector of desired item
     [Tooltip("# is placeholder char for actual interact input binding key")]
-    [SerializeField] private string textToShow = "Press # to interact";
-    [SerializeField] private string interactedText = "Interacted";
+    [SerializeField] private string textToShow = "Press # to interact";     // Default string to be shown if showFloatingText is true
+    [SerializeField] private string interactedText = "Interacted";      // Default string to be replaced and shown if updateTextOnInteract is true
 
     private void Start()
     {
         // Get the input key for interact action
         textToShow = textToShow.Replace("#", inputActions.FindAction("Interact").controls.ToArray()[0].name);
-     
-        // These two sets should/can be done regardless of showFloatingText being false
-        // Set text at start
-        floatingText.text = textToShow;
-        // Hide text as default
-        floatingText.gameObject.SetActive(false);
+
+        // Set text at start to ""
+        floatingText.text = "";
 
         // If item event is not set we set new UnityEvent and AddListener to Interact.
         // Interact() is called in PlayerInteractions when pressed F as a Event with Invoke()
@@ -53,7 +50,6 @@ public class Interactable : MonoBehaviour
             {
                 floatingText.text = textToShow;     // Press F to interact
             }
-            floatingText.gameObject.SetActive(true);
         }
     }
     // Makes text object hidden, called from item script when player leaves triggerarea
@@ -61,7 +57,7 @@ public class Interactable : MonoBehaviour
     {
         if (showFloatingText)
         {
-            floatingText.gameObject.SetActive(false);
+            floatingText.text = "";
         }
     }
 
