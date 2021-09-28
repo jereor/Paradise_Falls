@@ -47,23 +47,24 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
+        // Not allowing player to move or Flip localScale
         if (canMove)
         {
             // Movement
             rb.velocity = new Vector2(horizontal * movementVelocity, rb.velocity.y); // Moves the player by horizontal input
+
+            // Character flip
+            if (!isFacingRight && horizontal > 0f) // Flip when turning right
+                Flip();
+            else if (isFacingRight && horizontal < 0f) // Flip when turning left
+                Flip();
         }
 
         // Coyote Time
         if (IsGrounded())
         {
             lastGroundedTime = Time.time;
-        }
-
-        // Character flip
-        if (!isFacingRight && horizontal > 0f) // Flip when turning right
-            Flip();
-        else if (isFacingRight && horizontal < 0f) // Flip when turning left
-            Flip();
+        }    
     }
 
     // Physic based operations should be called in FixedUpdate(), else hardware can affect Physics (frame drops can skip Update() calls)
@@ -86,12 +87,14 @@ public class PlayerMovement : MonoBehaviour
              */
             if ((BodyIsTouchingWall() || FeetAreTouchingWall()) 
                 && !LedgeIsOccupied() 
-                && (IsGrounded() || Time.time - lastGroundedTime >= coyoteTime) 
+                && (IsGrounded() || (!IsGrounded() && Time.time - lastGroundedTime >= coyoteTime)) 
                 && Time.time - lastTimeClimbed >= climbTimeBuffer)
             {
+                //Debug.Log("Climb start: " + Time.time);
                 canClimb = true;
             }
 
+            // We can climb so we climb
             if (canClimb)
             {
                 // Do these before animation
@@ -101,7 +104,7 @@ public class PlayerMovement : MonoBehaviour
                 canMove = false; // Prevent moving while climbing mostly for animations
                 lastTimeClimbed = Time.time;
 
-                // START CLIMBING ANIMATION HERE
+                // START CLIMBING ANIMATION HERE FOR DEMO COROUTINE TO STOP MOVEMENT WHILE CLIMBING
                 StartCoroutine(Climb());
                 
                 // Start this when climbing animation is completed aka not here
@@ -180,7 +183,7 @@ public class PlayerMovement : MonoBehaviour
         
         // If button was pressed
         if (context.performed && (Time.time - lastGroundedTime <= coyoteTime) // Check if coyote time is online
-            && (Time.time - jumpButtonPressedTime <= coyoteTime)) // Check if jump has been buffered
+            && (Time.time - jumpButtonPressedTime <= coyoteTime) && !isClimbing) // Check if jump has been buffered
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce); // Keep player in upwards motion
         }

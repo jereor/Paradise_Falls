@@ -277,7 +277,7 @@ MonoBehaviour:
   ledgeCheck: {fileID: 2838063052809471023}
   wallCheckBody: {fileID: 6576764605224401354}
   wallCheckFeet: {fileID: 1156667530783647825}
-  checkDistance: 0.6
+  checkDistance: 0.8
   climbXOffset: 1
   climbYOffset: 1
 --- !u!114 &2646993275326716546
