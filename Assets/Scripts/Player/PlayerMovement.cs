@@ -85,14 +85,9 @@ public class PlayerMovement : MonoBehaviour
              * AND ( IsGrounded OR Time - lastGroundedTime is greater than climbTimeBuffer )    This is to prevent walking of a cliff and climbing soon as you step off the ledge
              * AND Time - lastTimeClimbed is greater that climbTimeBuffer                       Prevents climbing super fast
              */
-            //Debug.Log("Wall: " + (BodyIsTouchingWall() || FeetAreTouchingWall()));
-            //Debug.Log("Ledge: " + !LedgeIsOccupied());
-            //Debug.Log("Grounded: " + (IsGrounded() || (!IsGrounded() && Time.time - lastGroundedTime >= coyoteTime)));
-            //Debug.Log("ClimbBuffer: " +(Time.time - lastTimeClimbed >= climbTimeBuffer));
 
             if ((BodyIsTouchingWall() || FeetAreTouchingWall()) 
-                && !LedgeIsOccupied() 
-                && (IsGrounded() || (!IsGrounded() && Time.time - lastGroundedTime >= coyoteTime)) 
+                && !LedgeIsOccupied()
                 && Time.time - lastTimeClimbed >= climbTimeBuffer)
             {
                 //Debug.Log("Climb start: " + Time.time);
