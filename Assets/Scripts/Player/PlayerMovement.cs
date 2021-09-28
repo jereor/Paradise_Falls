@@ -83,8 +83,13 @@ public class PlayerMovement : MonoBehaviour
              * body OR feet are tounging wall
              * AND ledge isn't occupied
              * AND ( IsGrounded OR Time - lastGroundedTime is greater than climbTimeBuffer )    This is to prevent walking of a cliff and climbing soon as you step off the ledge
-             * AND Time - lastTimeClimbed is greater that climbTimeBuffer
+             * AND Time - lastTimeClimbed is greater that climbTimeBuffer                       Prevents climbing super fast
              */
+            //Debug.Log("Wall: " + (BodyIsTouchingWall() || FeetAreTouchingWall()));
+            //Debug.Log("Ledge: " + !LedgeIsOccupied());
+            //Debug.Log("Grounded: " + (IsGrounded() || (!IsGrounded() && Time.time - lastGroundedTime >= coyoteTime)));
+            //Debug.Log("ClimbBuffer: " +(Time.time - lastTimeClimbed >= climbTimeBuffer));
+
             if ((BodyIsTouchingWall() || FeetAreTouchingWall()) 
                 && !LedgeIsOccupied() 
                 && (IsGrounded() || (!IsGrounded() && Time.time - lastGroundedTime >= coyoteTime)) 
@@ -100,9 +105,11 @@ public class PlayerMovement : MonoBehaviour
                 // Do these before animation
                 isClimbing = true;
                 rb.gravityScale = 0f; // Set to zero because 
-                rb.velocity = new Vector2(0, 0);
+                rb.velocity = new Vector2(0, 0); // Set velocity here to zero else movement bugs while climbing
+
                 canMove = false; // Prevent moving while climbing mostly for animations
-                lastTimeClimbed = Time.time;
+
+                lastTimeClimbed = Time.time; // We start climbing set time here
 
                 // START CLIMBING ANIMATION HERE FOR DEMO COROUTINE TO STOP MOVEMENT WHILE CLIMBING
                 StartCoroutine(Climb());
@@ -127,6 +134,7 @@ public class PlayerMovement : MonoBehaviour
     {
         // Move player for offset amount to X and Y directions. X dir will need localScale.x to track where player is looking
         transform.position = new Vector2(transform.position.x + climbXOffset * transform.localScale.x, transform.position.y + climbYOffset);
+
         rb.gravityScale = defaultGravityScale; // Set this to default here
         canClimb = false; // We cannot climb after before we have checked Raycasts again with new position
         isClimbing = false; // We end climbing
