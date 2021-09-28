@@ -17,6 +17,8 @@ public class PlayerMovement : MonoBehaviour
 
     // State variables
     private float horizontal; // Tracks horizontal input direction
+    private bool moving = false;
+    private bool falling = false;
     private bool isFacingRight = true; // Tracks player sprite direction
     private float? jumpButtonPressedTime; // Saves the time when player presses jump button
     private float? lastGroundedTime;
@@ -27,6 +29,7 @@ public class PlayerMovement : MonoBehaviour
     private void Start()
     {
         rb = gameObject.GetComponent<Rigidbody2D>();
+        PlayerCamera.Instance.ChangeCameraOffset(0.2f, false, 1);
     }
 
     private void Update()
@@ -34,11 +37,16 @@ public class PlayerMovement : MonoBehaviour
         // Movement
         rb.velocity = new Vector2(horizontal * movementVelocity, rb.velocity.y); // Moves the player by horizontal input
 
+        moving = rb.velocity.x != 0;
+        falling = rb.velocity.y < 0;
+        if (moving)
+            PlayerCamera.Instance.ChangeCameraOffset(0.2f, falling, isFacingRight ? 0.8f : -0.8f); // Centers camera a little
+        else
+            PlayerCamera.Instance.ChangeCameraOffset(0.2f, falling, isFacingRight ? 1 : -1); // Offset camera with character front direction
+
         // Coyote Time
         if (IsGrounded())
-        {
             lastGroundedTime = Time.time;
-        }
 
         // Character flip
         if (!isFacingRight && horizontal > 0f) // Flip when turning right
@@ -56,6 +64,7 @@ public class PlayerMovement : MonoBehaviour
     // Flips player by changing localScale
     private void Flip()
     {
+        // Character flip
         isFacingRight = !isFacingRight;
         Vector3 localScale = transform.localScale;
         localScale.x *= -1f;
