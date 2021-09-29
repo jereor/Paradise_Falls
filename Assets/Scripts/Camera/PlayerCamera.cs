@@ -23,6 +23,7 @@ public class PlayerCamera : MonoBehaviour
 
     public void ChangeTransposer(CinemachineFramingTransposer newTransposer)
     {
+        StopAllCoroutines();
         transposer = newTransposer;
     }
 

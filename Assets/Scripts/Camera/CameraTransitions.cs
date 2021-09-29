@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cinemachine;
 
 public class CameraTransitions : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class CameraTransitions : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+        currentCamera.SetActive(true);
     }
 
     public GameObject GetCurrentCamera()
@@ -18,12 +20,21 @@ public class CameraTransitions : MonoBehaviour
         return currentCamera;
     }
 
+    public CinemachineFramingTransposer GetCurrentTransposer()
+    {
+        return currentCamera.GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachineFramingTransposer>();
+    }
+
     public void SwitchCameras(GameObject newCamera)
     {
         PlayerCamera.Instance.StopAllCoroutines();
-        currentCamera.SetActive(false);
 
+
+        currentCamera.SetActive(false);
         newCamera.SetActive(true);
         currentCamera = newCamera;
+
+        var newTransposer = currentCamera.GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachineFramingTransposer>();
+        PlayerCamera.Instance.ChangeTransposer(newTransposer);
     }
 }
