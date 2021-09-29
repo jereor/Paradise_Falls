@@ -230,6 +230,7 @@ public class PlayerMovement : MonoBehaviour
     {
         jumpButtonPressedTime = Time.time;
 
+        // If button is pressed and we are in allowed walljump position
         if (context.started && canWallJump)
         {
             //Debug.Log("Wall jump");
