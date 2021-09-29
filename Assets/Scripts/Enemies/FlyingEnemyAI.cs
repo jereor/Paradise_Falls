@@ -7,40 +7,43 @@ public class FlyingEnemyAI : MonoBehaviour
 {
     private Health _targetHealth;
 
+    [Header("Transforms")]
     public Transform target;
     public Transform enemyGFX;
-    private Vector2 spawnPosition;
-    private Collider2D _collider;
-
     public Rigidbody2D playerRB;
+    public GameObject bullet;
 
+    [Header("Ground Check")]
     [SerializeField] LayerMask groundLayer;
 
+    [Header("Player Check")]
+    [SerializeField] LayerMask playerLayer;
+
+    [Header("Mobility")]
     public float speed = 200f;
     public float nextWaypointDistance = 3f;
     public float pathUpdateInterval = 1f;
 
+    [Header("State and Parameters")]
     public string state = "roam";
     public float roamingRange = 2f;
     public float aggroDistance = 5f;
-    public float punchingDistance = 3f;
+    public float shootingDistance = 10f;
     public float wallCheckDistance = 2f;
     public float knockbackForce = 5f;
 
-    //private bool isFacingRight = true;
-    //private bool canMove = true;
-    //private bool canJump = true;
     private bool returningFromChase = false;
-    private bool canPunch = true;
-    private float punchCooldown = 1.5f;
-    //private int layerMask = 1 << 6;
+    private bool canShoot = true;
+    private float shootCooldown = 1.5f;
 
-    Path path;
-    int currentWaypoint = 0;
-    bool reachedEndOfPath = false;
+    private Collider2D _collider;
+    private Vector2 spawnPosition;
+    private Path path;
+    private int currentWaypoint = 0;
+    private bool reachedEndOfPath = false;
 
-    Seeker seeker;
-    Rigidbody2D rb;
+    private Seeker seeker;
+    private Rigidbody2D rb;
 
     // Start is called before the first frame update
     void Start()
@@ -75,10 +78,7 @@ public class FlyingEnemyAI : MonoBehaviour
     void FixedUpdate()
     {
         //If the target was not found, returns to the start of the update
-        if (path == null)
-        {
-            return;
-        }
+        if (path == null) {return;}
 
         //Checks if the enemy is in the end of the path
         if (currentWaypoint >= path.vectorPath.Count)
@@ -99,25 +99,19 @@ public class FlyingEnemyAI : MonoBehaviour
         float distance = Vector2.Distance(rb.position, path.vectorPath[currentWaypoint]);
 
         //Keeps the count of the waypoints
-        if (distance < nextWaypointDistance)
-        {
-            currentWaypoint++;
-        }
+        if (distance < nextWaypointDistance) {currentWaypoint++;}
 
         //Used for turning the enemy sprite into the direction it is currently going towards to
         if (rb.velocity.x >= 0.1f)
         {
             transform.localScale = new Vector3(1f, 1f, 1f);
-            //isFacingRight = true;
         }
         else if (rb.velocity.x <= -0.1f)
         {
             transform.localScale = new Vector3(-1f, 1f, 1f);
-            //isFacingRight = false;
         }
 
-        ObstacleCheck();
-
+        //ObstacleCheck();
         EnemyStateChange(force);
     }
 
@@ -131,42 +125,12 @@ public class FlyingEnemyAI : MonoBehaviour
         yield return new WaitForSeconds(waitTime);
     }
 
-    ////Cooldowns for walk, run, jump and punch.
-    //private IEnumerator WalkCoolDown()
-    //{
-    //    canMove = false;
-    //    yield return new WaitForSeconds(walkStepInterval);
-    //    canMove = true;
-    //}
-
-    //private IEnumerator RunCoolDown()
-    //{
-    //    canMove = false;
-    //    yield return new WaitForSeconds(runStepInterval);
-    //    canMove = true;
-    //}
-
-    //private IEnumerator JumpCoolDown()
-    //{
-    //    canJump = false;
-    //    yield return new WaitForSeconds(walkStepInterval);
-    //    canJump = true;
-    //}
-
-    private IEnumerator PunchCoolDown()
+    private IEnumerator ShootCoolDown()
     {
-        canPunch = false;
-        yield return new WaitForSeconds(punchCooldown);
-        canPunch = true;
+        canShoot = false;
+        yield return new WaitForSeconds(shootCooldown);
+        canShoot = true;
     }
-
-    //private IEnumerator JumpForceForward(float jumpDirection)
-    //{
-    //    yield return new WaitForSeconds(0.4f);
-
-    //    //Debug.Log("enemyJUMP");
-    //    rb.AddForce(new Vector2(100 * jumpDirection, 0));
-    //}
 
     //Trying to raycast and check if there's an obstacle below the enemy unit
     private void ObstacleCheck()
@@ -182,16 +146,8 @@ public class FlyingEnemyAI : MonoBehaviour
         if (hit.collider != null)
         {
             rb.AddForce(force);
-
-
         }
     }
-
-    // Returns true if ground check detects ground
-    //private bool IsGrounded()
-    //{
-    //    return Physics2D.OverlapCircle(groundCheck.position, checkRadius, groundLayer);
-    //}
 
     private void EnemyStateChange(Vector2 force)
     {
@@ -201,7 +157,7 @@ public class FlyingEnemyAI : MonoBehaviour
             //Roams in a specified area given to the enemy unit and stays inside of it.
             case "roam":
                 //Debug.Log("Roaming.");
-                speed = 5;
+                
 
                 if(returningFromChase)
                 {
@@ -216,88 +172,93 @@ public class FlyingEnemyAI : MonoBehaviour
                 //If the enemy unit tries to go outside of the given area parameters, it turns around.
                 if (transform.position.x >= (spawnPosition.x + roamingRange))
                 {
-                    //rb.AddForce(forceX);
-                    //StartCoroutine(WalkCoolDown());
-                    //Debug.Log("Left");
                     transform.localScale = new Vector3(-1f, 1f, 1f);
-                    //isFacingRight = false;
-                    rb.AddForce(new Vector2(transform.localScale.x * speed, 0));
-                    //StartCoroutine(WalkCoolDown());
-                    
+                    rb.AddForce(new Vector2(transform.localScale.x * speed, 0));                 
                 }
                 else if (transform.position.x <= (spawnPosition.x - roamingRange))
                 {
-                    //rb.AddForce(forceX);
-                    //StartCoroutine(WalkCoolDown());
-                    //Debug.Log("Right");
                     transform.localScale = new Vector3(1f, 1f, 1f);
-                    //isFacingRight = true;
-                    rb.AddForce(new Vector2(transform.localScale.x * speed, 0));
-                    //StartCoroutine(WalkCoolDown());
-                    
+                    rb.AddForce(new Vector2(transform.localScale.x * speed, 0));                
                 }
                 //If target is close enough the enemy unit, charges it towards the player.
                 else if (aggroDistance >= path.GetTotalLength() && (target.transform.position.x >= (spawnPosition.x - roamingRange) && target.transform.position.x < (spawnPosition.x + roamingRange)))
                 {
                     state = "charge";
+                    speed = 10;
                     break;
                 }
                 if (transform.position.x <= (spawnPosition.x + roamingRange) && transform.position.x >= (spawnPosition.x - roamingRange))
                 {
                     rb.AddForce(new Vector2(transform.localScale.x * speed, 0));
-                    //StartCoroutine(WalkCoolDown());
                 }
                 break;
 
             //Here enemy charges the player. Checks if player is inside enemy unit's roaming range.
             case "charge":
 
-                speed = 10;
+                
                 //Debug.Log("Charging!");
                 if (path.GetTotalLength() > aggroDistance || (target.transform.position.x <= (spawnPosition.x - roamingRange) || target.transform.position.x > (spawnPosition.x + roamingRange)))
                 {
                     returningFromChase = true;
                     state = "roam";
+                    speed = 5;
                     break;
                 }
-                else if (aggroDistance >= path.GetTotalLength() && path.GetTotalLength() > punchingDistance)
+                else if (aggroDistance >= path.GetTotalLength() && path.GetTotalLength() > shootingDistance)
                 {
-
                     rb.AddForce(force);
-                    //StartCoroutine(RunCoolDown());
-                    
-
                 }
-                //If target is close enough the enemy unit, it changes the state to "punch"
-                else if (path.GetTotalLength() < punchingDistance)
+                //If target is close enough the enemy unit, it changes the state to "shoot"
+                else if (path.GetTotalLength() < shootingDistance)
                 {
-                    state = "punch";
+                    state = "shoot";
                 }
                 break;
 
             //Does damage to target if close enough. Otherwise goes to roam or charge state.
-            case "punch":
+            case "shoot":
                 //Do damage to player here
-                if (canPunch)
+                Debug.DrawRay(transform.position, target.transform.position - transform.position, Color.blue);
+                if (canShoot)
                 {
-                    Debug.Log("Player hit");
+                    RaycastHit2D hit;
+                    hit = Physics2D.Raycast(transform.position, (target.transform.position - transform.position), (target.transform.position - transform.position).magnitude, playerLayer);
+                    
+                    if(hit.collider != null)
+                    {
+                        Debug.Log("PEW!");
+                        Instantiate(bullet, transform.position, Quaternion.identity);                       
+                    }
+
+                    
+
+                    // Turns the enemy unit torwards the target when shooting.
+                    if (target.transform.position.x - transform.position.x >= 0)
+                    {
+                        transform.localScale = new Vector3(1f, 1f, 1f);
+                    }
+                    else
+                    {
+                        transform.localScale = new Vector3(-1f, 1f, 1f);
+                    }
                     //_targetHealth.TakeDamage(1);
                     //PlayerPushback();
-                    StartCoroutine(PunchCoolDown());
+                    StartCoroutine(ShootCoolDown());
                 }
-
                 if (target.transform.position.x <= (spawnPosition.x - roamingRange) || target.transform.position.x > (spawnPosition.x + roamingRange))
                 {
                     state = "roam";
+                    speed = 5;
                     break;
                 }
-                else if (path.GetTotalLength() > punchingDistance)
+                else if (path.GetTotalLength() > shootingDistance)
                 {
                     state = "charge";
+                    speed = 10;
                     //Debug.Log("Charge again!");
                     break;
                 }
-
                 break;
         }
     }
@@ -308,5 +269,4 @@ public class FlyingEnemyAI : MonoBehaviour
         Vector2 knockbackDirection = new Vector2((pushbackX), pushbackX / 2).normalized;
         playerRB.AddForce(knockbackDirection * knockbackForce);
     }
-
 }
