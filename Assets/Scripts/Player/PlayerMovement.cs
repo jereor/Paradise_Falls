@@ -40,8 +40,8 @@ public class PlayerMovement : MonoBehaviour
     private bool isClimbing;
     private bool canMove = true;
 
-    private bool canWallJump;
-    private float wallJumpDir = 0f;
+    private bool canWallJump; // Tells jump function/event that we can jump this is set in CheckWallJump()
+    private float wallJumpDir = 0f; // Keeps track if we jump from the left or right (Mathf.Sign() == -1 jumped from left, == 1 jumped from right, == we havent jumped from wall)
 
     // References
     private Rigidbody2D rb;
@@ -89,7 +89,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void CheckLedgeClimb()
     {
-        // If climbing do not do these cast again and again
+        // Allow ledgeclimb or we are currently climbing
         if (allowLedgeClimb && !isClimbing)
         {
             // Nasty if combo:
@@ -150,25 +150,33 @@ public class PlayerMovement : MonoBehaviour
         canMove = true; // We can move again
     }
 
+    // Check if Raycasts hit wall and we are in air to set canWallJump
     private void CheckWallJump()
     {
+        // We have wall jumps enabled
         if (allowWallJump)
         {
+            // We are in air
             if (!IsGrounded())
             {
+                // Feet and LedgeOccupation raycasts detect ground layer obj 
+                // We check that we are jumping form different wall or we havent walljumped in a while example: we jumped from left now we check we are trying to jump from right and allow walljump
                 if (FeetAreTouchingWall() && LedgeIsOccupied()
                     && (!Mathf.Sign(wallJumpDir).Equals(transform.localScale.x) || wallJumpDir == 0f))
                 {
                     canWallJump = true;
                 }
+                // If we are in air but Raycasts and wall side tests are not going through
                 else if (canWallJump)
                 {
                     canWallJump = false;
                 }
             }
+            // We land set wall jump wall direction tracking to zero
             if (IsGrounded())
             {
                 wallJumpDir = 0f;
+                canWallJump = false;
             }
         }
     }
@@ -224,14 +232,18 @@ public class PlayerMovement : MonoBehaviour
 
         if (context.started && canWallJump)
         {
+            //Debug.Log("Wall jump");
+            // Jumping from left wall
             if (Mathf.Sign(transform.localScale.x) == -1)
             {
-                rb.velocity = new Vector2(jumpForce, jumpForce);
+                rb.velocity = new Vector2(jumpForce, jumpForce); // add x parameter to jump left or right currently jumps straight up
             }
+            // Jumping from right wall
             else if (Mathf.Sign(transform.localScale.x) == 1)
             {
-                rb.velocity = new Vector2(-jumpForce, jumpForce);
+                rb.velocity = new Vector2(-jumpForce, jumpForce); // add x parameter to jump left or right currently jumps straight up
             }
+            // Set tracking float here that we jumped from some wall
             wallJumpDir = Mathf.Sign(transform.localScale.x);
         }
 
