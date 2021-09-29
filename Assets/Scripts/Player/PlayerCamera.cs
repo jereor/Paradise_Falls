@@ -10,7 +10,8 @@ public class PlayerCamera : MonoBehaviour
     public static PlayerCamera Instance { get; private set; }
 
     [SerializeField] private CinemachineVirtualCamera cmCamera;
-    [SerializeField] private float yOffset;
+    [SerializeField] private float yOffsetFalling;
+    private float yOffset;
 
     // Cinemachine Components
     private CinemachineFramingTransposer transposer;
@@ -23,28 +24,25 @@ public class PlayerCamera : MonoBehaviour
 
     public void ChangeCameraOffset(float timer, bool falling, float x)
     {
-        if (falling)
-            StartCoroutine(Offset(timer, transposer.m_TrackedObjectOffset.x, x, falling));
-        else
-            StartCoroutine(Offset(timer, transposer.m_TrackedObjectOffset.x, x, falling));
+        StartCoroutine(Offset(timer, transposer.m_TrackedObjectOffset.x, x, falling));
     }
 
     private IEnumerator Offset(float timer, float start, float end, bool falling)
     {
-        // yOffset is still work in progress
-
+        var yStart = transposer.m_TrackedObjectOffset.y;
         if (falling)
-            yOffset = -2; // Lower the camera a bit
+            yOffset = yOffsetFalling; // Lower the camera a bit
+        else
+            yOffset = 0;
 
         float counter = 0;
         while (counter < timer)
         {
             counter += Time.deltaTime;
             var newX = Mathf.Lerp(start, end, counter / timer);
-            var newY = Mathf.Lerp(0, yOffset, counter / timer);
+            var newY = Mathf.Lerp(yStart, yOffset, counter / timer);
             transposer.m_TrackedObjectOffset = new Vector3(newX, newY, 0);
             yield return new WaitForEndOfFrame();
         }
-        yOffset = 0; // Reset yOffset
     }
 }
