@@ -410,7 +410,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 10
-  destroyWhenDead: 0
+  destroyWhenDead: 1
   onDie:
     m_PersistentCalls:
       m_Calls: []
