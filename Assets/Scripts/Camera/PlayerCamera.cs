@@ -9,7 +9,6 @@ public class PlayerCamera : MonoBehaviour
     // esim. PlayerCamera.Instance.ChangeCameraOffset(0.4f, true, -1); jossa 0.4f on prosessin aika, true on falling ja -1 offset määrä
     public static PlayerCamera Instance { get; private set; }
 
-    [SerializeField] private CinemachineVirtualCamera cmCamera;
     [SerializeField] private float yOffsetFalling;
     private float yOffset;
 
@@ -19,7 +18,12 @@ public class PlayerCamera : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-        transposer = cmCamera.GetCinemachineComponent<CinemachineFramingTransposer>();
+        transposer = GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachineFramingTransposer>();
+    }
+
+    public void ChangeTransposer(CinemachineFramingTransposer newTransposer)
+    {
+        transposer = newTransposer;
     }
 
     public void ChangeCameraOffset(float timer, bool falling, float x)
