@@ -464,8 +464,8 @@ MonoBehaviour:
   meleeDamage: 1
   meleeChargedDamage: 2
   meleeAttackRate: 1
-  maxChargeTime: 0
-  throwingForce: 0
+  maxChargeTime: 2
+  throwingForce: 5
   enemyLayer:
     serializedVersion: 2
     m_Bits: 128

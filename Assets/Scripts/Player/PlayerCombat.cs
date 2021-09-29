@@ -46,10 +46,12 @@ public class PlayerCombat : MonoBehaviour
 
     public void Melee(InputAction.CallbackContext context)
     {
-        if(context.performed && isWeaponWielded && Time.time - lastTimeMeleed >= meleeAttackRate && meleeThrow)
+        if(context.performed && isWeaponWielded && meleeThrow)
         {
-            weaponInstance = Instantiate(meleeWeaponPrefab, attackPoint);
-            weaponInstance.GetComponent<Rigidbody2D>().AddForce(new Vector2(transform.localScale.x * throwingForce, 0));
+            weaponInstance = Instantiate(meleeWeaponPrefab, attackPoint.position, Quaternion.identity);
+            weaponInstance.GetComponent<Rigidbody2D>().AddForce(new Vector2(Mathf.Sign(transform.localScale.x) * throwingForce, 0), ForceMode2D.Impulse);
+            isWeaponWielded = false;
+            
         }
         else if (context.performed && isWeaponWielded && Time.time - lastTimeMeleed >= meleeAttackRate && !meleeThrow)
         {
@@ -109,5 +111,11 @@ public class PlayerCombat : MonoBehaviour
     private void OnDrawGizmosSelected()
     {
         Gizmos.DrawWireCube(attackPoint.position, new Vector3(attackRangeX, attackRangeY, 0f));
+    }
+
+    public void PickUpWeapon()
+    {
+        Debug.Log("Picked weapon");
+        isWeaponWielded = true;
     }
 }
