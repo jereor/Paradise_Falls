@@ -56,7 +56,7 @@ public class GroundEnemyAI : MonoBehaviour
     {
         seeker = GetComponent<Seeker>();
         rb = GetComponent<Rigidbody2D>();
-        _targetHealth = GetComponent<Health>();
+        _targetHealth = GameObject.Find("Player").GetComponent<Health>();
         spawnPosition = transform.position;
 
         Physics2D.IgnoreLayerCollision(3, 7);
@@ -317,7 +317,7 @@ public class GroundEnemyAI : MonoBehaviour
                     {
                         transform.localScale = new Vector3(-1f, 1f, 1f);
                     }
-                    //_targetHealth.TakeDamage(1);
+                    _targetHealth.TakeDamage(1);
                     PlayerPushback();
                     StartCoroutine(PunchCoolDown());
                 }
