@@ -209,6 +209,7 @@ GameObject:
   - component: {fileID: -4342889769223962116}
   - component: {fileID: 2646993275326716664}
   - component: {fileID: 127911568793665776}
+  - component: {fileID: -7876944988601332671}
   - component: {fileID: 2646993275326716547}
   - component: {fileID: 2646993275326716665}
   - component: {fileID: 2646993275326716550}
@@ -236,6 +237,7 @@ Transform:
   - {fileID: 2838063052809471023}
   - {fileID: 6576764605224401354}
   - {fileID: 1156667530783647825}
+  - {fileID: 7203769194457441225}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -254,6 +256,7 @@ MonoBehaviour:
   movementScript: {fileID: 2646993275326716549}
   collisionScript: {fileID: 2646993275326716546}
   interactionsScript: {fileID: -4342889769223962116}
+  combatScript: {fileID: -7876944988601332671}
 --- !u!114 &2646993275326716549
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -392,6 +395,38 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: 8f0f6181-6114-4dcd-a121-0ccd035b4762
     m_ActionName: GameUI/Map
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: -7876944988601332671}
+        m_TargetAssemblyTypeName: PlayerCombat, Assembly-CSharp
+        m_MethodName: Melee
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 6f8b7c63-2afc-4548-8b1a-a494d77953e8
+    m_ActionName: Player/Melee[/Keyboard/c,/Mouse/leftButton]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: -7876944988601332671}
+        m_TargetAssemblyTypeName: PlayerCombat, Assembly-CSharp
+        m_MethodName: MeleeAimThrowing
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: f8fddd7a-4d48-4631-8753-5b2cd623f066
+    m_ActionName: Player/MeleeThrow[/Keyboard/k,/Mouse/rightButton]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -414,6 +449,32 @@ MonoBehaviour:
   onDie:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &-7876944988601332671
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2646993275326716545}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68279dc01e70bb34f9195b45b7234967, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  meleeDamage: 1
+  meleeChargedDamage: 2
+  meleeAttackRate: 1
+  maxChargeTime: 0
+  throwingForce: 0
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  attackPoint: {fileID: 7203769194457441225}
+  attackRangeX: 1
+  attackRangeY: 1
+  meleeWeaponPrefab: {fileID: 9202534226729985718, guid: 325699c0f48c0fc449ccd5e25ac5a191, type: 3}
+  weaponInstance: {fileID: 0}
+  isWeaponWielded: 1
 --- !u!212 &2646993275326716547
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -601,4 +662,34 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2646993275326716544}
   m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8513049561452299090
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7203769194457441225}
+  m_Layer: 0
+  m_Name: AttackPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7203769194457441225
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8513049561452299090}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 2646993275326716544}
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
