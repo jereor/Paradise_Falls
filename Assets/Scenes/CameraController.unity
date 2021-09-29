@@ -410,7 +410,7 @@ GameObject:
   - component: {fileID: 83694983}
   - component: {fileID: 83694984}
   - component: {fileID: 83694985}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Left Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2180,7 +2180,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cmCamera: {fileID: 1450510007}
-  yOffset: 0
+  yOffsetFalling: -0.5
 --- !u!1 &1649168264
 GameObject:
   m_ObjectHideFlags: 0
@@ -2377,7 +2377,7 @@ GameObject:
   - component: {fileID: 1993802981}
   - component: {fileID: 1993802983}
   - component: {fileID: 1993802982}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Right  Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2595,22 +2595,6 @@ PrefabInstance:
       propertyPath: destroyWhenDead
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 127911568793665776, guid: 4154d57994558ff489a9180c3151e624, type: 3}
-      propertyPath: onDie.m_PersistentCalls.m_Calls.Array.size
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 127911568793665776, guid: 4154d57994558ff489a9180c3151e624, type: 3}
-      propertyPath: onDie.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 127911568793665776, guid: 4154d57994558ff489a9180c3151e624, type: 3}
-      propertyPath: onDie.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 526558494}
-    - target: {fileID: 127911568793665776, guid: 4154d57994558ff489a9180c3151e624, type: 3}
-      propertyPath: onDie.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
     - target: {fileID: 2646993275326716544, guid: 4154d57994558ff489a9180c3151e624, type: 3}
       propertyPath: m_RootOrder
       value: 2
@@ -2657,10 +2641,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2646993275326716545, guid: 4154d57994558ff489a9180c3151e624, type: 3}
       propertyPath: m_Name
-      value: Player
-      objectReference: {fileID: 0}
-    - target: {fileID: 2646993275326716545, guid: 4154d57994558ff489a9180c3151e624, type: 3}
-      propertyPath: m_TagString
       value: Player
       objectReference: {fileID: 0}
     m_RemovedComponents: []

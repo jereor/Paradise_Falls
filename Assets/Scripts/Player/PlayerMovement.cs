@@ -63,7 +63,7 @@ public class PlayerMovement : MonoBehaviour
                 Flip();
         }
         moving = rb.velocity.x != 0;
-        falling = rb.velocity.y < 0;
+        falling = rb.velocity.y < -0.5f;
         if (moving)
             PlayerCamera.Instance.ChangeCameraOffset(0.2f, falling, isFacingRight ? 0.8f : -0.8f); // Centers camera a little
         else
