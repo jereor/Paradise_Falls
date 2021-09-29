@@ -17,6 +17,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] LayerMask groundLayer; // Chosen layer that is recognized as ground in ground checks
 
     [Header("Ledge and Wall Check")]
+    [SerializeField] private bool allowLedgeClimb = true;
+    [SerializeField] private bool allowWallJump = true;
     [SerializeField] private Transform ledgeCheck; // Point where Ledge Check Occupation Raycast is cast should be close to top of head
     [SerializeField] private Transform wallCheckBody; // Point where Body Check Raycast is cast
     [SerializeField] private Transform wallCheckFeet; // Point where Feet Check Raycast is cast
@@ -37,6 +39,9 @@ public class PlayerMovement : MonoBehaviour
     private bool canClimb;
     private bool isClimbing;
     private bool canMove = true;
+
+    private bool canWallJump;
+    private float wallJumpDir = 0f;
 
     // References
     private Rigidbody2D rb;
@@ -79,12 +84,13 @@ public class PlayerMovement : MonoBehaviour
     private void FixedUpdate()
     {
         CheckLedgeClimb();
+        CheckWallJump();
     }
 
     private void CheckLedgeClimb()
     {
         // If climbing do not do these cast again and again
-        if (!isClimbing)
+        if (allowLedgeClimb && !isClimbing)
         {
             // Nasty if combo:
             /* IF
@@ -144,6 +150,29 @@ public class PlayerMovement : MonoBehaviour
         canMove = true; // We can move again
     }
 
+    private void CheckWallJump()
+    {
+        if (allowWallJump)
+        {
+            if (!IsGrounded())
+            {
+                if (FeetAreTouchingWall() && LedgeIsOccupied()
+                    && (!Mathf.Sign(wallJumpDir).Equals(transform.localScale.x) || wallJumpDir == 0f))
+                {
+                    canWallJump = true;
+                }
+                else if (canWallJump)
+                {
+                    canWallJump = false;
+                }
+            }
+            if (IsGrounded())
+            {
+                wallJumpDir = 0f;
+            }
+        }
+    }
+
     // Returns true if Raycast hits to something aka our body is so close to wall that it counts as touching
     private bool BodyIsTouchingWall()
     {
@@ -192,12 +221,25 @@ public class PlayerMovement : MonoBehaviour
     public void Jump(InputAction.CallbackContext context) // Context tells the function when the action is triggered
     {
         jumpButtonPressedTime = Time.time;
-        
+
+        if (context.started && canWallJump)
+        {
+            if (Mathf.Sign(transform.localScale.x) == -1)
+            {
+                rb.velocity = new Vector2(jumpForce, jumpForce);
+            }
+            else if (Mathf.Sign(transform.localScale.x) == 1)
+            {
+                rb.velocity = new Vector2(-jumpForce, jumpForce);
+            }
+            wallJumpDir = Mathf.Sign(transform.localScale.x);
+        }
+
         // If button was pressed
         if (context.performed && (Time.time - lastGroundedTime <= coyoteTime) // Check if coyote time is online
             && (Time.time - jumpButtonPressedTime <= coyoteTime) && !isClimbing) // Check if jump has been buffered
         {
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce); // Keep player in upwards motion
+             rb.velocity = new Vector2(rb.velocity.x, jumpForce); // Keep player in upwards motion
         }
 
         // If button was released
