@@ -2180,7 +2180,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cmCamera: {fileID: 1450510007}
-  yOffset: 0
+  yOffsetFalling: -0.5
 --- !u!1 &1649168264
 GameObject:
   m_ObjectHideFlags: 0
@@ -2377,7 +2377,7 @@ GameObject:
   - component: {fileID: 1993802981}
   - component: {fileID: 1993802983}
   - component: {fileID: 1993802982}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Right  Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2591,6 +2591,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 368704289}
     m_Modifications:
+    - target: {fileID: 127911568793665776, guid: 4154d57994558ff489a9180c3151e624, type: 3}
+      propertyPath: destroyWhenDead
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2646993275326716544, guid: 4154d57994558ff489a9180c3151e624, type: 3}
       propertyPath: m_RootOrder
       value: 2
