@@ -10,6 +10,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float jumpForce; // Jump height variable
     [SerializeField] private float coyoteTime; // Determines coyote time forgiveness
     [SerializeField] private float climbTimeBuffer; // Time when we can climb again
+    [SerializeField] private float wallSlideGravityScale;
 
     [Header("Ground Check")]
     [SerializeField] private Transform groundCheck; // GameObject attached to player that checks if touching ground
@@ -17,8 +18,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] LayerMask groundLayer; // Chosen layer that is recognized as ground in ground checks
 
     [Header("Ledge and Wall Check")]
-    [SerializeField] private bool allowLedgeClimb = true;
-    [SerializeField] private bool allowWallJump = true;
+    [SerializeField] private bool allowLedgeClimb;
+    [SerializeField] private bool allowWallJump;
+    [SerializeField] private bool allowCoyoteWallJump; // Allows coyoteTime = coyoteTime / 2 to jump from wall (you can move horizontaly or turn around a small distance off the wall and still jump)
     [SerializeField] private Transform ledgeCheck; // Point where Ledge Check Occupation Raycast is cast should be close to top of head
     [SerializeField] private Transform wallCheckBody; // Point where Body Check Raycast is cast
     [SerializeField] private Transform wallCheckFeet; // Point where Feet Check Raycast is cast
@@ -35,6 +37,7 @@ public class PlayerMovement : MonoBehaviour
     private float? lastGroundedTime;
 
     private float lastTimeClimbed; // This is used to prevent climbing steplike object instantly to the top from first step
+    private float lastWallTouchTime;
 
     private bool canClimb;
     private bool isClimbing;
@@ -164,17 +167,27 @@ public class PlayerMovement : MonoBehaviour
                 if (FeetAreTouchingWall() && LedgeIsOccupied()
                     && (!Mathf.Sign(wallJumpDir).Equals(transform.localScale.x) || wallJumpDir == 0f))
                 {
+                    // If we are sliding down a wall and we have gravityscale as default change gravityscale so it feel like there is kitka :)
+                    if (rb.velocity.y < 0 && rb.gravityScale == defaultGravityScale)
+                    {
+                        rb.gravityScale = wallSlideGravityScale;
+                    }
+                    // We are facing to the wall and we can jump off the wall
                     canWallJump = true;
+                    // This is used in Wall Jump Coyote time check
+                    lastWallTouchTime = Time.time;
                 }
                 // If we are in air but Raycasts and wall side tests are not going through
                 else if (canWallJump)
                 {
+                    rb.gravityScale = defaultGravityScale;
                     canWallJump = false;
                 }
             }
             // We land set wall jump wall direction tracking to zero
             if (IsGrounded())
             {
+                rb.gravityScale = defaultGravityScale;
                 wallJumpDir = 0f;
                 canWallJump = false;
             }
@@ -230,23 +243,44 @@ public class PlayerMovement : MonoBehaviour
     {
         jumpButtonPressedTime = Time.time;
 
+        // -WALLJUMP-
+
         // If button is pressed and we are in allowed walljump position
         if (context.started && canWallJump)
         {
-            //Debug.Log("Wall jump");
+            //Debug.Log("Normal wall jump");
+
+            // Use this commented else if, if we want to give player boost to the left or right when walljumping
             // Jumping from left wall
-            if (Mathf.Sign(transform.localScale.x) == -1)
-            {
-                rb.velocity = new Vector2(jumpForce, jumpForce); // add x parameter to jump left or right currently jumps straight up
-            }
-            // Jumping from right wall
-            else if (Mathf.Sign(transform.localScale.x) == 1)
-            {
-                rb.velocity = new Vector2(-jumpForce, jumpForce); // add x parameter to jump left or right currently jumps straight up
-            }
+            //if (Mathf.Sign(transform.localScale.x) == -1)
+            //{
+            //    rb.velocity = new Vector2(jumpForce, jumpForce); // add x parameter to jump left or right currently jumps straight up
+            //}
+            //// Jumping from right wall
+            //else if (Mathf.Sign(transform.localScale.x) == 1)
+            //{
+            //    rb.velocity = new Vector2(-jumpForce, jumpForce); // add x parameter to jump left or right currently jumps straight up
+            //}
+
+            // Comment this if above is used 
+            rb.velocity = new Vector2(jumpForce, jumpForce);
             // Set tracking float here that we jumped from some wall
             wallJumpDir = Mathf.Sign(transform.localScale.x);
         }
+        // Coyotetime wall jump 
+        else if (context.started && allowCoyoteWallJump
+            && (Time.time - lastWallTouchTime <= coyoteTime/2) // With full coyoteTime handling feels weird
+            && !LedgeIsOccupied()) // This Check prevents jumping from wall when there is no ground after the wall object and we slide past wall, Coyote time causes unwanted double jump without
+        {
+            //Debug.Log("Coyote walljump");
+
+            // Replace or figure this out if else if is used above
+            rb.velocity = new Vector2(jumpForce, jumpForce);
+            // wallJumpDir here is opposite of opposite :)
+            wallJumpDir = Mathf.Sign(-transform.localScale.x);
+        }
+
+        // -JUMP FROM GROUND-
 
         // If button was pressed
         if (context.performed && (Time.time - lastGroundedTime <= coyoteTime) // Check if coyote time is online
