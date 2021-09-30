@@ -8,7 +8,9 @@ public class MeleeWeapon : Interactable
     [SerializeField] private float weaponThrowDamage; // Damage dealt if hits enemy
     [SerializeField] private float rotAngle; // Rotation angle to spin when thowing
     [SerializeField] private float ricochetForce; // Force of hit ricochet on enemies and gorund elements
+    [SerializeField] private float pullSpeed;
     [SerializeField] private float maxDistance; // Max distance to travel with gravityscale 0 and deal damage
+
     [SerializeField] private bool playerIsClose; // ATM used for debugging
     //[SerializeField] private bool isFlying = true;
     private PlayerCombat combatScript;
@@ -24,20 +26,28 @@ public class MeleeWeapon : Interactable
         myRB = GetComponent<Rigidbody2D>();
         defaultGravityScale = myRB.gravityScale;
         myRB.gravityScale = 0f;
+        // Set our throw start point
         startPoint = transform.position;
 
+        // Weapon can deal damage since it is just thrown
         canDealDamage = true;
 
+        // Hide text
         HideFloatingText();
 
+        // We need to AddThisLister here because this is not Instantiated on Scene load
         itemEvent.AddListener(Interact);
     }
     private void Update()
     {
         if (beingPulled)
         {
-            transform.position = Vector2.MoveTowards(transform.position, puller.transform.position, 10 * Time.deltaTime);
-            //transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(puller.transform.position), Time.deltaTime * 10);
+            transform.position = Vector2.MoveTowards(transform.position, puller.transform.position, pullSpeed * Time.deltaTime);
+
+            Vector3 vectorToTarget = puller.transform.position - transform.position;
+            float angle = Mathf.Atan2(vectorToTarget.y, vectorToTarget.x) * Mathf.Rad2Deg;
+            Quaternion q = Quaternion.AngleAxis(angle, Vector3.forward);
+            transform.rotation = Quaternion.Slerp(transform.rotation, q, Time.deltaTime * pullSpeed);
         }
         if (canDealDamage)
         {
@@ -55,7 +65,7 @@ public class MeleeWeapon : Interactable
     private void OnCollisionEnter2D(Collision2D collision)
     {
         // Player
-        if (collision.gameObject.layer == 3)
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Player"))
         {
             // Gives persmission to save and gives GameObject that this script is attached so PlayerInteraction know of whos Interact() to Invoke
             collision.gameObject.GetComponent<PlayerInteractions>().AllowInteract(true);
@@ -64,6 +74,7 @@ public class MeleeWeapon : Interactable
             // Mark for this item that player is close (easier to track interactions when debugging)
             playerIsClose = true;
 
+            // If we pulled and hit player -> pick up
             if (beingPulled)
             {
                 Interact();
@@ -72,37 +83,44 @@ public class MeleeWeapon : Interactable
             ShowFloatingText();
         }
         // Ground
-        else if (collision.gameObject.layer == 6)
+        else if (collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
         {
+            // While weapon is beingPulled we hit ground
             if (beingPulled)
             {
-                Vector2 tmp = new Vector2(transform.position.x, transform.position.y) - collision.GetContact(0).point;
-                myRB.AddForce(tmp.normalized * ricochetForce, ForceMode2D.Impulse);
+                Debug.Log(collision.contacts[0]);
+                Vector2 tmp = new Vector2(transform.position.x, transform.position.y) - collision.contacts[0].point;
+                Debug.Log(tmp);
+                myRB.AddForce(tmp * ricochetForce, ForceMode2D.Impulse);
             }
+            // We hit ground we lose momentum -> no damage
             else
             {
+                myRB.gravityScale = defaultGravityScale;
                 canDealDamage = false;
             }
         }
         // Enemy
-        else if (collision.gameObject.layer == 7)
+        else if (collision.gameObject.layer == LayerMask.NameToLayer("Enemy"))
         {          
             // Hits enemy when flying and can deal damage
             if (canDealDamage)
             {
+                StopRBForce();
                 collision.gameObject.GetComponent<Health>().TakeDamage(weaponThrowDamage);
 
                 Debug.Log("Bonk " + collision.gameObject.name);
                 myRB.gravityScale = defaultGravityScale;
                 
-                myRB.AddForce((transform.position - collision.gameObject.transform.position).normalized + new Vector3(0,2,0) * ricochetForce, ForceMode2D.Impulse);
+                myRB.AddForce((transform.position - collision.gameObject.transform.position).normalized + new Vector3(0,1,0) * ricochetForce, ForceMode2D.Impulse);
             }
         }
     }
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if (collision.gameObject.layer == 3)
+        // Player
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Player"))
         {
             collision.gameObject.GetComponent<PlayerInteractions>().AllowInteract(false);
             collision.gameObject.GetComponent<PlayerInteractions>().GiveGameObject(null);
@@ -123,6 +141,12 @@ public class MeleeWeapon : Interactable
             puller = objectThatPulls;
             beingPulled = true;
         }
+    }
+
+    private void StopRBForce()
+    {
+        myRB.velocity = Vector2.zero;
+        myRB.angularVelocity = 0f;
     }
 
     // Called as event from player if interacted or when weapon is pulled and hits player
