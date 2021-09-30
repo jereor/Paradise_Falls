@@ -214,7 +214,7 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
-  m_LinearDrag: 1
+  m_LinearDrag: 3
   m_AngularDrag: 0.05
   m_GravityScale: 0
   m_Material: {fileID: 0}
@@ -298,15 +298,21 @@ MonoBehaviour:
   target: {fileID: 0}
   enemyGFX: {fileID: 674690727670028638}
   playerRB: {fileID: 0}
+  bullet: {fileID: 7057756548087642846, guid: f038b9176ac32cf4a83f1731b068bda7, type: 3}
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 8
   speed: 5
+  chargeSpeed: 10
+  roamSpeed: 5
   nextWaypointDistance: 3
   pathUpdateInterval: 1
   state: roam
   roamingRange: 10
   aggroDistance: 10
-  shootingDistance: 10
+  shootingDistance: 5
   wallCheckDistance: 1.5
   knockbackForce: 5
