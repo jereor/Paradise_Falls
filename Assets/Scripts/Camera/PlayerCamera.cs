@@ -21,15 +21,11 @@ public class PlayerCamera : MonoBehaviour
         transposer = GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachineFramingTransposer>();
     }
 
-    public void ChangeTransposer(CinemachineFramingTransposer newTransposer)
-    {
-        StopAllCoroutines();
-        transposer = newTransposer;
-    }
-
     public void ChangeCameraOffset(float timer, bool falling, float x)
     {
-        StartCoroutine(Offset(timer, transposer.m_TrackedObjectOffset.x, x, falling));
+        // Check if the camera is currently active so we don't try to access a deactivated camera
+        if (gameObject.activeInHierarchy)
+            StartCoroutine(Offset(timer, transposer.m_TrackedObjectOffset.x, x, falling));
     }
 
     private IEnumerator Offset(float timer, float start, float end, bool falling)
