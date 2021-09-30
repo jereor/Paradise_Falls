@@ -20,14 +20,13 @@ public class GroundEnemyAI : MonoBehaviour
 
     [Header("Mobility")]
     public float speed = 200f;
-    public float jumpHeight = 500f;    
-    public float pathUpdateInterval = 1f;
+    public float jumpHeight = 500f;      
     public float walkStepInterval = 1f;
     public float runStepInterval = 0.5f;
 
     [Header("State and Parameters")]
     public string state = "roam";
-    public float roamingRange = 2f;
+    public float roamingRange = 10f;
     public float aggroDistance = 5f;
     public float punchingDistance = 3f;
     public float knockbackForce = 5f;
@@ -41,6 +40,7 @@ public class GroundEnemyAI : MonoBehaviour
     private bool canPunch = true;
     private float punchCooldown = 1.5f;
 
+    public float pathUpdateInterval = 1f;
     public float nextWaypointDistance = 3f;
 
     private Vector2 spawnPosition;
@@ -231,19 +231,21 @@ public class GroundEnemyAI : MonoBehaviour
         return Physics2D.OverlapCircle(groundCheck.position, checkRadius, groundLayer);
     }
 
+
+    // ENEMY BEHAVIOUR STATES
+    // ---------------------------------------------------------------------------------------------------------------
     private void EnemyStateChange(Vector2 forceX)
     {
         // switch-case system between different enemy states.
         switch (state)
         {
+            // ROAM STATE
+            //-------------------------------------------------------------------------------------------------------
             // Roams in a specified area given to the enemy unit and stays inside of it.
             case "roam":
-                //Debug.Log("Roaming.");
                 // If the enemy unit tries to go outside of the given area parameters, it turns around.
                 if (transform.position.x >= (spawnPosition.x + roamingRange) && canMove && IsGrounded())
                 {
-                    //rb.AddForce(forceX);
-                    //StartCoroutine(WalkCoolDown());
                     //Debug.Log("Left");
                     transform.localScale = new Vector3(-1f, 1f, 1f);
                     isFacingRight = false;
@@ -253,8 +255,6 @@ public class GroundEnemyAI : MonoBehaviour
                 }
                 else if (transform.position.x <= (spawnPosition.x - roamingRange) && canMove && IsGrounded())
                 {
-                    //rb.AddForce(forceX);
-                    //StartCoroutine(WalkCoolDown());
                     //Debug.Log("Right");
                     transform.localScale = new Vector3(1f, 1f, 1f);
                     isFacingRight = true;
@@ -263,7 +263,8 @@ public class GroundEnemyAI : MonoBehaviour
                     break;
                 }
                 // If target is close enough the enemy unit, charges it towards the player.
-                else if (aggroDistance >= path.GetTotalLength() && (target.transform.position.x >= (spawnPosition.x - roamingRange) && target.transform.position.x < (spawnPosition.x + roamingRange)))
+                else if (aggroDistance >= path.GetTotalLength() && CheckIfTargetInsideXAxisNegative() && CheckIfTargetInsideXAxisPositive() 
+                    && CheckIfTargetInsideYAxisNegative() && CheckIfTargetInsideYAxisPositive())
                 {
                     state = "charge";
                     break;
@@ -276,11 +277,13 @@ public class GroundEnemyAI : MonoBehaviour
                 }
                 break;
 
+            // CHARGE STATE
+            //------------------------------------------------------------------------------------------------------------------
             //Here enemy charges the target. Checks if target is inside enemy unit's roaming range.
             case "charge":
-                //Debug.Log("Charging!");
-                // Outside the range, return to roaming state.
-                if (path.GetTotalLength() > aggroDistance || (target.transform.position.x <= (spawnPosition.x - roamingRange) || target.transform.position.x > (spawnPosition.x + roamingRange)))
+                // Outside the range, return to roam state.
+                if (path.GetTotalLength() > aggroDistance || CheckIfTargetOutsideXAxisPositive() || CheckIfTargetOutsideXAxisNegative() ||
+                    CheckIfTargetOutsideYAxisPositive() || CheckIfTargetOutsideYAxisNegative())
                 {
                     state = "roam";
                     break;
@@ -288,11 +291,9 @@ public class GroundEnemyAI : MonoBehaviour
                 // Inside the range, runs towards the target.
                 else if (aggroDistance >= path.GetTotalLength() && path.GetTotalLength() > punchingDistance && canMove)
                 {
-
                     rb.AddForce(forceX);
                     StartCoroutine(RunCoolDown());
                     break;
-
                 }
                 //If target is close enough the enemy unit, it changes the state to "punch"
                 else if (path.GetTotalLength() < punchingDistance)
@@ -300,7 +301,9 @@ public class GroundEnemyAI : MonoBehaviour
                     state = "punch";
                 }
                 break;
-
+                
+            // PUNCH STATE
+            //------------------------------------------------------------------------------------------------------------------
             //Does damage to target if close enough. Otherwise goes to roam or charge state.
             case "punch":               
                 if (canPunch)
@@ -322,8 +325,8 @@ public class GroundEnemyAI : MonoBehaviour
                     StartCoroutine(PunchCoolDown());
                 }
 
-                //If target goes out of enemy's bounds, return to "roam" state
-                if (target.transform.position.x <= (spawnPosition.x - roamingRange) || target.transform.position.x > (spawnPosition.x + roamingRange))
+                // If target goes out of enemy's bounds, return to "roam" state
+                if (CheckIfTargetOutsideXAxisNegative() || CheckIfTargetOutsideXAxisPositive())
                 {
                     state = "roam";
                     break;
@@ -346,5 +349,44 @@ public class GroundEnemyAI : MonoBehaviour
         playerRB.AddForce(knockbackDirection * knockbackForce);
     }
 
+    // Axis checks if target is outside or inside the given roaming parameters
+    private bool CheckIfTargetInsideYAxisPositive()
+    {
+        return target.transform.position.y < (spawnPosition.y + roamingRange);
+    }
+    private bool CheckIfTargetInsideYAxisNegative()
+    {
+        return target.transform.position.y >= (spawnPosition.y - roamingRange);
+    }
+
+    private bool CheckIfTargetInsideXAxisPositive()
+    {
+        return target.transform.position.x < (spawnPosition.x + roamingRange);
+    }
+
+    private bool CheckIfTargetInsideXAxisNegative()
+    {
+        return (target.transform.position.x >= (spawnPosition.x - roamingRange));
+    }
+
+    private bool CheckIfTargetOutsideXAxisPositive()
+    {
+        return target.transform.position.x > (spawnPosition.x + roamingRange);
+    }
+
+    private bool CheckIfTargetOutsideXAxisNegative()
+    {
+        return target.transform.position.x <= (spawnPosition.x - roamingRange);
+    }
+
+    private bool CheckIfTargetOutsideYAxisPositive()
+    {
+        return target.transform.position.y > (spawnPosition.y + roamingRange);
+    }
+
+    private bool CheckIfTargetOutsideYAxisNegative()
+    {
+        return target.transform.position.y <= (spawnPosition.y - roamingRange);
+    }
 }
 

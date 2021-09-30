@@ -20,7 +20,9 @@ public class FlyingEnemyAI : MonoBehaviour
     [SerializeField] LayerMask playerLayer;
 
     [Header("Mobility")]
-    public float speed = 200f;
+    public float speed = 5f;
+    public float chargeSpeed = 10f;
+    public float roamSpeed = 5f;
     public float nextWaypointDistance = 3f;
     public float pathUpdateInterval = 1f;
 
@@ -35,6 +37,7 @@ public class FlyingEnemyAI : MonoBehaviour
     private bool returningFromChase = false;
     private bool canShoot = true;
     private float shootCooldown = 1.5f;
+    private bool isFacingRight = true;
 
     private Collider2D _collider;
     private Vector2 spawnPosition;
@@ -105,10 +108,12 @@ public class FlyingEnemyAI : MonoBehaviour
         if (rb.velocity.x >= 0.1f)
         {
             transform.localScale = new Vector3(1f, 1f, 1f);
+            isFacingRight = true;
         }
         else if (rb.velocity.x <= -0.1f)
         {
             transform.localScale = new Vector3(-1f, 1f, 1f);
+            isFacingRight = false;
         }
 
         //ObstacleCheck();
@@ -141,7 +146,7 @@ public class FlyingEnemyAI : MonoBehaviour
         //Casts a ray below the flying enemy checking that it doesn't hit the ground
         hit = Physics2D.Raycast(transform.position, new Vector2(0, -1), wallCheckDistance, groundLayer);
         Debug.DrawRay(transform.position, -transform.up * wallCheckDistance, Color.red);
-        force = new Vector2(0, 50);
+        force = new Vector2(0, 30);
 
         if (hit.collider != null)
         {
@@ -149,15 +154,18 @@ public class FlyingEnemyAI : MonoBehaviour
         }
     }
 
+    // ENEMY BEHAVIOUR STATES
+    // --------------------------------------------------------------------------------------------------------------------------
+
     private void EnemyStateChange(Vector2 force)
     {
         //switch-case system between different enemy states.
         switch (state)
         {
+            // ROAM STATE
+            //-------------------------------------------------------------------------------------------------------
             //Roams in a specified area given to the enemy unit and stays inside of it.
             case "roam":
-                //Debug.Log("Roaming.");
-                
 
                 if(returningFromChase)
                 {
@@ -166,6 +174,7 @@ public class FlyingEnemyAI : MonoBehaviour
                     if(_collider.bounds.Contains(spawnPosition))
                     {
                         returningFromChase = false;
+                        rb.velocity = new Vector2(0,0);
                     }
                     break;
                 }
@@ -173,36 +182,63 @@ public class FlyingEnemyAI : MonoBehaviour
                 if (transform.position.x >= (spawnPosition.x + roamingRange))
                 {
                     transform.localScale = new Vector3(-1f, 1f, 1f);
+                    isFacingRight = false;
                     rb.AddForce(new Vector2(transform.localScale.x * speed, 0));                 
                 }
                 else if (transform.position.x <= (spawnPosition.x - roamingRange))
                 {
                     transform.localScale = new Vector3(1f, 1f, 1f);
+                    isFacingRight = true;
                     rb.AddForce(new Vector2(transform.localScale.x * speed, 0));                
                 }
                 //If target is close enough the enemy unit, charges it towards the player.
-                else if (aggroDistance >= path.GetTotalLength() && (target.transform.position.x >= (spawnPosition.x - roamingRange) && target.transform.position.x < (spawnPosition.x + roamingRange)))
+                else if (aggroDistance >= path.GetTotalLength() && CheckIfTargetInsideXAxisNegative() && CheckIfTargetInsideXAxisPositive() &&
+                    CheckIfTargetInsideYAxisNegative() && CheckIfTargetInsideYAxisPositive())
                 {
                     state = "charge";
-                    speed = 10;
+                    speed = chargeSpeed;
                     break;
                 }
+
+                // WallCheck! If enemy unit is about to hit a wall in roaming state, it turns around and continues to the opposite direction.
                 if (transform.position.x <= (spawnPosition.x + roamingRange) && transform.position.x >= (spawnPosition.x - roamingRange))
                 {
+                    RaycastHit2D hit;
+                    if(isFacingRight)
+                    {
+                        hit = Physics2D.Raycast(transform.position, Vector2.right, 3, groundLayer);
+                        Debug.DrawRay(transform.position, Vector2.right, Color.red);
+                        if(hit.collider != null)
+                        {
+                            transform.localScale = new Vector3(-1, 1f, 1f);
+                        }
+                    }
+                    else
+                    {
+                        hit = Physics2D.Raycast(transform.position, Vector2.left, 3, groundLayer);
+                        Debug.DrawRay(transform.position, Vector2.left, Color.red);
+                        if (hit.collider != null)
+                        {
+                            transform.localScale = new Vector3(1, 1f, 1f);
+                        }
+                    }
+
                     rb.AddForce(new Vector2(transform.localScale.x * speed, 0));
                 }
                 break;
 
-            //Here enemy charges the player. Checks if player is inside enemy unit's roaming range.
-            case "charge":
 
-                
-                //Debug.Log("Charging!");
-                if (path.GetTotalLength() > aggroDistance || (target.transform.position.x <= (spawnPosition.x - roamingRange) || target.transform.position.x > (spawnPosition.x + roamingRange)))
+            // CHARGE STATE
+            //------------------------------------------------------------------------------------------------------------------
+            //Here enemy charges the player. Checks if player is inside enemy unit's roaming range.
+            case "charge":              
+                // Target is out of aggro range, return to roaming state.
+                if (path.GetTotalLength() > aggroDistance || CheckIfTargetOutsideXAxisPositive() || CheckIfTargetOutsideXAxisNegative() ||
+                    CheckIfTargetOutsideYAxisPositive() || CheckIfTargetOutsideYAxisNegative())
                 {
                     returningFromChase = true;
                     state = "roam";
-                    speed = 5;
+                    speed = roamSpeed;
                     break;
                 }
                 else if (aggroDistance >= path.GetTotalLength() && path.GetTotalLength() > shootingDistance)
@@ -216,22 +252,24 @@ public class FlyingEnemyAI : MonoBehaviour
                 }
                 break;
 
+
+            // SHOOT STATE
+            //-------------------------------------------------------------------------------------------------------------------
             //Does damage to target if close enough. Otherwise goes to roam or charge state.
             case "shoot":
                 //Do damage to player here
                 Debug.DrawRay(transform.position, target.transform.position - transform.position, Color.blue);
                 if (canShoot)
                 {
-                    RaycastHit2D hit;
-                    hit = Physics2D.Raycast(transform.position, (target.transform.position - transform.position), (target.transform.position - transform.position).magnitude, playerLayer);
-                    
-                    if(hit.collider != null)
+                    RaycastHit2D hitGround;
+                    RaycastHit2D hitPlayer;
+                    hitGround = Physics2D.Raycast(transform.position, (target.transform.position - transform.position), (target.transform.position - transform.position).magnitude, groundLayer);
+                    hitPlayer = Physics2D.Raycast(transform.position, (target.transform.position - transform.position), (target.transform.position - transform.position).magnitude, playerLayer);
+                    if (hitPlayer && !hitGround)
                     {
-                        Debug.Log("PEW!");
+                        // Debug.Log("PEW!");
                         Instantiate(bullet, transform.position, Quaternion.identity);                       
-                    }
-
-                    
+                    }                 
 
                     // Turns the enemy unit torwards the target when shooting.
                     if (target.transform.position.x - transform.position.x >= 0)
@@ -242,31 +280,65 @@ public class FlyingEnemyAI : MonoBehaviour
                     {
                         transform.localScale = new Vector3(-1f, 1f, 1f);
                     }
-                    //_targetHealth.TakeDamage(1);
-                    //PlayerPushback();
                     StartCoroutine(ShootCoolDown());
                 }
-                if (target.transform.position.x <= (spawnPosition.x - roamingRange) || target.transform.position.x > (spawnPosition.x + roamingRange))
+                // If target goes out of enemy's bounds, return to "roam" state
+                if (CheckIfTargetOutsideXAxisNegative() || CheckIfTargetOutsideXAxisPositive() || CheckIfTargetOutsideYAxisNegative() || CheckIfTargetOutsideYAxisPositive())
                 {
+                    returningFromChase = true;
                     state = "roam";
-                    speed = 5;
+                    speed = roamSpeed;
                     break;
                 }
-                else if (path.GetTotalLength() > shootingDistance)
+                else if (path.GetTotalLength() > shootingDistance && CheckIfTargetInsideXAxisNegative() && CheckIfTargetInsideXAxisPositive() &&
+                    CheckIfTargetInsideYAxisNegative() && CheckIfTargetInsideYAxisPositive())
                 {
                     state = "charge";
-                    speed = 10;
-                    //Debug.Log("Charge again!");
+                    speed = chargeSpeed;
                     break;
                 }
                 break;
         }
     }
 
-    void PlayerPushback()
+    // Axis checks if target is outside or inside the given roaming parameters
+    private bool CheckIfTargetInsideYAxisPositive()
     {
-        float pushbackX = target.transform.position.x - transform.position.x;
-        Vector2 knockbackDirection = new Vector2((pushbackX), pushbackX / 2).normalized;
-        playerRB.AddForce(knockbackDirection * knockbackForce);
+        return target.transform.position.y < (spawnPosition.y + roamingRange);
     }
+    private bool CheckIfTargetInsideYAxisNegative()
+    {
+        return target.transform.position.y >= (spawnPosition.y - roamingRange);
+    }
+
+    private bool CheckIfTargetInsideXAxisPositive()
+    {
+        return target.transform.position.x < (spawnPosition.x + roamingRange);
+    }
+
+    private bool CheckIfTargetInsideXAxisNegative()
+    {
+        return (target.transform.position.x >= (spawnPosition.x - roamingRange));
+    }
+
+    private bool CheckIfTargetOutsideXAxisPositive()
+    {
+        return target.transform.position.x > (spawnPosition.x + roamingRange);
+    }
+
+    private bool CheckIfTargetOutsideXAxisNegative()
+    {
+        return target.transform.position.x <= (spawnPosition.x - roamingRange);
+    }
+
+    private bool CheckIfTargetOutsideYAxisPositive()
+    {
+        return target.transform.position.y > (spawnPosition.y + roamingRange);
+    }
+
+    private bool CheckIfTargetOutsideYAxisNegative()
+    {
+        return target.transform.position.y <= (spawnPosition.y - roamingRange);
+    }
+
 }

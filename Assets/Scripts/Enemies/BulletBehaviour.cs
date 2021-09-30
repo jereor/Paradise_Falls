@@ -12,14 +12,29 @@ public class BulletBehaviour : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         target = GameObject.Find("Player");
+
+        Physics2D.IgnoreLayerCollision(7, 9);
+
         Vector2 force = (target.transform.position - transform.position).normalized * bulletSpeed;
         rb.AddForce(force, ForceMode2D.Impulse);
-        Physics2D.IgnoreLayerCollision(7, 9);
     }
 
     // Update is called once per frame
     void Update()
     {
+        
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.collider.CompareTag("Player"))
+        {
+            target.GetComponent<Health>().TakeDamage(1);
+            Destroy(gameObject);
+        }
+        else
+            Destroy(gameObject);
+
         
     }
 }
