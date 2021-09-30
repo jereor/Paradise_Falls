@@ -5,8 +5,11 @@ using Cinemachine;
 
 public class PlayerCamera : MonoBehaviour
 {
-    // ChangeCameraOffset toimii asettamalla x akselin arvon
-    // esim. PlayerCamera.Instance.ChangeCameraOffset(0.4f, true, -1); jossa 0.4f on prosessin aika, true on falling ja -1 offset määrä
+    // This object is attached to the CinemachineBrain gameobject
+    // Access this script from other scripts through the Instance
+
+    // EXAMPLE: PlayerCamera.Instance.ChangeCameraOffset(0.2f, falling, 0.8f);
+
     public static PlayerCamera Instance { get; private set; }
 
     [SerializeField] private float yOffsetFalling;
@@ -30,19 +33,19 @@ public class PlayerCamera : MonoBehaviour
 
     private IEnumerator Offset(float timer, float start, float end, bool falling)
     {
-        var yStart = transposer.m_TrackedObjectOffset.y;
+        var yStart = transposer.m_TrackedObjectOffset.y; // Get camera's starting y-position
         if (falling)
             yOffset = yOffsetFalling; // Lower the camera a bit
         else
-            yOffset = 0;
+            yOffset = 0; // Reset y-offset when not falling
 
         float counter = 0;
         while (counter < timer)
         {
             counter += Time.deltaTime;
-            var newX = Mathf.Lerp(start, end, counter / timer);
-            var newY = Mathf.Lerp(yStart, yOffset, counter / timer);
-            transposer.m_TrackedObjectOffset = new Vector3(newX, newY, 0);
+            var newX = Mathf.Lerp(start, end, counter / timer); // Interpolate to the desired x-offset
+            var newY = Mathf.Lerp(yStart, yOffset, counter / timer); // Interpolate to the desired y-offset
+            transposer.m_TrackedObjectOffset = new Vector3(newX, newY, 0); // Update offset on each tick
             yield return new WaitForEndOfFrame();
         }
     }
