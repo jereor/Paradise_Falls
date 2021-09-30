@@ -5,11 +5,12 @@ using UnityEngine.InputSystem;
 
 public class PlayerCombat : MonoBehaviour
 {
-
     [Header("Player Variables")]
     [SerializeField] private float meleeDamage;
-    [SerializeField] private float meleeChargedDamage;
-    [SerializeField] private float meleeAttackRate;
+    [SerializeField] private float meleeComboLastDamage;
+    [SerializeField] private float meleeAttackRate; // Time between combo attacks
+    [SerializeField] private float comboTimer; // Timer of when we need to start new combo
+
     [SerializeField] private float maxChargeTime;
     [SerializeField] private float throwingForce;
 
@@ -28,6 +29,9 @@ public class PlayerCombat : MonoBehaviour
     private float? meleeButtonPressedTime;
     private float lastTimeMeleed;
     private bool meleeThrow;
+    private int currentComboHit;
+
+
 
     // Start is called before the first frame update
     void Start()
@@ -38,10 +42,22 @@ public class PlayerCombat : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (Time.time - meleeButtonPressedTime >= maxChargeTime)
+        //if (Time.time - meleeButtonPressedTime >= maxChargeTime)
+        //{
+        //    Debug.Log("Fully Charged");
+        //}
+
+
+    }
+
+    private IEnumerator PullWeapon()
+    {
+        if(meleeButtonPressedTime != null)
         {
-            Debug.Log("Fully Charged");
+            weaponInstance.transform.position = Vector2.MoveTowards(weaponInstance.transform.position, transform.position, 10 * Time.deltaTime);
         }
+
+        yield return null;
     }
 
     public void Melee(InputAction.CallbackContext context)
@@ -58,6 +74,12 @@ public class PlayerCombat : MonoBehaviour
             //Debug.Log("Started melee charge");
             meleeButtonPressedTime = Time.time;
         }
+        else if(context.performed && !isWeaponWielded && Time.time - lastTimeMeleed >= meleeAttackRate)
+        {
+            Debug.Log("Trying to pull weapon");
+            weaponInstance.GetComponent<MeleeWeapon>().PullWeapon(gameObject);
+            
+        }
 
 
 
@@ -69,11 +91,14 @@ public class PlayerCombat : MonoBehaviour
             {
                 Debug.Log("Charged attack");
 
-                foreach (Collider2D enemy in hitEnemies)
-                {
-                    if (enemy.GetComponent<Health>() != null)
-                        enemy.GetComponent<Health>().TakeDamage(meleeChargedDamage);
-                }
+                //foreach (Collider2D enemy in hitEnemies)
+                //{
+                //    if (enemy.GetComponent<Health>() != null)
+                //    {
+                //        enemy.GetComponent<Health>().TakeDamage(meleeChargedDamage);
+                //        Debug.Log("Melee: " + enemy.gameObject.name);
+                //    }
+                //}
 
             }
             else
@@ -83,7 +108,20 @@ public class PlayerCombat : MonoBehaviour
                 foreach (Collider2D enemy in hitEnemies)
                 {
                     if (enemy.GetComponent<Health>() != null)
-                        enemy.GetComponent<Health>().TakeDamage(meleeDamage);
+                    {
+                        if (currentComboHit < 3)
+                        {
+                            enemy.GetComponent<Health>().TakeDamage(meleeDamage);
+                            Debug.Log("Combo hit: " + currentComboHit + " to " + enemy.gameObject.name);
+                            currentComboHit++;
+                        }
+                        else
+                        {
+                            enemy.GetComponent<Health>().TakeDamage(meleeComboLastDamage);
+                            Debug.Log("Combo hit: " + currentComboHit + " to " + enemy.gameObject.name);
+                            
+                        }
+                    }
                 }
 
             }
@@ -95,13 +133,13 @@ public class PlayerCombat : MonoBehaviour
 
     public void MeleeAimThrowing(InputAction.CallbackContext context)
     {
-        if (context.performed && isWeaponWielded)
+        if (context.performed)
         {
             meleeThrow = true;
             Debug.Log("Throw ini");
         }
 
-        if (context.canceled && isWeaponWielded)
+        if (context.canceled)
         {
             meleeThrow = false;
             Debug.Log("Throw cancel");
@@ -112,6 +150,7 @@ public class PlayerCombat : MonoBehaviour
     {
         Gizmos.DrawWireCube(attackPoint.position, new Vector3(attackRangeX, attackRangeY, 0f));
     }
+
 
     public void PickUpWeapon()
     {
