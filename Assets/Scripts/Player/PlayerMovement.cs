@@ -232,6 +232,7 @@ public class PlayerMovement : MonoBehaviour
         transform.localScale = localScale;
     }
 
+   
     // Move action: Called when the Move Action Button is pressed
     public void Move(InputAction.CallbackContext context) // Context tells the function when the action is triggered
     {
