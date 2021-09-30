@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 
 public class Shield : MonoBehaviour
 {
+    [SerializeField] private GameObject shield;
     private bool blocking;
 
     public void Block(InputAction.CallbackContext context)
@@ -13,9 +14,11 @@ public class Shield : MonoBehaviour
         {
             Debug.Log("BLOCKING!");
             blocking = true;
+            shield.SetActive(true);
         }
         if (context.canceled)
         {
+            shield.SetActive(false);
             Debug.Log("NOT BLOCKING.");
             blocking = false;
         }

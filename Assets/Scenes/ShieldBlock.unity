@@ -1635,7 +1635,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &604414329
 Transform:
   m_ObjectHideFlags: 0
@@ -1648,7 +1648,7 @@ Transform:
   m_LocalScale: {x: 0.21769999, y: 0.65234, z: 1}
   m_Children: []
   m_Father: {fileID: 729320505}
-  m_RootOrder: 6
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &604414330
 SpriteRenderer:
@@ -2489,6 +2489,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8383f700fe18e474dabee9df936bbb23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  shield: {fileID: 604414328}
 --- !u!1 &1850227693
 GameObject:
   m_ObjectHideFlags: 0
@@ -2909,11 +2910,11 @@ PrefabInstance:
       objectReference: {fileID: 729320505}
     - target: {fileID: 2049820520096467095, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: m_TrackedObjectOffset.x
-      value: -0.9999568
+      value: 0.9999996
       objectReference: {fileID: 0}
     - target: {fileID: 2049820520096467095, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: m_TrackedObjectOffset.y
-      value: -0.00735246
+      value: -4.070884e-23
       objectReference: {fileID: 0}
     - target: {fileID: 2049820520137079200, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: m_RootOrder
