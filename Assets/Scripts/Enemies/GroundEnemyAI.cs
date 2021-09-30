@@ -12,11 +12,14 @@ public class GroundEnemyAI : MonoBehaviour
     public Transform target;
     public Transform enemyGFX;
     public Rigidbody2D playerRB;
+    public Transform groundDetection;
 
     [Header("Ground Check")]
     [SerializeField] private Transform groundCheck; // GameObject attached to player that checks if touching ground
     [SerializeField] private float checkRadius; // Radius for ground checks
     [SerializeField] LayerMask groundLayer; // Chosen layer that is recognized as ground in ground checks
+
+    [SerializeField] LayerMask playerLayer;
 
     [Header("Mobility")]
     public float speed = 200f;
@@ -26,7 +29,8 @@ public class GroundEnemyAI : MonoBehaviour
 
     [Header("State and Parameters")]
     public string state = "roam";
-    public float roamingRange = 10f;
+    public float roamingRangeX = 10f;
+    public float roamingRangeY = 10f;
     public float aggroDistance = 5f;
     public float punchingDistance = 3f;
     public float knockbackForce = 5f;
@@ -70,6 +74,11 @@ public class GroundEnemyAI : MonoBehaviour
             seeker.StartPath(rb.position, target.position, OnPathComplete);
     }
 
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawWireCube(spawnPosition, new Vector2(roamingRangeX, roamingRangeY));
+    }
+
     void OnPathComplete(Path p)
     {
         if(!p.error)
@@ -95,6 +104,8 @@ public class GroundEnemyAI : MonoBehaviour
         {
             reachedEndOfPath = false;
         }
+        // Current path length is saved for enemy behaviour purposes.
+        float vectorPathLength = path.GetTotalLength();
 
         //Calculates the next path point and the amount of force applied on X-axis
         Vector2 direction = ((Vector2)path.vectorPath[currentWaypoint] - rb.position).normalized;
@@ -120,7 +131,7 @@ public class GroundEnemyAI : MonoBehaviour
 
         ObstacleCheck();
 
-        EnemyStateChange(forceX);
+        EnemyStateChange(forceX, vectorPathLength);
     }
 
     //Does not serve any purpose at the moment.
@@ -177,7 +188,7 @@ public class GroundEnemyAI : MonoBehaviour
     {           
         RaycastHit2D hitHorizontal;
         RaycastHit2D hitAngularUp;
-        RaycastHit2D hitAngularDown;
+        RaycastHit2D hitDown;
         float jumpDirection;
         Vector2 force;
         Vector2 jumpPosition = transform.position;
@@ -187,28 +198,28 @@ public class GroundEnemyAI : MonoBehaviour
         {
             hitHorizontal = Physics2D.Raycast(transform.position, transform.right, wallCheckDistance, groundLayer);
             hitAngularUp = Physics2D.Raycast(transform.position, new Vector2(1, 1), higherWallCheckDistance, groundLayer);
-            hitAngularDown = Physics2D.Raycast(transform.position, new Vector2(1, -1.5f), groundCheckDistance, groundLayer);
+            hitDown = Physics2D.Raycast(groundDetection.transform.position, Vector2.down, groundCheckDistance, groundLayer);
             Debug.DrawRay(transform.position, transform.right * wallCheckDistance, Color.red);
             Debug.DrawRay(transform.position, new Vector2(1,1) * higherWallCheckDistance, Color.red);
-            Debug.DrawRay(transform.position, new Vector2(1,-1.5f) * groundCheckDistance, Color.red);
+            Debug.DrawRay(groundDetection.transform.position, Vector2.down * groundCheckDistance, Color.red);
             jumpDirection = 1;
         }
         else
         {
             hitHorizontal = Physics2D.Raycast(transform.position, -transform.right, wallCheckDistance, groundLayer);
             hitAngularUp = Physics2D.Raycast(transform.position, new Vector2(-1, 1), higherWallCheckDistance, groundLayer);
-            hitAngularDown = Physics2D.Raycast(transform.position, new Vector2(-1, -1.5f), groundCheckDistance, groundLayer);
+            hitDown = Physics2D.Raycast(groundDetection.transform.position, Vector2.down, groundCheckDistance, groundLayer);
             Debug.DrawRay(transform.position, -transform.right * wallCheckDistance, Color.red);
             Debug.DrawRay(transform.position, new Vector2(-1, 1) * higherWallCheckDistance, Color.red);
-            Debug.DrawRay(transform.position, new Vector2(-1, -1.5f) * groundCheckDistance, Color.red);
+            Debug.DrawRay(groundDetection.transform.position, Vector2.down * groundCheckDistance, Color.red);
             jumpDirection = -1;
         }
 
 
         // If there's no ground ahead, turns around and starts going back.
-        if ((hitHorizontal.collider != null && hitAngularUp.collider != null) || hitAngularDown.collider == null)
+        if ((hitHorizontal.collider != null && hitAngularUp.collider != null) || hitDown.collider == null)
         {
-            if(hitAngularDown.collider == null)
+            if(hitDown.collider == null)
             {
                 Debug.Log("No ground ahead!");
             }
@@ -231,10 +242,16 @@ public class GroundEnemyAI : MonoBehaviour
         return Physics2D.OverlapCircle(groundCheck.position, checkRadius, groundLayer);
     }
 
+    private bool IsPlayerInRange()
+    {
+        return Physics2D.OverlapBox(spawnPosition, new Vector2(roamingRangeX, roamingRangeY), 0, playerLayer);
+    }
+
+
 
     // ENEMY BEHAVIOUR STATES
     // ---------------------------------------------------------------------------------------------------------------
-    private void EnemyStateChange(Vector2 forceX)
+    private void EnemyStateChange(Vector2 forceX, float pathLength)
     {
         // switch-case system between different enemy states.
         switch (state)
@@ -244,7 +261,7 @@ public class GroundEnemyAI : MonoBehaviour
             // Roams in a specified area given to the enemy unit and stays inside of it.
             case "roam":
                 // If the enemy unit tries to go outside of the given area parameters, it turns around.
-                if (transform.position.x >= (spawnPosition.x + roamingRange) && canMove && IsGrounded())
+                if (transform.position.x >= (spawnPosition.x + roamingRangeX/2) && canMove && IsGrounded())
                 {
                     //Debug.Log("Left");
                     transform.localScale = new Vector3(-1f, 1f, 1f);
@@ -253,7 +270,7 @@ public class GroundEnemyAI : MonoBehaviour
                     StartCoroutine(WalkCoolDown());
                     break;
                 }
-                else if (transform.position.x <= (spawnPosition.x - roamingRange) && canMove && IsGrounded())
+                else if (transform.position.x <= (spawnPosition.x - roamingRangeX/2) && canMove && IsGrounded())
                 {
                     //Debug.Log("Right");
                     transform.localScale = new Vector3(1f, 1f, 1f);
@@ -263,14 +280,13 @@ public class GroundEnemyAI : MonoBehaviour
                     break;
                 }
                 // If target is close enough the enemy unit, charges it towards the player.
-                else if (aggroDistance >= path.GetTotalLength() && CheckIfTargetInsideXAxisNegative() && CheckIfTargetInsideXAxisPositive() 
-                    && CheckIfTargetInsideYAxisNegative() && CheckIfTargetInsideYAxisPositive())
+                else if (aggroDistance >= pathLength && IsPlayerInRange())
                 {
                     state = "charge";
                     break;
                 }
                 // If the enemy unit is inside the given roaming range and target is nowhere near, it roams around.
-                if(transform.position.x <= (spawnPosition.x + roamingRange) && transform.position.x >= (spawnPosition.x - roamingRange) && canMove && IsGrounded())
+                if(transform.position.x <= (spawnPosition.x + roamingRangeX) && transform.position.x >= (spawnPosition.x - roamingRangeX) && canMove && IsGrounded())
                 {
                     rb.AddForce(new Vector2(transform.localScale.x * speed, 0));
                     StartCoroutine(WalkCoolDown());
@@ -282,21 +298,20 @@ public class GroundEnemyAI : MonoBehaviour
             //Here enemy charges the target. Checks if target is inside enemy unit's roaming range.
             case "charge":
                 // Outside the range, return to roam state.
-                if (path.GetTotalLength() > aggroDistance || CheckIfTargetOutsideXAxisPositive() || CheckIfTargetOutsideXAxisNegative() ||
-                    CheckIfTargetOutsideYAxisPositive() || CheckIfTargetOutsideYAxisNegative())
+                if (pathLength > aggroDistance || !IsPlayerInRange())
                 {
                     state = "roam";
                     break;
                 }
                 // Inside the range, runs towards the target.
-                else if (aggroDistance >= path.GetTotalLength() && path.GetTotalLength() > punchingDistance && canMove)
+                else if (aggroDistance >= pathLength && pathLength > punchingDistance && canMove)
                 {
                     rb.AddForce(forceX);
                     StartCoroutine(RunCoolDown());
                     break;
                 }
                 //If target is close enough the enemy unit, it changes the state to "punch"
-                else if (path.GetTotalLength() < punchingDistance)
+                else if (pathLength < punchingDistance)
                 {
                     state = "punch";
                 }
@@ -326,12 +341,12 @@ public class GroundEnemyAI : MonoBehaviour
                 }
 
                 // If target goes out of enemy's bounds, return to "roam" state
-                if (CheckIfTargetOutsideXAxisNegative() || CheckIfTargetOutsideXAxisPositive())
+                if (!IsPlayerInRange())
                 {
                     state = "roam";
                     break;
                 }
-                else if (path.GetTotalLength() > punchingDistance)
+                else if (pathLength > punchingDistance)
                 {
                     state = "charge";
                     //Debug.Log("Charge again!");
@@ -352,41 +367,41 @@ public class GroundEnemyAI : MonoBehaviour
     // Axis checks if target is outside or inside the given roaming parameters
     private bool CheckIfTargetInsideYAxisPositive()
     {
-        return target.transform.position.y < (spawnPosition.y + roamingRange);
+        return target.transform.position.y < (spawnPosition.y + roamingRangeY);
     }
     private bool CheckIfTargetInsideYAxisNegative()
     {
-        return target.transform.position.y >= (spawnPosition.y - roamingRange);
+        return target.transform.position.y >= (spawnPosition.y - roamingRangeY);
     }
 
     private bool CheckIfTargetInsideXAxisPositive()
     {
-        return target.transform.position.x < (spawnPosition.x + roamingRange);
+        return target.transform.position.x < (spawnPosition.x + roamingRangeX);
     }
 
     private bool CheckIfTargetInsideXAxisNegative()
     {
-        return (target.transform.position.x >= (spawnPosition.x - roamingRange));
+        return (target.transform.position.x >= (spawnPosition.x - roamingRangeX));
     }
 
     private bool CheckIfTargetOutsideXAxisPositive()
     {
-        return target.transform.position.x > (spawnPosition.x + roamingRange);
+        return target.transform.position.x > (spawnPosition.x + roamingRangeX);
     }
 
     private bool CheckIfTargetOutsideXAxisNegative()
     {
-        return target.transform.position.x <= (spawnPosition.x - roamingRange);
+        return target.transform.position.x <= (spawnPosition.x - roamingRangeX);
     }
 
     private bool CheckIfTargetOutsideYAxisPositive()
     {
-        return target.transform.position.y > (spawnPosition.y + roamingRange);
+        return target.transform.position.y > (spawnPosition.y + roamingRangeY);
     }
 
     private bool CheckIfTargetOutsideYAxisNegative()
     {
-        return target.transform.position.y <= (spawnPosition.y - roamingRange);
+        return target.transform.position.y <= (spawnPosition.y - roamingRangeY);
     }
 }
 
