@@ -2808,6 +2808,14 @@ PrefabInstance:
       propertyPath: m_Follow
       value: 
       objectReference: {fileID: 729320505}
+    - target: {fileID: 2049820520096467095, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
+      propertyPath: m_TrackedObjectOffset.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2049820520096467095, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
+      propertyPath: m_TrackedObjectOffset.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2049820520137079200, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: m_RootOrder
       value: 0
