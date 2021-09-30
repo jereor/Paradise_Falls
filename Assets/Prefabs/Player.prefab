@@ -58,7 +58,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2646993275326716544}
-  m_RootOrder: 6
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2646993275326716545
 GameObject:
@@ -322,7 +322,7 @@ MonoBehaviour:
     m_Bits: 128
   attackPoint: {fileID: 972088618895377897}
   attackRangeX: 1
-  attackRangeY: 1
+  attackRangeY: 2
   meleeWeaponPrefab: {fileID: 3980506574090905470, guid: 3780bd19eaa15054a9ebdb884fa668ba, type: 3}
   weaponInstance: {fileID: 0}
   isWeaponWielded: 1
