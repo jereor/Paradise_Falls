@@ -475,8 +475,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   meleeDamage: 1
-  meleeChargedDamage: 2
+  meleeComboLastDamage: 0
+  knockbackForceNormal: 500
+  knockbackForceLast: 750
   meleeAttackRate: 1
+  comboCooldown: 2
+  comboBetweenTimer: 2
   maxChargeTime: 3
   throwingForce: 15
   enemyLayer:
@@ -488,6 +492,7 @@ MonoBehaviour:
   meleeWeaponPrefab: {fileID: 3980506574090905470, guid: 3780bd19eaa15054a9ebdb884fa668ba, type: 3}
   weaponInstance: {fileID: 0}
   isWeaponWielded: 1
+  comboOnGoing: 0
 --- !u!114 &127911568793665776
 MonoBehaviour:
   m_ObjectHideFlags: 0
