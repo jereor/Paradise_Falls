@@ -165,7 +165,7 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
-  m_LinearDrag: 1
+  m_LinearDrag: 3
   m_AngularDrag: 0.05
   m_GravityScale: 3
   m_Material: {fileID: 0}
@@ -244,16 +244,19 @@ MonoBehaviour:
   playerRB: {fileID: 0}
   groundDetection: {fileID: 1249067800}
   groundCheck: {fileID: 8401565248830553074}
-  checkRadius: 0.45
+  checkRadius: 0.5
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 8
   speed: 200
-  jumpHeight: 12
+  jumpHeight: 13
   walkStepInterval: 1
   runStepInterval: 0.5
   state: roam
-  roamingRange: 10
+  roamingRange: {x: 10, y: 10}
   aggroDistance: 10
   punchingDistance: 1.5
   knockbackForce: 1000
