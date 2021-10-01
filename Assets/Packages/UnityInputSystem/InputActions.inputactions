@@ -30,17 +30,9 @@
                     "interactions": ""
                 },
                 {
-                    "name": "Melee",
+                    "name": "Shield",
                     "type": "Button",
-                    "id": "f578b080-d0a1-40eb-b16b-1acb3500877d",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": ""
-                },
-                {
-                    "name": "AimMeleeThrow",
-                    "type": "Button",
-                    "id": "ef3c6be5-b81c-4758-8227-dbd42f17d9db",
+                    "id": "26d35881-2fb2-444c-8cce-ec135f39e1e1",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
@@ -203,23 +195,23 @@
                 },
                 {
                     "name": "",
-                    "id": "348461ff-cafe-4a7c-a85f-d4d501b4d7e8",
-                    "path": "<Mouse>/leftButton",
+                    "id": "53d98ce8-3f1a-4074-8638-1e616915ca4c",
+                    "path": "<Keyboard>/ctrl",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Melee",
+                    "action": "Shield",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "de73111a-369c-45c4-9131-cc998577192e",
-                    "path": "<Mouse>/rightButton",
+                    "id": "0ed290a1-55a7-4a49-9813-8f3ef17a4f3a",
+                    "path": "<Gamepad>/leftTrigger",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "AimMeleeThrow",
+                    "action": "Shield",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

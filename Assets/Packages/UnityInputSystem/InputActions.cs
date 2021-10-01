@@ -43,17 +43,9 @@ public class @InputActions : IInputActionCollection, IDisposable
                     ""interactions"": """"
                 },
                 {
-                    ""name"": ""Melee"",
+                    ""name"": ""Shield"",
                     ""type"": ""Button"",
-                    ""id"": ""f578b080-d0a1-40eb-b16b-1acb3500877d"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """"
-                },
-                {
-                    ""name"": ""AimMeleeThrow"",
-                    ""type"": ""Button"",
-                    ""id"": ""ef3c6be5-b81c-4758-8227-dbd42f17d9db"",
+                    ""id"": ""26d35881-2fb2-444c-8cce-ec135f39e1e1"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
@@ -216,23 +208,23 @@ public class @InputActions : IInputActionCollection, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""348461ff-cafe-4a7c-a85f-d4d501b4d7e8"",
-                    ""path"": ""<Mouse>/leftButton"",
+                    ""id"": ""53d98ce8-3f1a-4074-8638-1e616915ca4c"",
+                    ""path"": ""<Keyboard>/ctrl"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Melee"",
+                    ""action"": ""Shield"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
                 {
                     ""name"": """",
-                    ""id"": ""de73111a-369c-45c4-9131-cc998577192e"",
-                    ""path"": ""<Mouse>/rightButton"",
+                    ""id"": ""0ed290a1-55a7-4a49-9813-8f3ef17a4f3a"",
+                    ""path"": ""<Gamepad>/leftTrigger"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""AimMeleeThrow"",
+                    ""action"": ""Shield"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -303,8 +295,7 @@ public class @InputActions : IInputActionCollection, IDisposable
         m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
         m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
         m_Player_Interact = m_Player.FindAction("Interact", throwIfNotFound: true);
-        m_Player_Melee = m_Player.FindAction("Melee", throwIfNotFound: true);
-        m_Player_AimMeleeThrow = m_Player.FindAction("AimMeleeThrow", throwIfNotFound: true);
+        m_Player_Shield = m_Player.FindAction("Shield", throwIfNotFound: true);
         // GameUI
         m_GameUI = asset.FindActionMap("GameUI", throwIfNotFound: true);
         m_GameUI_Pause = m_GameUI.FindAction("Pause", throwIfNotFound: true);
@@ -361,8 +352,7 @@ public class @InputActions : IInputActionCollection, IDisposable
     private readonly InputAction m_Player_Move;
     private readonly InputAction m_Player_Jump;
     private readonly InputAction m_Player_Interact;
-    private readonly InputAction m_Player_Melee;
-    private readonly InputAction m_Player_AimMeleeThrow;
+    private readonly InputAction m_Player_Shield;
     public struct PlayerActions
     {
         private @InputActions m_Wrapper;
@@ -370,8 +360,7 @@ public class @InputActions : IInputActionCollection, IDisposable
         public InputAction @Move => m_Wrapper.m_Player_Move;
         public InputAction @Jump => m_Wrapper.m_Player_Jump;
         public InputAction @Interact => m_Wrapper.m_Player_Interact;
-        public InputAction @Melee => m_Wrapper.m_Player_Melee;
-        public InputAction @AimMeleeThrow => m_Wrapper.m_Player_AimMeleeThrow;
+        public InputAction @Shield => m_Wrapper.m_Player_Shield;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -390,12 +379,9 @@ public class @InputActions : IInputActionCollection, IDisposable
                 @Interact.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnInteract;
                 @Interact.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnInteract;
                 @Interact.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnInteract;
-                @Melee.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMelee;
-                @Melee.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMelee;
-                @Melee.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMelee;
-                @AimMeleeThrow.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAimMeleeThrow;
-                @AimMeleeThrow.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAimMeleeThrow;
-                @AimMeleeThrow.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAimMeleeThrow;
+                @Shield.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnShield;
+                @Shield.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnShield;
+                @Shield.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnShield;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -409,12 +395,9 @@ public class @InputActions : IInputActionCollection, IDisposable
                 @Interact.started += instance.OnInteract;
                 @Interact.performed += instance.OnInteract;
                 @Interact.canceled += instance.OnInteract;
-                @Melee.started += instance.OnMelee;
-                @Melee.performed += instance.OnMelee;
-                @Melee.canceled += instance.OnMelee;
-                @AimMeleeThrow.started += instance.OnAimMeleeThrow;
-                @AimMeleeThrow.performed += instance.OnAimMeleeThrow;
-                @AimMeleeThrow.canceled += instance.OnAimMeleeThrow;
+                @Shield.started += instance.OnShield;
+                @Shield.performed += instance.OnShield;
+                @Shield.canceled += instance.OnShield;
             }
         }
     }
@@ -465,8 +448,7 @@ public class @InputActions : IInputActionCollection, IDisposable
         void OnMove(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
         void OnInteract(InputAction.CallbackContext context);
-        void OnMelee(InputAction.CallbackContext context);
-        void OnAimMeleeThrow(InputAction.CallbackContext context);
+        void OnShield(InputAction.CallbackContext context);
     }
     public interface IGameUIActions
     {
