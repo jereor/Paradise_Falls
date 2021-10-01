@@ -103,7 +103,7 @@ public class PlayerMovement : MonoBehaviour
              * AND Time - lastTimeClimbed is greater that climbTimeBuffer                       Prevents climbing super fast
              */
 
-            if ((BodyIsTouchingWall() || FeetAreTouchingWall())
+            if ((BodyIsTouchingWall() /*|| FeetAreTouchingWall()*/)
                 && !LedgeIsOccupied()
                 && Time.time - lastTimeClimbed >= climbTimeBuffer)
             {
