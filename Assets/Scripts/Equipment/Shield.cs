@@ -9,9 +9,6 @@ public class Shield : MonoBehaviour
     public bool Parrying { get; private set; }
     public float ProtectionAmount { get; private set; }
 
-    public bool gotHit { get; set; } // Hit state: true or false
-    public float gotHitTime { get; set; } // Saves the time when player got hit
-
     [SerializeField] private GameObject shield;
     [SerializeField] private float protectionValue;
     [SerializeField] private float parryTime;
@@ -42,6 +39,8 @@ public class Shield : MonoBehaviour
     }
 
     // Activated when Shield button is released
+    // Other objects in world check if Shield is Parrying and do their own thing
+    // For example melee enemies get stunned if they attack and Shield is currently Parrying
     private IEnumerator ActivateParryWindow()
     {
         Debug.Log("Parrying...");
@@ -56,12 +55,5 @@ public class Shield : MonoBehaviour
 
         Debug.Log("STOP PARRY");
         Parrying = false;
-    }
-
-    // Called when a parry is succesful
-    private void Parry()
-    {
-        // Stuns enemy if melee hit
-        // Reflects projectile if projectile hit
     }
 }
