@@ -16,7 +16,6 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private float comboCooldown; // Timer of when we need to start new combo
     [SerializeField] private float comboBetweenTimer; // If this runs out we set combo on cooldown
 
-    [SerializeField] private float maxChargeTime;
     [SerializeField] private float throwingForce;
 
     [Header("Attack Detection Variables")]

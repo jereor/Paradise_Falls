@@ -54,7 +54,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2066380320926992024}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1, y: 0, z: 0}
+  m_LocalPosition: {x: 0.75, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2646993275326716544}
@@ -309,20 +309,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   meleeDamage: 1
-  meleeComboLastDamage: 0
+  meleeComboLastDamage: 2
   knockbackForceNormal: 500
   knockbackForceLast: 750
   meleeAttackRate: 1
   comboCooldown: 2
   comboBetweenTimer: 2
-  maxChargeTime: 3
   throwingForce: 15
   enemyLayer:
     serializedVersion: 2
     m_Bits: 128
   attackPoint: {fileID: 972088618895377897}
-  attackRangeX: 1
-  attackRangeY: 2
+  attackRangeX: 1.5
+  attackRangeY: 1.5
   meleeWeaponPrefab: {fileID: 3980506574090905470, guid: 3780bd19eaa15054a9ebdb884fa668ba, type: 3}
   weaponInstance: {fileID: 0}
   isWeaponWielded: 1
