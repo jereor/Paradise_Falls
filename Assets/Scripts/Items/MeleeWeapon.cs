@@ -125,6 +125,7 @@ public class MeleeWeapon : MonoBehaviour
         // Weapon cannot deal damage aka hit enemy or ground
         if (landed)
         {
+            // Ignore layers that should't collide
             SetEnemyIngoresOnPull();
 
             myRB.velocity = Vector2.zero; // Stop moving at the start of pulling physics bugs
