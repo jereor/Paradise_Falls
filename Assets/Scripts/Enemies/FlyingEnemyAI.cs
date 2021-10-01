@@ -10,10 +10,10 @@ public class FlyingEnemyAI : MonoBehaviour
 
     [Header("Transforms")]
     public Transform target;
+    public Transform spawnPoint;
     public Transform enemyGFX;
     public Rigidbody2D playerRB;
     public GameObject bullet;
-    public Collider2D areaCollider;
 
     [Header("Ground Check")]
     [SerializeField] LayerMask groundLayer;
@@ -66,15 +66,20 @@ public class FlyingEnemyAI : MonoBehaviour
         spawnPosition = transform.position;
         gizmoPositionChange = false;
         Physics2D.IgnoreLayerCollision(3, 7);
-
         //Updates the path repeatedly with a chosen time interval
-        InvokeRepeating("UpdatePath", 0f, 0.5f);
+        InvokeRepeating("UpdatePath", 0f, pathUpdateInterval);
         
     }
     void UpdatePath()
     {
         if (seeker.IsDone())
             seeker.StartPath(rb.position, target.position, OnPathComplete);
+    }
+
+    void UpdatePathReturn()
+    {
+        if (seeker.IsDone())
+            seeker.StartPath(rb.position, spawnPosition, OnPathComplete);
     }
 
     //Draws gizmos for enemy's "territory".
@@ -92,9 +97,12 @@ public class FlyingEnemyAI : MonoBehaviour
     {
         if (!p.error)
         {
+
             path = p;
             currentWaypoint = 0;
         }
+        else 
+            Debug.Log("Error");
     }
 
     // Update is called once per frame
@@ -168,7 +176,9 @@ public class FlyingEnemyAI : MonoBehaviour
         if (seeker.IsDone())
         {
             seeker.StartPath(rb.position, target.position, OnPathComplete);
+            Debug.Log("Path updated.");
         }
+
         yield return new WaitForSeconds(waitTime);
     }
 
@@ -204,7 +214,7 @@ public class FlyingEnemyAI : MonoBehaviour
 
     private bool IsHittingGround()
     {
-        return Physics2D.OverlapCircle(transform.position, 4, groundLayer);
+        return Physics2D.CircleCast(transform.position, 4, transform.position, 4, groundLayer);
     }
 
     // ENEMY BEHAVIOUR STATES
@@ -222,13 +232,22 @@ public class FlyingEnemyAI : MonoBehaviour
                 // Checks if enemy unit has given up a chase and is returning to spawn point. If target comes too close to the enemy, it begins to chase again.
                 if(returningFromChase && (aggroDistance < pathLength || !IsPlayerInRange()))
                 {
-                    Vector2 directionToSpawnPoint = (spawnPosition - (Vector2)transform.position).normalized;
-                    rb.AddForce(directionToSpawnPoint * speed);
-                    if(_collider.bounds.Contains(spawnPosition))
+                    //target = spawnPoint;
+                    rb.AddForce(force);
+                    //RaycastHit2D hit;
+                    //Vector2 directionToSpawnPoint = (spawnPosition - (Vector2)transform.position).normalized;
+                    //rb.AddForce(directionToSpawnPoint * speed);
+                    //hit = Physics2D.CircleCast(transform.position, 1, transform.position, 1, groundLayer);
+                    if (_collider.bounds.Contains(spawnPosition))
                     {
                         returningFromChase = false;
                         rb.velocity = new Vector2(0,0);
+                        InvokeRepeating("UpdatePath", 0f, pathUpdateInterval);
                     }
+                    //if(hit)
+                    //{
+                    //    rb.AddForce((transform.position - hit.collider.transform.position) * speed);
+                    //}
                     break;
                 }
                 //If the enemy unit tries to go outside of the given area parameters in X-axis, it turns around.
@@ -249,6 +268,8 @@ public class FlyingEnemyAI : MonoBehaviour
                 else if (aggroDistance >= pathLength && IsPlayerInRange())
                 {
                     Debug.Log("We here bois");
+                    CancelInvoke();
+                    InvokeRepeating("UpdatePath", 0f, pathUpdateInterval);
                     state = "charge";
                     speed = chargeSpeed;
                     break;
@@ -290,6 +311,8 @@ public class FlyingEnemyAI : MonoBehaviour
                 if (pathLength > aggroDistance || !IsPlayerInRange())
                 {
                     returningFromChase = true;
+                    CancelInvoke();
+                    InvokeRepeating("UpdatePathReturn", 0f, pathUpdateInterval);
                     state = "roam";
                     speed = roamSpeed;
                     break;
@@ -347,6 +370,8 @@ public class FlyingEnemyAI : MonoBehaviour
                 if (!IsPlayerInRange())
                 {
                     returningFromChase = true;
+                    CancelInvoke();
+                    InvokeRepeating("UpdatePathReturn", 0f, pathUpdateInterval);
                     state = "roam";
                     speed = roamSpeed;
                     break;

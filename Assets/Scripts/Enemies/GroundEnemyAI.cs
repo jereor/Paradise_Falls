@@ -53,6 +53,7 @@ public class GroundEnemyAI : MonoBehaviour
     private int currentWaypoint = 0;
     private bool reachedEndOfPath = false;
     private bool gizmoPositionChange = true;
+    private bool isTargetInBehaviourRange = false;
 
     private Seeker seeker;
     private Rigidbody2D rb;
@@ -102,44 +103,61 @@ public class GroundEnemyAI : MonoBehaviour
         //If the target was not found, returns to the start of the update
         if(path == null) {return;}
 
-        //Checks if the enemy is in the end of the path
-        if (currentWaypoint >= path.vectorPath.Count)
+        // If the target is too far from the enemy unit, it respawns in to the spawn point and stays there until target is close enough again.
+        // Enemy stops all actions for the time being.
+        if ((target.transform.position - transform.position).magnitude > 20)
         {
-            reachedEndOfPath = true;
-            return;
+            transform.position = spawnPosition;
+            isTargetInBehaviourRange = false;
         }
         else
         {
-            reachedEndOfPath = false;
+            isTargetInBehaviourRange = true;
         }
-        // Current path length is saved for enemy behaviour purposes.
-        float vectorPathLength = path.GetTotalLength();
 
-        //Calculates the next path point and the amount of force applied on X-axis
-        Vector2 direction = ((Vector2)path.vectorPath[currentWaypoint] - rb.position).normalized;
-        Vector2 forceX = new Vector2(direction.x, 0).normalized * speed;
-
-        //Distance between the enemy and next waypoint
-        float distance = Vector2.Distance(rb.position, path.vectorPath[currentWaypoint]);
-
-        //Keeps the count of the waypoints
-        if(distance < nextWaypointDistance) {currentWaypoint++;}
-
-        //Used for turning the enemy sprite into the direction it is currently going towards to
-        if (rb.velocity.x >= 1f)
+        if(isTargetInBehaviourRange)
         {
-            transform.localScale = new Vector3(1f, 1f, 1f);
-            isFacingRight = true;
-        }
-        else if (rb.velocity.x <= -1f)
-        {
-            transform.localScale = new Vector3(-1f, 1f, 1f);
-            isFacingRight = false;
+            //Checks if the enemy is in the end of the path
+            if (currentWaypoint >= path.vectorPath.Count)
+            {
+                reachedEndOfPath = true;
+                return;
+            }
+            else
+            {
+                reachedEndOfPath = false;
+            }
+            // Current path length is saved for enemy behaviour purposes.
+            float vectorPathLength = path.GetTotalLength();
+
+            //Calculates the next path point and the amount of force applied on X-axis
+            Vector2 direction = ((Vector2)path.vectorPath[currentWaypoint] - rb.position).normalized;
+            Vector2 forceX = new Vector2(direction.x, 0).normalized * speed;
+
+            //Distance between the enemy and next waypoint
+            float distance = Vector2.Distance(rb.position, path.vectorPath[currentWaypoint]);
+
+            //Keeps the count of the waypoints
+            if (distance < nextWaypointDistance) { currentWaypoint++; }
+
+            //Used for turning the enemy sprite into the direction it is currently going towards to
+            if (rb.velocity.x >= 1f)
+            {
+                transform.localScale = new Vector3(1f, 1f, 1f);
+                isFacingRight = true;
+            }
+            else if (rb.velocity.x <= -1f)
+            {
+                transform.localScale = new Vector3(-1f, 1f, 1f);
+                isFacingRight = false;
+            }
+
+            ObstacleCheck();
+
+            EnemyStateChange(forceX, vectorPathLength);
         }
 
-        ObstacleCheck();
 
-        EnemyStateChange(forceX, vectorPathLength);
     }
 
     //Does not serve any purpose at the moment.
@@ -185,8 +203,6 @@ public class GroundEnemyAI : MonoBehaviour
     private IEnumerator JumpForceForward(float jumpDirection)
     {
         yield return new WaitForSeconds(0.4f);
-
-        //Debug.Log("enemyJUMP");
         rb.AddForce(new Vector2(100 * jumpDirection, 0));
     }
 
@@ -250,6 +266,7 @@ public class GroundEnemyAI : MonoBehaviour
         return Physics2D.OverlapCircle(groundCheck.position, checkRadius, groundLayer);
     }
 
+    // Checks if target is in a box shaped area given by parameters.
     private bool IsPlayerInRange()
     {
         return Physics2D.OverlapBox(spawnPosition, roamingRange, 0, playerLayer);
