@@ -51,12 +51,12 @@ public class MeleeWeapon : Interactable
         }
         if (canDealDamage)
         {
-            Debug.Log("Flying");
+            //Debug.Log("Flying");
             transform.Rotate(new Vector3(0f,0f, - rotAngle * Time.deltaTime));
         }
         if ((transform.position - startPoint).magnitude >= maxDistance && !beingPulled)
         {
-            Debug.Log("Max d");
+            Debug.Log("Max distance traveled");
             myRB.gravityScale = defaultGravityScale;
             canDealDamage = false;
         }
@@ -88,9 +88,9 @@ public class MeleeWeapon : Interactable
             // While weapon is beingPulled we hit ground
             if (beingPulled)
             {
-                Debug.Log(collision.contacts[0]);
+                //Debug.Log(collision.contacts[0]);
                 Vector2 tmp = new Vector2(transform.position.x, transform.position.y) - collision.contacts[0].point;
-                Debug.Log(tmp);
+                //Debug.Log(tmp);
                 myRB.AddForce(tmp * ricochetForce, ForceMode2D.Impulse);
             }
             // We hit ground we lose momentum -> no damage
