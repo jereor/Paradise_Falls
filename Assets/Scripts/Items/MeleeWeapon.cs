@@ -156,12 +156,12 @@ public class MeleeWeapon : MonoBehaviour
     {
         if (beingPulled)
         {
-            Debug.Log("Dealing Pull Damage");
+            //Debug.Log("Dealing Pull Damage");
             col.gameObject.GetComponent<Health>().TakeDamage(weaponPullDamage);
         }
         else
         {
-            Debug.Log("Dealing Throw Damage");
+            //Debug.Log("Dealing Throw Damage");
             col.gameObject.GetComponent<Health>().TakeDamage(weaponThrowDamage);
         }
     }

@@ -185,7 +185,7 @@ public class PlayerCombat : MonoBehaviour
     // Called from Weapon script if pulled or we Interact with weapon
     public void PickUpWeapon()
     {
-        Debug.Log("Picked weapon");
+        //Debug.Log("Picked weapon");
         isWeaponWielded = true;
     }
 }
