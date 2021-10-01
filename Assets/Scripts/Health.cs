@@ -7,6 +7,7 @@ using UnityEngine.Events;
 public class Health : MonoBehaviour
 {
     [SerializeField] private float maxHealth;
+    public float debugHealth;
 
     [Tooltip("Enable if you want this script to destroy the gameobject after health reaches zero")]
     public bool destroyWhenDead;
@@ -35,6 +36,7 @@ public class Health : MonoBehaviour
     {
         CurrentHealth = (maxHealth > 0 ? maxHealth : 1);
         MaxHealth = CurrentHealth;
+        debugHealth = CurrentHealth; // DEBUG: For tracking health in inspector
     }
 
     /// <summary>
@@ -46,7 +48,15 @@ public class Health : MonoBehaviour
     {
         if (IsDead()) return; // If the script is still active, don't invoke onDie more than once
 
+        // If this object has a shield and they are currently blocking, reduce damage
+        if (gameObject.TryGetComponent(out Shield shield))
+        {
+            if (shield.Blocking) amount -= shield.ProtectionAmount;
+            if (amount < 0) amount = 0;
+        }
+
         CurrentHealth -= amount;
+        debugHealth = CurrentHealth; // DEBUG: For tracking health in inspector
 
         TakingDamage?.Invoke(this, EventArgs.Empty);
 
