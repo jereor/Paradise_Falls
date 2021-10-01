@@ -12,22 +12,26 @@ public class GroundEnemyAI : MonoBehaviour
     public Transform target;
     public Transform enemyGFX;
     public Rigidbody2D playerRB;
+    public Transform groundDetection;
 
     [Header("Ground Check")]
     [SerializeField] private Transform groundCheck; // GameObject attached to player that checks if touching ground
     [SerializeField] private float checkRadius; // Radius for ground checks
     [SerializeField] LayerMask groundLayer; // Chosen layer that is recognized as ground in ground checks
 
+    [SerializeField] LayerMask playerLayer;
+
     [Header("Mobility")]
     public float speed = 200f;
-    public float jumpHeight = 500f;    
-    public float pathUpdateInterval = 1f;
+    public float jumpHeight = 500f;      
     public float walkStepInterval = 1f;
     public float runStepInterval = 0.5f;
 
     [Header("State and Parameters")]
     public string state = "roam";
-    public float roamingRange = 2f;
+    public Vector2 roamingRange = new Vector2(10, 10);
+    //public float roamingRangeX = 10f;
+    //public float roamingRangeY = 10f;
     public float aggroDistance = 5f;
     public float punchingDistance = 3f;
     public float knockbackForce = 5f;
@@ -41,12 +45,15 @@ public class GroundEnemyAI : MonoBehaviour
     private bool canPunch = true;
     private float punchCooldown = 1.5f;
 
+    public float pathUpdateInterval = 1f;
     public float nextWaypointDistance = 3f;
 
     private Vector2 spawnPosition;
     private Path path;
     private int currentWaypoint = 0;
     private bool reachedEndOfPath = false;
+    private bool gizmoPositionChange = true;
+    private bool isTargetInBehaviourRange = false;
 
     private Seeker seeker;
     private Rigidbody2D rb;
@@ -58,7 +65,7 @@ public class GroundEnemyAI : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         _targetHealth = GameObject.Find("Player").GetComponent<Health>();
         spawnPosition = transform.position;
-
+        gizmoPositionChange = false;
         Physics2D.IgnoreLayerCollision(3, 7);
 
         //Updates the path repeatedly with a chosen time interval
@@ -68,6 +75,17 @@ public class GroundEnemyAI : MonoBehaviour
     {
         if (seeker.IsDone())
             seeker.StartPath(rb.position, target.position, OnPathComplete);
+    }
+
+    //Draws gizmos for enemy's "territory".
+    private void OnDrawGizmos()
+    {
+        if (gizmoPositionChange)
+        {
+            Gizmos.DrawWireCube(transform.position, roamingRange);
+        }
+        else
+            Gizmos.DrawWireCube(spawnPosition, roamingRange);
     }
 
     void OnPathComplete(Path p)
@@ -85,42 +103,61 @@ public class GroundEnemyAI : MonoBehaviour
         //If the target was not found, returns to the start of the update
         if(path == null) {return;}
 
-        //Checks if the enemy is in the end of the path
-        if (currentWaypoint >= path.vectorPath.Count)
+        // If the target is too far from the enemy unit, it respawns in to the spawn point and stays there until target is close enough again.
+        // Enemy stops all actions for the time being.
+        if ((target.transform.position - transform.position).magnitude > 20)
         {
-            reachedEndOfPath = true;
-            return;
+            transform.position = spawnPosition;
+            isTargetInBehaviourRange = false;
         }
         else
         {
-            reachedEndOfPath = false;
+            isTargetInBehaviourRange = true;
         }
 
-        //Calculates the next path point and the amount of force applied on X-axis
-        Vector2 direction = ((Vector2)path.vectorPath[currentWaypoint] - rb.position).normalized;
-        Vector2 forceX = new Vector2(direction.x, 0).normalized * speed;
-
-        //Distance between the enemy and next waypoint
-        float distance = Vector2.Distance(rb.position, path.vectorPath[currentWaypoint]);
-
-        //Keeps the count of the waypoints
-        if(distance < nextWaypointDistance) {currentWaypoint++;}
-
-        //Used for turning the enemy sprite into the direction it is currently going towards to
-        if (rb.velocity.x >= 1f)
+        if(isTargetInBehaviourRange)
         {
-            transform.localScale = new Vector3(1f, 1f, 1f);
-            isFacingRight = true;
-        }
-        else if (rb.velocity.x <= -1f)
-        {
-            transform.localScale = new Vector3(-1f, 1f, 1f);
-            isFacingRight = false;
+            //Checks if the enemy is in the end of the path
+            if (currentWaypoint >= path.vectorPath.Count)
+            {
+                reachedEndOfPath = true;
+                return;
+            }
+            else
+            {
+                reachedEndOfPath = false;
+            }
+            // Current path length is saved for enemy behaviour purposes.
+            float vectorPathLength = path.GetTotalLength();
+
+            //Calculates the next path point and the amount of force applied on X-axis
+            Vector2 direction = ((Vector2)path.vectorPath[currentWaypoint] - rb.position).normalized;
+            Vector2 forceX = new Vector2(direction.x, 0).normalized * speed;
+
+            //Distance between the enemy and next waypoint
+            float distance = Vector2.Distance(rb.position, path.vectorPath[currentWaypoint]);
+
+            //Keeps the count of the waypoints
+            if (distance < nextWaypointDistance) { currentWaypoint++; }
+
+            //Used for turning the enemy sprite into the direction it is currently going towards to
+            if (rb.velocity.x >= 1f)
+            {
+                transform.localScale = new Vector3(1f, 1f, 1f);
+                isFacingRight = true;
+            }
+            else if (rb.velocity.x <= -1f)
+            {
+                transform.localScale = new Vector3(-1f, 1f, 1f);
+                isFacingRight = false;
+            }
+
+            ObstacleCheck();
+
+            EnemyStateChange(forceX, vectorPathLength);
         }
 
-        ObstacleCheck();
 
-        EnemyStateChange(forceX);
     }
 
     //Does not serve any purpose at the moment.
@@ -166,8 +203,6 @@ public class GroundEnemyAI : MonoBehaviour
     private IEnumerator JumpForceForward(float jumpDirection)
     {
         yield return new WaitForSeconds(0.4f);
-
-        //Debug.Log("enemyJUMP");
         rb.AddForce(new Vector2(100 * jumpDirection, 0));
     }
 
@@ -177,7 +212,7 @@ public class GroundEnemyAI : MonoBehaviour
     {           
         RaycastHit2D hitHorizontal;
         RaycastHit2D hitAngularUp;
-        RaycastHit2D hitAngularDown;
+        RaycastHit2D hitDown;
         float jumpDirection;
         Vector2 force;
         Vector2 jumpPosition = transform.position;
@@ -187,28 +222,28 @@ public class GroundEnemyAI : MonoBehaviour
         {
             hitHorizontal = Physics2D.Raycast(transform.position, transform.right, wallCheckDistance, groundLayer);
             hitAngularUp = Physics2D.Raycast(transform.position, new Vector2(1, 1), higherWallCheckDistance, groundLayer);
-            hitAngularDown = Physics2D.Raycast(transform.position, new Vector2(1, -1.5f), groundCheckDistance, groundLayer);
+            hitDown = Physics2D.Raycast(groundDetection.transform.position, Vector2.down, groundCheckDistance, groundLayer);
             Debug.DrawRay(transform.position, transform.right * wallCheckDistance, Color.red);
             Debug.DrawRay(transform.position, new Vector2(1,1) * higherWallCheckDistance, Color.red);
-            Debug.DrawRay(transform.position, new Vector2(1,-1.5f) * groundCheckDistance, Color.red);
+            Debug.DrawRay(groundDetection.transform.position, Vector2.down * groundCheckDistance, Color.red);
             jumpDirection = 1;
         }
         else
         {
             hitHorizontal = Physics2D.Raycast(transform.position, -transform.right, wallCheckDistance, groundLayer);
             hitAngularUp = Physics2D.Raycast(transform.position, new Vector2(-1, 1), higherWallCheckDistance, groundLayer);
-            hitAngularDown = Physics2D.Raycast(transform.position, new Vector2(-1, -1.5f), groundCheckDistance, groundLayer);
+            hitDown = Physics2D.Raycast(groundDetection.transform.position, Vector2.down, groundCheckDistance, groundLayer);
             Debug.DrawRay(transform.position, -transform.right * wallCheckDistance, Color.red);
             Debug.DrawRay(transform.position, new Vector2(-1, 1) * higherWallCheckDistance, Color.red);
-            Debug.DrawRay(transform.position, new Vector2(-1, -1.5f) * groundCheckDistance, Color.red);
+            Debug.DrawRay(groundDetection.transform.position, Vector2.down * groundCheckDistance, Color.red);
             jumpDirection = -1;
         }
 
 
         // If there's no ground ahead, turns around and starts going back.
-        if ((hitHorizontal.collider != null && hitAngularUp.collider != null) || hitAngularDown.collider == null)
+        if ((hitHorizontal.collider != null && hitAngularUp.collider != null) || hitDown.collider == null && IsGrounded())
         {
-            if(hitAngularDown.collider == null)
+            if(hitDown.collider == null)
             {
                 Debug.Log("No ground ahead!");
             }
@@ -231,19 +266,28 @@ public class GroundEnemyAI : MonoBehaviour
         return Physics2D.OverlapCircle(groundCheck.position, checkRadius, groundLayer);
     }
 
-    private void EnemyStateChange(Vector2 forceX)
+    // Checks if target is in a box shaped area given by parameters.
+    private bool IsPlayerInRange()
+    {
+        return Physics2D.OverlapBox(spawnPosition, roamingRange, 0, playerLayer);
+    }
+
+
+
+    // ENEMY BEHAVIOUR STATES
+    // ---------------------------------------------------------------------------------------------------------------
+    private void EnemyStateChange(Vector2 forceX, float pathLength)
     {
         // switch-case system between different enemy states.
         switch (state)
         {
+            // ROAM STATE
+            //-------------------------------------------------------------------------------------------------------
             // Roams in a specified area given to the enemy unit and stays inside of it.
             case "roam":
-                //Debug.Log("Roaming.");
                 // If the enemy unit tries to go outside of the given area parameters, it turns around.
-                if (transform.position.x >= (spawnPosition.x + roamingRange) && canMove && IsGrounded())
+                if (transform.position.x >= (spawnPosition.x + roamingRange.x/2) && canMove && IsGrounded())
                 {
-                    //rb.AddForce(forceX);
-                    //StartCoroutine(WalkCoolDown());
                     //Debug.Log("Left");
                     transform.localScale = new Vector3(-1f, 1f, 1f);
                     isFacingRight = false;
@@ -251,10 +295,8 @@ public class GroundEnemyAI : MonoBehaviour
                     StartCoroutine(WalkCoolDown());
                     break;
                 }
-                else if (transform.position.x <= (spawnPosition.x - roamingRange) && canMove && IsGrounded())
+                else if (transform.position.x <= (spawnPosition.x - roamingRange.x/2) && canMove && IsGrounded())
                 {
-                    //rb.AddForce(forceX);
-                    //StartCoroutine(WalkCoolDown());
                     //Debug.Log("Right");
                     transform.localScale = new Vector3(1f, 1f, 1f);
                     isFacingRight = true;
@@ -263,44 +305,45 @@ public class GroundEnemyAI : MonoBehaviour
                     break;
                 }
                 // If target is close enough the enemy unit, charges it towards the player.
-                else if (aggroDistance >= path.GetTotalLength() && (target.transform.position.x >= (spawnPosition.x - roamingRange) && target.transform.position.x < (spawnPosition.x + roamingRange)))
+                else if (aggroDistance >= pathLength && IsPlayerInRange())
                 {
                     state = "charge";
                     break;
                 }
                 // If the enemy unit is inside the given roaming range and target is nowhere near, it roams around.
-                if(transform.position.x <= (spawnPosition.x + roamingRange) && transform.position.x >= (spawnPosition.x - roamingRange) && canMove && IsGrounded())
+                if(transform.position.x <= (spawnPosition.x + roamingRange.x) && transform.position.x >= (spawnPosition.x - roamingRange.x) && canMove && IsGrounded())
                 {
                     rb.AddForce(new Vector2(transform.localScale.x * speed, 0));
                     StartCoroutine(WalkCoolDown());
                 }
                 break;
 
+            // CHARGE STATE
+            //------------------------------------------------------------------------------------------------------------------
             //Here enemy charges the target. Checks if target is inside enemy unit's roaming range.
             case "charge":
-                //Debug.Log("Charging!");
-                // Outside the range, return to roaming state.
-                if (path.GetTotalLength() > aggroDistance || (target.transform.position.x <= (spawnPosition.x - roamingRange) || target.transform.position.x > (spawnPosition.x + roamingRange)))
+                // Outside the range, return to roam state.
+                if (pathLength > aggroDistance || !IsPlayerInRange())
                 {
                     state = "roam";
                     break;
                 }
                 // Inside the range, runs towards the target.
-                else if (aggroDistance >= path.GetTotalLength() && path.GetTotalLength() > punchingDistance && canMove)
+                else if (aggroDistance >= pathLength && pathLength > punchingDistance && canMove)
                 {
-
                     rb.AddForce(forceX);
                     StartCoroutine(RunCoolDown());
                     break;
-
                 }
                 //If target is close enough the enemy unit, it changes the state to "punch"
-                else if (path.GetTotalLength() < punchingDistance)
+                else if (pathLength < punchingDistance)
                 {
                     state = "punch";
                 }
                 break;
-
+                
+            // PUNCH STATE
+            //------------------------------------------------------------------------------------------------------------------
             //Does damage to target if close enough. Otherwise goes to roam or charge state.
             case "punch":               
                 if (canPunch)
@@ -322,13 +365,13 @@ public class GroundEnemyAI : MonoBehaviour
                     StartCoroutine(PunchCoolDown());
                 }
 
-                //If target goes out of enemy's bounds, return to "roam" state
-                if (target.transform.position.x <= (spawnPosition.x - roamingRange) || target.transform.position.x > (spawnPosition.x + roamingRange))
+                // If target goes out of enemy's bounds, return to "roam" state
+                if (!IsPlayerInRange())
                 {
                     state = "roam";
                     break;
                 }
-                else if (path.GetTotalLength() > punchingDistance)
+                else if (pathLength > punchingDistance)
                 {
                     state = "charge";
                     //Debug.Log("Charge again!");
@@ -345,6 +388,5 @@ public class GroundEnemyAI : MonoBehaviour
         Vector2 knockbackDirection = new Vector2(pushbackX, Math.Abs(pushbackX / 4)).normalized;
         playerRB.AddForce(knockbackDirection * knockbackForce);
     }
-
 }
 
