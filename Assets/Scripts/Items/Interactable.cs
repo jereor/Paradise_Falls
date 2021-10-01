@@ -24,8 +24,7 @@ public class Interactable : MonoBehaviour
 
     private void Start()
     {
-        // Get the input key for interact action
-        textToShow = textToShow.Replace("#", inputActions.FindAction("Interact").controls.ToArray()[0].name);
+        UpdateTextBinding();
 
         // Set text at start to ""
         floatingText.text = "";
@@ -38,6 +37,13 @@ public class Interactable : MonoBehaviour
             //itemEvent.AddListener(Interact);
         }
         itemEvent.AddListener(Interact);
+    }
+    
+    // Updates # to correct key
+    public void UpdateTextBinding()
+    {
+        // Get the input key for interact action
+        textToShow = textToShow.Replace("#", inputActions.FindAction("Interact").controls.ToArray()[0].name);
     }
 
     // Makes text object visible, called from item script when player comes close

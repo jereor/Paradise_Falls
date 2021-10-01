@@ -143,42 +143,6 @@ public class PlayerCombat : MonoBehaviour
             Debug.Log("Trying to pull weapon");
             weaponInstance.GetComponent<MeleeWeapon>().PullWeapon(gameObject);          
         }
-
-
-
-        //if (context.canceled && isWeaponWielded && CheckAttackRate() && !meleeThrow)
-        //{
-        //    Collider2D[] hitEnemies = Physics2D.OverlapBoxAll(attackPoint.position, new Vector2(attackRangeX, attackRangeY), 0f, enemyLayer);
-
-        //    if (currentComboHit < 3)
-        //    {               
-        //        Debug.Log("Combo hit: " + currentComboHit);
-        //        currentComboHit++;
-
-        //        foreach (Collider2D enemy in hitEnemies)
-        //        {
-        //            if (enemy.GetComponent<Health>() != null)
-        //            {
-        //                enemy.GetComponent<Health>().TakeDamage(meleeDamage);
-        //            }
-        //        }
-        //    }
-        //    else
-        //    {                 
-        //        Debug.Log("Last hit: " + currentComboHit);                  
-        //        foreach (Collider2D enemy in hitEnemies)
-        //        {
-        //            if (enemy.GetComponent<Health>() != null)
-        //            {
-        //                enemy.GetComponent<Health>().TakeDamage(meleeComboLastDamage);
-        //            }
-        //        }
-        //        ResetCombo();
-        //    }
-        //    //meleeButtonPressedTime = null;
-        //    lastTimeMeleed = Time.time;
-        //}
-        
     }
 
     public void MeleeAimThrowing(InputAction.CallbackContext context)
@@ -186,13 +150,13 @@ public class PlayerCombat : MonoBehaviour
         if (context.performed)
         {
             meleeThrow = true;
-            Debug.Log("Throw ini");
+            //Debug.Log("Throw ini");
         }
 
         if (context.canceled)
         {
             meleeThrow = false;
-            Debug.Log("Throw cancel");
+            //Debug.Log("Throw cancel");
         }
     }
 
