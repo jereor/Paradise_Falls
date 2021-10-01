@@ -5,13 +5,13 @@ using UnityEngine.InputSystem;
 
 public class Shield : MonoBehaviour
 {
-    public static Shield Instance { get; private set; }
+    public bool Blocking { get; private set; }
+    public bool Parrying { get; private set; }
+    public float ProtectionAmount { get; private set; }
 
     [SerializeField] private GameObject shield;
     [SerializeField] private float protectionValue;
-
-    public bool Blocking { get; private set; }
-    public float ProtectionAmount { get; private set; }
+    [SerializeField] private float parryTime;
 
     private void Start()
     {
@@ -27,11 +27,31 @@ public class Shield : MonoBehaviour
             Blocking = true;
             shield.SetActive(true);
         }
-        // Not blocking
+        // Blocking cancelled
         if (context.canceled)
         {
+            // Parry window activated
+            StartCoroutine(ActivateParryWindow());
+
             shield.SetActive(false);
             Blocking = false;
         }
+    }
+
+    // Activated when Shield button is released
+    private IEnumerator ActivateParryWindow()
+    {
+        Debug.Log("Parrying...");
+        Parrying = true;
+
+        float parryTimer = 0;
+        while (parryTimer <= parryTime)
+        {
+            parryTimer += Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+
+        Debug.Log("STOP PARRY");
+        Parrying = false;
     }
 }

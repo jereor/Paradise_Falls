@@ -51,7 +51,9 @@ public class Health : MonoBehaviour
         // If this object has a shield and they are currently blocking, reduce damage
         if (gameObject.TryGetComponent(out Shield shield))
         {
-            if (shield.Blocking) amount -= shield.ProtectionAmount;
+            if (shield.Parrying) amount = 0;
+            else if (shield.Blocking) amount -= shield.ProtectionAmount;
+
             if (amount < 0) amount = 0;
         }
 
