@@ -198,7 +198,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   allowLedgeClimb: 1
-  allowWallJump: 1
+  allowWallJump: 0
   allowCoyoteWallJump: 1
   ledgeCheck: {fileID: 2838063052809471023}
   wallCheckBody: {fileID: 6576764605224401354}

@@ -298,4 +298,10 @@ public class PlayerMovement : MonoBehaviour
             lastGroundedTime = null;
         }
     }
+
+    // Activated from pick up
+    public void AllowWallJump()
+    {
+        allowWallJump = true;
+    }
 }
