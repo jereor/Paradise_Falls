@@ -70,4 +70,18 @@ public class Health : MonoBehaviour
                 Destroy(gameObject);
         }
     }
+
+    // Setter for new CurrentHealth amount.
+    public void SetHealth(float amount)
+    {
+        if (CurrentHealth + amount >= MaxHealth)
+            CurrentHealth = MaxHealth;
+        else
+            CurrentHealth += amount;
+    }
+
+    public float GetHealth()
+    {
+        return CurrentHealth;
+    }
 }

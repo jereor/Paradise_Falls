@@ -239,10 +239,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5423c9748d8c6194ab4391113e8374e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 0}
+  target: {fileID: 2646993275326716544, guid: 4154d57994558ff489a9180c3151e624, type: 3}
   enemyGFX: {fileID: 8401565248790612542}
-  playerRB: {fileID: 0}
+  playerRB: {fileID: 2646993275326716665, guid: 4154d57994558ff489a9180c3151e624, type: 3}
   groundDetection: {fileID: 1249067800}
+  healthItem: {fileID: 8475744114839058090, guid: 0aeb80a14b2a8254dbe07e4c54a022f6, type: 3}
+  energyItem: {fileID: 7526672294046396501, guid: 4049d0c991ec2534dbef2099a278b67e, type: 3}
   groundCheck: {fileID: 8401565248830553074}
   checkRadius: 0.5
   groundLayer:
@@ -255,6 +257,7 @@ MonoBehaviour:
   jumpHeight: 13
   walkStepInterval: 1
   runStepInterval: 0.5
+  attackPower: 3
   state: roam
   roamingRange: {x: 10, y: 10}
   aggroDistance: 10
@@ -279,7 +282,19 @@ MonoBehaviour:
   destroyWhenDead: 1
   onDie:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 8401565248732910209}
+        m_TargetAssemblyTypeName: GroundEnemyAI, Assembly-CSharp
+        m_MethodName: SpawnHealthOrEnergy
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &8401565248790612543
 GameObject:
   m_ObjectHideFlags: 0
