@@ -27,7 +27,7 @@ public class PlayerCombat : MonoBehaviour
     [Header("Weapon")]
     [SerializeField] private GameObject meleeWeaponPrefab;
     [SerializeField] private GameObject weaponInstance;
-    [SerializeField] private bool isWeaponWielded; 
+    [SerializeField] private bool isWeaponWielded;
 
     // State variables
     //private float? meleeButtonPressedTime;
@@ -78,7 +78,7 @@ public class PlayerCombat : MonoBehaviour
     public void Melee(InputAction.CallbackContext context)
     {
         // Throwing
-        if (context.performed && isWeaponWielded && meleeThrow)
+        if (context.performed && isWeaponWielded && meleeThrow && meleeWeaponPrefab)
         {
             // Instantiate meleeWeaponPrefab on attackPoint
             weaponInstance = Instantiate(meleeWeaponPrefab, attackPoint.position, Quaternion.identity);
@@ -137,7 +137,7 @@ public class PlayerCombat : MonoBehaviour
             lastTimeMeleed = Time.time;
         }
         // Pull weapon if thrown
-        else if(context.performed && !isWeaponWielded && CheckAttackRate())
+        else if(context.performed && !isWeaponWielded && CheckAttackRate() && weaponInstance != null)
         {
             Debug.Log("Trying to pull weapon");
             weaponInstance.GetComponent<MeleeWeapon>().PullWeapon(gameObject);          
@@ -187,5 +187,10 @@ public class PlayerCombat : MonoBehaviour
     {
         //Debug.Log("Picked weapon");
         isWeaponWielded = true;
+    }
+
+    public bool getWeaponWielded()
+    {
+        return isWeaponWielded;
     }
 }
