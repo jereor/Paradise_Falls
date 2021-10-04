@@ -7,13 +7,15 @@ using System;
 public class FlyingEnemyAI : MonoBehaviour
 {
     private Health _targetHealth;
+    private Energy _targetEnergy;
 
     [Header("Transforms")]
     public Transform target;
-    public Transform spawnPoint;
     public Transform enemyGFX;
     public Rigidbody2D playerRB;
     public GameObject bullet;
+    public GameObject energyItem;
+    public GameObject healthItem;
 
     [Header("Ground Check")]
     [SerializeField] LayerMask groundLayer;
@@ -31,8 +33,6 @@ public class FlyingEnemyAI : MonoBehaviour
     [Header("State and Parameters")]
     public string state = "roam";
     public Vector2 roamingRange = new Vector2(10, 10);
-    //public float roamingRangeX = 10f;
-    //public float roamingRangeY = 10f;
     public float aggroDistance = 5f;
     public float shootingDistance = 10f;
     public float wallCheckDistance = 2f;
@@ -49,7 +49,6 @@ public class FlyingEnemyAI : MonoBehaviour
     private Vector2 spawnPosition;
     private Path path;
     private bool gizmoPositionChange = true;
-    Vector2 gizmos;
     private int currentWaypoint = 0;
     private bool reachedEndOfPath = false;
 
@@ -67,10 +66,10 @@ public class FlyingEnemyAI : MonoBehaviour
         gizmoPositionChange = false;
         Physics2D.IgnoreLayerCollision(3, 7);
         //Updates the path repeatedly with a chosen time interval
-        InvokeRepeating("UpdatePath", 0f, pathUpdateInterval);
+        InvokeRepeating("UpdatePathToPlayer", 0f, pathUpdateInterval);
         
     }
-    void UpdatePath()
+    void UpdatePathToPlayer()
     {
         if (seeker.IsDone())
             seeker.StartPath(rb.position, target.position, OnPathComplete);
@@ -242,7 +241,7 @@ public class FlyingEnemyAI : MonoBehaviour
                     {
                         returningFromChase = false;
                         rb.velocity = new Vector2(0,0);
-                        InvokeRepeating("UpdatePath", 0f, pathUpdateInterval);
+                        InvokeRepeating("UpdatePathToPlayer", 0f, pathUpdateInterval);
                     }
                     //if(hit)
                     //{
@@ -269,7 +268,7 @@ public class FlyingEnemyAI : MonoBehaviour
                 {
                     Debug.Log("We here bois");
                     CancelInvoke();
-                    InvokeRepeating("UpdatePath", 0f, pathUpdateInterval);
+                    InvokeRepeating("UpdatePathToPlayer", 0f, pathUpdateInterval);
                     state = "charge";
                     speed = chargeSpeed;
                     break;
@@ -392,5 +391,16 @@ public class FlyingEnemyAI : MonoBehaviour
         float pushbackX = target.transform.position.x - transform.position.x;
         Vector2 knockbackDirection = new Vector2(pushbackX, Math.Abs(pushbackX / 4)).normalized;
         playerRB.AddForce(knockbackDirection * knockbackForce);
+    }
+
+    public void SpawnHealthOrEnergy()
+    {
+        int rand = UnityEngine.Random.Range(0, 100);
+        if (_targetHealth.GetHealth() <= 3 && rand < 49)
+        {
+            Instantiate(healthItem, transform.position, Quaternion.identity);
+        }
+        else if (rand >= 49)
+            Instantiate(energyItem, transform.position, Quaternion.identity);
     }
 }
