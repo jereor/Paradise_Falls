@@ -15,12 +15,16 @@ public class PlayerCamera : MonoBehaviour
     [SerializeField] private float yOffsetFalling;
     private float yOffset;
 
+    // Main camera
+    private GameObject mainCam;
+
     // Cinemachine Components
     private CinemachineFramingTransposer transposer;
 
     private void Awake()
     {
         Instance = this;
+        mainCam = GameObject.Find("Main Camera");
         transposer = GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachineFramingTransposer>();
     }
 
@@ -29,6 +33,12 @@ public class PlayerCamera : MonoBehaviour
         // Check if the camera is currently active so we don't try to access a deactivated camera
         if (gameObject.activeInHierarchy)
             StartCoroutine(Offset(timer, transposer.m_TrackedObjectOffset.x, x, falling));
+    }
+
+    public void ChangeBlendSpeed(float value)
+    {
+        var brain = mainCam.GetComponent<CinemachineBrain>();
+        brain.m_DefaultBlend.m_Time = value;
     }
 
     private IEnumerator Offset(float timer, float start, float end, bool falling)
