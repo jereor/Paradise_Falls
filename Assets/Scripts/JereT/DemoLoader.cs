@@ -182,10 +182,17 @@ public class DemoLoader : MonoBehaviour
             GameStatus.status.UpdateWallJump(playerObject.GetComponent<PlayerMovement>().getAllowWallJump());
 
             // Enemies
-            for(int i = 0; i < enemiesKilled.Length; i++)
+            for (int i = 0; i < enemies.Count; i++)
             {
-                 GameStatus.status.UpdateEnemyKilled(i, enemiesKilled[i]);
+                GameStatus.status.UpdateEnemyKilled(i, enemiesKilled[i]);
+                if (enemies[i] == null)
+                {
+                    //Debug.Log("dead enemy");
+                    enemiesKilled[i] = true;
+                }
+                GameStatus.status.UpdateEnemyKilled(i, enemiesKilled[i]);
             }
+
 
             GameStatus.status.UpdateCamera(CameraTransitions.Instance.GetCurrentCamera().name);
 
