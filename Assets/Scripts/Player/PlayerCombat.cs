@@ -78,7 +78,7 @@ public class PlayerCombat : MonoBehaviour
     public void Melee(InputAction.CallbackContext context)
     {
         // Throwing
-        if (context.performed && isWeaponWielded && meleeThrow)
+        if (context.performed && isWeaponWielded && meleeThrow && meleeWeaponPrefab)
         {
             // Instantiate meleeWeaponPrefab on attackPoint
             weaponInstance = Instantiate(meleeWeaponPrefab, attackPoint.position, Quaternion.identity);
@@ -137,7 +137,7 @@ public class PlayerCombat : MonoBehaviour
             lastTimeMeleed = Time.time;
         }
         // Pull weapon if thrown
-        else if(context.performed && !isWeaponWielded && CheckAttackRate())
+        else if(context.performed && !isWeaponWielded && CheckAttackRate() && weaponInstance != null)
         {
             Debug.Log("Trying to pull weapon");
             weaponInstance.GetComponent<MeleeWeapon>().PullWeapon(gameObject);          

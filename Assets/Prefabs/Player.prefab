@@ -525,7 +525,7 @@ MonoBehaviour:
   attackRangeY: 1.5
   meleeWeaponPrefab: {fileID: 3980506574090905470, guid: 3780bd19eaa15054a9ebdb884fa668ba, type: 3}
   weaponInstance: {fileID: 0}
-  isWeaponWielded: 1
+  isWeaponWielded: 0
   comboOnGoing: 0
 --- !u!1 &2646993277219195829
 GameObject:
