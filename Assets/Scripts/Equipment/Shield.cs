@@ -11,11 +11,11 @@ public class Shield : MonoBehaviour
 
     [SerializeField] private GameObject shield;
     [SerializeField] private float protectionValue;
-    [SerializeField] private float parryTime;
-    [SerializeField] private float parryCooldown;
+    [SerializeField] private float parryTimeWindow = 0.5f;
    
-    private bool parryOnCooldown;
     private bool hitParried = false;
+    private float nextParry = -1; // Initialize as -1. First time it will always be less than the current time and will allow to parry. 
+    private float parryCooldown = 0.6f;
 
     private void Start()
     {
@@ -26,8 +26,11 @@ public class Shield : MonoBehaviour
     public void Block(InputAction.CallbackContext context)
     {
         // Blocking
-        if (context.started)
+        if (context.started && (Time.time >= nextParry || hitParried))
         {
+            nextParry = Time.time + parryCooldown;
+            hitParried = false;
+
             Blocking = true;
             shield.SetActive(true);
         }
@@ -52,36 +55,15 @@ public class Shield : MonoBehaviour
     // For example melee enemies get stunned if they attack and Shield is currently Parrying
     private IEnumerator ActivateParryWindow()
     {
-        Debug.Log("Parrying...");
         Parrying = true;
 
         float parryTimer = 0;
-        while (parryTimer <= parryTime)
+        while (parryTimer <= parryTimeWindow)
         {
             parryTimer += Time.deltaTime;
             yield return new WaitForEndOfFrame();
         }
 
-        if (hitParried)
-            parryOnCooldown = false;
-        else
-            StartCoroutine(ParryCooldown());
-
-        Debug.Log("STOP PARRY");
         Parrying = false;
-    }
-
-    private IEnumerator ParryCooldown()
-    {
-        parryOnCooldown = true;
-
-        float cooldownTimer = 0;
-        while (cooldownTimer <= parryCooldown)
-        {
-            cooldownTimer += Time.deltaTime;
-            yield return new WaitForEndOfFrame();
-        }
-        
-        parryOnCooldown = false;
     }
 }
