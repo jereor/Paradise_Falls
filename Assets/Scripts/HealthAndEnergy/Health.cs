@@ -71,15 +71,17 @@ public class Health : MonoBehaviour
         }
     }
 
-    // Gives the target corresponding amount of health when called while not exceeding the maximum health value
-    public void GiveHealthPoints(float amount)
+    // Setter for new CurrentHealth amount.
+    public void SetHealth(float amount)
     {
         if (CurrentHealth + amount >= MaxHealth)
-        {
             CurrentHealth = MaxHealth;
-        }
         else
             CurrentHealth += amount;
+    }
 
+    public float GetHealth()
+    {
+        return CurrentHealth;
     }
 }
