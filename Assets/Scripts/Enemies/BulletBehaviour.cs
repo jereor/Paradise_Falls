@@ -8,6 +8,7 @@ public class BulletBehaviour : MonoBehaviour
     public GameObject shooter; // Set by the shooter
     private GameObject target;
     public float bulletSpeed = 5;
+    public float bulletDamage = 1f;
     private bool reflected = false;
 
     // Start is called before the first frame update
@@ -41,19 +42,19 @@ public class BulletBehaviour : MonoBehaviour
                     ReflectBullet();
                 else
                 {
-                    target.GetComponent<Health>().TakeDamage(4); // Player takes damage
+                    target.GetComponent<Health>().TakeDamage(bulletDamage); // Player takes damage
                     Destroy(gameObject);
                 }
             }
             else
             {
-                target.GetComponent<Health>().TakeDamage(4); // Player takes damage
+                target.GetComponent<Health>().TakeDamage(bulletDamage); // Player takes damage
                 Destroy(gameObject);
             }
         }
         else if (reflected && collision.collider.CompareTag("Enemy"))
         {
-            collision.collider.GetComponent<Health>().TakeDamage(4); // Enemy takes damage
+            collision.collider.GetComponent<Health>().TakeDamage(bulletDamage); // Enemy takes damage
             Destroy(gameObject);
         }
         else
