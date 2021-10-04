@@ -5,6 +5,7 @@ using UnityEngine;
 public class BulletBehaviour : MonoBehaviour
 {
     private Rigidbody2D rb;
+    public GameObject shooter; // Set by the shooter
     private GameObject target;
     public float bulletSpeed = 5;
     private bool reflected = false;
@@ -40,19 +41,19 @@ public class BulletBehaviour : MonoBehaviour
                     ReflectBullet();
                 else
                 {
-                    target.GetComponent<Health>().TakeDamage(4);
+                    target.GetComponent<Health>().TakeDamage(4); // Player takes damage
                     Destroy(gameObject);
                 }
             }
             else
             {
-                target.GetComponent<Health>().TakeDamage(4);
+                target.GetComponent<Health>().TakeDamage(4); // Player takes damage
                 Destroy(gameObject);
             }
         }
-        else if (reflected || collision.collider.CompareTag("Enemy"))
+        else if (reflected && collision.collider.CompareTag("Enemy"))
         {
-            target.GetComponent<Health>().TakeDamage(4);
+            collision.collider.GetComponent<Health>().TakeDamage(4); // Enemy takes damage
             Destroy(gameObject);
         }
         else
@@ -63,8 +64,9 @@ public class BulletBehaviour : MonoBehaviour
     private void ReflectBullet()
     {
         reflected = true;
+        target = shooter;
         rb.velocity = Vector2.zero;
-        Vector2 force = (transform.position - target.transform.position).normalized * bulletSpeed;
+        Vector2 force = (target.transform.position - transform.position).normalized * bulletSpeed;
         rb.AddForce(force, ForceMode2D.Impulse);
 
         gameObject.layer = 10;

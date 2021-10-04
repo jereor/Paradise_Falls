@@ -344,7 +344,8 @@ public class FlyingEnemyAI : MonoBehaviour
                     if (hitPlayer && !hitGround)
                     {
                         // Instantiate a bullet prefab from enemy unit location.
-                        Instantiate(bullet, transform.position, Quaternion.identity);
+                        GameObject bulletObject = Instantiate(bullet, transform.position, Quaternion.identity);
+                        bulletObject.GetComponent<BulletBehaviour>().shooter = this.gameObject;
                         StartCoroutine(ShootCoolDown());
                     }
                     // If the target is in shooting range but there's a ground in between, enemy unit tries to find a path past it.
