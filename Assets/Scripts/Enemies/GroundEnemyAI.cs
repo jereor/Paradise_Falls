@@ -6,7 +6,7 @@ using System;
 
 public class GroundEnemyAI : MonoBehaviour
 {
-    private Health _targetHealth;
+    private Health targetHealth;
 
     [Header("Transforms")]
     public Transform target;
@@ -23,7 +23,7 @@ public class GroundEnemyAI : MonoBehaviour
 
     [Header("Mobility")]
     public float speed = 200f;
-    public float jumpHeight = 500f;      
+    public float jumpHeight = 500f;
     public float walkStepInterval = 1f;
     public float runStepInterval = 0.5f;
 
@@ -40,6 +40,7 @@ public class GroundEnemyAI : MonoBehaviour
     private float higherWallCheckDistance = 1.5f;
     private float groundCheckDistance = 2f;
     private bool isFacingRight = true;
+    private bool stunned = false;
     private bool canMove = true;
     private bool canJump = true;
     private bool canPunch = true;
@@ -63,7 +64,7 @@ public class GroundEnemyAI : MonoBehaviour
     {
         seeker = GetComponent<Seeker>();
         rb = GetComponent<Rigidbody2D>();
-        _targetHealth = GameObject.Find("Player").GetComponent<Health>();
+        targetHealth = target.GetComponent<Health>();
         spawnPosition = transform.position;
         gizmoPositionChange = false;
         Physics2D.IgnoreLayerCollision(3, 7);
@@ -90,7 +91,7 @@ public class GroundEnemyAI : MonoBehaviour
 
     void OnPathComplete(Path p)
     {
-        if(!p.error)
+        if (!p.error)
         {
             path = p;
             currentWaypoint = 0;
@@ -101,7 +102,7 @@ public class GroundEnemyAI : MonoBehaviour
     void FixedUpdate()
     {
         //If the target was not found, returns to the start of the update
-        if(path == null) {return;}
+        if (path == null) { return; }
 
         // If the target is too far from the enemy unit, it respawns in to the spawn point and stays there until target is close enough again.
         // Enemy stops all actions for the time being.
@@ -115,7 +116,7 @@ public class GroundEnemyAI : MonoBehaviour
             isTargetInBehaviourRange = true;
         }
 
-        if(isTargetInBehaviourRange)
+        if (isTargetInBehaviourRange)
         {
             //Checks if the enemy is in the end of the path
             if (currentWaypoint >= path.vectorPath.Count)
@@ -163,7 +164,7 @@ public class GroundEnemyAI : MonoBehaviour
     //Does not serve any purpose at the moment.
     private IEnumerator UpdatePath(float waitTime)
     {
-        if(seeker.IsDone())
+        if (seeker.IsDone())
         {
             seeker.StartPath(rb.position, target.position, OnPathComplete);
         }
@@ -209,7 +210,7 @@ public class GroundEnemyAI : MonoBehaviour
     // Trying to raycast and check if there's an obstacle in front of the enemy. Function also checks if the obstacle is too high to jump over and turns around if impossible to get over.
     // Third ray checks if there's a pit coming ahead so the enemy unit doesn't fall off from the edge.
     private void ObstacleCheck()
-    {           
+    {
         RaycastHit2D hitHorizontal;
         RaycastHit2D hitAngularUp;
         RaycastHit2D hitDown;
@@ -224,7 +225,7 @@ public class GroundEnemyAI : MonoBehaviour
             hitAngularUp = Physics2D.Raycast(transform.position, new Vector2(1, 1), higherWallCheckDistance, groundLayer);
             hitDown = Physics2D.Raycast(groundDetection.transform.position, Vector2.down, groundCheckDistance, groundLayer);
             Debug.DrawRay(transform.position, transform.right * wallCheckDistance, Color.red);
-            Debug.DrawRay(transform.position, new Vector2(1,1) * higherWallCheckDistance, Color.red);
+            Debug.DrawRay(transform.position, new Vector2(1, 1) * higherWallCheckDistance, Color.red);
             Debug.DrawRay(groundDetection.transform.position, Vector2.down * groundCheckDistance, Color.red);
             jumpDirection = 1;
         }
@@ -243,7 +244,7 @@ public class GroundEnemyAI : MonoBehaviour
         // If there's no ground ahead, turns around and starts going back.
         if ((hitHorizontal.collider != null && hitAngularUp.collider != null) || hitDown.collider == null && IsGrounded())
         {
-            if(hitDown.collider == null)
+            if (hitDown.collider == null)
             {
                 Debug.Log("No ground ahead!");
             }
@@ -253,10 +254,10 @@ public class GroundEnemyAI : MonoBehaviour
         else if (hitHorizontal.collider != null && hitAngularUp.collider == null && IsGrounded() && canJump)
         {
             force = new Vector2(jumpDirection, jumpHeight);
-            rb.AddForce(force, ForceMode2D.Impulse);  
+            rb.AddForce(force, ForceMode2D.Impulse);
             StartCoroutine(JumpForceForward(jumpDirection));
             StartCoroutine(JumpCoolDown());
-           
+
         }
     }
 
@@ -285,8 +286,9 @@ public class GroundEnemyAI : MonoBehaviour
             //-------------------------------------------------------------------------------------------------------
             // Roams in a specified area given to the enemy unit and stays inside of it.
             case "roam":
+                if (stunned) break;
                 // If the enemy unit tries to go outside of the given area parameters, it turns around.
-                if (transform.position.x >= (spawnPosition.x + roamingRange.x/2) && canMove && IsGrounded())
+                if (transform.position.x >= (spawnPosition.x + roamingRange.x / 2) && canMove && IsGrounded())
                 {
                     //Debug.Log("Left");
                     transform.localScale = new Vector3(-1f, 1f, 1f);
@@ -295,7 +297,7 @@ public class GroundEnemyAI : MonoBehaviour
                     StartCoroutine(WalkCoolDown());
                     break;
                 }
-                else if (transform.position.x <= (spawnPosition.x - roamingRange.x/2) && canMove && IsGrounded())
+                else if (transform.position.x <= (spawnPosition.x - roamingRange.x / 2) && canMove && IsGrounded())
                 {
                     //Debug.Log("Right");
                     transform.localScale = new Vector3(1f, 1f, 1f);
@@ -311,7 +313,7 @@ public class GroundEnemyAI : MonoBehaviour
                     break;
                 }
                 // If the enemy unit is inside the given roaming range and target is nowhere near, it roams around.
-                if(transform.position.x <= (spawnPosition.x + roamingRange.x) && transform.position.x >= (spawnPosition.x - roamingRange.x) && canMove && IsGrounded())
+                if (transform.position.x <= (spawnPosition.x + roamingRange.x) && transform.position.x >= (spawnPosition.x - roamingRange.x) && canMove && IsGrounded())
                 {
                     rb.AddForce(new Vector2(transform.localScale.x * speed, 0));
                     StartCoroutine(WalkCoolDown());
@@ -322,6 +324,7 @@ public class GroundEnemyAI : MonoBehaviour
             //------------------------------------------------------------------------------------------------------------------
             //Here enemy charges the target. Checks if target is inside enemy unit's roaming range.
             case "charge":
+                if (stunned) break;
                 // Outside the range, return to roam state.
                 if (pathLength > aggroDistance || !IsPlayerInRange())
                 {
@@ -341,18 +344,19 @@ public class GroundEnemyAI : MonoBehaviour
                     state = "punch";
                 }
                 break;
-                
+
             // PUNCH STATE
             //------------------------------------------------------------------------------------------------------------------
             //Does damage to target if close enough. Otherwise goes to roam or charge state.
-            case "punch":               
+            case "punch":
+                if (stunned) break;
                 if (canPunch)
                 {
                     //Do damage to player here
                     Debug.Log("Player hit");
 
                     // Turns the enemy unit torwards the target when punching.
-                    if(target.transform.position.x - transform.position.x >= 0)
+                    if (target.transform.position.x - transform.position.x >= 0)
                     {
                         transform.localScale = new Vector3(1f, 1f, 1f);
                     }
@@ -360,7 +364,13 @@ public class GroundEnemyAI : MonoBehaviour
                     {
                         transform.localScale = new Vector3(-1f, 1f, 1f);
                     }
-                    _targetHealth.TakeDamage(1);
+
+                    if (target.TryGetComponent(out Shield shield))
+                        if (shield.Parrying)
+                            StartCoroutine(Stunned());
+
+                    targetHealth.TakeDamage(4);
+
                     PlayerPushback();
                     StartCoroutine(PunchCoolDown());
                 }
@@ -387,6 +397,24 @@ public class GroundEnemyAI : MonoBehaviour
         float pushbackX = target.transform.position.x - transform.position.x;
         Vector2 knockbackDirection = new Vector2(pushbackX, Math.Abs(pushbackX / 4)).normalized;
         playerRB.AddForce(knockbackDirection * knockbackForce);
+    }
+
+    IEnumerator Stunned()
+    {
+        Debug.Log("Stunned...");
+        stunned = true;
+        gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.red;
+
+        float timer = 5;
+        while (timer > 0)
+        {
+            timer -= Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+
+        Debug.Log("Stun ended");
+        stunned = false;
+        gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.black;
     }
 }
 
