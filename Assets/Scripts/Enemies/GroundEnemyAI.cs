@@ -366,13 +366,24 @@ public class GroundEnemyAI : MonoBehaviour
                     }
 
                     if (target.TryGetComponent(out Shield shield))
+                    {
                         if (shield.Parrying)
                             StartCoroutine(Stunned());
+                        else
+                        {
+                            targetHealth.TakeDamage(4);
 
-                    targetHealth.TakeDamage(4);
+                            PlayerPushback();
+                            StartCoroutine(PunchCoolDown());
+                        }
+                    }
+                    else
+                    {
+                        targetHealth.TakeDamage(4);
 
-                    PlayerPushback();
-                    StartCoroutine(PunchCoolDown());
+                        PlayerPushback();
+                        StartCoroutine(PunchCoolDown());
+                    }
                 }
 
                 // If target goes out of enemy's bounds, return to "roam" state

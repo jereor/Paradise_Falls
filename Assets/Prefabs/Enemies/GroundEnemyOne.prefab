@@ -128,7 +128,7 @@ GameObject:
   - component: {fileID: 2085753358315985748}
   m_Layer: 7
   m_Name: GroundEnemyOne
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -275,6 +275,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 3
+  debugHealth: 0
   destroyWhenDead: 1
   onDie:
     m_PersistentCalls:
