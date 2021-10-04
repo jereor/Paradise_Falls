@@ -6,13 +6,16 @@ using System;
 
 public class GroundEnemyAI : MonoBehaviour
 {
-    private Health targetHealth;
+    private Health _targetHealth;
+    private Health _targetEnergy;
 
     [Header("Transforms")]
     public Transform target;
     public Transform enemyGFX;
     public Rigidbody2D playerRB;
     public Transform groundDetection;
+    public GameObject healthItem;
+    public GameObject energyItem;
 
     [Header("Ground Check")]
     [SerializeField] private Transform groundCheck; // GameObject attached to player that checks if touching ground
@@ -26,6 +29,7 @@ public class GroundEnemyAI : MonoBehaviour
     public float jumpHeight = 500f;
     public float walkStepInterval = 1f;
     public float runStepInterval = 0.5f;
+    public float attackPower = 1f;
 
     [Header("State and Parameters")]
     public string state = "roam";
@@ -64,7 +68,7 @@ public class GroundEnemyAI : MonoBehaviour
     {
         seeker = GetComponent<Seeker>();
         rb = GetComponent<Rigidbody2D>();
-        targetHealth = target.GetComponent<Health>();
+        _targetHealth = target.GetComponent<Health>();
         spawnPosition = transform.position;
         gizmoPositionChange = false;
         Physics2D.IgnoreLayerCollision(3, 7);
@@ -369,7 +373,7 @@ public class GroundEnemyAI : MonoBehaviour
                         if (shield.Parrying)
                             StartCoroutine(Stunned());
 
-                    targetHealth.TakeDamage(4);
+                    _targetHealth.TakeDamage(attackPower);
 
                     PlayerPushback();
                     StartCoroutine(PunchCoolDown());
@@ -415,6 +419,17 @@ public class GroundEnemyAI : MonoBehaviour
         Debug.Log("Stun ended");
         stunned = false;
         gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.black;
+    }
+
+    public void SpawnHealthOrEnergy()
+    {
+        int rand = UnityEngine.Random.Range(0, 100);
+        if (_targetHealth.GetHealth() <= 3 && rand < 49)
+        {
+            Instantiate(healthItem, transform.position, Quaternion.identity);
+        }
+        else if (rand < 20)
+            Instantiate(energyItem, transform.position, Quaternion.identity);
     }
 }
 

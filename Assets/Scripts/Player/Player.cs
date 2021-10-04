@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    private GUIStyle TextStyleEnergy = new GUIStyle();
+    private GUIStyle TextStyleHealth = new GUIStyle();
     // This script can be used to control all player sub scripts through one place.
     // Not in use right now because the new Unity Input System does all the work for us. (Input does not need to be tracked separately)
 
@@ -15,6 +17,8 @@ public class Player : MonoBehaviour
     [SerializeField] private PlayerCollision collisionScript;
     [SerializeField] private PlayerInteractions interactionsScript;
     [SerializeField] private PlayerCombat combatScript;
+    [SerializeField] private Health healthScript;
+    [SerializeField] private Energy energyScript;
 
     // Component references
     private Animator animator;
@@ -23,5 +27,17 @@ public class Player : MonoBehaviour
     // Other references
     private string currentState;
 
+    private void Start()
+    {
+        TextStyleHealth.normal.textColor = Color.green;
+        TextStyleEnergy.fontSize = 30;
+        TextStyleHealth.fontSize = 30;
+        TextStyleEnergy.normal.textColor = Color.red;
+    }
 
+    private void OnGUI()
+    {
+        GUI.Label(new Rect(10, 10, 300, 100), "Health: " + healthScript.GetHealth(), TextStyleHealth);
+        GUI.Label(new Rect(200, 10, 300, 100), "Energy: " + energyScript.GetEnergy(), TextStyleEnergy);
+    }
 }
