@@ -266,7 +266,6 @@ public class FlyingEnemyAI : MonoBehaviour
                 //If target is close enough the enemy unit, charges it towards the player.              
                 else if (aggroDistance >= pathLength && IsPlayerInRange())
                 {
-                    Debug.Log("We here bois");
                     CancelInvoke();
                     InvokeRepeating("UpdatePathToPlayer", 0f, pathUpdateInterval);
                     state = "charge";
@@ -344,8 +343,8 @@ public class FlyingEnemyAI : MonoBehaviour
                     if (hitPlayer && !hitGround)
                     {
                         // Instantiate a bullet prefab from enemy unit location.
-                        //Debug.Log("PEW!");
-                        Instantiate(bullet, transform.position, Quaternion.identity);
+                        GameObject bulletObject = Instantiate(bullet, transform.position, Quaternion.identity);
+                        bulletObject.GetComponent<BulletBehaviour>().shooter = this.gameObject;
                         StartCoroutine(ShootCoolDown());
                     }
                     // If the target is in shooting range but there's a ground in between, enemy unit tries to find a path past it.
