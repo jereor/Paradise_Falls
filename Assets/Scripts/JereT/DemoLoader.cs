@@ -138,8 +138,7 @@ public class DemoLoader : MonoBehaviour
         // FOR DEBUGGING -- Respawn 
         if (Input.GetKeyDown(KeyCode.O))
         {
-            Debug.Log("Respawning, atm loading scene with loaded save");
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            PlayerDeathRespawn();
         }
     }
 
