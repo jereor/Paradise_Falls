@@ -14,6 +14,8 @@ public class MeleeWeapon : MonoBehaviour
     [SerializeField] private float pullForce; // Force we are pulling
     [SerializeField] private float maxDistance; // Max distance to travel with gravityscale 0 and deal damage
 
+    [SerializeField] private bool worldPickUp;
+
     public float knockbackForce;
 
     // Other variables
@@ -36,8 +38,14 @@ public class MeleeWeapon : MonoBehaviour
         // Set our throw start point
         startPoint = transform.position;
 
-        // Weapon is not landed since it is just thrown
-        landed = false;
+        if (worldPickUp)
+        {
+            landed = true;
+            SetEnemyIngoresOnLand();
+        }
+        else
+            // Weapon is not landed since it is just thrown
+            landed = false;
     }
     private void FixedUpdate()
     {

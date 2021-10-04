@@ -24,6 +24,14 @@ public class SaveData
 
     public bool[] bossesDefeated;             // true = defeated , false = not defeated
 
+    public bool[] enemiesDefeated;
+
+    public bool weaponAcquired;
+
+    public bool wallJumpAcquired;
+
+    public string camera;
+
     /*
      *  Constructor for creating SaveData from given object.
      *  Personalize data when needed. 
@@ -34,6 +42,10 @@ public class SaveData
         position = new float[2];
 
         bossesDefeated = new bool[1];
+
+        enemiesDefeated = new bool[4];
+
+        camera = "";
     }
 
     /*
