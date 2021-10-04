@@ -11,6 +11,10 @@ public class DemoLoader : MonoBehaviour
     public GameObject playerPrefab;
     public GameObject playerObject;
 
+    [Header("Enemies")]
+    public GameObject parentOfGroundEnemies;
+    public GameObject parentOfFlyingEnemies;
+
     [Header("Boss Objects")]
     public GameObject firstBossObject;
     public bool firstBossKilled;
