@@ -63,6 +63,8 @@ public class BulletBehaviour : MonoBehaviour
 
     private void ReflectBullet()
     {
+        target.GetComponent<Shield>().HitWhileParried(); // Tell player parry was successful
+
         reflected = true;
         target = shooter;
         rb.velocity = Vector2.zero;

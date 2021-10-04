@@ -368,7 +368,10 @@ public class GroundEnemyAI : MonoBehaviour
                     if (target.TryGetComponent(out Shield shield))
                     {
                         if (shield.Parrying)
-                            StartCoroutine(Stunned());
+                        {
+                            target.GetComponent<Shield>().HitWhileParried(); // Tell player parry was successful
+                            StartCoroutine(Stunned()); // Get stunned
+                        }
                         else
                         {
                             targetHealth.TakeDamage(4);

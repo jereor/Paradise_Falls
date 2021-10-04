@@ -12,6 +12,10 @@ public class Shield : MonoBehaviour
     [SerializeField] private GameObject shield;
     [SerializeField] private float protectionValue;
     [SerializeField] private float parryTime;
+    [SerializeField] private float parryCooldown;
+   
+    private bool parryOnCooldown;
+    private bool hitParried = false;
 
     private void Start()
     {
@@ -38,6 +42,11 @@ public class Shield : MonoBehaviour
         }
     }
 
+    public void HitWhileParried()
+    {
+        hitParried = true;
+    }
+
     // Activated when Shield button is released
     // Other objects in world check if Shield is Parrying and do their own thing
     // For example melee enemies get stunned if they attack and Shield is currently Parrying
@@ -53,7 +62,26 @@ public class Shield : MonoBehaviour
             yield return new WaitForEndOfFrame();
         }
 
+        if (hitParried)
+            parryOnCooldown = false;
+        else
+            StartCoroutine(ParryCooldown());
+
         Debug.Log("STOP PARRY");
         Parrying = false;
+    }
+
+    private IEnumerator ParryCooldown()
+    {
+        parryOnCooldown = true;
+
+        float cooldownTimer = 0;
+        while (cooldownTimer <= parryCooldown)
+        {
+            cooldownTimer += Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+        
+        parryOnCooldown = false;
     }
 }
