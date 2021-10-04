@@ -106,7 +106,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 777726905079294911}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5, z: 0}
+  m_LocalPosition: {x: 0, y: 0.8, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2646993275326716544}
@@ -131,6 +131,7 @@ GameObject:
   - component: {fileID: 2646993275326716665}
   - component: {fileID: 2646993275326716550}
   - component: {fileID: 1812080132}
+  - component: {fileID: 7463911945564789779}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -154,6 +155,7 @@ Transform:
   - {fileID: 6576764605224401354}
   - {fileID: 1156667530783647825}
   - {fileID: 604414329}
+  - {fileID: 7716404287092780390}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -172,6 +174,7 @@ MonoBehaviour:
   movementScript: {fileID: 2646993275326716549}
   collisionScript: {fileID: 2646993275326716546}
   interactionsScript: {fileID: -4342889769223962116}
+  combatScript: {fileID: 7463911945564789779}
 --- !u!114 &2646993275326716549
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -326,6 +329,38 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 26d35881-2fb2-444c-8cce-ec135f39e1e1
     m_ActionName: Player/Shield[/Keyboard/ctrl]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 7463911945564789779}
+        m_TargetAssemblyTypeName: PlayerCombat, Assembly-CSharp
+        m_MethodName: Melee
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: dcd7c718-e069-44d7-8830-f1481723994d
+    m_ActionName: Player/Melee[/Mouse/leftButton]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 7463911945564789779}
+        m_TargetAssemblyTypeName: PlayerCombat, Assembly-CSharp
+        m_MethodName: MeleeAimThrowing
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 948e6069-45ff-4c78-b6f5-d1c5b423cdc4
+    m_ActionName: Player/ThrowAim[/Mouse/rightButton]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -344,6 +379,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 10
+  debugHealth: 0
   destroyWhenDead: 1
   onDie:
     m_PersistentCalls:
@@ -459,6 +495,38 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shield: {fileID: 604414328}
+  protectionValue: 0
+  parryTime: 0
+--- !u!114 &7463911945564789779
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2646993275326716545}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68279dc01e70bb34f9195b45b7234967, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  meleeDamage: 1
+  meleeComboLastDamage: 2
+  knockbackForceNormal: 500
+  knockbackForceLast: 750
+  meleeAttackRate: 0.5
+  comboCooldown: 1
+  comboBetweenTimer: 2
+  throwingForce: 15
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  attackPoint: {fileID: 7716404287092780390}
+  attackRangeX: 1.5
+  attackRangeY: 1.5
+  meleeWeaponPrefab: {fileID: 3980506574090905470, guid: 3780bd19eaa15054a9ebdb884fa668ba, type: 3}
+  weaponInstance: {fileID: 0}
+  isWeaponWielded: 1
+  comboOnGoing: 0
 --- !u!1 &2646993277219195829
 GameObject:
   m_ObjectHideFlags: 0
@@ -488,6 +556,36 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2646993275326716544}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &3164537028802366205
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7716404287092780390}
+  m_Layer: 0
+  m_Name: AttackPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7716404287092780390
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3164537028802366205}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.75, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 2646993275326716544}
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5849274825170513874
 GameObject:
