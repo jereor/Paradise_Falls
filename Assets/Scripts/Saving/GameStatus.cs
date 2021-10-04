@@ -131,4 +131,9 @@ public class GameStatus : MonoBehaviour
     {
         dataToSave.enemiesDefeated[index] = defeated;
     }
+
+    public void UpdateCamera(string currentCamera)
+    {
+        dataToSave.camera = currentCamera;
+    }
 }

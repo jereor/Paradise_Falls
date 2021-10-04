@@ -30,6 +30,8 @@ public class SaveData
 
     public bool wallJumpAcquired;
 
+    public string camera;
+
     /*
      *  Constructor for creating SaveData from given object.
      *  Personalize data when needed. 
@@ -42,6 +44,8 @@ public class SaveData
         bossesDefeated = new bool[1];
 
         enemiesDefeated = new bool[4];
+
+        camera = "";
     }
 
     /*

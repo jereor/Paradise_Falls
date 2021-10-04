@@ -8,21 +8,21 @@ public class DemoLoader : MonoBehaviour
     public static DemoLoader levelLoaderInstance;
 
     [Header("Player Objects")]
-    public GameObject playerPrefab;
-    public GameObject playerObject;
+    public GameObject playerPrefab; // Prefab if we need to instantiate player
+    public GameObject playerObject; // Assigned on Start()
 
     [Header("Enemies")]
-    public GameObject parentOfGroundEnemies;
-    public GameObject parentOfFlyingEnemies;
-    [SerializeField] private List<GameObject> enemies = new List<GameObject>();
-    public bool[] enemiesKilled;
+    public GameObject parentOfGroundEnemies;    // Used to create enemies List and lenght of enemiesKilled
+    public GameObject parentOfFlyingEnemies;    // 
+    [SerializeField] private List<GameObject> enemies = new List<GameObject>(); // List of enemy objects in this scene 
+    public bool[] enemiesKilled; // Array of booleans if true this enemy on current index is defeated aka destroy enemy on load
 
     [Header("Boss Objects")]
     public GameObject firstBossObject;
     public bool firstBossKilled;
 
     [Header("Pick ups")]
-    public GameObject wallJumpPickUp;
+    public GameObject wallJumpPickUp; // Used in start to check if have acquired wallJump ability before last save
     public GameObject weaponPickUp;
 
     [Header("Savepoints")]
@@ -30,8 +30,9 @@ public class DemoLoader : MonoBehaviour
     [SerializeField] private List<GameObject> savePoints = new List<GameObject>();
     [SerializeField] public Vector2 respawnPoint;
 
-    [Header("Respawn point")]
-    [SerializeField] private Transform currentRespawnPoint;
+    [Header("Scene utilities")]
+    [SerializeField] private Transform currentRespawnPoint; // Default respawn point
+    [SerializeField] private List<GameObject> cameras = new List<GameObject>();
     /*
      * GameScene loads initialize player and bosses
      */
@@ -43,21 +44,25 @@ public class DemoLoader : MonoBehaviour
         {
             // SCENE INITIALIZATION --- could be done in Awake too test which is better
             Debug.Log("Binds for save tests(alpha keys): 0 save, 9 checksave, 8 delete, 7 load, O respawn, P kill boss");
-            Debug.Log("Player spawning to: " + GameStatus.status.getLoadedData().position[0] + ", " + GameStatus.status.getLoadedData().position[1]);
+            //Debug.Log("Player spawning to: " + GameStatus.status.getLoadedData().position[0] + ", " + GameStatus.status.getLoadedData().position[1]);
+
             // Set respawn point as loaded position
             respawnPoint = new Vector2(GameStatus.status.getLoadedData().position[0], GameStatus.status.getLoadedData().position[1]);
             if (GameObject.Find("Player").activeInHierarchy)
             {
                 // Player respawnPosition
                 playerObject = GameObject.Find("Player");
+                // If there was zero vector loaded, set new respawn point as currentRespawnPoint (default) 
                 if(respawnPoint == Vector2.zero)
                 {
                     respawnPoint = currentRespawnPoint.transform.position;
                 }
+                // Copy respawn point if it was or wasn't zero vector
                 currentRespawnPoint.transform.position = respawnPoint;
+                // Move player to respawn
                 playerObject.transform.position = respawnPoint;
 
-                // Weapon
+                // Weapon if weaponAcquired == true destroy weaponPickUp from scnene if not leave it untouched
                 if (GameStatus.status.getLoadedData().weaponAcquired)
                 {
                     playerObject.GetComponent<PlayerCombat>().PickUpWeapon();
@@ -71,6 +76,23 @@ public class DemoLoader : MonoBehaviour
                     Destroy(wallJumpPickUp);
                 }
 
+                // Camera
+                // Check if there is saved camera string
+                if (GameStatus.status.getLoadedData().camera.Length > 1)
+                {
+                    //Debug.Log("Searching for camera");
+                    foreach (GameObject camera in cameras)
+                    {
+                        // Compare strings if found SwitchCameras to it
+                        if (camera.name.Equals(GameStatus.status.getLoadedData().camera))
+                        {
+                            //Debug.Log("Found");
+                            CameraTransitions.Instance.SwitchCameras(camera);
+                            break; // No need to check List anymore
+                        }
+                    }
+                }
+
             }
             // No player in scene we instantiate it then
             else
@@ -78,17 +100,18 @@ public class DemoLoader : MonoBehaviour
                 playerObject = Respawn(playerPrefab, respawnPoint);
             }
 
+            // This is sent to GameStatus on save default values are false
             enemiesKilled = new bool[parentOfGroundEnemies.transform.childCount + parentOfFlyingEnemies.transform.childCount];
 
             // Enemies to List
             for (int i = 0; i < parentOfGroundEnemies.transform.childCount; i++)
             {
-                Debug.Log("G");
+                //Debug.Log("G");
                 enemies.Add(parentOfGroundEnemies.transform.GetChild(i).gameObject);
             }
             for (int i = 0; i < parentOfFlyingEnemies.transform.childCount; i++)
             {
-                Debug.Log("F");
+                //Debug.Log("F");
                 enemies.Add(parentOfFlyingEnemies.transform.GetChild(i).gameObject);
             }
 
@@ -97,7 +120,7 @@ public class DemoLoader : MonoBehaviour
             {
                 if (GameStatus.status.getLoadedData().enemiesDefeated[i])
                 {
-                    Destroy(enemies[i]);
+                    Destroy(enemies[i]);                  
                 }
             }
 
@@ -149,16 +172,22 @@ public class DemoLoader : MonoBehaviour
             // Here update dataToSave 
             GameStatus.status.UpdatePlayerPosition(respawnPoint.x, respawnPoint.y);
 
+            // Boss
             GameStatus.status.UpdateBossKilled(0, firstBossKilled);
 
+            // Weapon
             GameStatus.status.UpdateWeapon(playerObject.GetComponent<PlayerCombat>().getWeaponWielded());
 
+            // Wall jump ability
             GameStatus.status.UpdateWallJump(playerObject.GetComponent<PlayerMovement>().getAllowWallJump());
 
+            // Enemies
             for(int i = 0; i < enemiesKilled.Length; i++)
             {
                  GameStatus.status.UpdateEnemyKilled(i, enemiesKilled[i]);
             }
+
+            GameStatus.status.UpdateCamera(CameraTransitions.Instance.GetCurrentCamera().name);
 
             GameStatus.status.Save();
         }
@@ -186,11 +215,15 @@ public class DemoLoader : MonoBehaviour
 
     public void EnemyKilled(GameObject enemyThatIsKilled)
     {
+        // As enemyThatIsKilled will be Destroyed from scene when health is less that zero we have bool array 
         foreach  (GameObject enemy in enemies)
         {
+            // GameObject given is found in array
             if(enemy == enemyThatIsKilled)
             {
+                // enemies and enemiesKilled indexes are the same made in Start()
                 enemiesKilled[enemies.IndexOf(enemy)] = true;
+                break; // No need to the end
             }
         }
     }
@@ -200,6 +233,7 @@ public class DemoLoader : MonoBehaviour
         return Instantiate(obj, pos, Quaternion.identity);
     }
 
+    // Lazy version for respawn load scene again with loaded data works as Save function updates saveData only
     public void PlayerDeathRespawn()
     {
         Debug.Log("Respawning, atm loading scene with loaded save");
