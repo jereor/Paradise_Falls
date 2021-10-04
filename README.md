@@ -1,6 +1,6 @@
 # Paradise_Falls
 
-This is repository is for a school game project made by 3 programmers, a graphics designer, and a sound designer.
+This is repository is for a university game project made by 3 programmers, a graphics designer, and a sound designer.
 
 
 # Short Biography
