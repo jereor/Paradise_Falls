@@ -27,7 +27,7 @@ public class PlayerCombat : MonoBehaviour
     [Header("Weapon")]
     [SerializeField] private GameObject meleeWeaponPrefab;
     [SerializeField] private GameObject weaponInstance;
-    [SerializeField] private bool isWeaponWielded; 
+    [SerializeField] private bool isWeaponWielded;
 
     // State variables
     //private float? meleeButtonPressedTime;
@@ -187,5 +187,10 @@ public class PlayerCombat : MonoBehaviour
     {
         //Debug.Log("Picked weapon");
         isWeaponWielded = true;
+    }
+
+    public bool getWeaponWielded()
+    {
+        return isWeaponWielded;
     }
 }

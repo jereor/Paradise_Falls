@@ -116,4 +116,15 @@ public class GameStatus : MonoBehaviour
     {
         dataToSave.bossesDefeated[index] = defeated;
     }
+
+    public void UpdateWallJump(bool b)
+    {
+        dataToSave.wallJumpAcquired = b;
+    }
+
+    public void UpdateWeapon(bool b)
+    {
+        dataToSave.weaponAcquired = b;
+    }
+
 }

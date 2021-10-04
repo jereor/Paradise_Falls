@@ -19,11 +19,17 @@ public class DemoLoader : MonoBehaviour
     public GameObject firstBossObject;
     public bool firstBossKilled;
 
+    [Header("Pick ups")]
+    public GameObject wallJumpPickUp;
+    public GameObject weaponPickUp;
+
     [Header("Savepoints")]
     public GameObject savePointsParent;
     [SerializeField] private List<GameObject> savePoints = new List<GameObject>();
     [SerializeField] public Vector2 respawnPoint;
 
+    [Header("Respawn point")]
+    [SerializeField] private Transform currentRespawnPoint;
     /*
      * GameScene loads initialize player and bosses
      */
@@ -40,7 +46,24 @@ public class DemoLoader : MonoBehaviour
             if (GameObject.Find("Player").activeInHierarchy)
             {
                 playerObject = GameObject.Find("Player");
+                if(respawnPoint == Vector2.zero)
+                {
+                    respawnPoint = currentRespawnPoint.transform.position;
+                }
                 playerObject.transform.position = respawnPoint;
+
+                if (GameStatus.status.getLoadedData().weaponAcquired)
+                {
+                    playerObject.GetComponent<PlayerCombat>().PickUpWeapon();
+                    Destroy(weaponPickUp);
+                }
+
+                if (GameStatus.status.getLoadedData().wallJumpAcquired)
+                {
+                    playerObject.GetComponent<PlayerMovement>().AllowWallJump();
+                    Destroy(wallJumpPickUp);
+                }
+
             }
             else
             {
@@ -99,6 +122,10 @@ public class DemoLoader : MonoBehaviour
             GameStatus.status.UpdatePlayerPosition(respawnPoint.x, respawnPoint.y);
 
             GameStatus.status.UpdateBossKilled(0, firstBossKilled);
+
+            GameStatus.status.UpdateWeapon(playerObject.GetComponent<PlayerCombat>().getWeaponWielded());
+
+            GameStatus.status.UpdateWallJump(playerObject.GetComponent<PlayerMovement>().getAllowWallJump());
 
             GameStatus.status.Save();
         }

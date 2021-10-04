@@ -304,4 +304,9 @@ public class PlayerMovement : MonoBehaviour
     {
         allowWallJump = true;
     }
+
+    public bool getAllowWallJump()
+    {
+        return allowWallJump;
+    }
 }

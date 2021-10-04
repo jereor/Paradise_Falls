@@ -24,6 +24,10 @@ public class SaveData
 
     public bool[] bossesDefeated;             // true = defeated , false = not defeated
 
+    public bool weaponAcquired;
+
+    public bool wallJumpAcquired;
+
     /*
      *  Constructor for creating SaveData from given object.
      *  Personalize data when needed. 
