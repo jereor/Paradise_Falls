@@ -82,14 +82,20 @@ public class FlyingEnemyAI : MonoBehaviour
     }
 
     //Draws gizmos for enemy's "territory".
-    private void OnDrawGizmos()
+    private void OnDrawGizmosSelected()
     {
         if(gizmoPositionChange)
         {
             Gizmos.DrawWireCube(transform.position, roamingRange);
         }
         else
+        {
             Gizmos.DrawWireCube(spawnPosition, roamingRange);
+        }
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, aggroDistance);
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, shootingDistance);
     }
 
     void OnPathComplete(Path p)
@@ -134,8 +140,6 @@ public class FlyingEnemyAI : MonoBehaviour
             {
                 reachedEndOfPath = false;
             }
-            // Current path length is saved for enemy behaviour purposes.
-            vectorPathLength = path.GetTotalLength();
 
             //Calculates the next path point and the amount of force applied
             Vector2 direction = ((Vector2)path.vectorPath[currentWaypoint] - rb.position).normalized;
@@ -158,15 +162,9 @@ public class FlyingEnemyAI : MonoBehaviour
                 transform.localScale = new Vector3(-1f, 1f, 1f);
                 isFacingRight = false;
             }
-            //if(IsHittingGround())
-            //{
-            //    rb.AddForce()
-            //}
             ObstacleCheck();
-            EnemyStateChange(force, vectorPathLength);
+            EnemyStateChange(force);
         }
-
-
     }
 
     //Does not serve any purpose at the moment.
@@ -211,6 +209,16 @@ public class FlyingEnemyAI : MonoBehaviour
         return Physics2D.OverlapBox(spawnPosition, roamingRange, 0, playerLayer);
     }
 
+    private bool IsPlayerInAggroRange()
+    {
+        return Physics2D.OverlapCircle(transform.position, aggroDistance, playerLayer);
+    }
+
+    private bool IsPlayerInShootingRange()
+    {
+        return Physics2D.OverlapCircle(transform.position, shootingDistance, playerLayer);
+    }
+
     private bool IsHittingGround()
     {
         return Physics2D.CircleCast(transform.position, 4, transform.position, 4, groundLayer);
@@ -219,7 +227,7 @@ public class FlyingEnemyAI : MonoBehaviour
     // ENEMY BEHAVIOUR STATES
     // --------------------------------------------------------------------------------------------------------------------------
 
-    private void EnemyStateChange(Vector2 force, float pathLength)
+    private void EnemyStateChange(Vector2 force)
     {
         //switch-case system between different enemy states.
         switch (state)
@@ -229,24 +237,15 @@ public class FlyingEnemyAI : MonoBehaviour
             //Roams in a specified area given to the enemy unit and stays inside of it.
             case "roam":
                 // Checks if enemy unit has given up a chase and is returning to spawn point. If target comes too close to the enemy, it begins to chase again.
-                if(returningFromChase && (aggroDistance < pathLength || !IsPlayerInRange()))
+                if(returningFromChase && (!IsPlayerInAggroRange() || !IsPlayerInRange()))
                 {
-                    //target = spawnPoint;
                     rb.AddForce(force);
-                    //RaycastHit2D hit;
-                    //Vector2 directionToSpawnPoint = (spawnPosition - (Vector2)transform.position).normalized;
-                    //rb.AddForce(directionToSpawnPoint * speed);
-                    //hit = Physics2D.CircleCast(transform.position, 1, transform.position, 1, groundLayer);
                     if (_collider.bounds.Contains(spawnPosition))
                     {
                         returningFromChase = false;
                         rb.velocity = new Vector2(0,0);
                         InvokeRepeating("UpdatePathToPlayer", 0f, pathUpdateInterval);
                     }
-                    //if(hit)
-                    //{
-                    //    rb.AddForce((transform.position - hit.collider.transform.position) * speed);
-                    //}
                     break;
                 }
                 //If the enemy unit tries to go outside of the given area parameters in X-axis, it turns around.
@@ -264,7 +263,7 @@ public class FlyingEnemyAI : MonoBehaviour
                 }
 
                 //If target is close enough the enemy unit, charges it towards the player.              
-                else if (aggroDistance >= pathLength && IsPlayerInRange())
+                else if (IsPlayerInAggroRange() && IsPlayerInRange())
                 {
                     CancelInvoke();
                     InvokeRepeating("UpdatePathToPlayer", 0f, pathUpdateInterval);
@@ -306,7 +305,7 @@ public class FlyingEnemyAI : MonoBehaviour
             //Here enemy charges the player. Checks if player is inside enemy unit's roaming range.
             case "charge":
                 // Target is out of aggro range, return to roaming state.
-                if (pathLength > aggroDistance || !IsPlayerInRange())
+                if (!IsPlayerInAggroRange() || !IsPlayerInRange())
                 {
                     returningFromChase = true;
                     CancelInvoke();
@@ -315,12 +314,12 @@ public class FlyingEnemyAI : MonoBehaviour
                     speed = roamSpeed;
                     break;
                 }
-                else if (aggroDistance >= pathLength && pathLength > shootingDistance)
+                else if (IsPlayerInAggroRange() && !IsPlayerInShootingRange())
                 {
                     rb.AddForce(force);
                 }
                 //If target is close enough the enemy unit, it changes the state to "shoot"
-                else if (pathLength < shootingDistance)
+                else if (IsPlayerInShootingRange())
                 {
                     state = "shoot";
                 }
@@ -351,7 +350,7 @@ public class FlyingEnemyAI : MonoBehaviour
                     else if(hitPlayer && hitGround)
                     {
                         //Debug.Log("Moving closer.");
-                        rb.AddForce(force * 4);
+                        rb.AddForce(force);
                     }
 
                     // Turns the enemy unit torwards the target when shooting.
@@ -374,7 +373,7 @@ public class FlyingEnemyAI : MonoBehaviour
                     speed = roamSpeed;
                     break;
                 }
-                else if (pathLength > shootingDistance && IsPlayerInRange())
+                else if (!IsPlayerInShootingRange() && IsPlayerInAggroRange())
                 {
                     state = "charge";
                     speed = chargeSpeed;

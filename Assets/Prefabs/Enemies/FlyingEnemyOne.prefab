@@ -194,7 +194,7 @@ Transform:
   m_GameObject: {fileID: 674690728015036898}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -3.37, y: 2.35, z: 0}
-  m_LocalScale: {x: 0.675, y: 0.6496875, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 674690727670028638}
   - {fileID: 674690726183442597}
@@ -246,7 +246,19 @@ MonoBehaviour:
   destroyWhenDead: 1
   onDie:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 208985480462589908}
+        m_TargetAssemblyTypeName: FlyingEnemyAI, Assembly-CSharp
+        m_MethodName: SpawnHealthOrEnergy
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &208985480462589908
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -260,10 +272,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 0}
-  spawnPoint: {fileID: 0}
   enemyGFX: {fileID: 674690727670028638}
   playerRB: {fileID: 0}
   bullet: {fileID: 7057756548087642846, guid: f038b9176ac32cf4a83f1731b068bda7, type: 3}
+  energyItem: {fileID: 0}
+  healthItem: {fileID: 0}
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
@@ -273,12 +286,12 @@ MonoBehaviour:
   speed: 5
   chargeSpeed: 10
   roamSpeed: 5
-  nextWaypointDistance: 3
+  nextWaypointDistance: 1
   pathUpdateInterval: 1
   state: roam
-  roamingRange: {x: 10, y: 10}
-  aggroDistance: 10
-  shootingDistance: 5
+  roamingRange: {x: 25.94, y: 17.59}
+  aggroDistance: 8
+  shootingDistance: 4.02
   wallCheckDistance: 1.5
   knockbackForce: 5
 --- !u!50 &674690728015036903
@@ -294,7 +307,7 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
-  m_LinearDrag: 3
+  m_LinearDrag: 4
   m_AngularDrag: 0.05
   m_GravityScale: 0
   m_Material: {fileID: 0}
@@ -317,4 +330,4 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: -0.00000018348712}
   serializedVersion: 2
-  m_Radius: 0.52372843
+  m_Radius: 0.6

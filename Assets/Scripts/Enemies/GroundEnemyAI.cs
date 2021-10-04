@@ -6,13 +6,16 @@ using System;
 
 public class GroundEnemyAI : MonoBehaviour
 {
-    private Health targetHealth;
+    private Health _targetHealth;
+    private Energy _targetEnergy;
 
     [Header("Transforms")]
     public Transform target;
     public Transform enemyGFX;
     public Rigidbody2D playerRB;
     public Transform groundDetection;
+    public GameObject energyItem;
+    public GameObject healthItem;
 
     [Header("Ground Check")]
     [SerializeField] private Transform groundCheck; // GameObject attached to player that checks if touching ground
@@ -26,14 +29,16 @@ public class GroundEnemyAI : MonoBehaviour
     public float jumpHeight = 500f;
     public float walkStepInterval = 1f;
     public float runStepInterval = 0.5f;
+    public float attackPower = 1f;
 
     [Header("State and Parameters")]
     public string state = "roam";
     public Vector2 roamingRange = new Vector2(10, 10);
     //public float roamingRangeX = 10f;
     //public float roamingRangeY = 10f;
-    public float aggroDistance = 5f;
-    public float punchingDistance = 3f;
+    public Vector2 aggroDistance = new Vector2(5f, 5f);
+    public float aggroDistanceLength = 5f;
+    public Vector2 punchingDistance = new Vector2(3f, 3f);
     public float knockbackForce = 5f;
 
     private float wallCheckDistance = 1.5f;
@@ -64,7 +69,7 @@ public class GroundEnemyAI : MonoBehaviour
     {
         seeker = GetComponent<Seeker>();
         rb = GetComponent<Rigidbody2D>();
-        targetHealth = target.GetComponent<Health>();
+        _targetHealth = target.GetComponent<Health>();
         spawnPosition = transform.position;
         gizmoPositionChange = false;
         Physics2D.IgnoreLayerCollision(3, 7);
@@ -79,14 +84,21 @@ public class GroundEnemyAI : MonoBehaviour
     }
 
     //Draws gizmos for enemy's "territory".
-    private void OnDrawGizmos()
+    private void OnDrawGizmosSelected()
     {
         if (gizmoPositionChange)
         {
             Gizmos.DrawWireCube(transform.position, roamingRange);
         }
         else
+        {
             Gizmos.DrawWireCube(spawnPosition, roamingRange);
+        }
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireCube(transform.position, aggroDistance);
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireCube(transform.position, punchingDistance);
+
     }
 
     void OnPathComplete(Path p)
@@ -128,8 +140,6 @@ public class GroundEnemyAI : MonoBehaviour
             {
                 reachedEndOfPath = false;
             }
-            // Current path length is saved for enemy behaviour purposes.
-            float vectorPathLength = path.GetTotalLength();
 
             //Calculates the next path point and the amount of force applied on X-axis
             Vector2 direction = ((Vector2)path.vectorPath[currentWaypoint] - rb.position).normalized;
@@ -155,7 +165,7 @@ public class GroundEnemyAI : MonoBehaviour
 
             ObstacleCheck();
 
-            EnemyStateChange(forceX, vectorPathLength);
+            EnemyStateChange(forceX);
         }
 
 
@@ -273,11 +283,21 @@ public class GroundEnemyAI : MonoBehaviour
         return Physics2D.OverlapBox(spawnPosition, roamingRange, 0, playerLayer);
     }
 
+    private bool IsPlayerInPunchingRange()
+    {
+        return Physics2D.OverlapBox(transform.position, punchingDistance, 0, playerLayer);
+    }
+
+    private bool IsPlayerInAggroRange()
+    {
+        return Physics2D.OverlapBox(transform.position, aggroDistance, 0, playerLayer);
+    }
+
 
 
     // ENEMY BEHAVIOUR STATES
     // ---------------------------------------------------------------------------------------------------------------
-    private void EnemyStateChange(Vector2 forceX, float pathLength)
+    private void EnemyStateChange(Vector2 forceX)
     {
         // switch-case system between different enemy states.
         switch (state)
@@ -307,7 +327,7 @@ public class GroundEnemyAI : MonoBehaviour
                     break;
                 }
                 // If target is close enough the enemy unit, charges it towards the player.
-                else if (aggroDistance >= pathLength && IsPlayerInRange())
+                else if (IsPlayerInAggroRange() && IsPlayerInRange())
                 {
                     state = "charge";
                     break;
@@ -326,20 +346,20 @@ public class GroundEnemyAI : MonoBehaviour
             case "charge":
                 if (stunned) break;
                 // Outside the range, return to roam state.
-                if (pathLength > aggroDistance || !IsPlayerInRange())
+                if (!IsPlayerInAggroRange() || !IsPlayerInRange())
                 {
                     state = "roam";
                     break;
                 }
                 // Inside the range, runs towards the target.
-                else if (aggroDistance >= pathLength && pathLength > punchingDistance && canMove)
+                if (IsPlayerInAggroRange() && !IsPlayerInPunchingRange() && canMove)
                 {
                     rb.AddForce(forceX);
                     StartCoroutine(RunCoolDown());
                     break;
                 }
                 //If target is close enough the enemy unit, it changes the state to "punch"
-                else if (pathLength < punchingDistance)
+                if (IsPlayerInPunchingRange())
                 {
                     state = "punch";
                 }
@@ -374,7 +394,7 @@ public class GroundEnemyAI : MonoBehaviour
                         }
                         else
                         {
-                            targetHealth.TakeDamage(4);
+                            _targetHealth.TakeDamage(attackPower);
 
                             PlayerPushback();
                             StartCoroutine(PunchCoolDown());
@@ -382,7 +402,7 @@ public class GroundEnemyAI : MonoBehaviour
                     }
                     else
                     {
-                        targetHealth.TakeDamage(4);
+                        _targetHealth.TakeDamage(4);
 
                         PlayerPushback();
                         StartCoroutine(PunchCoolDown());
@@ -395,7 +415,7 @@ public class GroundEnemyAI : MonoBehaviour
                     state = "roam";
                     break;
                 }
-                else if (pathLength > punchingDistance)
+                else if (!IsPlayerInPunchingRange() && IsPlayerInAggroRange())
                 {
                     state = "charge";
                     //Debug.Log("Charge again!");
@@ -429,6 +449,17 @@ public class GroundEnemyAI : MonoBehaviour
         Debug.Log("Stun ended");
         stunned = false;
         gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.black;
+    }
+
+    public void SpawnHealthOrEnergy()
+    {
+        int rand = UnityEngine.Random.Range(0, 100);
+        if (_targetHealth.GetHealth() <= 3 && rand < 49)
+        {
+            Instantiate(healthItem, transform.position, Quaternion.identity);
+        }
+        else if (rand >= 49)
+            Instantiate(energyItem, transform.position, Quaternion.identity);
     }
 }
 
