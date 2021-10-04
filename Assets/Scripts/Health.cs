@@ -58,4 +58,16 @@ public class Health : MonoBehaviour
                 Destroy(gameObject);
         }
     }
+
+    // Gives the target corresponding amount of health when called while not exceeding the maximum health value
+    public void GiveHealthPoints(float amount)
+    {
+        if (CurrentHealth + amount >= MaxHealth)
+        {
+            CurrentHealth = MaxHealth;
+        }
+        else
+            CurrentHealth += amount;
+
+    }
 }
