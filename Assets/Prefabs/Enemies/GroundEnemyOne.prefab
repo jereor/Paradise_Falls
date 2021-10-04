@@ -257,6 +257,7 @@ MonoBehaviour:
   jumpHeight: 13
   walkStepInterval: 1
   runStepInterval: 0.5
+  attackPower: 3
   state: roam
   roamingRange: {x: 10, y: 10}
   aggroDistance: 10
@@ -282,19 +283,18 @@ MonoBehaviour:
   onDie:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 8401565248732910210}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: 
+      - m_Target: {fileID: 8401565248732910209}
+        m_TargetAssemblyTypeName: GroundEnemyAI, Assembly-CSharp
+        m_MethodName: SpawnHealthOrEnergy
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  CurrentHealth: 0
 --- !u!1 &8401565248790612543
 GameObject:
   m_ObjectHideFlags: 0

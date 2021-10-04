@@ -7,6 +7,7 @@ public class BulletBehaviour : MonoBehaviour
     private Rigidbody2D rb;
     private GameObject target;
     public float bulletSpeed = 5;
+    public float bulletDamage = 1f;
     // Start is called before the first frame update
     void Start()
     {
@@ -32,7 +33,7 @@ public class BulletBehaviour : MonoBehaviour
     {
         if (collision.collider.CompareTag("Player"))
         {
-            target.GetComponent<Health>().TakeDamage(1);
+            target.GetComponent<Health>().TakeDamage(bulletDamage);
             Destroy(gameObject);
         }
         else

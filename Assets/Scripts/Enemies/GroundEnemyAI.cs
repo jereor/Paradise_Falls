@@ -29,6 +29,7 @@ public class GroundEnemyAI : MonoBehaviour
     public float jumpHeight = 500f;
     public float walkStepInterval = 1f;
     public float runStepInterval = 0.5f;
+    public float attackPower = 1f;
 
     [Header("State and Parameters")]
     public string state = "roam";
@@ -372,7 +373,7 @@ public class GroundEnemyAI : MonoBehaviour
                         if (shield.Parrying)
                             StartCoroutine(Stunned());
 
-                    _targetHealth.TakeDamage(4);
+                    _targetHealth.TakeDamage(attackPower);
 
                     PlayerPushback();
                     StartCoroutine(PunchCoolDown());

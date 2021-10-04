@@ -37,7 +37,7 @@ public class Player : MonoBehaviour
 
     private void OnGUI()
     {
-        GUI.Label(new Rect(10, 10, 300, 100), "Health: " + healthScript.GetComponent<Health>().GetHealth(), TextStyleHealth);
-        GUI.Label(new Rect(200, 10, 300, 100), "Energy: " + energyScript.GetComponent<Energy>().GetEnergy(), TextStyleEnergy);
+        GUI.Label(new Rect(10, 10, 300, 100), "Health: " + healthScript.GetHealth(), TextStyleHealth);
+        GUI.Label(new Rect(200, 10, 300, 100), "Energy: " + energyScript.GetEnergy(), TextStyleEnergy);
     }
 }

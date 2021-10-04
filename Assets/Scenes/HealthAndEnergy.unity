@@ -2046,6 +2046,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4240992959880559737, guid: cf6195c196782eb4983f8e92dc2e79ec, type: 3}
   m_PrefabInstance: {fileID: 1297977717}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1332690541 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 208985480462589908, guid: 41c2fc79220733a4abc856ee861da9f2, type: 3}
+  m_PrefabInstance: {fileID: 1897986479}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05926f1ba4bca4145b5f91c0b05b6b5e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1336075225
 GameObject:
   m_ObjectHideFlags: 0
@@ -3089,7 +3100,7 @@ PrefabInstance:
     - target: {fileID: 7004985351230670900, guid: 41c2fc79220733a4abc856ee861da9f2, type: 3}
       propertyPath: onDie.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 208985480462589908, guid: 41c2fc79220733a4abc856ee861da9f2, type: 3}
+      objectReference: {fileID: 1332690541}
     - target: {fileID: 7004985351230670900, guid: 41c2fc79220733a4abc856ee861da9f2, type: 3}
       propertyPath: onDie.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
       value: 2
