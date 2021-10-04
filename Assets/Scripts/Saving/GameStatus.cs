@@ -127,4 +127,8 @@ public class GameStatus : MonoBehaviour
         dataToSave.weaponAcquired = b;
     }
 
+    public void UpdateEnemyKilled(int index, bool defeated)
+    {
+        dataToSave.enemiesDefeated[index] = defeated;
+    }
 }
