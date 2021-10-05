@@ -5,21 +5,14 @@ using DG.Tweening;
 
 public class DrawBridgeController : MonoBehaviour
 {
+    [Header("")]
     public float duration = 3f;
+    [Header("Direction the drawbridge is opening")]
     public leftOrRight direction = new leftOrRight();
-    public float rotateAmount;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    [Header("Amount of rotation")]
+    public float rotateAmount; 
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 
     public void Work()
     {
