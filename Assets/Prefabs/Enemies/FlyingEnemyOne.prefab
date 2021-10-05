@@ -275,8 +275,8 @@ MonoBehaviour:
   enemyGFX: {fileID: 674690727670028638}
   playerRB: {fileID: 0}
   bullet: {fileID: 7057756548087642846, guid: f038b9176ac32cf4a83f1731b068bda7, type: 3}
-  energyItem: {fileID: 0}
-  healthItem: {fileID: 0}
+  energyItem: {fileID: 7526672294046396501, guid: 4049d0c991ec2534dbef2099a278b67e, type: 3}
+  healthItem: {fileID: 8475744114839058090, guid: 0aeb80a14b2a8254dbe07e4c54a022f6, type: 3}
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
