@@ -16,8 +16,13 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private float comboCooldown; // Timer of when we need to start new combo
     [SerializeField] private float comboBetweenTimer; // If this runs out we set combo on cooldown
 
-    [SerializeField] private float throwingForce;
-    [SerializeField] private float maxThrowingForce;
+    [Header("Throwing")]
+    [SerializeField] private GameObject throwingIndicator;
+    [SerializeField] private float maxXScale;
+    [SerializeField] private float maxYScale;
+    private Vector3 defaultScale;
+    [SerializeField] private float defaultThrowingForce;
+    [SerializeField] private float maxChargeTime;
 
     [Header("Attack Detection Variables")]
     public LayerMask enemyLayer;
@@ -38,22 +43,69 @@ public class PlayerCombat : MonoBehaviour
     private int currentComboHit = 1; // Combo counter 1 normal, 2 normal, 3 last hit -> comboCooldown -> Combo can be done again
 
     private float? throwButtonPressedTime;
+    private float throwChargeMaxTime;
+
+    private bool chargeMaxTimeSet;
 
     private bool comboOnCooldown; // boolean to check if we can attack
-    public bool comboOnGoing; // Used in ComboCounter() calculates if we aren't attacking before comboBetweenTimer then we reset combo
+    private bool comboOnGoing; // Used in ComboCounter() calculates if we aren't attacking before comboBetweenTimer then we reset combo
 
+    Mouse mouse = Mouse.current;
+
+    Camera mainCamera;
+    Ray mousePosRay;
     // Start is called before the first frame update
     void Start()
     {
         // We don't have to wait cooldown on start
         comboEndTime = comboEndTime - comboCooldown;
+        mainCamera = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
+
+        defaultScale = throwingIndicator.transform.localScale;
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         // Calculates when we can combo and if combo will end
         ComboCounter();
+
+        if(Time.time - throwButtonPressedTime < maxChargeTime)
+        {
+            Debug.Log("Charging");
+            throwChargeMaxTime = Time.time;
+
+            float propo = (throwChargeMaxTime - (float)throwButtonPressedTime) / maxChargeTime;
+            throwingIndicator.transform.localScale = new Vector3(propo * maxXScale, propo * maxYScale, throwingIndicator.transform.localScale.z);
+        }
+        else if (Time.time - throwButtonPressedTime >= maxChargeTime)
+        {
+            if (!chargeMaxTimeSet)
+            {
+                Debug.Log("Max");
+                //throwChargeMaxTime = Time.time;
+                chargeMaxTimeSet = true;
+            }
+        }
+        mousePosRay = mainCamera.ScreenPointToRay(mouse.position.ReadValue());
+        //float angle = Vector2.Angle(new Vector2(mousePosRay.origin.x - gameObject.transform.position.x, mousePosRay.origin.y - gameObject.transform.position.y), Vector2.up);
+        //Debug.Log(angle);
+        //Quaternion q = new Quaternion(0,0, angle, 0);
+        //Debug.Log(q);
+        //throwingIndicator.transform.RotateAround(mousePosRay.origin, Vector3.right, angle); //= Vector2.up;//  q.eulerAngles;
+        ////Debug.Log(ray);
+
+        Vector3 vectorToTarget = new Vector2(mousePosRay.origin.x - gameObject.transform.position.x, mousePosRay.origin.y - gameObject.transform.position.y);
+        float angle = Mathf.Atan2(vectorToTarget.y, vectorToTarget.x) * Mathf.Rad2Deg;
+        Debug.Log(angle);
+        Quaternion q = new Quaternion(0,0,angle, 0);
+        //Debug.Log(q);
+        throwingIndicator.transform.localScale = gameObject.transform.localScale; 
+        throwingIndicator.transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
+            //RotateAround(throwingIndicator.transform.position, Vector3.forward, angle/* * Time.fixedDeltaTime*/);//Quaternion.Slerp(throwingIndicator.transform.rotation, q, Time.deltaTime);
+
     }
+
+
 
     private void ComboCounter()
     {
@@ -84,7 +136,7 @@ public class PlayerCombat : MonoBehaviour
         if (context.performed && isWeaponWielded && meleeThrow && meleeWeaponPrefab)
         {
             throwButtonPressedTime = Time.time;
-            
+            chargeMaxTimeSet = false;
         }
         // Melee
         else if (context.performed && isWeaponWielded && CheckAttackRate() && !meleeThrow && !comboOnCooldown)
@@ -148,9 +200,18 @@ public class PlayerCombat : MonoBehaviour
             // Instantiate meleeWeaponPrefab on attackPoint
             weaponInstance = Instantiate(meleeWeaponPrefab, attackPoint.position, Quaternion.identity);
             // Give force to weaponInstance to throw
-            weaponInstance.GetComponent<Rigidbody2D>().AddForce(new Vector2(Mathf.Sign(transform.localScale.x) * throwingForce, 0), ForceMode2D.Impulse);
+    
+            Debug.Log(new Vector2(mousePosRay.origin.x - gameObject.transform.position.x, mousePosRay.origin.y - gameObject.transform.position.y).normalized);
+            float propo = (throwChargeMaxTime - (float)throwButtonPressedTime) / maxChargeTime;
+            Debug.Log(propo);
+            weaponInstance.GetComponent<MeleeWeapon>().setMaxDistance(weaponInstance.GetComponent<MeleeWeapon>().getMaxDistance() * propo);
+            weaponInstance.GetComponent<Rigidbody2D>().AddForce(new Vector2(mousePosRay.origin.x - gameObject.transform.position.x, mousePosRay.origin.y - gameObject.transform.position.y).normalized * defaultThrowingForce, ForceMode2D.Impulse);
+            
             // We don't have weapon anymore
             isWeaponWielded = false;
+            throwButtonPressedTime = null;
+
+            throwingIndicator.transform.localScale = defaultScale;
         }
 
     }

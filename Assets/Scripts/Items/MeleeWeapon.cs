@@ -12,7 +12,7 @@ public class MeleeWeapon : MonoBehaviour
     [SerializeField] private float ricochetForce; // Force of hit ricochet on enemies and gorund elements
     [SerializeField] private float enemyHitRicochetY; // Float parameter if we want to ricochet weapon slightly upward feels better and tell player that we hit and dealt damage to something
     [SerializeField] private float pullForce; // Force we are pulling
-    [SerializeField] private float maxDistance; // Max distance to travel with gravityscale 0 and deal damage
+    [SerializeField] private float maxDistance; // Max distance to travel with gravityscale 0
 
     [SerializeField] private bool worldPickUp;
 
@@ -203,5 +203,14 @@ public class MeleeWeapon : MonoBehaviour
     public bool getLanded()
     {
         return landed;
+    }
+
+    public void setMaxDistance(float f)
+    {
+        maxDistance = f;
+    }
+    public float getMaxDistance()
+    {
+        return maxDistance;
     }
 }

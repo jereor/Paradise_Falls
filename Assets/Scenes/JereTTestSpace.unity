@@ -472,6 +472,11 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!20 &245377209 stripped
+Camera:
+  m_CorrespondingSourceObject: {fileID: 2049820521459604729, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
+  m_PrefabInstance: {fileID: 1172060556}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &262577098
 GameObject:
   m_ObjectHideFlags: 0
@@ -903,6 +908,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 7463911945564789779, guid: 4154d57994558ff489a9180c3151e624, type: 3}
+      propertyPath: mainCamera
+      value: 
+      objectReference: {fileID: 245377209}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4154d57994558ff489a9180c3151e624, type: 3}
 --- !u!50 &604229746 stripped
