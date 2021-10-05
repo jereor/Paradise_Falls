@@ -97,7 +97,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1928146856551811166
 Transform:
   m_ObjectHideFlags: 0
@@ -565,11 +565,13 @@ MonoBehaviour:
   meleeAttackRate: 0.5
   comboCooldown: 1
   comboBetweenTimer: 2
-  throwingIndicator: {fileID: 533264429858380022}
+  throwIndicator: {fileID: 533264429858380022}
   maxXScale: 2
   maxYScale: 3
   defaultThrowingForce: 15
   maxChargeTime: 3
+  maxDistance: 7
+  minDistance: 2
   enemyLayer:
     serializedVersion: 2
     m_Bits: 128
@@ -577,7 +579,6 @@ MonoBehaviour:
   attackRangeX: 1.5
   attackRangeY: 1.5
   meleeWeaponPrefab: {fileID: 3980506574090905470, guid: 3780bd19eaa15054a9ebdb884fa668ba, type: 3}
-  weaponInstance: {fileID: 0}
   isWeaponWielded: 0
 --- !u!1 &2646993277219195829
 GameObject:

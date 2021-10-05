@@ -17,12 +17,17 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private float comboBetweenTimer; // If this runs out we set combo on cooldown
 
     [Header("Throwing")]
-    [SerializeField] private GameObject throwingIndicator;
+    [SerializeField] private GameObject throwIndicator;
     [SerializeField] private float maxXScale;
+    //[SerializeField] private float minXScale;
     [SerializeField] private float maxYScale;
-    private Vector3 defaultScale;
+    //[SerializeField] private float minYScale;
     [SerializeField] private float defaultThrowingForce;
     [SerializeField] private float maxChargeTime;
+    [SerializeField] private float maxDistance;
+    [SerializeField] private float minDistance;
+
+    private Vector3 defaultScale; // Used to reset throwIndicator
 
     [Header("Attack Detection Variables")]
     public LayerMask enemyLayer;
@@ -32,7 +37,7 @@ public class PlayerCombat : MonoBehaviour
 
     [Header("Weapon")]
     [SerializeField] private GameObject meleeWeaponPrefab;
-    [SerializeField] private GameObject weaponInstance;
+    private GameObject weaponInstance;
     [SerializeField] private bool isWeaponWielded;
 
     // State variables
@@ -42,13 +47,13 @@ public class PlayerCombat : MonoBehaviour
     private bool meleeThrow; // True if we are holdling Throw input
     private int currentComboHit = 1; // Combo counter 1 normal, 2 normal, 3 last hit -> comboCooldown -> Combo can be done again
 
-    private float? throwButtonPressedTime;
-    private float throwChargeMaxTime;
-
-    private bool chargeMaxTimeSet;
+    private float? throwButtonPressedTime; // Time when we start throwing
+    private float throwChargeMaxTime; // Time when we reach maximum charge
+    private float ratio; // Ratio float to grow desired parameters in same ratio. "One ratio to rule them all"
 
     private bool comboOnCooldown; // boolean to check if we can attack
     private bool comboOnGoing; // Used in ComboCounter() calculates if we aren't attacking before comboBetweenTimer then we reset combo
+
 
     Mouse mouse = Mouse.current;
 
@@ -61,51 +66,74 @@ public class PlayerCombat : MonoBehaviour
         comboEndTime = comboEndTime - comboCooldown;
         mainCamera = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
 
-        defaultScale = throwingIndicator.transform.localScale;
+        // Save scale here
+        defaultScale = throwIndicator.transform.localScale;
+    }
+
+    private void Update()
+    {
+        //AdjustIndicatorScale();
     }
 
     private void FixedUpdate()
     {
+        //AdjustIndicatorScale();
         // Calculates when we can combo and if combo will end
         ComboCounter();
 
-        if(Time.time - throwButtonPressedTime < maxChargeTime)
-        {
-            Debug.Log("Charging");
-            throwChargeMaxTime = Time.time;
+        RotateIndicator();
 
-            float propo = (throwChargeMaxTime - (float)throwButtonPressedTime) / maxChargeTime;
-            throwingIndicator.transform.localScale = new Vector3(propo * maxXScale, propo * maxYScale, throwingIndicator.transform.localScale.z);
-        }
-        else if (Time.time - throwButtonPressedTime >= maxChargeTime)
-        {
-            if (!chargeMaxTimeSet)
-            {
-                Debug.Log("Max");
-                //throwChargeMaxTime = Time.time;
-                chargeMaxTimeSet = true;
-            }
-        }
-        mousePosRay = mainCamera.ScreenPointToRay(mouse.position.ReadValue());
-        //float angle = Vector2.Angle(new Vector2(mousePosRay.origin.x - gameObject.transform.position.x, mousePosRay.origin.y - gameObject.transform.position.y), Vector2.up);
-        //Debug.Log(angle);
-        //Quaternion q = new Quaternion(0,0, angle, 0);
-        //Debug.Log(q);
-        //throwingIndicator.transform.RotateAround(mousePosRay.origin, Vector3.right, angle); //= Vector2.up;//  q.eulerAngles;
-        ////Debug.Log(ray);
-
-        Vector3 vectorToTarget = new Vector2(mousePosRay.origin.x - gameObject.transform.position.x, mousePosRay.origin.y - gameObject.transform.position.y);
-        float angle = Mathf.Atan2(vectorToTarget.y, vectorToTarget.x) * Mathf.Rad2Deg;
-        Debug.Log(angle);
-        Quaternion q = new Quaternion(0,0,angle, 0);
-        //Debug.Log(q);
-        throwingIndicator.transform.localScale = gameObject.transform.localScale; 
-        throwingIndicator.transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
-            //RotateAround(throwingIndicator.transform.position, Vector3.forward, angle/* * Time.fixedDeltaTime*/);//Quaternion.Slerp(throwingIndicator.transform.rotation, q, Time.deltaTime);
-
+        Throwing();
     }
 
+    private void AdjustIndicatorScale()
+    {
+        Debug.Log(throwIndicator.transform.localScale.x);
+        Debug.Log(gameObject.transform.localScale.x);
+        if (throwIndicator.transform.localScale.x != gameObject.transform.localScale.x)
+        {
+            Debug.Log("Scale");
+            throwIndicator.transform.localScale = new Vector3(throwIndicator.transform.localScale.x * -1, throwIndicator.transform.localScale.y, throwIndicator.transform.localScale.z);
+        }
+    }
 
+    private void RotateIndicator()
+    {
+        if (throwIndicator.activeInHierarchy)
+        {
+            //AdjustIndicatorScale();
+            Vector3 vectorToTarget = new Vector2(mousePosRay.origin.x - gameObject.transform.position.x, mousePosRay.origin.y - gameObject.transform.position.y);
+            float angle = Mathf.Atan2(vectorToTarget.y, vectorToTarget.x) * Mathf.Rad2Deg;
+            //Debug.Log(angle);
+
+            throwIndicator.transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
+          
+        }
+    }
+
+    private void Throwing()
+    {
+        // If we are throwing do these
+        if (meleeThrow)
+        {
+            // Get mouse position from mainCamera ScreenPointToRay
+            mousePosRay = mainCamera.ScreenPointToRay(mouse.position.ReadValue());
+            // We are holding throw/melee button down
+            if (Time.time - throwButtonPressedTime <= maxChargeTime)
+            {
+                //Debug.Log("Charging");
+                throwChargeMaxTime = Time.time;
+
+                ratio = (throwChargeMaxTime - (float)throwButtonPressedTime) / maxChargeTime;
+                if(ratio * maxDistance >= minDistance)
+                    throwIndicator.transform.localScale = new Vector3(ratio * maxXScale * gameObject.transform.localScale.x, ratio * maxYScale, throwIndicator.transform.localScale.z);
+            }
+            //else
+            //{
+            //    AdjustIndicatorScale();
+            //}
+        }
+    }
 
     private void ComboCounter()
     {
@@ -135,8 +163,12 @@ public class PlayerCombat : MonoBehaviour
         // Start Throwing
         if (context.performed && isWeaponWielded && meleeThrow && meleeWeaponPrefab)
         {
+            // Set time here since we start charging
             throwButtonPressedTime = Time.time;
-            chargeMaxTimeSet = false;
+            Debug.Log((minDistance / maxDistance) * maxXScale);
+            throwIndicator.transform.localScale = new Vector3((minDistance / maxDistance) * maxXScale, (minDistance / maxDistance) * maxYScale, 1);
+            throwIndicator.SetActive(true);
+            
         }
         // Melee
         else if (context.performed && isWeaponWielded && CheckAttackRate() && !meleeThrow && !comboOnCooldown)
@@ -200,20 +232,29 @@ public class PlayerCombat : MonoBehaviour
             // Instantiate meleeWeaponPrefab on attackPoint
             weaponInstance = Instantiate(meleeWeaponPrefab, attackPoint.position, Quaternion.identity);
             // Give force to weaponInstance to throw
-    
-            Debug.Log(new Vector2(mousePosRay.origin.x - gameObject.transform.position.x, mousePosRay.origin.y - gameObject.transform.position.y).normalized);
-            float propo = (throwChargeMaxTime - (float)throwButtonPressedTime) / maxChargeTime;
-            Debug.Log(propo);
-            weaponInstance.GetComponent<MeleeWeapon>().setMaxDistance(weaponInstance.GetComponent<MeleeWeapon>().getMaxDistance() * propo);
+            if (ratio * maxDistance >= minDistance)
+            {
+                if (weaponInstance.GetComponent<MeleeWeapon>().getMaxDistance() != maxDistance)
+                    weaponInstance.GetComponent<MeleeWeapon>().setMaxDistance(maxDistance * ratio); // Favor distance set in this script easier upgrade handling
+                else
+                    weaponInstance.GetComponent<MeleeWeapon>().setMaxDistance(weaponInstance.GetComponent<MeleeWeapon>().getMaxDistance() * ratio);
+            }
+            else
+            {
+                Debug.Log("MinDis");
+                weaponInstance.GetComponent<MeleeWeapon>().setMaxDistance(minDistance);
+            }
+
+            // Give force to vector mousePosRay - gameObjectPos, use default force and adjust length of throw iva MaxDistance calculations above
             weaponInstance.GetComponent<Rigidbody2D>().AddForce(new Vector2(mousePosRay.origin.x - gameObject.transform.position.x, mousePosRay.origin.y - gameObject.transform.position.y).normalized * defaultThrowingForce, ForceMode2D.Impulse);
             
             // We don't have weapon anymore
             isWeaponWielded = false;
             throwButtonPressedTime = null;
 
-            throwingIndicator.transform.localScale = defaultScale;
+            throwIndicator.transform.localScale = defaultScale;
+            throwIndicator.SetActive(false);
         }
-
     }
 
     public void MeleeAimThrowing(InputAction.CallbackContext context)
@@ -221,12 +262,14 @@ public class PlayerCombat : MonoBehaviour
         if (context.performed)
         {
             meleeThrow = true;
+            //throwIndicator.SetActive(true);
             //Debug.Log("Throw ini");
         }
 
         if (context.canceled)
         {
             meleeThrow = false;
+            //throwIndicator.SetActive(false);
             //Debug.Log("Throw cancel");
         }
     }
