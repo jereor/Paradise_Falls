@@ -49,10 +49,12 @@ public class PlayerMovement : MonoBehaviour
     // References
     private Rigidbody2D rb;
     private float defaultGravityScale;
+    private ShockwaveTool shockwaveTool;
 
     private void Start()
     {
         rb = gameObject.GetComponent<Rigidbody2D>();
+        shockwaveTool = gameObject.GetComponentInChildren<ShockwaveTool>();
         PlayerCamera.Instance.ChangeCameraOffset(0.2f, false, 1);
         defaultGravityScale = rb.gravityScale;
     }
@@ -291,7 +293,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // If button was released
-        if (context.canceled && rb.velocity.y > 0f)
+        if (context.canceled && rb.velocity.y > 0f && !shockwaveTool.ShockwaveUsed)
         {
             rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f); // Slow down player
             jumpButtonPressedTime = null;
