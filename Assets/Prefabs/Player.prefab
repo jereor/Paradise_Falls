@@ -387,7 +387,6 @@ MonoBehaviour:
   onDie:
     m_PersistentCalls:
       m_Calls: []
-  CurrentHealth: 0
 --- !u!114 &8760275387346948364
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -514,7 +513,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shield: {fileID: 604414328}
   protectionValue: 0
-  parryTime: 0
+  parryTimeWindow: 0.5
 --- !u!114 &7463911945564789779
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -534,7 +533,8 @@ MonoBehaviour:
   meleeAttackRate: 0.5
   comboCooldown: 1
   comboBetweenTimer: 2
-  throwingForce: 15
+  throwingForce: 0
+  maxThrowingForce: 15
   enemyLayer:
     serializedVersion: 2
     m_Bits: 128

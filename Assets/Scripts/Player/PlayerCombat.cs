@@ -17,6 +17,7 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private float comboBetweenTimer; // If this runs out we set combo on cooldown
 
     [SerializeField] private float throwingForce;
+    [SerializeField] private float maxThrowingForce;
 
     [Header("Attack Detection Variables")]
     public LayerMask enemyLayer;
@@ -35,6 +36,8 @@ public class PlayerCombat : MonoBehaviour
     private float lastTimeMeleed = 0;
     private bool meleeThrow; // True if we are holdling Throw input
     private int currentComboHit = 1; // Combo counter 1 normal, 2 normal, 3 last hit -> comboCooldown -> Combo can be done again
+
+    private float? throwButtonPressedTime;
 
     private bool comboOnCooldown; // boolean to check if we can attack
     public bool comboOnGoing; // Used in ComboCounter() calculates if we aren't attacking before comboBetweenTimer then we reset combo
@@ -77,15 +80,11 @@ public class PlayerCombat : MonoBehaviour
 
     public void Melee(InputAction.CallbackContext context)
     {
-        // Throwing
+        // Start Throwing
         if (context.performed && isWeaponWielded && meleeThrow && meleeWeaponPrefab)
         {
-            // Instantiate meleeWeaponPrefab on attackPoint
-            weaponInstance = Instantiate(meleeWeaponPrefab, attackPoint.position, Quaternion.identity);
-            // Give force to weaponInstance to throw
-            weaponInstance.GetComponent<Rigidbody2D>().AddForce(new Vector2(Mathf.Sign(transform.localScale.x) * throwingForce, 0), ForceMode2D.Impulse);
-            // We don't have weapon anymore
-            isWeaponWielded = false;
+            throwButtonPressedTime = Time.time;
+            
         }
         // Melee
         else if (context.performed && isWeaponWielded && CheckAttackRate() && !meleeThrow && !comboOnCooldown)
@@ -142,6 +141,18 @@ public class PlayerCombat : MonoBehaviour
             Debug.Log("Trying to pull weapon");
             weaponInstance.GetComponent<MeleeWeapon>().PullWeapon(gameObject);          
         }
+
+        // Throw
+        if(context.canceled && isWeaponWielded && meleeThrow && meleeWeaponPrefab)
+        {
+            // Instantiate meleeWeaponPrefab on attackPoint
+            weaponInstance = Instantiate(meleeWeaponPrefab, attackPoint.position, Quaternion.identity);
+            // Give force to weaponInstance to throw
+            weaponInstance.GetComponent<Rigidbody2D>().AddForce(new Vector2(Mathf.Sign(transform.localScale.x) * throwingForce, 0), ForceMode2D.Impulse);
+            // We don't have weapon anymore
+            isWeaponWielded = false;
+        }
+
     }
 
     public void MeleeAimThrowing(InputAction.CallbackContext context)
