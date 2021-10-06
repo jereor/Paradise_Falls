@@ -239,7 +239,7 @@ public class PlayerMovement : MonoBehaviour
     // Move action: Called when the Move Action Button is pressed
     public void Move(InputAction.CallbackContext context) // Context tells the function when the action is triggered
     {
-        horizontal = context.ReadValue<Vector2>().x; // Updates the horizontal input direction
+        horizontal = Mathf.Round(context.ReadValue<Vector2>().x); // Updates the horizontal input direction
     }
 
     // Jump action: Called when the Jump Action button is pressed
