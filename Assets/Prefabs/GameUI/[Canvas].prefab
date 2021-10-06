@@ -1421,6 +1421,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   buttons: {fileID: 4511080843370685260}
   _options: {fileID: 1273658641222807589}
+  settingsOpen: 0
   settingsBackButton: {fileID: 990409283077862644}
   settingsButton: {fileID: 7993020248271555693}
 --- !u!222 &8069144127179718166
@@ -3142,9 +3143,8 @@ MonoBehaviour:
   popUp: {fileID: 4916019234045513028}
   pauseMenuUI: {fileID: 8361965489602379618}
   continueButton: {fileID: 1854420476745100882}
-  pauseBackButton: {fileID: 990409283077862644}
   warningNoButton: {fileID: 6371415754197919487}
-  settingsMenu: {fileID: 4450060248690862487}
+  settingsMenu: {fileID: 2347348217146627161}
   warningPopUp: {fileID: 4557888902006614487}
   warningAnswered: 0
 --- !u!114 &2101977188672032792
@@ -3216,6 +3216,22 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: 948e6069-45ff-4c78-b6f5-d1c5b423cdc4
     m_ActionName: Player/ThrowAim[/Mouse/rightButton,/XInputControllerWindows/leftShoulder]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2248537422634088893}
+        m_TargetAssemblyTypeName: PauseMenuController, Assembly-CSharp
+        m_MethodName: ControllerInput
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: a7c0ba3c-2428-413f-8800-6de7baddeb0f
+    m_ActionName: GameUI/Navigation[/XInputControllerWindows/leftStick,/Keyboard/w,/Keyboard/s,/Keyboard/a,/Keyboard/d]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: GameUI
