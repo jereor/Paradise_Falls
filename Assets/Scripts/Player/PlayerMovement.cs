@@ -91,6 +91,7 @@ public class PlayerMovement : MonoBehaviour
     {
         CheckLedgeClimb();
         CheckWallJump();
+        CheckShockwaveJump();
     }
 
     private void CheckLedgeClimb()
@@ -197,6 +198,17 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    private void CheckShockwaveJump()
+    {
+        canShockwaveJump = (IsGrounded() && !shockwaveTool.ShockwaveJumpUsed) ? false : true;
+
+        if (!shockwaveTool.ShockwaveJumpUsed)
+            shockwaveJumping = false;
+
+        if (IsGrounded())
+            shockwaveTool.ShockwaveJumpUsed = false;
+    }
+
     // Returns true if Raycast hits to something aka our body is so close to wall that it counts as touching
     private bool BodyIsTouchingWall()
     {
@@ -285,11 +297,17 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // Shockwave jump while in air
-        else if (context.started && canShockwaveJump)
+        else if (context.started && canShockwaveJump && !shockwaveJumping)
         {
             shockwaveTool.ShockwaveJump();
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+
+            shockwaveTool.ShockwaveJumpUsed = true;
+            shockwaveJumping = true;
             canShockwaveJump = false;
+
+            jumpButtonPressedTime = null;
+            lastGroundedTime = null;
         }
 
         // -JUMP FROM GROUND-
@@ -302,14 +320,11 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // If button was released
-        if (context.canceled && rb.velocity.y > 0f && !shockwaveTool.ShockwaveUsed)
+        if (context.canceled && rb.velocity.y > 0f && !shockwaveTool.ShockwaveJumpUsed)
         {
             rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f); // Slow down player
             jumpButtonPressedTime = null;
             lastGroundedTime = null;
-
-            if (!IsGrounded())
-                canShockwaveJump = true;
         }
     }
 

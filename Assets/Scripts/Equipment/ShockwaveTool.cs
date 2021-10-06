@@ -5,7 +5,8 @@ using UnityEngine.InputSystem;
 
 public class ShockwaveTool : MonoBehaviour
 {
-    public bool ShockwaveUsed { get; private set; }
+    public bool ShockwaveJumpUsed { get; set; }
+    public bool ShockwaveAttackUsed { get; set; }
 
     [Header("Shockwave parameters")]
     [SerializeField] private float jumpForce;
@@ -77,13 +78,13 @@ public class ShockwaveTool : MonoBehaviour
 
             // Shockwave attack functionality here
 
-            StartCoroutine(ActivateCooldown(usageCooldown));
+            StartCoroutine(ActivateAttackCooldown(usageCooldown));
         }
     }
 
-    private IEnumerator ActivateCooldown(float cooldownTime)
+    private IEnumerator ActivateJumpCooldown(float cooldownTime)
     {
-        ShockwaveUsed = true;
+        ShockwaveJumpUsed = true;
 
         float cdTimer = 0;
         while (cdTimer <= cooldownTime)
@@ -92,6 +93,20 @@ public class ShockwaveTool : MonoBehaviour
             yield return new WaitForEndOfFrame();
         }
 
-        ShockwaveUsed = false;
+        ShockwaveJumpUsed = false;
+    }
+
+    private IEnumerator ActivateAttackCooldown(float cooldownTime)
+    {
+        ShockwaveAttackUsed = true;
+
+        float cdTimer = 0;
+        while (cdTimer <= cooldownTime)
+        {
+            cdTimer += Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+
+        ShockwaveAttackUsed = false;
     }
 }
