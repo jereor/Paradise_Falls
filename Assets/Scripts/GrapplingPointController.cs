@@ -21,42 +21,42 @@ public class GrapplingPointController : MonoBehaviour
         //meleeWeapon = GameObject.Find("MeleeWeapon");
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if(collision.gameObject.layer == LayerMask.NameToLayer("MeleeWeapon"))
-        {
-            Vector2 normal = collision.GetContact(0).normal;
-            float collisionAngle = Vector2.SignedAngle(Vector2.right, -normal);
-            //Debug.Log(collisionAngle);
-            if (collisionAngle <= 45 && collisionAngle >= -45)
-            {
-                Debug.Log("Right");
-                meleeWeapon.transform.DORotate(new Vector3(0, 0, 0), 0);
-                meleeWeapon.velocity = new Vector2(0,0);
-                meleeWeapon.transform.position = new Vector2(transform.position.x + meleeWeaponGrapplingDistance, transform.position.y);
-            }
-            else if (collisionAngle < -45 && collisionAngle > -135)
-            {
-                Debug.Log("Bottom");
-                meleeWeapon.transform.DORotate(new Vector3(0, 0, -90), 0);
-                meleeWeapon.velocity = new Vector2(0, 0);
-                meleeWeapon.transform.position = new Vector2(transform.position.x, transform.position.y - meleeWeaponGrapplingDistance);
-            }
-            else if (collisionAngle <= -135 || collisionAngle > 135)
-            {
-                Debug.Log("Left");
-                meleeWeapon.transform.DORotate(new Vector3(0, 0, 180), 0);
-                meleeWeapon.velocity = new Vector2(0, 0);
-                meleeWeapon.transform.position = new Vector2(transform.position.x - meleeWeaponGrapplingDistance, transform.position.y);
-            }
-            else if (collisionAngle > 45 && collisionAngle <= 135)
-            {
-                Debug.Log("Top"); 
-                meleeWeapon.transform.DORotate(new Vector3(0, 0, 90), 0);
-                meleeWeapon.velocity = new Vector2(0, 0);
-                meleeWeapon.transform.position = new Vector2(transform.position.x, transform.position.y + meleeWeaponGrapplingDistance);
-            }
-        }
+    //private void OnCollisionEnter2D(Collision2D collision)
+    //{
+    //    if(collision.gameObject.layer == LayerMask.NameToLayer("MeleeWeapon"))
+    //    {
+    //        Vector2 normal = collision.GetContact(0).normal;
+    //        float collisionAngle = Vector2.SignedAngle(Vector2.right, -normal);
+    //        //Debug.Log(collisionAngle);
+    //        if (collisionAngle <= 45 && collisionAngle >= -45)
+    //        {
+    //            Debug.Log("Right");
+    //            meleeWeapon.transform.DORotate(new Vector3(0, 0, 0), 0);
+    //            meleeWeapon.velocity = new Vector2(0,0);
+    //            meleeWeapon.transform.position = new Vector2(transform.position.x + meleeWeaponGrapplingDistance, transform.position.y);
+    //        }
+    //        else if (collisionAngle < -45 && collisionAngle > -135)
+    //        {
+    //            Debug.Log("Bottom");
+    //            meleeWeapon.transform.DORotate(new Vector3(0, 0, -90), 0);
+    //            meleeWeapon.velocity = new Vector2(0, 0);
+    //            meleeWeapon.transform.position = new Vector2(transform.position.x, transform.position.y - meleeWeaponGrapplingDistance);
+    //        }
+    //        else if (collisionAngle <= -135 || collisionAngle > 135)
+    //        {
+    //            Debug.Log("Left");
+    //            meleeWeapon.transform.DORotate(new Vector3(0, 0, 180), 0);
+    //            meleeWeapon.velocity = new Vector2(0, 0);
+    //            meleeWeapon.transform.position = new Vector2(transform.position.x - meleeWeaponGrapplingDistance, transform.position.y);
+    //        }
+    //        else if (collisionAngle > 45 && collisionAngle <= 135)
+    //        {
+    //            Debug.Log("Top"); 
+    //            meleeWeapon.transform.DORotate(new Vector3(0, 0, 90), 0);
+    //            meleeWeapon.velocity = new Vector2(0, 0);
+    //            meleeWeapon.transform.position = new Vector2(transform.position.x, transform.position.y + meleeWeaponGrapplingDistance);
+    //        }
+    //    }
 
-    }
+    //}
 }

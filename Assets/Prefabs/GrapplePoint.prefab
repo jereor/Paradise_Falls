@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 3061553107830435838}
   - component: {fileID: 3061553107830435837}
   - component: {fileID: 3061553107830435836}
-  - component: {fileID: 3061553107830435839}
   m_Layer: 12
   m_Name: GrapplePoint
   m_TagString: Untagged
@@ -111,21 +110,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &3061553107830435839
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3061553107830434819}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dd00c9ba0f477f44c820e264b232e3de, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  canUseMultitoolForGrappling: 1
-  meleeWeaponGrapplingDistance: 1
-  meleeWeapon: {fileID: 989077641383325624, guid: 3780bd19eaa15054a9ebdb884fa668ba, type: 3}
 --- !u!1 &3061553108854025684
 GameObject:
   m_ObjectHideFlags: 0
