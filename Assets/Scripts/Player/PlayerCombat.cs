@@ -62,6 +62,8 @@ public class PlayerCombat : MonoBehaviour
     Camera mainCamera;  // MainCamera
     Ray mousePosRay; // Ray from MainCamera to mouse position in screen (endpoint aka .origin vector is what we can use)
 
+    Vector2 vectorToTarget;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -162,11 +164,14 @@ public class PlayerCombat : MonoBehaviour
             weaponInstance.GetComponent<MeleeWeapon>().PullWeapon(gameObject);          
         }
 
-        // Throw
-        if(context.canceled && isWeaponWielded && throwAim && meleeWeaponPrefab)
+        // Throw on button release
+        if(context.canceled && isWeaponWielded && throwAim && meleeWeaponPrefab && throwButtonPressedTime != null)
         {
             // Instantiate meleeWeaponPrefab on attackPoint
             weaponInstance = Instantiate(meleeWeaponPrefab, throwPoint.position, Quaternion.identity);
+
+            weaponInstance.transform.right = vectorToTarget.normalized;
+
             // Give force to weaponInstance to throw
             if (ratio * maxDistance >= minDistance)
             {
@@ -310,7 +315,7 @@ public class PlayerCombat : MonoBehaviour
             // Get mouse position from mainCamera ScreenPointToRay
             mousePosRay = mainCamera.ScreenPointToRay(mouse.position.ReadValue());
 
-            Vector3 vectorToTarget = new Vector2(mousePosRay.origin.x - gameObject.transform.position.x, mousePosRay.origin.y - gameObject.transform.position.y);
+            vectorToTarget = new Vector2(mousePosRay.origin.x - gameObject.transform.position.x, mousePosRay.origin.y - gameObject.transform.position.y);
 
             // Positions of points[]
             for (int i = 0; i < numberOfPoints; i++)

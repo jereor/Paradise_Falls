@@ -8,9 +8,9 @@ public class MeleeWeapon : MonoBehaviour
     [Header("Variables from This script")]
     [SerializeField] private float weaponThrowDamage; // Damage dealt if hits enemy
     [SerializeField] private float weaponPullDamage;
-    [SerializeField] private float rotAngle; // Rotation angle to spin when thowing
-    [SerializeField] private float ricochetForce; // Force of hit ricochet on enemies and gorund elements
-    [SerializeField] private float enemyHitRicochetY; // Float parameter if we want to ricochet weapon slightly upward feels better and tell player that we hit and dealt damage to something
+    [SerializeField] private float rotSpeed; // Rotation angle to spin when thowing
+    [SerializeField] private float ricochetImpulseForce; // Force of hit ricochet on enemies and gorund elements
+    [SerializeField] private float ricochetYImpulse; // Float parameter if we want to ricochet weapon slightly upward feels better and tell player that we hit and dealt damage to something
     [SerializeField] private float pullForce; // Force we are pulling
     [SerializeField] private float maxDistance; // Max distance to travel with gravityscale 0
 
@@ -58,7 +58,10 @@ public class MeleeWeapon : MonoBehaviour
         // Rotation if weapon is still in air
         if (!landed)
         {
-            transform.Rotate(new Vector3(0f, 0f, -rotAngle * Time.deltaTime));
+            if (myRB.velocity.x > 0)
+                transform.Rotate(new Vector3(0f, 0f, -rotSpeed * Time.fixedDeltaTime));
+            else if (myRB.velocity.x < 0)
+                transform.Rotate(new Vector3(0f, 0f, rotSpeed * Time.fixedDeltaTime));
         }
         // Calculation when we reach end point
         if ((transform.position - startPoint).magnitude >= maxDistance && !beingPulled)
@@ -95,7 +98,7 @@ public class MeleeWeapon : MonoBehaviour
                 myRB.gravityScale = defaultGravityScale;
                 // Ricochet quickmaths
                 Vector2 tmp = new Vector2(collision.contacts[0].point.x - collision.transform.position.x, collision.contacts[0].point.y - collision.transform.position.y);
-                myRB.velocity = tmp.normalized + new Vector2(0, enemyHitRicochetY) * ricochetForce;
+                myRB.velocity = tmp.normalized + new Vector2(0, ricochetYImpulse) * ricochetImpulseForce;
 
                 landed = true;
                 SetEnemyIngoresOnLand();
@@ -109,7 +112,7 @@ public class MeleeWeapon : MonoBehaviour
             {
                 // Ricochet quickmaths
                 Vector2 tmp = new Vector2(collision.contacts[0].point.x - collision.transform.position.x , collision.contacts[0].point.y - collision.transform.position.y);
-                myRB.velocity = tmp.normalized + new Vector2(0, enemyHitRicochetY) * ricochetForce;
+                myRB.velocity = tmp.normalized + new Vector2(0, ricochetYImpulse) * ricochetImpulseForce;
 
                 // If this is somehow not default set it here to be sure
                 if(myRB.gravityScale != defaultGravityScale)
@@ -174,7 +177,7 @@ public class MeleeWeapon : MonoBehaviour
         }
     }
 
-    private void Knockback(GameObject target, GameObject from, float knockbackForce)
+    public void Knockback(GameObject target, GameObject from, float knockbackForce)
     {
         float pushbackX = target.transform.position.x - from.transform.position.x;
         Vector2 knockbackDirection = new Vector2(pushbackX, Mathf.Abs(pushbackX / 4)).normalized;
