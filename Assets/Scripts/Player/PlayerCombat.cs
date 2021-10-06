@@ -23,6 +23,7 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private float maxChargeTime;
     [SerializeField] private float maxDistance;
     [SerializeField] private float minDistance;
+    [SerializeField] private float maxDistanceBetween;
 
     [Header("Projection points")]
     public GameObject pointPrefab;
@@ -96,6 +97,8 @@ public class PlayerCombat : MonoBehaviour
         RotateIndicator();
 
         Throwing();
+
+        CheckMaxDistance();
     }
 
     // --- INPUT FUNCITONS ---
@@ -199,7 +202,7 @@ public class PlayerCombat : MonoBehaviour
 
     public void MeleeAimThrowing(InputAction.CallbackContext context)
     {
-        if (context.performed)
+        if (context.performed && isWeaponWielded)
         {
             throwAim = true;
 
@@ -375,6 +378,19 @@ public class PlayerCombat : MonoBehaviour
         }
         // Show minDistance amount of projections when aiming
         pointsShown = 0;
+    }
+
+    private void CheckMaxDistance()
+    {
+        // We have no weapon wielded and we have thrown weapon we know the instance
+        if (!isWeaponWielded && weaponInstance != null)
+        {
+            // If distance between player and weapon is greater than maxDistance
+            if ((weaponInstance.transform.position - gameObject.transform.position).magnitude >= maxDistanceBetween)
+            {
+                weaponInstance.GetComponent<MeleeWeapon>().PullWeapon(gameObject);
+            }
+        }
     }
 
     // Called from Weapon script if pulled or we Interact with weapon

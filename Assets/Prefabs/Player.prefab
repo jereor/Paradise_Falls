@@ -94,7 +94,7 @@ GameObject:
   m_Layer: 0
   m_Name: ThrowPoint
   m_TagString: Untagged
-  m_Icon: {fileID: 2974397684917235467, guid: 0000000000000000d000000000000000, type: 0}
+  m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -589,7 +589,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   meleeDamage: 1
-  meleeComboLastDamage: 2
   knockbackForceNormal: 500
   knockbackForceLast: 750
   meleeAttackRate: 0.5
@@ -601,6 +600,7 @@ MonoBehaviour:
   maxChargeTime: 3
   maxDistance: 7
   minDistance: 2
+  maxDistanceBetween: 25
   pointPrefab: {fileID: 4349618030200945619, guid: d79b0205f7096aa4786974302b48bf41, type: 3}
   spaceBetweenPoints: 0.02
   pointsShown: 7
