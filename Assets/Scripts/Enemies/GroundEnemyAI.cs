@@ -34,13 +34,20 @@ public class GroundEnemyAI : MonoBehaviour
     [Header("State and Parameters")]
     public string state = "roam";
     public Vector2 roamingRange = new Vector2(10, 10);
-    //public float roamingRangeX = 10f;
-    //public float roamingRangeY = 10f;
     public Vector2 aggroDistance = new Vector2(5f, 5f);
     public float aggroDistanceLength = 5f;
     public Vector2 punchingDistance = new Vector2(3f, 3f);
     public float knockbackForce = 5f;
 
+    [Header("Health and Energy Spawn values")]
+    public float healthProbability; // Value between 1-100. Higher the better chance.
+    public float energyProbability;
+    public float amountWhenHealthIsSpawnable; // MaxHealth value between 0-1. When your health sinks below a certain amount health becomes spawnable.
+
+    [Header("Pathfinding info")]
+    public float nextWaypointDistance = 1f;
+    public float pathUpdateInterval = 1f;
+    
     private float wallCheckDistance = 1.5f;
     private float higherWallCheckDistance = 1.5f;
     private float groundCheckDistance = 2f;
@@ -51,8 +58,7 @@ public class GroundEnemyAI : MonoBehaviour
     private bool canPunch = true;
     private float punchCooldown = 1.5f;
 
-    public float pathUpdateInterval = 1f;
-    public float nextWaypointDistance = 3f;
+
 
     private Vector2 spawnPosition;
     private Path path;
@@ -118,7 +124,7 @@ public class GroundEnemyAI : MonoBehaviour
 
         // If the target is too far from the enemy unit, it respawns in to the spawn point and stays there until target is close enough again.
         // Enemy stops all actions for the time being.
-        if ((target.transform.position - transform.position).magnitude > 20)
+        if ((target.transform.position - transform.position).magnitude > 60 && !IsPlayerInRange())
         {
             transform.position = spawnPosition;
             isTargetInBehaviourRange = false;
@@ -453,13 +459,18 @@ public class GroundEnemyAI : MonoBehaviour
 
     public void SpawnHealthOrEnergy()
     {
-        int rand = UnityEngine.Random.Range(0, 100);
-        if (_targetHealth.GetHealth() <= 3 && rand < 49)
+        int rand = UnityEngine.Random.Range(1, 101);
+        if (_targetHealth.GetHealth() <= _targetHealth.MaxHealth * amountWhenHealthIsSpawnable && rand <= healthProbability)
         {
+            // Debug.Log(rand);
             Instantiate(healthItem, transform.position, Quaternion.identity);
         }
-        else if (rand >= 49)
+        else if (rand <= energyProbability)
+        {
+            // Debug.Log(rand);
             Instantiate(energyItem, transform.position, Quaternion.identity);
+        }
+
     }
 }
 

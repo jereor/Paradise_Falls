@@ -27,8 +27,7 @@ public class FlyingEnemyAI : MonoBehaviour
     public float speed = 5f;
     public float chargeSpeed = 10f;
     public float roamSpeed = 5f;
-    public float nextWaypointDistance = 3f;
-    public float pathUpdateInterval = 1f;
+
 
     [Header("State and Parameters")]
     public string state = "roam";
@@ -37,6 +36,15 @@ public class FlyingEnemyAI : MonoBehaviour
     public float shootingDistance = 10f;
     public float wallCheckDistance = 2f;
     public float knockbackForce = 5f;
+
+    [Header("Health and Energy Spawn values")]
+    public float healthProbability; // Value between 1-100. Higher the better chance.
+    public float energyProbability;
+    public float amountWhenHealthIsSpawnable; // MaxHealth value between 0-1. When your health sinks below a certain amount health becomes spawnable.
+
+    [Header("Pathfinding info")]
+    public float nextWaypointDistance = 1f;
+    public float pathUpdateInterval = 1f;
 
     private bool returningFromChase = false;
     private bool canShoot = true;
@@ -118,7 +126,7 @@ public class FlyingEnemyAI : MonoBehaviour
 
         // If the target is too far from the enemy unit, it respawns in to the spawn point and stays there until target is close enough again.
         // Enemy stops all actions for the time being.
-        if ((target.transform.position - transform.position).magnitude > 20)
+        if ((target.transform.position - transform.position).magnitude > 60 && !IsPlayerInRange())
         {
             transform.position = spawnPosition;
             isTargetInBehaviourRange = false;
@@ -393,12 +401,17 @@ public class FlyingEnemyAI : MonoBehaviour
 
     public void SpawnHealthOrEnergy()
     {
-        int rand = UnityEngine.Random.Range(0, 100);
-        if (_targetHealth.GetHealth() <= 3 && rand < 49)
+        int rand = UnityEngine.Random.Range(1, 101);
+        if (_targetHealth.GetHealth() <= _targetHealth.MaxHealth * amountWhenHealthIsSpawnable && rand <= healthProbability)
         {
+            // Debug.Log(rand);
             Instantiate(healthItem, transform.position, Quaternion.identity);
         }
-        else if (rand >= 49)
+        else if (rand <= energyProbability)
+        {
+            // Debug.Log(rand);
             Instantiate(energyItem, transform.position, Quaternion.identity);
+        }
+
     }
 }
