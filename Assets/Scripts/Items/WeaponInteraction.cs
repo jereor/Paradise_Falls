@@ -20,4 +20,12 @@ public class WeaponInteraction : MonoBehaviour
             weaponScript.Knockback(collision.gameObject, gameObject, weaponScript.knockbackForce);
         }
     }
+
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Player") && weaponScript.getLanded())
+        {
+            weaponScript.Interact(collision.gameObject);
+        }
+    }
 }
