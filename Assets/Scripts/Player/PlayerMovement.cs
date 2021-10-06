@@ -125,6 +125,7 @@ public class PlayerMovement : MonoBehaviour
                 rb.velocity = new Vector2(0, 0); // Set velocity here to zero else movement bugs while climbing
 
                 canMove = false; // Prevent moving while climbing mostly for animations
+                canShockwaveJump = false;
 
                 lastTimeClimbed = Time.time; // We start climbing set time here
 
@@ -201,7 +202,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void CheckShockwaveJump()
     {
-        canShockwaveJump = (IsGrounded() && !shockwaveTool.ShockwaveJumpUsed) ? false : true;
+        canShockwaveJump = (!IsGrounded() && !isClimbing && !shockwaveTool.ShockwaveJumpUsed) ? true : false;
 
         if (!shockwaveTool.ShockwaveJumpUsed)
             shockwaveJumping = false;
@@ -298,7 +299,8 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // Shockwave jump while in air
-        else if (context.started && allowShockwaveJump && canShockwaveJump && !shockwaveJumping)
+        else if (context.started && allowShockwaveJump && canShockwaveJump && !shockwaveJumping
+            && !(Time.time - lastGroundedTime <= coyoteTime)) // Check if coyote time is online
         {
             shockwaveTool.ShockwaveJump();
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
