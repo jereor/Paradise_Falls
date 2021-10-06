@@ -166,6 +166,10 @@ public class MeleeWeapon : MonoBehaviour
             // Makes the player and melee weapon to collide until it is pulled again. Weapon can be used as a platform during grapple.
             Physics2D.IgnoreLayerCollision(3, 13, false);
 
+            // TODO: Change grapple point and meleeweapon layers to Ground here!
+            //gameObject.layer = 6;
+            //collision.gameObject.layer = 6;
+
             // We are attached to a grappling point.
             attachedToGrapplePoint = true;
             landed = true;
