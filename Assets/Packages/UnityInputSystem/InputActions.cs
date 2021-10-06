@@ -320,6 +320,14 @@ public class @InputActions : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""Navigation"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""a7c0ba3c-2428-413f-8800-6de7baddeb0f"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -355,6 +363,72 @@ public class @InputActions : IInputActionCollection, IDisposable
                     ""action"": ""Map"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""715fa20b-7a63-451d-9e1b-ab6011b2cc4d"",
+                    ""path"": ""<Gamepad>/leftStick"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Navigation"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""2D Vector"",
+                    ""id"": ""6701f247-125c-4ee6-92f2-91497091351a"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Navigation"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""d6b9dd23-568f-4fd6-96ea-7c84f491f56b"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Navigation"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""707611a4-8760-42a0-9927-bf7f965c0007"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Navigation"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""8fca91b7-9ba8-4ae0-b858-1f552c1c515c"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Navigation"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""03968c15-6198-4f02-bd96-bf40183cde94"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Navigation"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         }
@@ -373,6 +447,7 @@ public class @InputActions : IInputActionCollection, IDisposable
         m_GameUI = asset.FindActionMap("GameUI", throwIfNotFound: true);
         m_GameUI_Pause = m_GameUI.FindAction("Pause", throwIfNotFound: true);
         m_GameUI_Map = m_GameUI.FindAction("Map", throwIfNotFound: true);
+        m_GameUI_Navigation = m_GameUI.FindAction("Navigation", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -497,12 +572,14 @@ public class @InputActions : IInputActionCollection, IDisposable
     private IGameUIActions m_GameUIActionsCallbackInterface;
     private readonly InputAction m_GameUI_Pause;
     private readonly InputAction m_GameUI_Map;
+    private readonly InputAction m_GameUI_Navigation;
     public struct GameUIActions
     {
         private @InputActions m_Wrapper;
         public GameUIActions(@InputActions wrapper) { m_Wrapper = wrapper; }
         public InputAction @Pause => m_Wrapper.m_GameUI_Pause;
         public InputAction @Map => m_Wrapper.m_GameUI_Map;
+        public InputAction @Navigation => m_Wrapper.m_GameUI_Navigation;
         public InputActionMap Get() { return m_Wrapper.m_GameUI; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -518,6 +595,9 @@ public class @InputActions : IInputActionCollection, IDisposable
                 @Map.started -= m_Wrapper.m_GameUIActionsCallbackInterface.OnMap;
                 @Map.performed -= m_Wrapper.m_GameUIActionsCallbackInterface.OnMap;
                 @Map.canceled -= m_Wrapper.m_GameUIActionsCallbackInterface.OnMap;
+                @Navigation.started -= m_Wrapper.m_GameUIActionsCallbackInterface.OnNavigation;
+                @Navigation.performed -= m_Wrapper.m_GameUIActionsCallbackInterface.OnNavigation;
+                @Navigation.canceled -= m_Wrapper.m_GameUIActionsCallbackInterface.OnNavigation;
             }
             m_Wrapper.m_GameUIActionsCallbackInterface = instance;
             if (instance != null)
@@ -528,6 +608,9 @@ public class @InputActions : IInputActionCollection, IDisposable
                 @Map.started += instance.OnMap;
                 @Map.performed += instance.OnMap;
                 @Map.canceled += instance.OnMap;
+                @Navigation.started += instance.OnNavigation;
+                @Navigation.performed += instance.OnNavigation;
+                @Navigation.canceled += instance.OnNavigation;
             }
         }
     }
@@ -545,5 +628,6 @@ public class @InputActions : IInputActionCollection, IDisposable
     {
         void OnPause(InputAction.CallbackContext context);
         void OnMap(InputAction.CallbackContext context);
+        void OnNavigation(InputAction.CallbackContext context);
     }
 }

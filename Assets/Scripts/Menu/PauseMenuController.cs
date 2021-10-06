@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using DG.Tweening;
 using UnityEngine.InputSystem;
+using UnityEngine.EventSystems;
 
 public class PauseMenuController : MonoBehaviour
 {
@@ -13,10 +14,16 @@ public class PauseMenuController : MonoBehaviour
 
     public CanvasGroup fader, buttons, popUp;
     public GameObject pauseMenuUI;
+
+    public Button continueButton;
+    public Button warningNoButton;
+
     public GameObject settingsMenu;
     public GameObject warningPopUp;
     [SerializeField] private bool warningAnswered;
-    
+
+    private bool warningOpen;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -44,6 +51,8 @@ public class PauseMenuController : MonoBehaviour
     {
         pauseMenuUI.SetActive(false);
 
+        EventSystem.current.SetSelectedGameObject(null);
+        
         // Time scale back to default
         Time.timeScale = 1f;
         GameIsPaused = false;
@@ -53,6 +62,8 @@ public class PauseMenuController : MonoBehaviour
     private void Pause()
     {
         pauseMenuUI.SetActive(true);
+
+        continueButton.Select();
 
         // Freeze time
         Time.timeScale = 0f;
@@ -79,8 +90,9 @@ public class PauseMenuController : MonoBehaviour
             .DOFade(1, .3f)
             .SetUpdate(true);
 
-        warningAnswered = true;
-        QuitToMenu();
+        warningOpen = false;
+        warningPopUp.SetActive(false);
+        continueButton.Select();
     }
 
     //Confirms players intention and loads Main Menu Scene
@@ -92,7 +104,9 @@ public class PauseMenuController : MonoBehaviour
                 .DOFade(0, .3f)
                 .SetUpdate(true);
 
+            warningOpen = true;
             warningPopUp.SetActive(true);
+            warningNoButton.Select();
         }
         else
         {
@@ -104,6 +118,21 @@ public class PauseMenuController : MonoBehaviour
             
             warningAnswered = false;
             SceneManager.LoadScene(0); // MainMenu or intro scene should be at buildindex 0
+        }
+    }
+
+    // Checks input from controller if we have selected null aka pressed screen but not UI elements
+    public void ControllerInput(InputAction.CallbackContext context)
+    {
+        // We have presed screen with mouse or something so we have null in selected
+        if (context.performed && context.ReadValue<Vector2>().magnitude > 0 && EventSystem.current.currentSelectedGameObject == null)
+        {
+            if (settingsMenu.GetComponent<SettingsController>().settingsOpen) // Settings panel is open select settingsBackButton
+                settingsMenu.GetComponent<SettingsController>().settingsBackButton.Select();
+            else if (warningOpen) // Warning panel is open select warningNoButton
+                warningNoButton.Select();
+            else // PauseMenu is only one opened select continueButton
+                continueButton.Select();
         }
     }
 }
