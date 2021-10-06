@@ -15,34 +15,68 @@ public class ShockwaveTool : MonoBehaviour
     [SerializeField] private Player playerScript;
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private GameObject shockwaveDirection;
-    [SerializeField] private ParticleSystem shockwaveEffect;
+    [SerializeField] private ParticleSystem shockwaveJumpEffect;
+    [SerializeField] private ParticleSystem shockwaveDiveEffect;
+    [SerializeField] private ParticleSystem shockwaveAttackEffect;
 
     private float nextShockwave = -1; // Initialize as -1. First time it will always be less than the current time so use it can be used. 
 
     private void Update()
     {
-        UpdateDirection();    
+        UpdateDirection();
     }
 
     private void UpdateDirection()
     {
-        var vertical = playerScript.InputVertical;
+        // NEW WAY WITH ONLY HORIZONTAL INPUT
 
+        // When not shockwave jumping or diving
+        float horizontal = playerScript.IsFacingRight() ? 1 : -1;
+        shockwaveDirection.transform.localPosition = new Vector3(0, 0, 0);
+        shockwaveDirection.transform.rotation = Quaternion.Euler(0, 0, -90 * horizontal);
+
+        /* OLD WAY WITH VERTICAL INPUT
+        float vertical = playerScript.InputVertical;
         switch (vertical)
         {
-            case -1: shockwaveDirection.transform.localPosition = new Vector3(-1, 1, 0); break; // DIVE
-            case 1: shockwaveDirection.transform.localPosition = new Vector3(-1, -1, 0); break; // JUMP
+            case 0:
+                float horizontal = playerScript.IsFacingRight() ? 1 : -1;
+                shockwaveDirection.transform.localPosition = new Vector3(0, 0, 0);
+                shockwaveDirection.transform.rotation = Quaternion.Euler(0, 0, -90 * horizontal);
+                break;
+            case -1:
+                shockwaveDirection.transform.localPosition = new Vector3(-1.5f, -1, 0);
+                shockwaveDirection.transform.rotation = Quaternion.Euler(0, 0, 180);
+                break; // DIVE
+            case 1: 
+                shockwaveDirection.transform.localPosition = new Vector3(-1.5f, -1, 0);
+                shockwaveDirection.transform.rotation = Quaternion.Euler(0, 0, 0);
+                break; // JUMP
         }
+        */
     }
 
-    // Shockwave action: Called when the Shockwave Action Button is pressed
-    public void Shockwave(InputAction.CallbackContext context) // Context tells the function when the action is triggered
+    // Shockwave Jump: Triggered when double jumping
+    public void ShockwaveJump() // Context tells the function when the action is triggered
+    {
+        shockwaveJumpEffect.Play();
+    }
+
+    public void ShockwaveDive()
+    {
+        shockwaveDiveEffect.Play();
+    }
+
+    // ShockwaveAttack action: Called when the ShockwaveAttack Action Button is pressed
+    public void ShockwaveAttack(InputAction.CallbackContext context) // Context tells the function when the action is triggered
     {
         if (context.started && Time.time >= nextShockwave)
         {
             nextShockwave = Time.time + usageCooldown;
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-            shockwaveEffect.Play();
+            shockwaveAttackEffect.Play();
+
+            // Shockwave attack functionality here
+
             StartCoroutine(ActivateCooldown(usageCooldown));
         }
     }

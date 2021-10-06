@@ -2571,7 +2571,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.2
+      scalar: 0.6
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -2624,7 +2624,7 @@ ParticleSystem:
     startSpeed:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 5
+      scalar: 10
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -7533,7 +7533,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1940316766}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.75, y: 0, z: 0}
+  m_LocalPosition: {x: 1.5, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1691313837}
@@ -7557,7 +7557,9 @@ MonoBehaviour:
   playerScript: {fileID: 2646993275714197190}
   rb: {fileID: 1859845175}
   shockwaveDirection: {fileID: 1691313836}
-  shockwaveEffect: {fileID: 1691313839}
+  shockwaveJumpEffect: {fileID: 0}
+  shockwaveDiveEffect: {fileID: 0}
+  shockwaveAttackEffect: {fileID: 0}
 --- !u!1 &1993802980
 GameObject:
   m_ObjectHideFlags: 0
@@ -7789,11 +7791,11 @@ PrefabInstance:
       objectReference: {fileID: 729320505}
     - target: {fileID: 284613507, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: m_TrackedObjectOffset.x
-      value: -0.999999
+      value: 0.8297052
       objectReference: {fileID: 0}
     - target: {fileID: 284613507, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: m_TrackedObjectOffset.y
-      value: -0.00000002180228
+      value: -0.06962404
       objectReference: {fileID: 0}
     - target: {fileID: 505850491, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: m_Follow
@@ -7809,11 +7811,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2049820520096467095, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: m_TrackedObjectOffset.x
-      value: 0.977467
+      value: -0.9931108
       objectReference: {fileID: 0}
     - target: {fileID: 2049820520096467095, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: m_TrackedObjectOffset.y
-      value: -1.015474e-10
+      value: -0.03624107
       objectReference: {fileID: 0}
     - target: {fileID: 2049820520137079200, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: m_RootOrder
@@ -7936,6 +7938,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 2646993275326716549, guid: 4154d57994558ff489a9180c3151e624, type: 3}
+      propertyPath: allowWallJump
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2646993275326716551, guid: 4154d57994558ff489a9180c3151e624, type: 3}
+      propertyPath: shockwaveTool
+      value: 
+      objectReference: {fileID: 1940316768}
     - target: {fileID: 2646993275326716664, guid: 4154d57994558ff489a9180c3151e624, type: 3}
       propertyPath: m_ActionEvents.Array.size
       value: 9
@@ -7986,7 +7996,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2646993275326716664, guid: 4154d57994558ff489a9180c3151e624, type: 3}
       propertyPath: m_ActionEvents.Array.data[8].m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: Shockwave
+      value: ShockwaveAttack
       objectReference: {fileID: 0}
     - target: {fileID: 2646993275326716664, guid: 4154d57994558ff489a9180c3151e624, type: 3}
       propertyPath: m_ActionEvents.Array.data[0].m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName

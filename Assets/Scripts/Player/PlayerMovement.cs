@@ -32,7 +32,8 @@ public class PlayerMovement : MonoBehaviour
     private float horizontal; // Tracks horizontal input direction
     private bool moving = false;
     private bool falling = false;
-    private bool isFacingRight = true; // Tracks player sprite direction
+    public bool shockwaveJumping = false;
+    public bool isFacingRight = true; // Tracks player sprite direction
     private float? jumpButtonPressedTime; // Saves the time when player presses jump button
     private float? lastGroundedTime;
 
@@ -42,7 +43,7 @@ public class PlayerMovement : MonoBehaviour
     private bool canClimb;
     private bool isClimbing;
     private bool canMove = true;
-
+    private bool canShockwaveJump = false;
     private bool canWallJump; // Tells jump function/event that we can jump this is set in CheckWallJump()
     private float wallJumpDir = 0f; // Keeps track if we jump from the left or right (Mathf.Sign() == -1 jumped from left, == 1 jumped from right, == we havent jumped from wall)
 
@@ -283,6 +284,14 @@ public class PlayerMovement : MonoBehaviour
             wallJumpDir = Mathf.Sign(-transform.localScale.x);
         }
 
+        // Shockwave jump while in air
+        else if (context.started && canShockwaveJump)
+        {
+            shockwaveTool.ShockwaveJump();
+            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+            canShockwaveJump = false;
+        }
+
         // -JUMP FROM GROUND-
 
         // If button was pressed
@@ -298,6 +307,9 @@ public class PlayerMovement : MonoBehaviour
             rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f); // Slow down player
             jumpButtonPressedTime = null;
             lastGroundedTime = null;
+
+            if (!IsGrounded())
+                canShockwaveJump = true;
         }
     }
 

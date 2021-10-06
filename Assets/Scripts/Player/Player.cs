@@ -21,6 +21,7 @@ public class Player : MonoBehaviour
     [SerializeField] private PlayerCollision collisionScript;
     [SerializeField] private PlayerInteractions interactionsScript;
     [SerializeField] private PlayerCombat combatScript;
+    [SerializeField] private ShockwaveTool shockwaveTool;
     [SerializeField] private Health healthScript;
     [SerializeField] private Energy energyScript;
 
@@ -37,6 +38,16 @@ public class Player : MonoBehaviour
         TextStyleEnergy.fontSize = 30;
         TextStyleHealth.fontSize = 30;
         TextStyleEnergy.normal.textColor = Color.red;
+    }
+
+    public bool IsFacingRight()
+    {
+        return movementScript.isFacingRight;
+    }
+
+    public bool IsShockwaveJumping()
+    {
+        return movementScript.shockwaveJumping;
     }
 
     private void OnGUI()

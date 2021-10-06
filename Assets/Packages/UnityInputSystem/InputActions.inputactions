@@ -54,7 +54,7 @@
                     "interactions": ""
                 },
                 {
-                    "name": "Shockwave",
+                    "name": "ShockwaveAttack",
                     "type": "Button",
                     "id": "18f277c4-c09b-4662-895e-43167f85c6df",
                     "expectedControlType": "Button",
@@ -264,22 +264,22 @@
                 {
                     "name": "",
                     "id": "ed8f35da-118c-4cd0-bdc2-67696c482b50",
-                    "path": "<Keyboard>/leftShift",
+                    "path": "<Keyboard>/f",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Shockwave",
+                    "action": "ShockwaveAttack",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
                     "id": "8d239e54-4abc-4e36-a8cb-cf6b50438fd0",
-                    "path": "<Gamepad>/rightTrigger",
+                    "path": "<Gamepad>/buttonEast",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Shockwave",
+                    "action": "ShockwaveAttack",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
