@@ -9,7 +9,14 @@ public class MainMenuController : MonoBehaviour
 {
     public RectTransform credits;
     public CanvasGroup fader, buttons, popUp;
-    public GameObject continueButton;
+    public Button newGameButton;
+    public Button continueButton;
+
+    public Button creditsButton;
+
+    public Button creditsBackButton;
+    public Button warningNoButton;
+
     public GameObject settingsMenu;
     //public TMPPlayer saveData;
     public GameObject warningPopUp;
@@ -21,11 +28,13 @@ public class MainMenuController : MonoBehaviour
         // If game finds save file show continue button
         if (GameStatus.status.CheckData())
         {
-            continueButton.SetActive(true);
+            continueButton.gameObject.SetActive(true);
+            continueButton.Select();
         }
         else
         {
-            continueButton.SetActive(false);
+            continueButton.gameObject.SetActive(false);
+            newGameButton.Select();
         }
         //fader.alpha = 1;
         //fader.DOFade(0, 1).SetUpdate(true);
@@ -49,6 +58,8 @@ public class MainMenuController : MonoBehaviour
                 .SetUpdate(true);
 
             warningPopUp.SetActive(true);
+
+            warningNoButton.Select();
         }
         else
         {
@@ -113,6 +124,8 @@ public class MainMenuController : MonoBehaviour
         credits
             .DOAnchorPos(Vector2.zero, .3f)
             .SetUpdate(true);
+
+        creditsBackButton.Select();
     }
 
     //Closes the credits panel
@@ -124,6 +137,8 @@ public class MainMenuController : MonoBehaviour
         credits
             .DOAnchorPos(new Vector2(0, -500), .3f)
             .SetUpdate(true);
+
+        creditsButton.Select();
     }
 
     //Closes the application.

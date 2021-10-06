@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using DG.Tweening;
 using UnityEngine.InputSystem;
+using UnityEngine.EventSystems;
 
 public class PauseMenuController : MonoBehaviour
 {
@@ -13,6 +14,10 @@ public class PauseMenuController : MonoBehaviour
 
     public CanvasGroup fader, buttons, popUp;
     public GameObject pauseMenuUI;
+
+    public Button continueButton;
+    public Button warningNoButton;
+
     public GameObject settingsMenu;
     public GameObject warningPopUp;
     [SerializeField] private bool warningAnswered;
@@ -44,6 +49,8 @@ public class PauseMenuController : MonoBehaviour
     {
         pauseMenuUI.SetActive(false);
 
+        EventSystem.current.SetSelectedGameObject(null);
+        
         // Time scale back to default
         Time.timeScale = 1f;
         GameIsPaused = false;
@@ -53,6 +60,8 @@ public class PauseMenuController : MonoBehaviour
     private void Pause()
     {
         pauseMenuUI.SetActive(true);
+
+        continueButton.Select();
 
         // Freeze time
         Time.timeScale = 0f;
@@ -79,8 +88,9 @@ public class PauseMenuController : MonoBehaviour
             .DOFade(1, .3f)
             .SetUpdate(true);
 
-        warningAnswered = true;
-        QuitToMenu();
+        //warningAnswered = true;
+        warningPopUp.SetActive(false);
+        continueButton.Select();
     }
 
     //Confirms players intention and loads Main Menu Scene
@@ -93,6 +103,7 @@ public class PauseMenuController : MonoBehaviour
                 .SetUpdate(true);
 
             warningPopUp.SetActive(true);
+            warningNoButton.Select();
         }
         else
         {
