@@ -82,6 +82,67 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &221694810971202532
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3243163536262417571}
+  m_Layer: 0
+  m_Name: ThrowPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3243163536262417571
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 221694810971202532}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.64, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1928146856551811166}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &533264429858380022
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1928146856551811166}
+  m_Layer: 0
+  m_Name: ThrowIndicator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1928146856551811166
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 533264429858380022}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.27, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 3243163536262417571}
+  m_Father: {fileID: 2646993275326716544}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &777726905079294911
 GameObject:
   m_ObjectHideFlags: 0
@@ -157,6 +218,7 @@ Transform:
   - {fileID: 1156667530783647825}
   - {fileID: 604414329}
   - {fileID: 7716404287092780390}
+  - {fileID: 1928146856551811166}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -387,7 +449,6 @@ MonoBehaviour:
   onDie:
     m_PersistentCalls:
       m_Calls: []
-  CurrentHealth: 0
 --- !u!114 &8760275387346948364
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -514,7 +575,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shield: {fileID: 604414328}
   protectionValue: 0
-  parryTime: 0
+  parryTimeWindow: 0.5
 --- !u!114 &7463911945564789779
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -528,13 +589,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   meleeDamage: 1
-  meleeComboLastDamage: 2
   knockbackForceNormal: 500
   knockbackForceLast: 750
   meleeAttackRate: 0.5
   comboCooldown: 1
   comboBetweenTimer: 2
-  throwingForce: 15
+  throwIndicator: {fileID: 533264429858380022}
+  throwPoint: {fileID: 3243163536262417571}
+  defaultThrowingForce: 15
+  maxChargeTime: 3
+  maxDistance: 7
+  minDistance: 2
+  maxDistanceBetween: 25
+  pointPrefab: {fileID: 4349618030200945619, guid: d79b0205f7096aa4786974302b48bf41, type: 3}
+  spaceBetweenPoints: 0.02
+  pointsShown: 7
+  pointScaleRatio: 1.2
   enemyLayer:
     serializedVersion: 2
     m_Bits: 128
@@ -542,9 +612,7 @@ MonoBehaviour:
   attackRangeX: 1.5
   attackRangeY: 1.5
   meleeWeaponPrefab: {fileID: 3980506574090905470, guid: 3780bd19eaa15054a9ebdb884fa668ba, type: 3}
-  weaponInstance: {fileID: 0}
   isWeaponWielded: 0
-  comboOnGoing: 0
 --- !u!1 &2646993277219195829
 GameObject:
   m_ObjectHideFlags: 0

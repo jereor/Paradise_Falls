@@ -65,14 +65,6 @@ public class @InputActions : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
-                },
-                {
-                    ""name"": ""ShockwaveAttack"",
-                    ""type"": ""Button"",
-                    ""id"": ""18f277c4-c09b-4662-895e-43167f85c6df"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -232,6 +224,17 @@ public class @InputActions : IInputActionCollection, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""b16e0e1c-c4b8-4000-8caf-df3762d7e80e"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Interact"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""53d98ce8-3f1a-4074-8638-1e616915ca4c"",
                     ""path"": ""<Keyboard>/ctrl"",
                     ""interactions"": """",
@@ -265,6 +268,17 @@ public class @InputActions : IInputActionCollection, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""bcd447bd-89c4-49d7-b63e-40150f84853e"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Melee"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""867f330b-b1c1-4ef5-9dbc-6f41956f057d"",
                     ""path"": ""<Mouse>/rightButton"",
                     ""interactions"": """",
@@ -276,23 +290,12 @@ public class @InputActions : IInputActionCollection, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""ed8f35da-118c-4cd0-bdc2-67696c482b50"",
-                    ""path"": ""<Keyboard>/f"",
+                    ""id"": ""9d793c12-3c49-499c-a918-3dbdcfc1f282"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""ShockwaveAttack"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""8d239e54-4abc-4e36-a8cb-cf6b50438fd0"",
-                    ""path"": ""<Gamepad>/buttonEast"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""ShockwaveAttack"",
+                    ""action"": ""ThrowAim"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -366,7 +369,6 @@ public class @InputActions : IInputActionCollection, IDisposable
         m_Player_Shield = m_Player.FindAction("Shield", throwIfNotFound: true);
         m_Player_Melee = m_Player.FindAction("Melee", throwIfNotFound: true);
         m_Player_ThrowAim = m_Player.FindAction("ThrowAim", throwIfNotFound: true);
-        m_Player_ShockwaveAttack = m_Player.FindAction("ShockwaveAttack", throwIfNotFound: true);
         // GameUI
         m_GameUI = asset.FindActionMap("GameUI", throwIfNotFound: true);
         m_GameUI_Pause = m_GameUI.FindAction("Pause", throwIfNotFound: true);
@@ -426,7 +428,6 @@ public class @InputActions : IInputActionCollection, IDisposable
     private readonly InputAction m_Player_Shield;
     private readonly InputAction m_Player_Melee;
     private readonly InputAction m_Player_ThrowAim;
-    private readonly InputAction m_Player_ShockwaveAttack;
     public struct PlayerActions
     {
         private @InputActions m_Wrapper;
@@ -437,7 +438,6 @@ public class @InputActions : IInputActionCollection, IDisposable
         public InputAction @Shield => m_Wrapper.m_Player_Shield;
         public InputAction @Melee => m_Wrapper.m_Player_Melee;
         public InputAction @ThrowAim => m_Wrapper.m_Player_ThrowAim;
-        public InputAction @ShockwaveAttack => m_Wrapper.m_Player_ShockwaveAttack;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -465,9 +465,6 @@ public class @InputActions : IInputActionCollection, IDisposable
                 @ThrowAim.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnThrowAim;
                 @ThrowAim.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnThrowAim;
                 @ThrowAim.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnThrowAim;
-                @ShockwaveAttack.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnShockwaveAttack;
-                @ShockwaveAttack.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnShockwaveAttack;
-                @ShockwaveAttack.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnShockwaveAttack;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -490,9 +487,6 @@ public class @InputActions : IInputActionCollection, IDisposable
                 @ThrowAim.started += instance.OnThrowAim;
                 @ThrowAim.performed += instance.OnThrowAim;
                 @ThrowAim.canceled += instance.OnThrowAim;
-                @ShockwaveAttack.started += instance.OnShockwaveAttack;
-                @ShockwaveAttack.performed += instance.OnShockwaveAttack;
-                @ShockwaveAttack.canceled += instance.OnShockwaveAttack;
             }
         }
     }
@@ -546,7 +540,6 @@ public class @InputActions : IInputActionCollection, IDisposable
         void OnShield(InputAction.CallbackContext context);
         void OnMelee(InputAction.CallbackContext context);
         void OnThrowAim(InputAction.CallbackContext context);
-        void OnShockwaveAttack(InputAction.CallbackContext context);
     }
     public interface IGameUIActions
     {

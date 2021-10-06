@@ -52,14 +52,6 @@
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
-                },
-                {
-                    "name": "ShockwaveAttack",
-                    "type": "Button",
-                    "id": "18f277c4-c09b-4662-895e-43167f85c6df",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": ""
                 }
             ],
             "bindings": [
@@ -219,6 +211,17 @@
                 },
                 {
                     "name": "",
+                    "id": "b16e0e1c-c4b8-4000-8caf-df3762d7e80e",
+                    "path": "<Gamepad>/buttonNorth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Interact",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "53d98ce8-3f1a-4074-8638-1e616915ca4c",
                     "path": "<Keyboard>/ctrl",
                     "interactions": "",
@@ -252,6 +255,17 @@
                 },
                 {
                     "name": "",
+                    "id": "bcd447bd-89c4-49d7-b63e-40150f84853e",
+                    "path": "<Gamepad>/rightShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Melee",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "867f330b-b1c1-4ef5-9dbc-6f41956f057d",
                     "path": "<Mouse>/rightButton",
                     "interactions": "",
@@ -263,23 +277,12 @@
                 },
                 {
                     "name": "",
-                    "id": "ed8f35da-118c-4cd0-bdc2-67696c482b50",
-                    "path": "<Keyboard>/f",
+                    "id": "9d793c12-3c49-499c-a918-3dbdcfc1f282",
+                    "path": "<Gamepad>/leftShoulder",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "ShockwaveAttack",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "8d239e54-4abc-4e36-a8cb-cf6b50438fd0",
-                    "path": "<Gamepad>/buttonEast",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "ShockwaveAttack",
+                    "action": "ThrowAim",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
