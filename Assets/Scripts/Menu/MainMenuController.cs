@@ -4,15 +4,27 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using DG.Tweening;
+using UnityEngine.EventSystems;
 
 public class MainMenuController : MonoBehaviour
 {
     public RectTransform credits;
     public CanvasGroup fader, buttons, popUp;
-    public GameObject continueButton;
+    public Button newGameButton;
+    public Button continueButton;
+
+    public Button creditsButton;
+
+    public Button creditsBackButton;
+    public Button warningNoButton;
+
     public GameObject settingsMenu;
-    //public TMPPlayer saveData;
+    
     public GameObject warningPopUp;
+
+    private bool creditsOpen; // If these are true and ControllerInput is called with current selected EventSystem == null select creditsBackButton
+    private bool warningOpen;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -21,11 +33,13 @@ public class MainMenuController : MonoBehaviour
         // If game finds save file show continue button
         if (GameStatus.status.CheckData())
         {
-            continueButton.SetActive(true);
+            continueButton.gameObject.SetActive(true);
+            continueButton.Select();
         }
         else
         {
-            continueButton.SetActive(false);
+            continueButton.gameObject.SetActive(false);
+            newGameButton.Select();
         }
         //fader.alpha = 1;
         //fader.DOFade(0, 1).SetUpdate(true);
@@ -34,7 +48,7 @@ public class MainMenuController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     //Starts new game file while asking to delete the old one if it exists.
@@ -49,6 +63,9 @@ public class MainMenuController : MonoBehaviour
                 .SetUpdate(true);
 
             warningPopUp.SetActive(true);
+
+            warningOpen = true;
+            warningNoButton.Select();
         }
         else
         {
@@ -102,6 +119,8 @@ public class MainMenuController : MonoBehaviour
         buttons
             .DOFade(1, .3f)
             .SetUpdate(true);
+
+        warningOpen = false;
     }
 
     //Opens the credits panel
@@ -113,6 +132,9 @@ public class MainMenuController : MonoBehaviour
         credits
             .DOAnchorPos(Vector2.zero, .3f)
             .SetUpdate(true);
+
+        creditsOpen = true;
+        creditsBackButton.Select();
     }
 
     //Closes the credits panel
@@ -124,6 +146,9 @@ public class MainMenuController : MonoBehaviour
         credits
             .DOAnchorPos(new Vector2(0, -500), .3f)
             .SetUpdate(true);
+
+        creditsOpen = false;
+        creditsButton.Select();
     }
 
     //Closes the application.
@@ -145,6 +170,23 @@ public class MainMenuController : MonoBehaviour
             Debug.Log("Loading: " + progress);
 
             yield return null;
+        }
+    }
+
+
+    public void ControllerInput(UnityEngine.InputSystem.InputAction.CallbackContext context)
+    {      
+        // We have presed screen with mouse or something so we have null in selected
+        if (context.performed && context.ReadValue<Vector2>().magnitude > 0 && EventSystem.current.currentSelectedGameObject == null) 
+        {
+            if (creditsOpen) // Credits panel is open select creditsBackButton
+                creditsBackButton.Select();
+            else if (warningOpen)   // Warning panel is open select warningNoButton
+                warningNoButton.Select();
+            else if (settingsMenu.GetComponent<SettingsController>().settingsOpen) // Settings panel is open select settingsBackButton
+                settingsMenu.GetComponent<SettingsController>().settingsBackButton.Select();
+            else // MainMenu panel is only one open so select creditsButton since if ControllerInput is activated Sumbit bind it Presses the button instantly
+                creditsButton.Select();
         }
     }
 }
