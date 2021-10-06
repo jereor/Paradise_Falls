@@ -218,9 +218,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponThrowDamage: 1
   weaponPullDamage: 1
-  rotAngle: 180
-  ricochetForce: 5
-  enemyHitRicochetY: 3
+  rotSpeed: 360
+  ricochetImpulseForce: 5
+  ricochetYImpulse: 3
   pullForce: 750
   maxDistance: 7
+  worldPickUp: 0
   knockbackForce: 500
