@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+// This script can be used to control all player sub scripts through one place.
+// Holds player components and state variables that can be accessed from anywhere
 public class Player : MonoBehaviour
 {
     public float InputHorizontal { get; private set; }
@@ -10,11 +12,6 @@ public class Player : MonoBehaviour
 
     private GUIStyle TextStyleEnergy = new GUIStyle();
     private GUIStyle TextStyleHealth = new GUIStyle();
-    // This script can be used to control all player sub scripts through one place.
-    // Holds player components and state variables that can be accessed from anywhere
-
-    // This script could maybe become useful when starting to make animation controller. 
-    // But maybe even then a separate animation controller script could be enough by itself.
 
     [Header("Player Sub Scripts")]
     [SerializeField] private PlayerMovement movementScript;
@@ -54,8 +51,6 @@ public class Player : MonoBehaviour
     {
         GUI.Label(new Rect(10, 10, 300, 100), "Health: " + healthScript.GetHealth(), TextStyleHealth);
         GUI.Label(new Rect(200, 10, 300, 100), "Energy: " + energyScript.GetEnergy(), TextStyleEnergy);
-        GUI.Label(new Rect(400, 10, 300, 100), "Horizontal: " + InputHorizontal, TextStyleHealth);
-        GUI.Label(new Rect(600, 10, 300, 100), "Vertical: " + InputVertical, TextStyleEnergy);
     }
 
     // Move action: Called when the Move Action Button is pressed

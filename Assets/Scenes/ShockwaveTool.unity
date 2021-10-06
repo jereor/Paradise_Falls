@@ -12281,13 +12281,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1851797149}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 1, w: 0}
   m_LocalPosition: {x: 0, y: -1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1940316767}
   m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 180}
 --- !u!199 &1851797151
 ParticleSystemRenderer:
   serializedVersion: 6
@@ -12490,7 +12490,7 @@ ParticleSystem:
     startSpeed:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 10
+      scalar: 5
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -17278,11 +17278,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ee9fc14155c80040934ee30f8cd0ccf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jumpForce: 22
   usageCooldown: 1
-  playerScript: {fileID: 2646993275714197190}
-  rb: {fileID: 1859845175}
-  shockwaveDirection: {fileID: 1691313836}
   shockwaveJumpEffect: {fileID: 212109729}
   shockwaveDiveEffect: {fileID: 1851797152}
   shockwaveAttackEffect: {fileID: 1691313839}
@@ -17517,11 +17513,11 @@ PrefabInstance:
       objectReference: {fileID: 729320505}
     - target: {fileID: 284613507, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: m_TrackedObjectOffset.x
-      value: -0.9967248
+      value: -0.9933515
       objectReference: {fileID: 0}
     - target: {fileID: 284613507, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: m_TrackedObjectOffset.y
-      value: -1.558608e-19
+      value: -0.1229284
       objectReference: {fileID: 0}
     - target: {fileID: 505850491, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: m_Follow
@@ -17537,11 +17533,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2049820520096467095, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: m_TrackedObjectOffset.x
-      value: 0.9766512
+      value: 0.9847379
       objectReference: {fileID: 0}
     - target: {fileID: 2049820520096467095, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: m_TrackedObjectOffset.y
-      value: -0.0000004556252
+      value: -0.05335687
       objectReference: {fileID: 0}
     - target: {fileID: 2049820520137079200, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: m_RootOrder
@@ -17674,7 +17670,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2646993275326716549, guid: 4154d57994558ff489a9180c3151e624, type: 3}
       propertyPath: allowShockwaveJump
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2646993275326716551, guid: 4154d57994558ff489a9180c3151e624, type: 3}
       propertyPath: shockwaveTool
