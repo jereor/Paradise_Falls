@@ -21,6 +21,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private bool allowLedgeClimb;
     [SerializeField] private bool allowWallJump;
     [SerializeField] private bool allowCoyoteWallJump; // Allows coyoteTime = coyoteTime / 2 to jump from wall (you can move horizontaly or turn around a small distance off the wall and still jump)
+    [SerializeField] private bool allowShockwaveJump;
     [SerializeField] private Transform ledgeCheck; // Point where Ledge Check Occupation Raycast is cast should be close to top of head
     [SerializeField] private Transform wallCheckBody; // Point where Body Check Raycast is cast
     [SerializeField] private Transform wallCheckFeet; // Point where Feet Check Raycast is cast
@@ -297,7 +298,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // Shockwave jump while in air
-        else if (context.started && canShockwaveJump && !shockwaveJumping)
+        else if (context.started && allowShockwaveJump && canShockwaveJump && !shockwaveJumping)
         {
             shockwaveTool.ShockwaveJump();
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
