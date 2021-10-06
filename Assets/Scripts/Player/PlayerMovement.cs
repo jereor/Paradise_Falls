@@ -21,6 +21,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private bool allowLedgeClimb;
     [SerializeField] private bool allowWallJump;
     [SerializeField] private bool allowCoyoteWallJump; // Allows coyoteTime = coyoteTime / 2 to jump from wall (you can move horizontaly or turn around a small distance off the wall and still jump)
+    [SerializeField] private bool allowShockwaveJump;
     [SerializeField] private Transform ledgeCheck; // Point where Ledge Check Occupation Raycast is cast should be close to top of head
     [SerializeField] private Transform wallCheckBody; // Point where Body Check Raycast is cast
     [SerializeField] private Transform wallCheckFeet; // Point where Feet Check Raycast is cast
@@ -32,7 +33,8 @@ public class PlayerMovement : MonoBehaviour
     private float horizontal; // Tracks horizontal input direction
     private bool moving = false;
     private bool falling = false;
-    private bool isFacingRight = true; // Tracks player sprite direction
+    public bool shockwaveJumping = false;
+    public bool isFacingRight = true; // Tracks player sprite direction
     private float? jumpButtonPressedTime; // Saves the time when player presses jump button
     private float? lastGroundedTime;
 
@@ -42,17 +44,19 @@ public class PlayerMovement : MonoBehaviour
     private bool canClimb;
     private bool isClimbing;
     private bool canMove = true;
-
+    private bool canShockwaveJump = false;
     private bool canWallJump; // Tells jump function/event that we can jump this is set in CheckWallJump()
     private float wallJumpDir = 0f; // Keeps track if we jump from the left or right (Mathf.Sign() == -1 jumped from left, == 1 jumped from right, == we havent jumped from wall)
 
     // References
     private Rigidbody2D rb;
     private float defaultGravityScale;
+    private ShockwaveTool shockwaveTool;
 
     private void Start()
     {
         rb = gameObject.GetComponent<Rigidbody2D>();
+        shockwaveTool = gameObject.GetComponentInChildren<ShockwaveTool>();
         PlayerCamera.Instance.ChangeCameraOffset(0.2f, false, 1);
         defaultGravityScale = rb.gravityScale;
     }
@@ -88,6 +92,7 @@ public class PlayerMovement : MonoBehaviour
     {
         CheckLedgeClimb();
         CheckWallJump();
+        CheckShockwaveJump();
     }
 
     private void CheckLedgeClimb()
@@ -194,6 +199,17 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    private void CheckShockwaveJump()
+    {
+        canShockwaveJump = (IsGrounded() && !shockwaveTool.ShockwaveJumpUsed) ? false : true;
+
+        if (!shockwaveTool.ShockwaveJumpUsed)
+            shockwaveJumping = false;
+
+        if (IsGrounded())
+            shockwaveTool.ShockwaveJumpUsed = false;
+    }
+
     // Returns true if Raycast hits to something aka our body is so close to wall that it counts as touching
     private bool BodyIsTouchingWall()
     {
@@ -236,7 +252,7 @@ public class PlayerMovement : MonoBehaviour
     // Move action: Called when the Move Action Button is pressed
     public void Move(InputAction.CallbackContext context) // Context tells the function when the action is triggered
     {
-        horizontal = context.ReadValue<Vector2>().x; // Updates the horizontal input direction
+        horizontal = Mathf.Round(context.ReadValue<Vector2>().x); // Updates the horizontal input direction
     }
 
     // Jump action: Called when the Jump Action button is pressed
@@ -281,6 +297,20 @@ public class PlayerMovement : MonoBehaviour
             wallJumpDir = Mathf.Sign(-transform.localScale.x);
         }
 
+        // Shockwave jump while in air
+        else if (context.started && allowShockwaveJump && canShockwaveJump && !shockwaveJumping)
+        {
+            shockwaveTool.ShockwaveJump();
+            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+
+            shockwaveTool.ShockwaveJumpUsed = true;
+            shockwaveJumping = true;
+            canShockwaveJump = false;
+
+            jumpButtonPressedTime = null;
+            lastGroundedTime = null;
+        }
+
         // -JUMP FROM GROUND-
 
         // If button was pressed
@@ -291,7 +321,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // If button was released
-        if (context.canceled && rb.velocity.y > 0f)
+        if (context.canceled && rb.velocity.y > 0f && !shockwaveTool.ShockwaveJumpUsed)
         {
             rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f); // Slow down player
             jumpButtonPressedTime = null;
