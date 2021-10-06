@@ -8,30 +8,12 @@ public class Lever : Interactable
 {
     [Header("Objects to interact with")]
     public GameObject[] objectsToInteractWith; // Objects the lever interacts with.
-    public Vector2[] endPosition;
-    public float moveTime = 1f;
 
     [Header("Bools for interaction")]
     public bool isMultiUseLever = false; // If this lever is used multiple times, tap this bool.
     public bool canUseMultitoolForLevers = true; // Does the player character have the tool for using levers?
 
     private bool isLeverUsed = false;
-    private PlayerInteractions playerInteractions;
-
-
-    // Draws simple gizmos from object locations to their designated spots.
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-        int i = 0;
-        foreach (GameObject movingObject in objectsToInteractWith)
-        {
-
-            Gizmos.DrawRay(movingObject.transform.position, new Vector2(endPosition[i].x, endPosition[i].y));
-            i++;
-        }
-            //Gizmos.DrawRay(movingObject.transform.position, new Vector2(movingObject.endPosition.x, endPosition.y));
-    }
 
     // Player is in the range of lever
     private void OnTriggerEnter2D(Collider2D collision)
@@ -84,9 +66,8 @@ public class Lever : Interactable
                 }
                 if(movingObject.tag == "Door")
                 {
-                    movingObject.transform.DOMove(new Vector2(movingObject.transform.position.x + endPosition[i].x, movingObject.transform.position.y + endPosition[i].y), moveTime);
+                    movingObject.GetComponent<DoorController>().Work();
                 }
-                //movingObject.transform.DOMove(new Vector2(movingObject.transform.position.x + endPosition[i].x, movingObject.transform.position.y + endPosition[i].y), moveTime);
                 i++;
             }
 
