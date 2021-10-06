@@ -2137,11 +2137,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1012424850, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: m_TrackedObjectOffset.x
-      value: -0.7992381
+      value: -0.9792792
       objectReference: {fileID: 0}
     - target: {fileID: 1012424850, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: m_TrackedObjectOffset.y
-      value: -0.00000009475528
+      value: -0.05110862
       objectReference: {fileID: 0}
     - target: {fileID: 1348274982, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: currentCamera
@@ -4302,9 +4302,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponThrowDamage: 1
   weaponPullDamage: 1
-  rotAngle: 180
-  ricochetForce: 5
-  enemyHitRicochetY: 3
+  rotSpeed: 0
+  ricochetImpulseForce: 0
+  ricochetYImpulse: 0
   pullForce: 750
   maxDistance: 7
   worldPickUp: 1

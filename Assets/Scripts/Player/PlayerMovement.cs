@@ -21,6 +21,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private bool allowLedgeClimb;
     [SerializeField] private bool allowWallJump;
     [SerializeField] private bool allowCoyoteWallJump; // Allows coyoteTime = coyoteTime / 2 to jump from wall (you can move horizontaly or turn around a small distance off the wall and still jump)
+    [SerializeField] private bool allowShockwaveJump;
     [SerializeField] private Transform ledgeCheck; // Point where Ledge Check Occupation Raycast is cast should be close to top of head
     [SerializeField] private Transform wallCheckBody; // Point where Body Check Raycast is cast
     [SerializeField] private Transform wallCheckFeet; // Point where Feet Check Raycast is cast
@@ -32,7 +33,8 @@ public class PlayerMovement : MonoBehaviour
     private float horizontal; // Tracks horizontal input direction
     private bool moving = false;
     private bool falling = false;
-    private bool isFacingRight = true; // Tracks player sprite direction
+    public bool shockwaveJumping = false;
+    public bool isFacingRight = true; // Tracks player sprite direction
     private float? jumpButtonPressedTime; // Saves the time when player presses jump button
     private float? lastGroundedTime;
 
@@ -42,17 +44,19 @@ public class PlayerMovement : MonoBehaviour
     private bool canClimb;
     private bool isClimbing;
     private bool canMove = true;
-
+    private bool canShockwaveJump = false;
     private bool canWallJump; // Tells jump function/event that we can jump this is set in CheckWallJump()
     private float wallJumpDir = 0f; // Keeps track if we jump from the left or right (Mathf.Sign() == -1 jumped from left, == 1 jumped from right, == we havent jumped from wall)
 
     // References
     private Rigidbody2D rb;
     private float defaultGravityScale;
+    private ShockwaveTool shockwaveTool;
 
     private void Start()
     {
         rb = gameObject.GetComponent<Rigidbody2D>();
+        shockwaveTool = gameObject.GetComponentInChildren<ShockwaveTool>();
         PlayerCamera.Instance.ChangeCameraOffset(0.2f, false, 1);
         defaultGravityScale = rb.gravityScale;
     }
@@ -70,17 +74,19 @@ public class PlayerMovement : MonoBehaviour
             else if (isFacingRight && horizontal < 0f) // Flip when turning left
                 Flip();
         }
+
+        // Coyote Time
+        if (IsGrounded()) lastGroundedTime = Time.time;
+
+        // Update movement based state variables
         moving = rb.velocity.x != 0;
         falling = rb.velocity.y < -0.5f;
+
+        // Offset camera while moving to create a feeling of momentum
         if (moving)
             PlayerCamera.Instance.ChangeCameraOffset(0.2f, falling, isFacingRight ? 0.8f : -0.8f); // Centers camera a little
         else
             PlayerCamera.Instance.ChangeCameraOffset(0.2f, falling, isFacingRight ? 1 : -1); // Offset camera with character front direction
-
-        // Coyote Time
-        if (IsGrounded())
-            lastGroundedTime = Time.time;
-
     }
 
     // Physic based operations should be called in FixedUpdate(), else hardware can affect Physics (frame drops can skip Update() calls)
@@ -88,6 +94,7 @@ public class PlayerMovement : MonoBehaviour
     {
         CheckLedgeClimb();
         CheckWallJump();
+        CheckShockwaveJump();
     }
 
     private void CheckLedgeClimb()
@@ -120,6 +127,7 @@ public class PlayerMovement : MonoBehaviour
                 rb.velocity = new Vector2(0, 0); // Set velocity here to zero else movement bugs while climbing
 
                 canMove = false; // Prevent moving while climbing mostly for animations
+                canShockwaveJump = false; // Prevent double jumping
 
                 lastTimeClimbed = Time.time; // We start climbing set time here
 
@@ -194,6 +202,20 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    private void CheckShockwaveJump()
+    {
+        // If player is grounded, double jump is "reset" by changing ShockwaveJumpUsed state to false
+        if (IsGrounded()) shockwaveTool.ShockwaveJumpUsed = false;
+
+        // If player has not double jumped since last touching the ground, set shockwaveJumping state to false
+        if (!shockwaveTool.ShockwaveJumpUsed) shockwaveJumping = false;
+
+        // Lastly, set canShockwaveJump state to true or false
+        // Making sure that they are not grounded or climbing so the ability can only be used when appropriate
+        // And also making sure shockwaveJump has not yet been used
+        canShockwaveJump = (!IsGrounded() && !isClimbing && !shockwaveTool.ShockwaveJumpUsed) ? true : false;
+    }
+
     // Returns true if Raycast hits to something aka our body is so close to wall that it counts as touching
     private bool BodyIsTouchingWall()
     {
@@ -236,7 +258,7 @@ public class PlayerMovement : MonoBehaviour
     // Move action: Called when the Move Action Button is pressed
     public void Move(InputAction.CallbackContext context) // Context tells the function when the action is triggered
     {
-        horizontal = context.ReadValue<Vector2>().x; // Updates the horizontal input direction
+        horizontal = Mathf.Round(context.ReadValue<Vector2>().x); // Updates the horizontal input direction
     }
 
     // Jump action: Called when the Jump Action button is pressed
@@ -270,7 +292,7 @@ public class PlayerMovement : MonoBehaviour
         }
         // Coyotetime wall jump 
         else if (context.started && allowCoyoteWallJump
-            && (Time.time - lastWallTouchTime <= coyoteTime/2) // With full coyoteTime handling feels weird
+            && (Time.time - lastWallTouchTime <= coyoteTime / 2) // With full coyoteTime handling feels weird
             && !LedgeIsOccupied()) // This Check prevents jumping from wall when there is no ground after the wall object and we slide past wall, Coyote time causes unwanted double jump without
         {
             //Debug.Log("Coyote walljump");
@@ -279,6 +301,28 @@ public class PlayerMovement : MonoBehaviour
             rb.velocity = new Vector2(jumpForce, jumpForce);
             // wallJumpDir here is opposite of opposite :)
             wallJumpDir = Mathf.Sign(-transform.localScale.x);
+        }
+
+        // Double jump while in the air
+        else if (allowShockwaveJump && canShockwaveJump) // Make sure player has acquired Shockwave Jump and that they can currently double jump
+        {
+            // If button is pressed and player has not yet double jumped
+            if (context.started && !shockwaveJumping
+                && !(Time.time - lastGroundedTime <= coyoteTime)) // Check if coyote time is online
+            {
+                // Activate the event through the ShockwaveTool script and do a double jump
+                shockwaveTool.ShockwaveJump(); // Activates VFX
+                rb.velocity = new Vector2(rb.velocity.x, jumpForce); // Jump in the air
+
+                // Update ShockwaveJump state variables after the jump
+                shockwaveTool.ShockwaveJumpUsed = true;
+                shockwaveJumping = true;
+                canShockwaveJump = false;
+
+                // Reset Jump state variables
+                jumpButtonPressedTime = null;
+                lastGroundedTime = null;
+            }
         }
 
         // -JUMP FROM GROUND-
@@ -291,7 +335,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // If button was released
-        if (context.canceled && rb.velocity.y > 0f)
+        if (context.canceled && rb.velocity.y > 0f && !shockwaveTool.ShockwaveJumpUsed)
         {
             rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f); // Slow down player
             jumpButtonPressedTime = null;
