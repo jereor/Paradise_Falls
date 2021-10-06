@@ -18,6 +18,7 @@ public class PlayerCombat : MonoBehaviour
 
     [Header("Throwing")]
     [SerializeField] private GameObject throwIndicator;
+    [SerializeField] private Transform throwPoint;
     [SerializeField] private float maxXScale;
     //[SerializeField] private float minXScale;
     [SerializeField] private float maxYScale;
@@ -26,6 +27,13 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private float maxChargeTime;
     [SerializeField] private float maxDistance;
     [SerializeField] private float minDistance;
+
+    public GameObject point;
+    GameObject[] points;
+    public int numberOfPoints;
+    public float spaceBetweenPoints;
+    private int pointsShown;
+    public float pointScaleRatio;
 
     private Vector3 defaultScale; // Used to reset throwIndicator
 
@@ -54,7 +62,6 @@ public class PlayerCombat : MonoBehaviour
     private bool comboOnCooldown; // boolean to check if we can attack
     private bool comboOnGoing; // Used in ComboCounter() calculates if we aren't attacking before comboBetweenTimer then we reset combo
 
-
     Mouse mouse = Mouse.current;
 
     Camera mainCamera;
@@ -68,17 +75,43 @@ public class PlayerCombat : MonoBehaviour
 
         // Save scale here
         defaultScale = throwIndicator.transform.localScale;
+
+        points = new GameObject[numberOfPoints];
+
+        // Go through the array and set colors of different red and scales
+        for (int i = 0; i < numberOfPoints; i++)
+        {
+            // Instantiate and parent
+            points[i] = Instantiate(point, throwPoint.position, Quaternion.identity);
+            points[i].transform.parent = throwIndicator.transform;
+
+            // Naming easier to read hierarchy
+            points[i].name = points[i].name.Replace("(Clone)", "(" + i +")");
+
+            // Color
+            Color pointC = new Color(1f, 1f - 1f * i / (numberOfPoints- 1), 1f - 1f * i / (numberOfPoints - 1) );
+            points[i].GetComponent<SpriteRenderer>().color = pointC;
+
+            // Scale 
+            if (i != 0)
+                points[i].transform.localScale = points[i - 1].transform.localScale * pointScaleRatio;
+
+            points[i].SetActive(false);
+        }
     }
 
     private void Update()
     {
         //AdjustIndicatorScale();
+        for (int i = 0; i < numberOfPoints; i++)
+        {
+            points[i].transform.position = PointPosition(i * spaceBetweenPoints);
+        }
     }
 
     private void FixedUpdate()
     {
-        //AdjustIndicatorScale();
-        // Calculates when we can combo and if combo will end
+
         ComboCounter();
 
         RotateIndicator();
@@ -97,16 +130,28 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
+    // Calculate the position of next point
+    Vector2 PointPosition(float t)
+    {
+        Vector2 position = (Vector2)throwPoint.position
+            + (new Vector2(mousePosRay.origin.x - gameObject.transform.position.x, mousePosRay.origin.y - gameObject.transform.position.y).normalized * defaultThrowingForce * t)
+            + 0.5f * Physics2D.gravity * (t * t);
+        return position;
+    }
+
     private void RotateIndicator()
     {
         if (throwIndicator.activeInHierarchy)
         {
             //AdjustIndicatorScale();
             Vector3 vectorToTarget = new Vector2(mousePosRay.origin.x - gameObject.transform.position.x, mousePosRay.origin.y - gameObject.transform.position.y);
-            float angle = Mathf.Atan2(vectorToTarget.y, vectorToTarget.x) * Mathf.Rad2Deg;
+            //float angle = Mathf.Atan2(vectorToTarget.y, vectorToTarget.x) * Mathf.Rad2Deg;
             //Debug.Log(angle);
-
-            throwIndicator.transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
+            if (gameObject.transform.localScale.x == 1)
+                throwIndicator.transform.right = vectorToTarget;
+            else
+                throwIndicator.transform.right = -vectorToTarget;
+            //throwIndicator.transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
           
         }
     }
@@ -125,13 +170,21 @@ public class PlayerCombat : MonoBehaviour
                 throwChargeMaxTime = Time.time;
 
                 ratio = (throwChargeMaxTime - (float)throwButtonPressedTime) / maxChargeTime;
-                if(ratio * maxDistance >= minDistance)
-                    throwIndicator.transform.localScale = new Vector3(ratio * maxXScale * gameObject.transform.localScale.x, ratio * maxYScale, throwIndicator.transform.localScale.z);
+                int pointsToShow = Mathf.FloorToInt(ratio * numberOfPoints);
+                Debug.Log(pointsToShow);
+                if(pointsShown < pointsToShow + 1)
+                {
+                    points[pointsShown].SetActive(true);
+                    if(pointsToShow == numberOfPoints - 1)
+                    {
+                        Debug.Log("MAX");
+                    }
+                    pointsShown++;
+                }
+                
+                //if(ratio * maxDistance >= minDistance)
+                //    throwIndicator.transform.localScale = new Vector3(ratio * maxXScale, ratio * maxYScale, throwIndicator.transform.localScale.z);
             }
-            //else
-            //{
-            //    AdjustIndicatorScale();
-            //}
         }
     }
 
@@ -166,9 +219,9 @@ public class PlayerCombat : MonoBehaviour
             // Set time here since we start charging
             throwButtonPressedTime = Time.time;
             Debug.Log((minDistance / maxDistance) * maxXScale);
-            throwIndicator.transform.localScale = new Vector3((minDistance / maxDistance) * maxXScale, (minDistance / maxDistance) * maxYScale, 1);
-            throwIndicator.SetActive(true);
-            
+            //throwIndicator.transform.localScale = new Vector3((minDistance / maxDistance) * maxXScale, (minDistance / maxDistance) * maxYScale, 1);
+            //throwIndicator.SetActive(true);
+            pointsShown = 0;
         }
         // Melee
         else if (context.performed && isWeaponWielded && CheckAttackRate() && !meleeThrow && !comboOnCooldown)
@@ -230,7 +283,7 @@ public class PlayerCombat : MonoBehaviour
         if(context.canceled && isWeaponWielded && meleeThrow && meleeWeaponPrefab)
         {
             // Instantiate meleeWeaponPrefab on attackPoint
-            weaponInstance = Instantiate(meleeWeaponPrefab, attackPoint.position, Quaternion.identity);
+            weaponInstance = Instantiate(meleeWeaponPrefab, throwPoint.position, Quaternion.identity);
             // Give force to weaponInstance to throw
             if (ratio * maxDistance >= minDistance)
             {
@@ -253,7 +306,12 @@ public class PlayerCombat : MonoBehaviour
             throwButtonPressedTime = null;
 
             throwIndicator.transform.localScale = defaultScale;
-            throwIndicator.SetActive(false);
+            for (int i = 0; i < numberOfPoints; i++)
+            {
+                
+                points[i].SetActive(false);
+            }
+            //throwIndicator.SetActive(false);
         }
     }
 
@@ -269,6 +327,11 @@ public class PlayerCombat : MonoBehaviour
         if (context.canceled)
         {
             meleeThrow = false;
+            for (int i = 0; i < numberOfPoints; i++)
+            {
+                points[i].SetActive(false);
+            }
+            pointsShown = 0;
             //throwIndicator.SetActive(false);
             //Debug.Log("Throw cancel");
         }
