@@ -6,8 +6,8 @@ using UnityEngine.InputSystem;
 public class PlayerCombat : MonoBehaviour
 {
     [Header("Player Variables")]
-    [SerializeField] private float meleeDamage; // Normal hits currentComboHit 1, 2
-    [SerializeField] private float meleeComboLastDamage; // Last hit currentComboHit 3
+    [SerializeField] private float meleeDamage; // Normal hits currentComboHit 1, 2 and 2*normal damage to last hit
+    //[SerializeField] private float meleeComboLastDamage; // Last hit currentComboHit 3
     [SerializeField] private float knockbackForceNormal;
     [SerializeField] private float knockbackForceLast;
 
@@ -17,31 +17,26 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private float comboBetweenTimer; // If this runs out we set combo on cooldown
 
     [Header("Throwing")]
-    [SerializeField] private GameObject throwIndicator;
-    [SerializeField] private Transform throwPoint;
-    [SerializeField] private float maxXScale;
-    //[SerializeField] private float minXScale;
-    [SerializeField] private float maxYScale;
-    //[SerializeField] private float minYScale;
+    [SerializeField] private GameObject throwIndicator; // Object used to rotate throwPoint and pointPrefabs
+    [SerializeField] private Transform throwPoint; // Point where the weapon will be Instantiated
     [SerializeField] private float defaultThrowingForce;
     [SerializeField] private float maxChargeTime;
     [SerializeField] private float maxDistance;
     [SerializeField] private float minDistance;
 
-    public GameObject point;
-    GameObject[] points;
-    public int numberOfPoints;
-    public float spaceBetweenPoints;
-    private int pointsShown;
-    public float pointScaleRatio;
-
-    private Vector3 defaultScale; // Used to reset throwIndicator
+    [Header("Projection points")]
+    public GameObject pointPrefab;
+    GameObject[] points; // Array of pointsPrefabs Instantiated
+    private int numberOfPoints; // Amount should be same as maxDistance we can throw, 1 point = 1 distance unit
+    [SerializeField] private float spaceBetweenPoints;
+    [SerializeField] private int pointsShown;
+    [SerializeField] private float pointScaleRatio;
 
     [Header("Attack Detection Variables")]
     public LayerMask enemyLayer;
     public Transform attackPoint; // Center of the hit point box we draw to check collisions
     public float attackRangeX; // Width of the check box
-    public float attackRangeY; // Heigth
+    public float attackRangeY; // Height
 
     [Header("Weapon")]
     [SerializeField] private GameObject meleeWeaponPrefab;
@@ -52,65 +47,47 @@ public class PlayerCombat : MonoBehaviour
     //private float? meleeButtonPressedTime;
     private float comboEndTime = 0; // Set here to zero so we are sure it starts from zero
     private float lastTimeMeleed = 0;
-    private bool meleeThrow; // True if we are holdling Throw input
+    private bool throwAim; // True if we are holdling Throw input
     private int currentComboHit = 1; // Combo counter 1 normal, 2 normal, 3 last hit -> comboCooldown -> Combo can be done again
 
     private float? throwButtonPressedTime; // Time when we start throwing
-    private float throwChargeMaxTime; // Time when we reach maximum charge
+    private float throwChargeStartTime; // Time when we start charging
     private float ratio; // Ratio float to grow desired parameters in same ratio. "One ratio to rule them all"
 
     private bool comboOnCooldown; // boolean to check if we can attack
     private bool comboOnGoing; // Used in ComboCounter() calculates if we aren't attacking before comboBetweenTimer then we reset combo
 
-    Mouse mouse = Mouse.current;
+    Mouse mouse = Mouse.current; // Mouse in use on Unity player
 
-    Camera mainCamera;
-    Ray mousePosRay;
+    Camera mainCamera;  // MainCamera
+    Ray mousePosRay; // Ray from MainCamera to mouse position in screen (endpoint aka .origin vector is what we can use)
+
     // Start is called before the first frame update
     void Start()
     {
         // We don't have to wait cooldown on start
         comboEndTime = comboEndTime - comboCooldown;
+        // MainCamera
         mainCamera = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
 
-        // Save scale here
-        defaultScale = throwIndicator.transform.localScale;
-
-        points = new GameObject[numberOfPoints];
-
-        // Go through the array and set colors of different red and scales
-        for (int i = 0; i < numberOfPoints; i++)
-        {
-            // Instantiate and parent
-            points[i] = Instantiate(point, throwPoint.position, Quaternion.identity);
-            points[i].transform.parent = throwIndicator.transform;
-
-            // Naming easier to read hierarchy
-            points[i].name = points[i].name.Replace("(Clone)", "(" + i +")");
-
-            // Color
-            Color pointC = new Color(1f, 1f - 1f * i / (numberOfPoints- 1), 1f - 1f * i / (numberOfPoints - 1) );
-            points[i].GetComponent<SpriteRenderer>().color = pointC;
-
-            // Scale 
-            if (i != 0)
-                points[i].transform.localScale = points[i - 1].transform.localScale * pointScaleRatio;
-
-            points[i].SetActive(false);
-        }
+        numberOfPoints = (int)maxDistance;
+        // Instantiate points and adjust their look
+        InitPoints();
     }
 
     private void Update()
     {
-        //AdjustIndicatorScale();
-        for (int i = 0; i < numberOfPoints; i++)
-        {
-            points[i].transform.position = PointPosition(i * spaceBetweenPoints);
-        }
+        
     }
 
     private void FixedUpdate()
     {
+        // If we updated maxDistance via pick up or debuff set numberOfPoints to same, aka show 1 pointPrefab per 1 distance unit 
+        if (numberOfPoints != (int)maxDistance)
+        {
+            numberOfPoints = (int)maxDistance;
+            InitPoints();
+        }
 
         ComboCounter();
 
@@ -119,112 +96,18 @@ public class PlayerCombat : MonoBehaviour
         Throwing();
     }
 
-    private void AdjustIndicatorScale()
-    {
-        Debug.Log(throwIndicator.transform.localScale.x);
-        Debug.Log(gameObject.transform.localScale.x);
-        if (throwIndicator.transform.localScale.x != gameObject.transform.localScale.x)
-        {
-            Debug.Log("Scale");
-            throwIndicator.transform.localScale = new Vector3(throwIndicator.transform.localScale.x * -1, throwIndicator.transform.localScale.y, throwIndicator.transform.localScale.z);
-        }
-    }
-
-    // Calculate the position of next point
-    Vector2 PointPosition(float t)
-    {
-        Vector2 position = (Vector2)throwPoint.position
-            + (new Vector2(mousePosRay.origin.x - gameObject.transform.position.x, mousePosRay.origin.y - gameObject.transform.position.y).normalized * defaultThrowingForce * t)
-            + 0.5f * Physics2D.gravity * (t * t);
-        return position;
-    }
-
-    private void RotateIndicator()
-    {
-        if (throwIndicator.activeInHierarchy)
-        {
-            //AdjustIndicatorScale();
-            Vector3 vectorToTarget = new Vector2(mousePosRay.origin.x - gameObject.transform.position.x, mousePosRay.origin.y - gameObject.transform.position.y);
-            //float angle = Mathf.Atan2(vectorToTarget.y, vectorToTarget.x) * Mathf.Rad2Deg;
-            //Debug.Log(angle);
-            if (gameObject.transform.localScale.x == 1)
-                throwIndicator.transform.right = vectorToTarget;
-            else
-                throwIndicator.transform.right = -vectorToTarget;
-            //throwIndicator.transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
-          
-        }
-    }
-
-    private void Throwing()
-    {
-        // If we are throwing do these
-        if (meleeThrow)
-        {
-            // Get mouse position from mainCamera ScreenPointToRay
-            mousePosRay = mainCamera.ScreenPointToRay(mouse.position.ReadValue());
-            // We are holding throw/melee button down
-            if (Time.time - throwButtonPressedTime <= maxChargeTime)
-            {
-                //Debug.Log("Charging");
-                throwChargeMaxTime = Time.time;
-
-                ratio = (throwChargeMaxTime - (float)throwButtonPressedTime) / maxChargeTime;
-                int pointsToShow = Mathf.FloorToInt(ratio * numberOfPoints);
-                Debug.Log(pointsToShow);
-                if(pointsShown < pointsToShow + 1)
-                {
-                    points[pointsShown].SetActive(true);
-                    if(pointsToShow == numberOfPoints - 1)
-                    {
-                        Debug.Log("MAX");
-                    }
-                    pointsShown++;
-                }
-                
-                //if(ratio * maxDistance >= minDistance)
-                //    throwIndicator.transform.localScale = new Vector3(ratio * maxXScale, ratio * maxYScale, throwIndicator.transform.localScale.z);
-            }
-        }
-    }
-
-    private void ComboCounter()
-    {
-        if (Time.time - comboEndTime > comboCooldown)
-        {
-            if (comboOnCooldown)
-                comboOnCooldown = false;
-            
-            if (comboOnGoing)
-            {
-                if (Time.time - lastTimeMeleed > comboBetweenTimer)
-                {
-                    //Debug.Log("End Combo due no attack");
-                    ResetCombo();
-                }
-            }
-        }
-    }
-
-    private bool CheckAttackRate()
-    {
-        return (Time.time - lastTimeMeleed >= meleeAttackRate);
-    }
+    // --- INPUT FUNCITONS ---
 
     public void Melee(InputAction.CallbackContext context)
     {
         // Start Throwing
-        if (context.performed && isWeaponWielded && meleeThrow && meleeWeaponPrefab)
+        if (context.performed && isWeaponWielded && throwAim && meleeWeaponPrefab)
         {
             // Set time here since we start charging
             throwButtonPressedTime = Time.time;
-            Debug.Log((minDistance / maxDistance) * maxXScale);
-            //throwIndicator.transform.localScale = new Vector3((minDistance / maxDistance) * maxXScale, (minDistance / maxDistance) * maxYScale, 1);
-            //throwIndicator.SetActive(true);
-            pointsShown = 0;
         }
         // Melee
-        else if (context.performed && isWeaponWielded && CheckAttackRate() && !meleeThrow && !comboOnCooldown)
+        else if (context.performed && isWeaponWielded && CheckAttackRate() && !throwAim && !comboOnCooldown)
         {
             // We start combo if we havent one started
             if(!comboOnGoing)
@@ -262,7 +145,7 @@ public class PlayerCombat : MonoBehaviour
                 {
                     if (enemy.GetComponent<Health>() != null)
                     {
-                        enemy.GetComponent<Health>().TakeDamage(meleeComboLastDamage);
+                        enemy.GetComponent<Health>().TakeDamage(meleeDamage * 2);
                         Knockback(enemy.gameObject, gameObject, knockbackForceLast);
                     }
                 }
@@ -280,7 +163,7 @@ public class PlayerCombat : MonoBehaviour
         }
 
         // Throw
-        if(context.canceled && isWeaponWielded && meleeThrow && meleeWeaponPrefab)
+        if(context.canceled && isWeaponWielded && throwAim && meleeWeaponPrefab)
         {
             // Instantiate meleeWeaponPrefab on attackPoint
             weaponInstance = Instantiate(meleeWeaponPrefab, throwPoint.position, Quaternion.identity);
@@ -294,7 +177,6 @@ public class PlayerCombat : MonoBehaviour
             }
             else
             {
-                Debug.Log("MinDis");
                 weaponInstance.GetComponent<MeleeWeapon>().setMaxDistance(minDistance);
             }
 
@@ -305,13 +187,8 @@ public class PlayerCombat : MonoBehaviour
             isWeaponWielded = false;
             throwButtonPressedTime = null;
 
-            throwIndicator.transform.localScale = defaultScale;
-            for (int i = 0; i < numberOfPoints; i++)
-            {
-                
-                points[i].SetActive(false);
-            }
-            //throwIndicator.SetActive(false);
+            // Weapon is thrown hide points
+            HideAllProjPoints();
         }
     }
 
@@ -319,22 +196,49 @@ public class PlayerCombat : MonoBehaviour
     {
         if (context.performed)
         {
-            meleeThrow = true;
-            //throwIndicator.SetActive(true);
-            //Debug.Log("Throw ini");
+            throwAim = true;
+
+            // Show minDistance amount of points
+            ShowProjPoints((int)minDistance);
         }
 
         if (context.canceled)
         {
-            meleeThrow = false;
-            for (int i = 0; i < numberOfPoints; i++)
-            {
-                points[i].SetActive(false);
-            }
-            pointsShown = 0;
-            //throwIndicator.SetActive(false);
-            //Debug.Log("Throw cancel");
+            throwAim = false;
+
+            // We release aim button hide points
+            HideAllProjPoints();
         }
+    }
+
+
+    // --- MELEE ---
+
+    private void ComboCounter()
+    {
+        // If we can start new combo
+        if (Time.time - comboEndTime > comboCooldown)
+        {
+            // Combo is not on cooldown anymore
+            if (comboOnCooldown)
+                comboOnCooldown = false;
+
+            // Check if we need to reset combo due no attacks
+            if (comboOnGoing)
+            {
+                // We dont melee between lastTimeMeleed and lastTimeMeleed + comboBetweenTimer
+                if (Time.time - lastTimeMeleed > comboBetweenTimer)
+                {
+                    // No attacks 
+                    ResetCombo();
+                }
+            }
+        }
+    }
+
+    private bool CheckAttackRate()
+    {
+        return (Time.time - lastTimeMeleed >= meleeAttackRate);
     }
 
     // Debug info draws hit point in this case cube
@@ -360,6 +264,114 @@ public class PlayerCombat : MonoBehaviour
         target.GetComponent<Rigidbody2D>().AddForce(knockbackDirection * knockbackForce);
     }
 
+
+    // --- THROWING ---
+
+    // Instantiate throwing projection points and scale, color, modify them here
+    private void InitPoints()
+    {
+        points = new GameObject[numberOfPoints];
+
+        // Go through the array and set colors of different red and scales
+        for (int i = 0; i < numberOfPoints; i++)
+        {
+            // Instantiate and set parent
+            points[i] = Instantiate(pointPrefab, throwPoint.position, Quaternion.identity);
+            points[i].transform.parent = throwIndicator.transform;
+
+            // Naming easier to read hierarchy
+            points[i].name = points[i].name.Replace("(Clone)", "(" + i + ")");
+
+            // Color
+            Color pointC = new Color(1f, 1f - 1f * i / (numberOfPoints - 1), 1f - 1f * i / (numberOfPoints - 1));
+            points[i].GetComponent<SpriteRenderer>().color = pointC;
+
+            // Scale 
+            if (i != 0)
+                points[i].transform.localScale = points[i - 1].transform.localScale * pointScaleRatio;
+
+            points[i].SetActive(false);
+        }
+    }
+
+    // Calculate the position of next point
+    Vector2 PointPosition(float t, Vector2 toTarget)
+    {
+        // Please don't ask the logic of this calculation it just works via trial and error
+        Vector2 position = (Vector2)throwPoint.position + (toTarget.normalized * defaultThrowingForce * t) + 0.5f * Physics2D.gravity * (t * t);
+        return position;
+    }
+
+    // Rotates indicator to mouse position and adjusts the positions of points[] gameObjects
+    private void RotateIndicator()
+    {
+        if (throwAim)
+        {
+            // Get mouse position from mainCamera ScreenPointToRay
+            mousePosRay = mainCamera.ScreenPointToRay(mouse.position.ReadValue());
+
+            Vector3 vectorToTarget = new Vector2(mousePosRay.origin.x - gameObject.transform.position.x, mousePosRay.origin.y - gameObject.transform.position.y);
+
+            // Positions of points[]
+            for (int i = 0; i < numberOfPoints; i++)
+            {
+                points[i].transform.position = PointPosition(i * spaceBetweenPoints, vectorToTarget);
+            }
+
+            // Check if we need to flip vector, player flip angles are different
+            if (gameObject.transform.localScale.x == 1)
+                throwIndicator.transform.right = vectorToTarget;
+            else
+                throwIndicator.transform.right = -vectorToTarget;
+        }
+    }
+
+    private void Throwing()
+    {
+        // If we are throwing do these
+        if (throwAim)
+        {
+            // We are holding throw and melee button down
+            if (Time.time - throwButtonPressedTime <= maxChargeTime)
+            {
+                throwChargeStartTime = Time.time;
+
+                // Ratio calculation tap ratio = 0 and hold for maxChargeTime = 1
+                ratio = (throwChargeStartTime - (float)throwButtonPressedTime) / maxChargeTime;
+
+                // Floor ratio to int to show correct amount of points
+                int pointsToShow = Mathf.FloorToInt(ratio * numberOfPoints);
+                // Check if we need to show more points since ratio is growing
+                if (pointsShown < pointsToShow + 1)
+                {
+                    points[pointsShown].SetActive(true);
+                    pointsShown++;
+                }
+            }
+        }
+    }
+
+    // Show amount of points
+    private void ShowProjPoints(int amount)
+    {
+        for (int i = 0; i < amount; i++)
+        {
+            points[i].SetActive(true);
+            pointsShown++;
+        }
+    }
+
+    // Hide
+    private void HideAllProjPoints()
+    {
+        for (int i = 0; i < numberOfPoints; i++)
+        {
+            points[i].SetActive(false);
+        }
+        // Show minDistance amount of projections when aiming
+        pointsShown = 0;
+    }
+
     // Called from Weapon script if pulled or we Interact with weapon
     public void PickUpWeapon()
     {
@@ -367,8 +379,36 @@ public class PlayerCombat : MonoBehaviour
         isWeaponWielded = true;
     }
 
+
+    // --- GET / SET ---
+
     public bool getWeaponWielded()
     {
         return isWeaponWielded;
+    }
+
+    public void setWeaponWielded(bool wield)
+    {
+        isWeaponWielded = wield;
+    }
+
+    public float getMaxDistance()
+    {
+        return maxDistance;
+    }
+
+    public void setMaxDistance(float d)
+    {
+        maxDistance = d;
+    }
+
+    public float getMeleeDamage()
+    {
+        return meleeDamage;
+    }
+
+    public void setMeleeDamage(float dmg)
+    {
+        meleeDamage = dmg;
     }
 }

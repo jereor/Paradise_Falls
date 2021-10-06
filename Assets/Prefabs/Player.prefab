@@ -597,15 +597,13 @@ MonoBehaviour:
   comboBetweenTimer: 2
   throwIndicator: {fileID: 533264429858380022}
   throwPoint: {fileID: 3243163536262417571}
-  maxXScale: 2
-  maxYScale: 3
   defaultThrowingForce: 15
   maxChargeTime: 3
   maxDistance: 7
   minDistance: 2
-  point: {fileID: 4349618030200945619, guid: d79b0205f7096aa4786974302b48bf41, type: 3}
-  numberOfPoints: 7
+  pointPrefab: {fileID: 4349618030200945619, guid: d79b0205f7096aa4786974302b48bf41, type: 3}
   spaceBetweenPoints: 0.02
+  pointsShown: 7
   pointScaleRatio: 1.2
   enemyLayer:
     serializedVersion: 2
