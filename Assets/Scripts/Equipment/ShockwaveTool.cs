@@ -19,7 +19,7 @@ public class ShockwaveTool : MonoBehaviour
     private float nextShockwave = -1; // Initialize as -1. First time it will always be less than the current time so use it can be used. 
 
     // Shockwave Jump: Triggered from PlayerMovement when double jumping
-    public void ShockwaveJump() // Context tells the function when the action is triggered
+    public void ShockwaveJump()
     {
         shockwaveJumpEffect.Play();
     }

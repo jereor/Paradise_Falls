@@ -49,6 +49,7 @@ public class PlayerMovement : MonoBehaviour
     private float wallJumpDir = 0f; // Keeps track if we jump from the left or right (Mathf.Sign() == -1 jumped from left, == 1 jumped from right, == we havent jumped from wall)
 
     // References
+    private Player playerScript;
     private Rigidbody2D rb;
     private float defaultGravityScale;
     private ShockwaveTool shockwaveTool;
@@ -303,6 +304,8 @@ public class PlayerMovement : MonoBehaviour
             wallJumpDir = Mathf.Sign(-transform.localScale.x);
         }
 
+        // -Double Jump-
+
         // Double jump while in the air
         else if (allowShockwaveJump && canShockwaveJump) // Make sure player has acquired Shockwave Jump and that they can currently double jump
         {
@@ -323,6 +326,15 @@ public class PlayerMovement : MonoBehaviour
                 jumpButtonPressedTime = null;
                 lastGroundedTime = null;
             }
+        }
+
+        // -Air Dive-
+
+        // Shockwave dive while in the air
+        else if (context.started && !IsGrounded()
+            && playerScript.InputVertical == -1)
+        {
+            // Air Dive functionality here
         }
 
         // -JUMP FROM GROUND-
