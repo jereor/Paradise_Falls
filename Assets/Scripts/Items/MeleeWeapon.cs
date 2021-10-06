@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using DG.Tweening;
 
 public class MeleeWeapon : MonoBehaviour
 {
@@ -13,6 +14,7 @@ public class MeleeWeapon : MonoBehaviour
     [SerializeField] private float ricochetYImpulse; // Float parameter if we want to ricochet weapon slightly upward feels better and tell player that we hit and dealt damage to something
     [SerializeField] private float pullForce; // Force we are pulling
     [SerializeField] private float maxDistance; // Max distance to travel with gravityscale 0
+    [SerializeField] private float meleeWeaponGrapplingDistance;
 
     [SerializeField] private bool worldPickUp;
 
@@ -27,6 +29,7 @@ public class MeleeWeapon : MonoBehaviour
 
     private GameObject pullingObject; // Object that is pulling given in PullWeapon()
     private bool beingPulled;
+    private bool attachedToGrapplePoint = false;
 
     private void Start()
     {
@@ -64,7 +67,7 @@ public class MeleeWeapon : MonoBehaviour
                 transform.Rotate(new Vector3(0f, 0f, rotSpeed * Time.fixedDeltaTime));
         }
         // Calculation when we reach end point
-        if ((transform.position - startPoint).magnitude >= maxDistance && !beingPulled)
+        if ((transform.position - startPoint).magnitude >= maxDistance && !beingPulled && !attachedToGrapplePoint)
         {
             myRB.gravityScale = defaultGravityScale;
 
@@ -77,6 +80,8 @@ public class MeleeWeapon : MonoBehaviour
     {
         if (beingPulled)
         {
+            Physics2D.IgnoreLayerCollision(3, 13);
+            myRB.constraints = ~RigidbodyConstraints2D.FreezePosition;
             // Rotating object to point player
             Vector3 vectorToTarget = pullingObject.transform.position - transform.position;
             float angle = Mathf.Atan2(vectorToTarget.y, vectorToTarget.x) * Mathf.Rad2Deg;
@@ -85,6 +90,33 @@ public class MeleeWeapon : MonoBehaviour
 
             // Moving object to player
             myRB.velocity = vectorToTarget.normalized * pullForce * Time.deltaTime;
+            attachedToGrapplePoint = false;
+        }
+    }
+
+    // Use this if you want to pull player character towards the grapple point when the multitool is attached to it.
+    private void playerPull()
+    {
+        if (beingPulled)
+        {
+            // Make the player and weapon ignore collisions again, which were declined in collision check after the weapon hit the grapple point.
+            Physics2D.IgnoreLayerCollision(3, 13);
+
+            // During grapple all constraints were freezed so the player couldn't push the weapon around when attached to the point.
+            // Here we unfreeze the position. Rotation is unfreezed automatically when being pulled again.
+            myRB.constraints = ~RigidbodyConstraints2D.FreezePosition;
+
+            // Rotating object to point player
+            Vector3 vectorToTarget =  transform.position - pullingObject.transform.position;
+            float angle = Mathf.Atan2(vectorToTarget.y, vectorToTarget.x) * Mathf.Rad2Deg;
+            Quaternion q = Quaternion.AngleAxis(angle, Vector3.forward);
+            transform.rotation = Quaternion.Slerp(transform.rotation, q, Time.deltaTime * pullForce);
+
+            // Moving object to player
+            pullingObject.GetComponent<Rigidbody2D>().velocity = vectorToTarget.normalized * pullForce * Time.deltaTime;
+
+            // Weapon is not attached to the grapple point anymore.
+            attachedToGrapplePoint = false;
         }
     }
 
@@ -128,7 +160,69 @@ public class MeleeWeapon : MonoBehaviour
                 SetEnemyIngoresOnLand();
             }      
         }
+        // Collision with GrapplePoint
+        else if(collision.gameObject.layer == LayerMask.NameToLayer("GrapplePoint"))
+        {
+            // Makes the player and melee weapon to collide until it is pulled again. Weapon can be used as a platform during grapple.
+            Physics2D.IgnoreLayerCollision(3, 13, false);
+
+            // We are attached to a grappling point.
+            attachedToGrapplePoint = true;
+            landed = true;
+            SetEnemyIngoresOnLand();
+
+            // Calculations for the angle where the weapon hit the block.
+            Vector2 normal = collision.GetContact(0).normal;
+            float collisionAngle = Vector2.SignedAngle(Vector2.right, normal);
+            //Debug.Log(collisionAngle);
+
+            myRB.gravityScale = 0f;
+
+            // Makes the desired calculations for the weapon to attach to the point correctly. Does not work perfectly at the moment.
+            if (collisionAngle <= 45 && collisionAngle >= -45)
+            {
+                //Debug.Log("Right");
+
+                transform.position = new Vector2(collision.transform.position.x + (collision.transform.localScale.x / meleeWeaponGrapplingDistance), collision.transform.position.y);
+                Quaternion q = Quaternion.AngleAxis(collisionAngle, Vector3.forward);
+                transform.rotation = Quaternion.Slerp(transform.rotation, q, Time.deltaTime * pullForce);
+                myRB.constraints = RigidbodyConstraints2D.FreezePosition;
+                myRB.freezeRotation = true;
+
+            }
+            else if (collisionAngle < -45 && collisionAngle > -135)
+            {
+                //Debug.Log("Bottom");
+
+                transform.position = new Vector2(collision.transform.position.x, collision.transform.position.y - (collision.transform.localScale.y / meleeWeaponGrapplingDistance));
+                Quaternion q = Quaternion.AngleAxis(collisionAngle, Vector3.forward);
+                transform.rotation = Quaternion.Slerp(transform.rotation, q, Time.deltaTime * pullForce);
+                myRB.constraints = RigidbodyConstraints2D.FreezePosition;
+                myRB.freezeRotation = true;
+            }
+            else if (collisionAngle <= -135 || collisionAngle > 135)
+            {
+                //Debug.Log("Left");
+
+                transform.position = new Vector2(collision.transform.position.x - (collision.transform.localScale.x / meleeWeaponGrapplingDistance), collision.transform.position.y);
+                Quaternion q = Quaternion.AngleAxis(collisionAngle, Vector3.forward);
+                transform.rotation = Quaternion.Slerp(transform.rotation, q, Time.deltaTime * pullForce);
+                myRB.constraints = RigidbodyConstraints2D.FreezePosition;
+                myRB.freezeRotation = true;
+            }
+            else if (collisionAngle > 45 && collisionAngle <= 135)
+            {
+                //Debug.Log("Top");
+
+                transform.position = new Vector2(collision.transform.position.x, collision.transform.position.y + (collision.transform.localScale.y / meleeWeaponGrapplingDistance));
+                Quaternion q = Quaternion.AngleAxis(collisionAngle, Vector3.forward);
+                transform.rotation = Quaternion.Slerp(transform.rotation, q, Time.deltaTime * pullForce);
+                myRB.constraints = RigidbodyConstraints2D.FreezePosition;
+                myRB.freezeRotation = true;
+            }
+        }
     }
+
 
     // Called from PlayerMeleeCombat
     public void PullWeapon(GameObject objectThatPulls)
@@ -153,6 +247,9 @@ public class MeleeWeapon : MonoBehaviour
 
         if (!Physics2D.GetIgnoreLayerCollision(LayerMask.NameToLayer("Ground"), LayerMask.NameToLayer("MeleeWeapon")))
             Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Ground"), LayerMask.NameToLayer("MeleeWeapon"), true);
+
+        if (!Physics2D.GetIgnoreLayerCollision(LayerMask.NameToLayer("GrapplePoint"), LayerMask.NameToLayer("MeleeWeapon")))
+            Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("GrapplePoint"), LayerMask.NameToLayer("MeleeWeapon"), true);
     }
 
     // Ignore enemylayer colliders when we land
@@ -191,11 +288,18 @@ public class MeleeWeapon : MonoBehaviour
         // Set collision detection back if this was set to ignore
         Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Ground"), LayerMask.NameToLayer("MeleeWeapon"), false);
         Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Enemy"), LayerMask.NameToLayer("MeleeWeapon"), false);
+        Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("GrapplePoint"), LayerMask.NameToLayer("MeleeWeapon"), false);
 
-        // Inform Player to pickup
-        objectWhoPicksUp.GetComponent<PlayerCombat>().PickUpWeapon();
-        // Destroy instance form scene
-        Destroy(gameObject);
+        // If we are not attached to the grapple point, make the weapon pickable.
+        if(!attachedToGrapplePoint)
+        {
+            // Inform Player to pickup
+            objectWhoPicksUp.GetComponent<PlayerCombat>().PickUpWeapon();
+            // Destroy instance form scene
+            Destroy(gameObject);
+
+        }
+
     }
 
     public bool getBeingPulled()
