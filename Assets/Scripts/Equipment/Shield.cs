@@ -10,10 +10,12 @@ public class Shield : MonoBehaviour
     public float ProtectionAmount { get; private set; }
 
     [SerializeField] private GameObject shield;
+
+    [Header("Shield variables")]
     [SerializeField] private float protectionValue;
     [SerializeField] private float parryTimeWindow = 0.5f;
    
-    private bool hitParried = false;
+    private bool hitParried = false; // State variable for tracking successful parries
     private float nextParry = -1; // Initialize as -1. First time it will always be less than the current time and will allow to parry. 
     private float parryCooldown = 0.6f;
 
@@ -28,19 +30,16 @@ public class Shield : MonoBehaviour
         // Blocking
         if (context.started && (Time.time >= nextParry || hitParried))
         {
-            nextParry = Time.time + parryCooldown;
-            hitParried = false;
-
+            nextParry = Time.time + parryCooldown; // Sets a time when parry can be used again
+            hitParried = false; // Reset hitParried state
+            shield.SetActive(true); // Activate shield graphics
             Blocking = true;
-            shield.SetActive(true);
         }
         // Blocking cancelled
         if (context.canceled)
         {
-            // Parry window activated
-            StartCoroutine(ActivateParryWindow());
-
-            shield.SetActive(false);
+            StartCoroutine(ActivateParryWindow()); // Parry window activated
+            shield.SetActive(false); // Disable shield graphics
             Blocking = false;
         }
     }
