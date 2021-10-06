@@ -1,13 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Player : MonoBehaviour
 {
+    public float InputHorizontal { get; private set; }
+    public float InputVertical { get; private set; }
+
     private GUIStyle TextStyleEnergy = new GUIStyle();
     private GUIStyle TextStyleHealth = new GUIStyle();
     // This script can be used to control all player sub scripts through one place.
-    // Not in use right now because the new Unity Input System does all the work for us. (Input does not need to be tracked separately)
+    // Holds player components and state variables that can be accessed from anywhere
 
     // This script could maybe become useful when starting to make animation controller. 
     // But maybe even then a separate animation controller script could be enough by itself.
@@ -17,6 +21,7 @@ public class Player : MonoBehaviour
     [SerializeField] private PlayerCollision collisionScript;
     [SerializeField] private PlayerInteractions interactionsScript;
     [SerializeField] private PlayerCombat combatScript;
+    [SerializeField] private ShockwaveTool shockwaveTool;
     [SerializeField] private Health healthScript;
     [SerializeField] private Energy energyScript;
 
@@ -35,9 +40,28 @@ public class Player : MonoBehaviour
         TextStyleEnergy.normal.textColor = Color.red;
     }
 
+    public bool IsFacingRight()
+    {
+        return movementScript.isFacingRight;
+    }
+
+    public bool IsShockwaveJumping()
+    {
+        return movementScript.shockwaveJumping;
+    }
+
     private void OnGUI()
     {
         GUI.Label(new Rect(10, 10, 300, 100), "Health: " + healthScript.GetHealth(), TextStyleHealth);
         GUI.Label(new Rect(200, 10, 300, 100), "Energy: " + energyScript.GetEnergy(), TextStyleEnergy);
+        GUI.Label(new Rect(400, 10, 300, 100), "Horizontal: " + InputHorizontal, TextStyleHealth);
+        GUI.Label(new Rect(600, 10, 300, 100), "Vertical: " + InputVertical, TextStyleEnergy);
+    }
+
+    // Move action: Called when the Move Action Button is pressed
+    public void Move(InputAction.CallbackContext context) // Context tells the function when the action is triggered
+    {
+        InputHorizontal = Mathf.Round(context.ReadValue<Vector2>().x); // Updates the horizontal input direction
+        InputVertical = Mathf.Round(context.ReadValue<Vector2>().y);// Updates the vertical input direction
     }
 }
