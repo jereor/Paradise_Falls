@@ -5,11 +5,17 @@ using UnityEngine.InputSystem;
 
 public class PlayerCombat : MonoBehaviour
 {
+    public LayerMask groundLayer;
+    public LayerMask grappleLayer;
+    public LayerMask playerLayer;
+    public GameObject magnetTether;
+    private Vector2 weaponPos;
     [Header("Player Variables")]
     [SerializeField] private float meleeDamage; // Normal hits currentComboHit 1, 2 and 2*normal damage to last hit
     //[SerializeField] private float meleeComboLastDamage; // Last hit currentComboHit 3
     [SerializeField] private float knockbackForceNormal;
     [SerializeField] private float knockbackForceLast;
+    [SerializeField] private float playerPullForce;
 
 
     [SerializeField] private float meleeAttackRate; // Time between combo attacks
@@ -43,6 +49,7 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private GameObject meleeWeaponPrefab;
     private GameObject weaponInstance;
     [SerializeField] private bool isWeaponWielded;
+    public bool isPlayerBeingPulled = false;
 
     // State variables
     //private float? meleeButtonPressedTime;
@@ -91,7 +98,11 @@ public class PlayerCombat : MonoBehaviour
             numberOfPoints = (int)maxDistance;
             InitPoints();
         }
-
+        if(weaponInstance)
+        {
+            Debug.DrawRay(transform.position, weaponInstance.transform.position - transform.position, Color.red);
+        }
+        
         ComboCounter();
 
         RotateIndicator();
@@ -99,6 +110,8 @@ public class PlayerCombat : MonoBehaviour
         Throwing();
 
         CheckMaxDistance();
+
+        PullingPlayer();
     }
 
     // --- INPUT FUNCITONS ---
@@ -161,10 +174,37 @@ public class PlayerCombat : MonoBehaviour
             lastTimeMeleed = Time.time;
         }
         // Pull weapon if thrown
-        else if(context.performed && !isWeaponWielded && CheckAttackRate() && weaponInstance != null)
+        else if(context.performed && !isWeaponWielded && CheckAttackRate() && weaponInstance != null && !throwAim)
         {
             Debug.Log("Trying to pull weapon");
             weaponInstance.GetComponent<MeleeWeapon>().PullWeapon(gameObject);          
+        }
+        // Pull player if pulling weapon while aiming
+        else if(context.performed && !isWeaponWielded && weaponInstance != null && throwAim && weaponInstance.GetComponent<MeleeWeapon>().getAttachedToGrapplePoint())
+        {
+            // Make the player and weapon ignore collisions again, which were declined in collision check after the weapon hit the grapple point.
+            
+            //Debug.Log("Check");
+            //Vector2 vectorToTarget = weaponInstance.transform.position - transform.position;
+            ////Debug.Log(weaponInstance.transform.position);
+            //RaycastHit2D hitGround;
+            //RaycastHit2D hitGrapplePoint;
+            //RaycastHit2D hit;
+            //hitGround = Physics2D.Raycast(transform.position, vectorToTarget, vectorToTarget.magnitude, LayerMask.NameToLayer("Ground"));
+            //hitGrapplePoint = Physics2D.Raycast(transform.position, vectorToTarget, vectorToTarget.magnitude, LayerMask.NameToLayer("GrapplePoint"));
+            //hit = Physics2D.Raycast(transform.position, vectorToTarget, vectorToTarget.magnitude);
+
+            //Debug.Log(hit.collider.name);
+
+            // Sets the collision between the player and weapon false again. Magnet tether becomes active during the flight to the weapon.
+            //if (!hitGround && !hitGrapplePoint)
+            //{
+                Debug.Log("Joo");
+                Physics2D.IgnoreLayerCollision(3, 13);
+                isPlayerBeingPulled = true;
+                magnetTether.SetActive(true);
+            //}
+
         }
 
         // Throw on button release
@@ -209,6 +249,10 @@ public class PlayerCombat : MonoBehaviour
             // Show minDistance amount of points
             ShowProjPoints((int)minDistance);
         }
+        if(context.performed && !isWeaponWielded && weaponInstance.GetComponent<MeleeWeapon>().getAttachedToGrapplePoint())
+        {
+            throwAim = true;
+        }
 
         if (context.canceled)
         {
@@ -219,6 +263,17 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
+    // Player is being pulled towards the weapon. Gavity = 0 during the pull.
+    private void PullingPlayer()
+    {
+        if (isPlayerBeingPulled)
+        {
+            Vector3 vectorToTarget = weaponInstance.transform.position - transform.position;
+            gameObject.GetComponent<Rigidbody2D>().gravityScale = 0f;
+            gameObject.GetComponent<Rigidbody2D>().velocity = vectorToTarget.normalized * playerPullForce * Time.deltaTime;
+        }
+
+    }
 
     // --- MELEE ---
 
@@ -398,6 +453,8 @@ public class PlayerCombat : MonoBehaviour
     {
         //Debug.Log("Picked weapon");
         isWeaponWielded = true;
+        //Deactivate the tether. Weapon reached.
+        magnetTether.SetActive(false);
     }
 
 
@@ -431,5 +488,10 @@ public class PlayerCombat : MonoBehaviour
     public void setMeleeDamage(float dmg)
     {
         meleeDamage = dmg;
+    }
+
+    public GameObject getWeaponInstance()
+    {
+        return weaponInstance;
     }
 }

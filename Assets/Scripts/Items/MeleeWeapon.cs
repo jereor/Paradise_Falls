@@ -54,6 +54,7 @@ public class MeleeWeapon : MonoBehaviour
     {
         ItemPull();
         WeaponThrow();
+        //PlayerPull();
     }
 
     private void WeaponThrow()
@@ -90,32 +91,6 @@ public class MeleeWeapon : MonoBehaviour
 
             // Moving object to player
             myRB.velocity = vectorToTarget.normalized * pullForce * Time.deltaTime;
-            attachedToGrapplePoint = false;
-        }
-    }
-
-    // Use this if you want to pull player character towards the grapple point when the multitool is attached to it.
-    private void playerPull()
-    {
-        if (beingPulled)
-        {
-            // Make the player and weapon ignore collisions again, which were declined in collision check after the weapon hit the grapple point.
-            Physics2D.IgnoreLayerCollision(3, 13);
-
-            // During grapple all constraints were freezed so the player couldn't push the weapon around when attached to the point.
-            // Here we unfreeze the position. Rotation is unfreezed automatically when being pulled again.
-            myRB.constraints = ~RigidbodyConstraints2D.FreezePosition;
-
-            // Rotating object to point player
-            Vector3 vectorToTarget =  transform.position - pullingObject.transform.position;
-            float angle = Mathf.Atan2(vectorToTarget.y, vectorToTarget.x) * Mathf.Rad2Deg;
-            Quaternion q = Quaternion.AngleAxis(angle, Vector3.forward);
-            transform.rotation = Quaternion.Slerp(transform.rotation, q, Time.deltaTime * pullForce);
-
-            // Moving object to player
-            pullingObject.GetComponent<Rigidbody2D>().velocity = vectorToTarget.normalized * pullForce * Time.deltaTime;
-
-            // Weapon is not attached to the grapple point anymore.
             attachedToGrapplePoint = false;
         }
     }
@@ -166,9 +141,8 @@ public class MeleeWeapon : MonoBehaviour
             // Makes the player and melee weapon to collide until it is pulled again. Weapon can be used as a platform during grapple.
             Physics2D.IgnoreLayerCollision(3, 13, false);
 
-            // TODO: Change grapple point and meleeweapon layers to Ground here!
-            //gameObject.layer = 6;
-            //collision.gameObject.layer = 6;
+            // Change the meleeweapon layer to Ground here! Player can stand on the weapon while attached to the grapple point.
+            gameObject.layer = 6;
 
             // We are attached to a grappling point.
             attachedToGrapplePoint = true;
@@ -239,6 +213,10 @@ public class MeleeWeapon : MonoBehaviour
 
             myRB.velocity = Vector2.zero; // Stop moving at the start of pulling physics bugs
 
+            //Layer back to MeleeWeapon from Ground.
+            gameObject.layer = 13;
+
+
             pullingObject = objectThatPulls;
             beingPulled = true;           
         }
@@ -295,10 +273,14 @@ public class MeleeWeapon : MonoBehaviour
         Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("GrapplePoint"), LayerMask.NameToLayer("MeleeWeapon"), false);
 
         // If we are not attached to the grapple point, make the weapon pickable.
-        if(!attachedToGrapplePoint)
+        if(!attachedToGrapplePoint || (attachedToGrapplePoint && objectWhoPicksUp.GetComponent<PlayerCombat>().isPlayerBeingPulled))
         {
             // Inform Player to pickup
             objectWhoPicksUp.GetComponent<PlayerCombat>().PickUpWeapon();
+
+            //Player was being pulled towards the weapon. Change the bool back to false and gravityscale to normal.
+            objectWhoPicksUp.GetComponent<PlayerCombat>().isPlayerBeingPulled = false;
+            objectWhoPicksUp.GetComponent<Rigidbody2D>().gravityScale = 5f;
             // Destroy instance form scene
             Destroy(gameObject);
 
@@ -323,5 +305,10 @@ public class MeleeWeapon : MonoBehaviour
     public float getMaxDistance()
     {
         return maxDistance;
+    }
+
+    public bool getAttachedToGrapplePoint()
+    {
+        return attachedToGrapplePoint;
     }
 }
