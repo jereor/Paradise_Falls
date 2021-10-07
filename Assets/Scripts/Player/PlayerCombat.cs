@@ -93,18 +93,27 @@ public class PlayerCombat : MonoBehaviour
     private void Update()
     {
         // Idle
-        if (onIdle && inputReceived)
+        if (onIdle && inputReceived && !heavyHold)
         {
-            Debug.Log("Attack1");
+            // Attacks in air
+            //if (TryGetComponent<PlayerMovement>(out var movementScript))
+            //{
+            //    if (movementScript.GROUNDED();)
+            //    airAttackPosition = gameObject.transform.position;
+            //    GetComponent<Rigidbody2D>().gravityScale = 0f;
+            //    attackingInAir = true;
+            //}
+
+            //Debug.Log("Attack1");
             StartCoroutine(PlaceHolderAttack1());
             InputManager();
             onIdle = false;
             inputReceived = false;
         }
 
-        if (onTran1 && inputReceived)
+        if (onTran1 && inputReceived && !heavyHold)
         {
-            Debug.Log("Attack2");
+            //Debug.Log("Attack2");
             StopCoroutine(tranToIdle);
             StartCoroutine(PlaceHolderAttack2());
             InputManager();
@@ -112,11 +121,49 @@ public class PlayerCombat : MonoBehaviour
             inputReceived = false;
         }
 
-        if (onTran2 && inputReceived)
+        if (onTran2 && inputReceived && !heavyHold)
         {
-            Debug.Log("Attack3");
+            //Debug.Log("Attack3");
             StopCoroutine(tranToIdle);
             StartCoroutine(PlaceHolderAttack3());
+            InputManager();
+            onTran2 = false;
+            inputReceived = false;
+        }
+
+        // Heavy
+        if (onIdle && inputReceived && heavyHold)
+        {
+            // Attacks in air
+            //if(TryGetComponent<PlayerMovement>(out var movementScript))
+            //{
+            //    if (movementScript.GROUNDED();)
+            //    airAttackPosition = gameObject.transform.position;
+            //    GetComponent<Rigidbody2D>().gravityScale = 0f;
+            //    attackingInAir = true;
+            //}
+            //Debug.Log("Attack1");
+            StartCoroutine(PlaceHolderAttackH1());
+            InputManager();
+            onIdle = false;
+            inputReceived = false;
+        }
+
+        if (onTran1 && inputReceived && heavyHold)
+        {
+            //Debug.Log("Attack2");
+            StopCoroutine(tranToIdle);
+            StartCoroutine(PlaceHolderAttackH2());
+            InputManager();
+            onTran1 = false;
+            inputReceived = false;
+        }
+
+        if (onTran2 && inputReceived && heavyHold)
+        {
+            //Debug.Log("Attack3");
+            StopCoroutine(tranToIdle);
+            StartCoroutine(PlaceHolderAttackH3());
             InputManager();
             onTran2 = false;
             inputReceived = false;
@@ -125,6 +172,7 @@ public class PlayerCombat : MonoBehaviour
 
     private void FixedUpdate()
     {
+
         CheckIfMaxDistanceChanged();
 
         RotateIndicator();
@@ -144,20 +192,13 @@ public class PlayerCombat : MonoBehaviour
             // Start Throwing
             if (throwAimHold && meleeWeaponPrefab)
             {
-                Debug.Log("Throw init");
                 // Set time here since we start charging
                 throwButtonPressedTime = Time.time;
             }
 
-            // Light melee
-            else if (!throwAimHold && canReceiveInput && !heavyHold)
-            {
-                inputReceived = true;
-                canReceiveInput = false;
-            }
-
-            // Heavy melee
-            else if (!throwAimHold && canReceiveInput && heavyHold)
+            // Input for melee 
+            // Melee type checked in Idle and transitions if heavyHold is true or false
+            else if (!throwAimHold && canReceiveInput)
             {
                 inputReceived = true;
                 canReceiveInput = false;
@@ -165,39 +206,27 @@ public class PlayerCombat : MonoBehaviour
         }
 
         // Pull (and grappling hook control) 
-        else if (context.performed && !isWeaponWielded)
+        else if (context.performed && !isWeaponWielded && weaponInstance != null && weaponInstance.TryGetComponent<MeleeWeapon>(out var weaponScript))
         {
-            if (weaponInstance != null && weaponInstance.TryGetComponent<MeleeWeapon>(out var weaponScript))
+            // Just left click
+            if (!throwAimHold)
             {
                 Debug.Log("Trying to pull weapon");
                 weaponScript.PullWeapon(gameObject);
+            }
+            // Left click when right is held down
+            else if (throwAimHold)
+            {
+                Debug.Log("DO GRAPPLING HOOK HERE");
+                //weaponScript.PullWeapon(gameObject);
             }
         }
 
         // Throw on button release
         if(context.canceled && isWeaponWielded && throwAimHold && meleeWeaponPrefab && throwButtonPressedTime != null)
         {
-            // Instantiate meleeWeaponPrefab on attackPoint
-            weaponInstance = Instantiate(meleeWeaponPrefab, throwPoint.position, Quaternion.identity);
+            ThrowWeapon();
 
-            weaponInstance.transform.right = vectorToTarget.normalized;
-
-            // Give force to weaponInstance to throw
-            if (ratio * maxDistance >= minDistance)
-            {
-                if (weaponInstance.GetComponent<MeleeWeapon>().getMaxDistance() != maxDistance)
-                    weaponInstance.GetComponent<MeleeWeapon>().setMaxDistance(maxDistance * ratio); // Favor distance set in this script easier upgrade handling
-                else
-                    weaponInstance.GetComponent<MeleeWeapon>().setMaxDistance(weaponInstance.GetComponent<MeleeWeapon>().getMaxDistance() * ratio);
-            }
-            else
-            {
-                weaponInstance.GetComponent<MeleeWeapon>().setMaxDistance(minDistance);
-            }
-
-            // Give force to vector mousePosRay - gameObjectPos, use default force and adjust length of throw iva MaxDistance calculations above
-            weaponInstance.GetComponent<Rigidbody2D>().AddForce(new Vector2(mousePosRay.origin.x - gameObject.transform.position.x, mousePosRay.origin.y - gameObject.transform.position.y).normalized * defaultThrowingForce, ForceMode2D.Impulse);
-            
             // We don't have weapon anymore
             isWeaponWielded = false;
             throwButtonPressedTime = null;
@@ -209,7 +238,7 @@ public class PlayerCombat : MonoBehaviour
 
     public void HeavyMelee(InputAction.CallbackContext context)
     {
-        if (context.performed && isWeaponWielded)
+        if (context.performed)
         {
             heavyHold = true;
         }
@@ -222,12 +251,16 @@ public class PlayerCombat : MonoBehaviour
 
     public void MeleeAimThrowing(InputAction.CallbackContext context)
     {
-        if (context.performed && isWeaponWielded)
+        if (context.performed)
         {
             throwAimHold = true;
 
-            // Show minDistance amount of points
-            ShowProjPoints((int)minDistance);
+            // Show weapon throw min distance direction
+            if (isWeaponWielded)
+            {
+                // Show minDistance amount of points
+                ShowProjPoints((int)minDistance);
+            }
         }
 
         if (context.canceled)
@@ -244,9 +277,9 @@ public class PlayerCombat : MonoBehaviour
 
     IEnumerator TranToIdle(int tranI)
     {
-        Debug.Log("Transition enter");
+        //Debug.Log("Transition enter");
         yield return new WaitForSecondsRealtime(1f);
-        Debug.Log("Transition exit");
+        //Debug.Log("Transition exit");
         if (tranI == 1)
             onTran1 = false;
         else if (tranI == 2)
@@ -254,10 +287,11 @@ public class PlayerCombat : MonoBehaviour
         else if (tranI == 3)
             onTran3 = false;
 
-
-        gameObject.GetComponent<PlayerMovement>().enabled = true;
+        // Allow movement
+        //gameObject.GetComponent<PlayerMovement>().enabled = true;
 
         onIdle = true;
+
         if (!canReceiveInput)
         {
             InputManager();
@@ -268,13 +302,16 @@ public class PlayerCombat : MonoBehaviour
     IEnumerator PlaceHolderAttack1()
     {
         //Debug.Log("Started melee animation");
-        gameObject.GetComponent<PlayerMovement>().enabled = false;
-        gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+        // Disable movement
+        //gameObject.GetComponent<PlayerMovement>().enabled = false;
+        //gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
 
         yield return new WaitForSecondsRealtime(1f);
 
-        Debug.Log("Ended melee animation 1");
+        Debug.Log("Ended light melee animation 1");
 
+
+        // Light attack animation 1
         DealDamage(1, false);
 
         canReceiveInput = true;
@@ -286,14 +323,15 @@ public class PlayerCombat : MonoBehaviour
     IEnumerator PlaceHolderAttack2()
     {
         //Debug.Log("Started melee animation");
-        gameObject.GetComponent<PlayerMovement>().enabled = false;
-
-        gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+        //gameObject.GetComponent<PlayerMovement>().enabled = false;
+        //gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
 
         yield return new WaitForSecondsRealtime(1f);
 
-        Debug.Log("Ended melee animation 2");
+        Debug.Log("Ended light melee animation 2");
 
+
+        // Light attack animation 2
         DealDamage(2, false);
 
         canReceiveInput = true;
@@ -305,20 +343,81 @@ public class PlayerCombat : MonoBehaviour
     IEnumerator PlaceHolderAttack3()
     {
         //Debug.Log("Started melee animation");
-        gameObject.GetComponent<PlayerMovement>().enabled = false;
-
-        gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+        //gameObject.GetComponent<PlayerMovement>().enabled = false;
+        //gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
 
         yield return new WaitForSecondsRealtime(1f);
 
-        Debug.Log("Ended melee animation 3");
+        Debug.Log("Ended light melee animation 3");
 
+
+        // Light attack animation 3
         DealDamage(3, false);
 
         onTran3 = true;
 
         tranToIdle = StartCoroutine(TranToIdle(3));
     }
+
+    IEnumerator PlaceHolderAttackH1()
+    {
+        //Debug.Log("Started melee animation");
+        // Disable movement
+        //gameObject.GetComponent<PlayerMovement>().enabled = false;
+        //gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+
+        yield return new WaitForSecondsRealtime(1f);
+
+        Debug.Log("Ended heavy melee animation 1");
+
+
+        // Heavy attack animation 1
+        DealDamage(1, true);
+
+        canReceiveInput = true;
+        onTran1 = true;
+
+        tranToIdle = StartCoroutine(TranToIdle(1));
+    }
+
+    IEnumerator PlaceHolderAttackH2()
+    {
+        //Debug.Log("Started melee animation");
+        //gameObject.GetComponent<PlayerMovement>().enabled = false;
+        // gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+
+        yield return new WaitForSecondsRealtime(1f);
+
+        Debug.Log("Ended heavy melee animation 2");
+
+
+        // Heavy attack animation 2
+        DealDamage(2, true);
+
+        canReceiveInput = true;
+        onTran2 = true;
+
+        tranToIdle = StartCoroutine(TranToIdle(2));
+    }
+
+    IEnumerator PlaceHolderAttackH3()
+    {
+        //Debug.Log("Started melee animation");
+        //gameObject.GetComponent<PlayerMovement>().enabled = false;
+        //gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+
+        yield return new WaitForSecondsRealtime(1f);
+
+        Debug.Log("Ended heavy melee animation 3");
+        
+        // Heavy attack animation 3
+        DealDamage(3, true);
+
+        onTran3 = true;
+
+        tranToIdle = StartCoroutine(TranToIdle(3));
+    }
+
 
     // Change canReceiveInput boolean to opposite
     public void InputManager()
@@ -468,16 +567,6 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
-    private void CheckIfMaxDistanceChanged()
-    {
-        // If we updated maxDistance via pick up or debuff set numberOfPoints to same, aka show 1 pointPrefab per 1 distance unit 
-        if (numberOfPoints != (int)maxDistance)
-        {
-            numberOfPoints = (int)maxDistance;
-            InitPoints();
-        }
-    }
-
     // Calculate the position of next point
     Vector2 PointPosition(float t, Vector2 toTarget)
     {
@@ -567,6 +656,47 @@ public class PlayerCombat : MonoBehaviour
                 weaponInstance.GetComponent<MeleeWeapon>().PullWeapon(gameObject);
             }
         }
+
+        CheckIfMaxDistanceChanged();
+    }
+
+    private void CheckIfMaxDistanceChanged()
+    {
+        // If we updated maxDistance via pick up or debuff set numberOfPoints to same, aka show 1 pointPrefab per 1 distance unit 
+        if (numberOfPoints != (int)maxDistance)
+        {
+            numberOfPoints = (int)maxDistance;
+            InitPoints();
+        }
+    }
+
+    // Instantiate weaponPrefab and launch it to mouse position
+    public void ThrowWeapon()
+    {
+        // Instantiate meleeWeaponPrefab on attackPoint
+        weaponInstance = Instantiate(meleeWeaponPrefab, throwPoint.position, Quaternion.identity);
+
+        weaponInstance.transform.right = vectorToTarget.normalized;
+
+        // Give force to weaponInstance to throw
+        if (ratio * maxDistance >= minDistance)
+        {
+            if (weaponInstance.GetComponent<MeleeWeapon>().getMaxDistance() != maxDistance)
+            {
+                weaponInstance.GetComponent<MeleeWeapon>().setMaxDistance(maxDistance * ratio); // Favor distance set in this script easier upgrade handling
+            }
+            else
+            {
+                weaponInstance.GetComponent<MeleeWeapon>().setMaxDistance(weaponInstance.GetComponent<MeleeWeapon>().getMaxDistance() * ratio);
+            }
+        }
+        else
+        {
+            weaponInstance.GetComponent<MeleeWeapon>().setMaxDistance(minDistance);
+        }
+
+        // Give force to vector mousePosRay - gameObjectPos, use default force and adjust length of throw iva MaxDistance calculations above
+        weaponInstance.GetComponent<Rigidbody2D>().AddForce(vectorToTarget.normalized * defaultThrowingForce, ForceMode2D.Impulse);
     }
 
     // Called from Weapon script if pulled or we Interact with weapon
