@@ -51,6 +51,8 @@ public class PlayerCombat : MonoBehaviour
     private bool throwAim; // True if we are holdling Throw input
     private int currentComboHit = 1; // Combo counter 1 normal, 2 normal, 3 last hit -> comboCooldown -> Combo can be done again
 
+    private bool heavyComboHold;
+
     private float? throwButtonPressedTime; // Time when we start throwing
     private float throwChargeStartTime; // Time when we start charging
     private float ratio; // Ratio float to grow desired parameters in same ratio. "One ratio to rule them all"
@@ -63,7 +65,13 @@ public class PlayerCombat : MonoBehaviour
     Camera mainCamera;  // MainCamera
     Ray mousePosRay; // Ray from MainCamera to mouse position in screen (endpoint aka .origin vector is what we can use)
 
+    public GameObject meleeDebugParticles;
+
     Vector2 vectorToTarget;
+
+    Coroutine meleeAnimation;
+
+    Coroutine comboBuffer;
 
     // Start is called before the first frame update
     void Start()
@@ -111,54 +119,17 @@ public class PlayerCombat : MonoBehaviour
             // Set time here since we start charging
             throwButtonPressedTime = Time.time;
         }
-        // Melee
+
+        // Normal Melee
         else if (context.performed && isWeaponWielded && CheckAttackRate() && !throwAim && !comboOnCooldown)
         {
             // We start combo if we havent one started
             if(!comboOnGoing)
                 comboOnGoing = true;
 
-            // Draws box and if this overlaps with object on enemyLayer, stores their colliders in array
-            Collider2D[] hitEnemies = Physics2D.OverlapBoxAll(attackPoint.position, new Vector2(attackRangeX, attackRangeY), 0f, enemyLayer);
-
-            // First and second attack
-            if (currentComboHit < 3)
-            {
-                Debug.Log("Combo hit: " + currentComboHit);
-
-                // If there is elements on hitEnemies array go through it
-                foreach (Collider2D enemy in hitEnemies)
-                {
-                    // Error check if there isn't Health script attached don't do damage
-                    if (enemy.GetComponent<Health>() != null)
-                    {
-                        // Deal damage
-                        enemy.GetComponent<Health>().TakeDamage(meleeDamage);
-                        // Knockback enemy
-                        Knockback(enemy.gameObject, gameObject, knockbackForceNormal);
-                    }
-                }
-                // Next combo attack
-                currentComboHit++;
-            }
-            // Third attack or if bug happens (currentComboHit = 4) this will deal 3. damage and reset combo
-            else
-            {
-                Debug.Log("Last hit: " + currentComboHit);
-
-                foreach (Collider2D enemy in hitEnemies)
-                {
-                    if (enemy.GetComponent<Health>() != null)
-                    {
-                        enemy.GetComponent<Health>().TakeDamage(meleeDamage * 2);
-                        Knockback(enemy.gameObject, gameObject, knockbackForceLast);
-                    }
-                }
-                //Debug.Log("End Combo due last attack");
-                ResetCombo();
-            }
-            //meleeButtonPressedTime = null;
-            lastTimeMeleed = Time.time;
+            // !!!!! When melee animations are here do this instead: Run correct animation here with currentCombo, when animation visually hits run DealDamage(),
+            if(meleeAnimation == null)
+                meleeAnimation = StartCoroutine(PlaceHolderMeleeAnimation());
         }
         // Pull weapon if thrown
         else if(context.performed && !isWeaponWielded && CheckAttackRate() && weaponInstance != null)
@@ -197,6 +168,19 @@ public class PlayerCombat : MonoBehaviour
 
             // Weapon is thrown hide points
             HideAllProjPoints();
+        }
+    }
+
+    public void HeavyMelee(InputAction.CallbackContext context)
+    {
+        if (context.performed && isWeaponWielded)
+        {
+            heavyComboHold = true;
+        }
+
+        if (context.canceled)
+        {
+            heavyComboHold = false;
         }
     }
 
@@ -247,6 +231,134 @@ public class PlayerCombat : MonoBehaviour
     private bool CheckAttackRate()
     {
         return (Time.time - lastTimeMeleed >= meleeAttackRate);
+    }
+
+    IEnumerator PlaceHolderMeleeAnimation()
+    {
+        //Debug.Log("Started melee animation");
+        gameObject.GetComponent<PlayerMovement>().enabled = false;
+        gameObject.GetComponent<Rigidbody2D>().gravityScale = 0f;
+        gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+
+        yield return new WaitForSecondsRealtime(1f);
+
+        Debug.Log("Ended melee animation");
+
+        DealDamage();
+        if (comboBuffer != null)
+        {
+            StopCoroutine(comboBuffer);
+            //comboBuffer = null;
+            comboBuffer = StartCoroutine(PlaceHolderComboBuffer());
+        }
+        else
+        {
+            comboBuffer = StartCoroutine(PlaceHolderComboBuffer());
+        }
+
+        meleeAnimation = null;
+    }
+
+    IEnumerator PlaceHolderComboBuffer()
+    {
+
+        yield return new WaitForSecondsRealtime(1f);
+
+        gameObject.GetComponent<PlayerMovement>().enabled = true;
+        gameObject.GetComponent<Rigidbody2D>().gravityScale = 5f;
+    }
+
+    // Call this function on melee animation end when melee visually hits something
+    public void DealDamage()
+    {
+        Instantiate(meleeDebugParticles, attackPoint.position, Quaternion.identity);
+
+        // Draws a box in scene if objects from enemyLayer overlap with this box store them in hitEnemies array
+        Collider2D[] hitEnemies = Physics2D.OverlapBoxAll(attackPoint.position, new Vector2(attackRangeX, attackRangeY), 0f, enemyLayer);
+
+        // Normal combo hits 1 and 2
+        if (currentComboHit < 3 && !heavyComboHold)
+        {
+            Debug.Log("Current combohit: " + currentComboHit + " Heavy?: " + heavyComboHold);
+            // If there is elements on hitEnemies array go through it
+            foreach (Collider2D enemy in hitEnemies)
+            {
+                // Error check if there isn't Health script attached don't do damage
+                if (enemy.GetComponent<Health>() != null)
+                {
+                    // Deal damage
+                    enemy.GetComponent<Health>().TakeDamage(meleeDamage);
+                    
+                    // STUN
+                    // Knockback enemy
+                    //Knockback(enemy.gameObject, gameObject, knockbackForceNormal);
+                }
+            }
+
+            currentComboHit++;
+        }
+        // Normal combo hit 3 aka last hit of combo
+        else if (currentComboHit == 3 && !heavyComboHold)
+        {
+            Debug.Log("Current combohit (last): " + currentComboHit + " Heavy?: " + heavyComboHold);
+
+            // If there is elements on hitEnemies array go through it
+            foreach (Collider2D enemy in hitEnemies)
+            {
+                // Error check if there isn't Health script attached don't do damage
+                if (enemy.GetComponent<Health>() != null)
+                {
+                    // Deal damage
+                    enemy.GetComponent<Health>().TakeDamage(meleeDamage + Mathf.Ceil(meleeDamage / 2));
+                    // Knockback enemy
+                    Knockback(enemy.gameObject, gameObject, knockbackForceLast);
+                }
+            }
+
+            ResetCombo();
+        }
+        // Heavy combo hits 1 and 2
+        if (currentComboHit < 3 && heavyComboHold)
+        {
+            Debug.Log("Current combohit: " + currentComboHit + " Heavy?: " + heavyComboHold);
+            // If there is elements on hitEnemies array go through it
+            foreach (Collider2D enemy in hitEnemies)
+            {
+                // Error check if there isn't Health script attached don't do damage
+                if (enemy.GetComponent<Health>() != null)
+                {
+                    // Deal damage
+                    enemy.GetComponent<Health>().TakeDamage(meleeDamage);
+                    // Knockback enemy
+                    Knockback(enemy.gameObject, gameObject, knockbackForceNormal);
+                }
+            }
+
+            currentComboHit++;
+        }
+        // Heavy combo hit 3 aka last hit of combo
+        else if (currentComboHit == 3 && heavyComboHold)
+        {
+            Debug.Log("Current combohit (last): " + currentComboHit + " Heavy?: " + heavyComboHold);
+
+            // If there is elements on hitEnemies array go through it
+            foreach (Collider2D enemy in hitEnemies)
+            {
+                // Error check if there isn't Health script attached don't do damage
+                if (enemy.GetComponent<Health>() != null)
+                {
+                    // Deal damage
+                    enemy.GetComponent<Health>().TakeDamage(meleeDamage + Mathf.Ceil(meleeDamage * 2));
+                    // Knockback enemy
+                    Knockback(enemy.gameObject, gameObject, knockbackForceLast);
+                }
+            }
+
+            ResetCombo();
+        }
+
+
+        lastTimeMeleed = Time.time;
     }
 
     // Debug info draws hit point in this case cube

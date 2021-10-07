@@ -4311,11 +4311,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponThrowDamage: 1
   weaponPullDamage: 1
-  rotAngle: 180
-  ricochetForce: 5
-  enemyHitRicochetY: 3
+  rotSpeed: 0
+  ricochetImpulseForce: 0
+  ricochetYImpulse: 0
   pullForce: 750
   maxDistance: 7
+  meleeWeaponGrapplingDistance: 0
   worldPickUp: 1
   knockbackForce: 500
 --- !u!61 &4313399883466721121
@@ -4469,3 +4470,60 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!1001 &8325522039738224724
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2348619561095295728, guid: b91c261403e5483499fb278259253ca8, type: 3}
+      propertyPath: m_Name
+      value: MeleeDebugParticles
+      objectReference: {fileID: 0}
+    - target: {fileID: 2710284495073151607, guid: b91c261403e5483499fb278259253ca8, type: 3}
+      propertyPath: m_RootOrder
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2710284495073151607, guid: b91c261403e5483499fb278259253ca8, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1179.0383
+      objectReference: {fileID: 0}
+    - target: {fileID: 2710284495073151607, guid: b91c261403e5483499fb278259253ca8, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 446.21063
+      objectReference: {fileID: 0}
+    - target: {fileID: 2710284495073151607, guid: b91c261403e5483499fb278259253ca8, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -135.91534
+      objectReference: {fileID: 0}
+    - target: {fileID: 2710284495073151607, guid: b91c261403e5483499fb278259253ca8, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 2710284495073151607, guid: b91c261403e5483499fb278259253ca8, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 2710284495073151607, guid: b91c261403e5483499fb278259253ca8, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2710284495073151607, guid: b91c261403e5483499fb278259253ca8, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2710284495073151607, guid: b91c261403e5483499fb278259253ca8, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 2710284495073151607, guid: b91c261403e5483499fb278259253ca8, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2710284495073151607, guid: b91c261403e5483499fb278259253ca8, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: b91c261403e5483499fb278259253ca8, type: 3}

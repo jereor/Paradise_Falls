@@ -15079,6 +15079,26 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 948e6069-45ff-4c78-b6f5-d1c5b423cdc4
     m_ActionName: Player/ThrowAim[/Mouse/rightButton]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: a7c0ba3c-2428-413f-8800-6de7baddeb0f
+    m_ActionName: GameUI/Navigation[/Keyboard/w,/Keyboard/s,/Keyboard/a,/Keyboard/d]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 7463911945564789779}
+        m_TargetAssemblyTypeName: PlayerCombat, Assembly-CSharp
+        m_MethodName: HeavyMelee
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 1bf54e5f-a07a-4906-8ed7-95e291e94468
+    m_ActionName: Player/StrongMelee[/Keyboard/leftShift]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -15266,6 +15286,7 @@ MonoBehaviour:
   attackRangeY: 1.5
   meleeWeaponPrefab: {fileID: 3980506574090905470, guid: 3780bd19eaa15054a9ebdb884fa668ba, type: 3}
   isWeaponWielded: 0
+  meleeDebugParticles: {fileID: 2348619561095295728, guid: b91c261403e5483499fb278259253ca8, type: 3}
 --- !u!1 &2646993277219195829
 GameObject:
   m_ObjectHideFlags: 0
