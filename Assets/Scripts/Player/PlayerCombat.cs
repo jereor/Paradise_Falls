@@ -184,26 +184,26 @@ public class PlayerCombat : MonoBehaviour
         {
             // Make the player and weapon ignore collisions again, which were declined in collision check after the weapon hit the grapple point.
 
-            //Debug.Log("Check");
-            //Vector2 vectorToTarget = weaponInstance.transform.position - transform.position;
-            ////Debug.Log(weaponInstance.transform.position);
-            //RaycastHit2D hitGround;
-            //RaycastHit2D hitGrapplePoint;
-            //RaycastHit2D hit;
-            //hitGround = Physics2D.Raycast(transform.position, vectorToTarget, vectorToTarget.magnitude, LayerMask.NameToLayer("Ground"));
-            //hitGrapplePoint = Physics2D.Raycast(transform.position, vectorToTarget, vectorToTarget.magnitude, LayerMask.NameToLayer("GrapplePoint"));
-            //hit = Physics2D.Raycast(transform.position, vectorToTarget, vectorToTarget.magnitude);
+            Debug.Log("Check");
+            Vector2 vectorToWeapon = weaponInstance.transform.position - transform.position;
+            //Debug.Log(weaponInstance.transform.position);
+            RaycastHit2D hitGround;
+            RaycastHit2D hitGrapplePoint;
+            RaycastHit2D hit;
+            hitGround = Physics2D.Raycast(transform.position, vectorToWeapon, vectorToWeapon.magnitude, LayerMask.GetMask("Ground"));
+            hitGrapplePoint = Physics2D.Raycast(transform.position, vectorToWeapon, vectorToWeapon.magnitude, LayerMask.GetMask("GrapplePoint"));
+            hit = Physics2D.Raycast(transform.position, vectorToWeapon, vectorToWeapon.magnitude);
 
-            //Debug.Log(hit.collider.name);
+            Debug.Log(hitGround.collider.gameObject.name);
 
-            ////Sets the collision between the player and weapon false again. Magnet tether becomes active during the flight to the weapon.
-            //if (!hitGround && !hitGrapplePoint)
-            //{
-            Debug.Log("Joo");
-            Physics2D.IgnoreLayerCollision(3, 13);
-            isPlayerBeingPulled = true;
-            magnetTether.SetActive(true);
-            //}
+            //Sets the collision between the player and weapon false again. Magnet tether becomes active during the flight to the weapon.
+            if (hitGround && hitGround.collider.tag == "MeleeWeapon" && !hitGrapplePoint)
+            {
+                Debug.Log("Joo");
+                Physics2D.IgnoreLayerCollision(3, 13);
+                isPlayerBeingPulled = true;
+                magnetTether.SetActive(true);
+            }
 
         }
 
