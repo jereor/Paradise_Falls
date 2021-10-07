@@ -183,7 +183,7 @@ public class PlayerCombat : MonoBehaviour
         else if(context.performed && !isWeaponWielded && weaponInstance != null && throwAim && weaponInstance.GetComponent<MeleeWeapon>().getAttachedToGrapplePoint())
         {
             // Make the player and weapon ignore collisions again, which were declined in collision check after the weapon hit the grapple point.
-            
+
             //Debug.Log("Check");
             //Vector2 vectorToTarget = weaponInstance.transform.position - transform.position;
             ////Debug.Log(weaponInstance.transform.position);
@@ -196,13 +196,13 @@ public class PlayerCombat : MonoBehaviour
 
             //Debug.Log(hit.collider.name);
 
-            // Sets the collision between the player and weapon false again. Magnet tether becomes active during the flight to the weapon.
+            ////Sets the collision between the player and weapon false again. Magnet tether becomes active during the flight to the weapon.
             //if (!hitGround && !hitGrapplePoint)
             //{
-                Debug.Log("Joo");
-                Physics2D.IgnoreLayerCollision(3, 13);
-                isPlayerBeingPulled = true;
-                magnetTether.SetActive(true);
+            Debug.Log("Joo");
+            Physics2D.IgnoreLayerCollision(3, 13);
+            isPlayerBeingPulled = true;
+            magnetTether.SetActive(true);
             //}
 
         }
