@@ -84,7 +84,8 @@ public class PlayerMovement : MonoBehaviour
             shockwaveTool.CancelShockwaveDive(); // Checks if shockwave dive graphics are on and disables them
             lastGroundedTime = Time.time;
             rb.gravityScale = defaultGravityScale;
-            playerScript.SetCurrentState(Player.State.Grounded);
+            if (playerScript.GetCurrentState() != Player.State.Jumping)
+                playerScript.SetCurrentState(Player.State.Grounded);
         }
         else
             CheckIfStuck();
@@ -283,6 +284,14 @@ public class PlayerMovement : MonoBehaviour
         Vector3 localScale = transform.localScale;
         localScale.x *= -1f;
         transform.localScale = localScale;
+    }
+
+    // Boost Jump when player jumps on Boost Plant. Called by BoostPlant-script
+    public void BoostJump(Vector2 direction)
+    {
+        // Do a boost jump
+        playerScript.SetCurrentState(Player.State.Jumping);
+        rb.velocity = new Vector2(0, jumpForce * 1.5f);
     }
 
    
