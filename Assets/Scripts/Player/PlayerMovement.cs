@@ -112,7 +112,7 @@ public class PlayerMovement : MonoBehaviour
     // This check eliminates those situations and enables jumping even when not grounded if player is clearly stuck
     private void CheckIfStuck()
     {
-        if (rb.velocity == Vector2.zero)
+        if (!isClimbing && rb.velocity == Vector2.zero)
         {
             playerScript.SetCurrentState(Player.State.Grounded);
             lastGroundedTime = Time.time;
@@ -144,9 +144,9 @@ public class PlayerMovement : MonoBehaviour
             // We can climb so we climb
             if (canClimb)
             {
+                playerScript.SetCurrentState(Player.State.Climbing);
                 // Do these before animation
                 isClimbing = true;
-                rb.gravityScale = 0f; // Set to zero because 
                 rb.velocity = new Vector2(0, 0); // Set velocity here to zero else movement bugs while climbing
 
                 canMove = false; // Prevent moving while climbing mostly for animations
@@ -160,6 +160,11 @@ public class PlayerMovement : MonoBehaviour
                 // Start this when climbing animation is completed aka not here
                 //LedgeClimb();
             }
+        }
+        else if (isClimbing)
+        {
+            rb.gravityScale = 0f; // Keep gravity at zero so player stays still until climbing is done
+            rb.velocity = Vector2.zero;
         }
     }
 
@@ -179,6 +184,7 @@ public class PlayerMovement : MonoBehaviour
         transform.position = new Vector2(transform.position.x + climbXOffset * transform.localScale.x, transform.position.y + climbYOffset);
         shockwaveTool.CancelShockwaveDive(); // Checks if shockwave dive graphics are on and disables them
         rb.gravityScale = defaultGravityScale; // Set this to default here
+        canWallJump = false; // Prevent wall jumps
         canClimb = false; // We cannot climb after before we have checked Raycasts again with new position
         isClimbing = false; // We end climbing
         canMove = true; // We can move again
@@ -199,7 +205,7 @@ public class PlayerMovement : MonoBehaviour
                     && (!Mathf.Sign(wallJumpDir).Equals(transform.localScale.x) || wallJumpDir == 0f))
                 {
                     // If we are sliding down a wall and we have gravityscale as default change gravityscale so it feel like there is kitka :) (JOrava EDIT: friction :D)
-                    if (rb.velocity.y < 0 && rb.gravityScale == defaultGravityScale)
+                    if (!isClimbing && rb.velocity.y < 0 && rb.gravityScale == defaultGravityScale)
                     {
                         playerScript.SetCurrentState(Player.State.WallSliding);
                         rb.gravityScale = wallSlideGravityScale;
@@ -289,6 +295,7 @@ public class PlayerMovement : MonoBehaviour
     // Jump action: Called when the Jump Action button is pressed
     public void Jump(InputAction.CallbackContext context) // Context tells the function when the action is triggered
     {
+        if (isClimbing) return;
         jumpButtonPressedTime = Time.time;
 
         // -WALLJUMP-
@@ -328,9 +335,9 @@ public class PlayerMovement : MonoBehaviour
             wallJumpDir = Mathf.Sign(-transform.localScale.x);
         }
 
-        // -Air Dive-
+        // -AIR DIVE-
 
-        // Shockwave dive while in the air
+        // Air dive while in the air
         else if (context.started && !IsGrounded()
             && playerScript.InputVertical == -1)
         {
@@ -344,7 +351,7 @@ public class PlayerMovement : MonoBehaviour
             rb.gravityScale = shockwaveDiveGravityScale;
         }
 
-        // -Double Jump-
+        // -DOUBLE JUMP-
 
         // Double jump while in the air
         else if (allowShockwaveJump && canShockwaveJump) // Make sure player has acquired Shockwave Jump and that they can currently double jump

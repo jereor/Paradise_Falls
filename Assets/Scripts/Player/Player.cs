@@ -31,7 +31,8 @@ public class Player : MonoBehaviour
         Jumping,
         Diving,
         Grounded,
-        WallSliding
+        WallSliding,
+        Climbing
     }
     State currentState;
 
