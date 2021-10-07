@@ -116,6 +116,7 @@ public class PlayerMovement : MonoBehaviour
         {
             playerScript.SetCurrentState(Player.State.Grounded);
             lastGroundedTime = Time.time;
+            canShockwaveJump = true;
         }
     }
 
@@ -176,7 +177,7 @@ public class PlayerMovement : MonoBehaviour
     {
         // Move player for offset amount to X and Y directions. X dir will need localScale.x to track where player is looking
         transform.position = new Vector2(transform.position.x + climbXOffset * transform.localScale.x, transform.position.y + climbYOffset);
-
+        shockwaveTool.CancelShockwaveDive(); // Checks if shockwave dive graphics are on and disables them
         rb.gravityScale = defaultGravityScale; // Set this to default here
         canClimb = false; // We cannot climb after before we have checked Raycasts again with new position
         isClimbing = false; // We end climbing
@@ -350,7 +351,7 @@ public class PlayerMovement : MonoBehaviour
         {
             // If button is pressed and player has not yet double jumped
             if (context.started && !shockwaveJumping
-                && !(Time.time - lastGroundedTime <= coyoteTime)) // Check if coyote time is online
+                && !(Time.time - lastGroundedTime <= coyoteTime)) // Check if coyote time is online (if yes, no double jump needed)
             {
                 playerScript.SetCurrentState(Player.State.Jumping);
                 shockwaveTool.CancelShockwaveDive(); // Checks if shockwave dive graphics are on and disables them
