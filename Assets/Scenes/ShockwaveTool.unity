@@ -2877,11 +2877,11 @@ PrefabInstance:
       objectReference: {fileID: 729320505}
     - target: {fileID: 284613507, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: m_TrackedObjectOffset.x
-      value: -0.9933515
+      value: -0.9999998
       objectReference: {fileID: 0}
     - target: {fileID: 284613507, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: m_TrackedObjectOffset.y
-      value: -0.1229284
+      value: -0.003524951
       objectReference: {fileID: 0}
     - target: {fileID: 505850491, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: m_Follow
@@ -2897,11 +2897,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2049820520096467095, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: m_TrackedObjectOffset.x
-      value: 0.9847379
+      value: -0.9803946
       objectReference: {fileID: 0}
     - target: {fileID: 2049820520096467095, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: m_TrackedObjectOffset.y
-      value: -0.05335687
+      value: -0.476559
       objectReference: {fileID: 0}
     - target: {fileID: 2049820520137079200, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: m_RootOrder
@@ -3011,6 +3011,10 @@ PrefabInstance:
     - target: {fileID: 2646993275326716545, guid: 4154d57994558ff489a9180c3151e624, type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 2646993275326716549, guid: 4154d57994558ff489a9180c3151e624, type: 3}
+      propertyPath: shockwaveDiveGravityScale
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4154d57994558ff489a9180c3151e624, type: 3}

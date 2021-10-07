@@ -26,15 +26,35 @@ public class Player : MonoBehaviour
     private Animator animator;
     private Rigidbody2D rb;
 
-    // Other references
-    private string currentState;
+    public enum State
+    {
+        Jumping,
+        Diving,
+        Grounded,
+        WallSliding,
+        Climbing
+    }
+    State currentState;
 
     private void Start()
     {
+        currentState = State.Grounded;
+        rb = gameObject.GetComponent<Rigidbody2D>();
+
         TextStyleHealth.normal.textColor = Color.green;
         TextStyleEnergy.fontSize = 30;
         TextStyleHealth.fontSize = 30;
         TextStyleEnergy.normal.textColor = Color.red;
+    }
+
+    public State GetCurrentState()
+    {
+        return currentState;
+    }
+
+    public void SetCurrentState(State newState)
+    {
+        currentState = newState;
     }
 
     public bool IsFacingRight()
@@ -51,6 +71,9 @@ public class Player : MonoBehaviour
     {
         GUI.Label(new Rect(10, 10, 300, 100), "Health: " + healthScript.GetHealth(), TextStyleHealth);
         GUI.Label(new Rect(200, 10, 300, 100), "Energy: " + energyScript.GetEnergy(), TextStyleEnergy);
+
+        GUI.Label(new Rect(700, 10, 300, 100), "State: " + currentState, TextStyleHealth);
+        GUI.Label(new Rect(1000, 10, 300, 100), "Gravity scale: " + rb.gravityScale, TextStyleEnergy);
     }
 
     // Move action: Called when the Move Action Button is pressed

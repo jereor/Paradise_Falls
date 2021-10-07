@@ -911,6 +911,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 2646993275326716549, guid: 4154d57994558ff489a9180c3151e624, type: 3}
+      propertyPath: allowWallJump
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2646993275326716550, guid: 4154d57994558ff489a9180c3151e624, type: 3}
+      propertyPath: m_Size.x
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4154d57994558ff489a9180c3151e624, type: 3}
 --- !u!50 &604229746 stripped
@@ -2145,11 +2153,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1012424850, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: m_TrackedObjectOffset.x
-      value: -0.9792792
+      value: -0.9999977
       objectReference: {fileID: 0}
     - target: {fileID: 1012424850, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: m_TrackedObjectOffset.y
-      value: -0.05110862
+      value: -1.038548e-12
       objectReference: {fileID: 0}
     - target: {fileID: 1348274982, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: currentCamera
@@ -4315,6 +4323,7 @@ MonoBehaviour:
   ricochetYImpulse: 0
   pullForce: 750
   maxDistance: 7
+  meleeWeaponGrapplingDistance: 0
   worldPickUp: 1
   knockbackForce: 500
 --- !u!61 &4313399883466721121
