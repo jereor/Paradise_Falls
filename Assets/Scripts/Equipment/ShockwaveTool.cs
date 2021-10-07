@@ -9,12 +9,12 @@ public class ShockwaveTool : MonoBehaviour
     public bool ShockwaveAttackUsed { get; set; }
 
     [Header("Shockwave parameters")]
-    [SerializeField] private float usageCooldown;
+    [SerializeField] private float attackCooldown;
 
     [Header("References")]
-    [SerializeField] private ParticleSystem shockwaveJumpEffect;
-    [SerializeField] private ParticleSystem shockwaveDiveEffect;
     [SerializeField] private ParticleSystem shockwaveAttackEffect;
+    [SerializeField] private ParticleSystem shockwaveJumpEffect;
+    [SerializeField] private GameObject shockwaveDiveGraphics;
 
     private float nextShockwave = -1; // Initialize as -1. First time it will always be less than the current time so use it can be used. 
 
@@ -25,9 +25,15 @@ public class ShockwaveTool : MonoBehaviour
     }
 
     // Shockwave Dive: Triggered from PlayerMovement when activating dive
-    public void ShockwaveDive()
+    public void DoShockwaveDive()
     {
-        shockwaveDiveEffect.Play();
+        shockwaveDiveGraphics.SetActive(true);
+    }
+
+    public void CancelShockwaveDive()
+    {
+        if (shockwaveDiveGraphics.activeInHierarchy)
+            shockwaveDiveGraphics.SetActive(false);
     }
 
     // ShockwaveAttack action: Called when the ShockwaveAttack Action Button is pressed
@@ -35,12 +41,12 @@ public class ShockwaveTool : MonoBehaviour
     {
         if (context.started && Time.time >= nextShockwave)
         {
-            nextShockwave = Time.time + usageCooldown; // Sets a time when attack can be used again
+            nextShockwave = Time.time + attackCooldown; // Sets a time when attack can be used again
             shockwaveAttackEffect.Play();
 
             // Shockwave attack functionality here
 
-            StartCoroutine(ActivateAttackCooldown(usageCooldown));
+            StartCoroutine(ActivateAttackCooldown(attackCooldown));
         }
     }
 

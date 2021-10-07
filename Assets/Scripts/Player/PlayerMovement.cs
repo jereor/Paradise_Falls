@@ -11,6 +11,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float coyoteTime; // Determines coyote time forgiveness
     [SerializeField] private float climbTimeBuffer; // Time when we can climb again
     [SerializeField] private float wallSlideGravityScale;
+    [SerializeField] private float shockwaveDiveGravityScale;
 
     [Header("Ground Check")]
     [SerializeField] private Transform groundCheck; // GameObject attached to player that checks if touching ground
@@ -58,6 +59,7 @@ public class PlayerMovement : MonoBehaviour
     {
         rb = gameObject.GetComponent<Rigidbody2D>();
         shockwaveTool = gameObject.GetComponentInChildren<ShockwaveTool>();
+        playerScript = gameObject.GetComponent<Player>();
         PlayerCamera.Instance.ChangeCameraOffset(0.2f, false, 1);
         defaultGravityScale = rb.gravityScale;
     }
@@ -76,8 +78,16 @@ public class PlayerMovement : MonoBehaviour
                 Flip();
         }
 
-        // Coyote Time
-        if (IsGrounded()) lastGroundedTime = Time.time;
+        // Ground check to set state variables
+        if (IsGrounded())
+        {
+            shockwaveTool.CancelShockwaveDive(); // Checks if shockwave dive graphics are on and disables them
+            lastGroundedTime = Time.time;
+            rb.gravityScale = defaultGravityScale;
+            playerScript.SetCurrentState(Player.State.Grounded);
+        }
+        else
+            CheckIfStuck();
 
         // Update movement based state variables
         moving = rb.velocity.x != 0;
@@ -96,6 +106,17 @@ public class PlayerMovement : MonoBehaviour
         CheckLedgeClimb();
         CheckWallJump();
         CheckShockwaveJump();
+    }
+
+    // Player can sometimes get stuck and not be able to jump because ground check fails
+    // This check eliminates those situations and enables jumping even when not grounded if player is clearly stuck
+    private void CheckIfStuck()
+    {
+        if (rb.velocity == Vector2.zero)
+        {
+            playerScript.SetCurrentState(Player.State.Grounded);
+            lastGroundedTime = Time.time;
+        }
     }
 
     private void CheckLedgeClimb()
@@ -176,9 +197,10 @@ public class PlayerMovement : MonoBehaviour
                 if (FeetAreTouchingWall() && LedgeIsOccupied()
                     && (!Mathf.Sign(wallJumpDir).Equals(transform.localScale.x) || wallJumpDir == 0f))
                 {
-                    // If we are sliding down a wall and we have gravityscale as default change gravityscale so it feel like there is kitka :)
+                    // If we are sliding down a wall and we have gravityscale as default change gravityscale so it feel like there is kitka :) (JOrava EDIT: friction :D)
                     if (rb.velocity.y < 0 && rb.gravityScale == defaultGravityScale)
                     {
+                        playerScript.SetCurrentState(Player.State.WallSliding);
                         rb.gravityScale = wallSlideGravityScale;
                     }
                     // We are facing to the wall and we can jump off the wall
@@ -189,6 +211,7 @@ public class PlayerMovement : MonoBehaviour
                 // If we are in air but Raycasts and wall side tests are not going through
                 else if (canWallJump)
                 {
+                    playerScript.SetCurrentState(Player.State.Jumping);
                     rb.gravityScale = defaultGravityScale;
                     canWallJump = false;
                 }
@@ -272,7 +295,7 @@ public class PlayerMovement : MonoBehaviour
         // If button is pressed and we are in allowed walljump position
         if (context.started && canWallJump)
         {
-            //Debug.Log("Normal wall jump");
+            playerScript.SetCurrentState(Player.State.Jumping);
 
             // Use this commented else if, if we want to give player boost to the left or right when walljumping
             // Jumping from left wall
@@ -296,12 +319,28 @@ public class PlayerMovement : MonoBehaviour
             && (Time.time - lastWallTouchTime <= coyoteTime / 2) // With full coyoteTime handling feels weird
             && !LedgeIsOccupied()) // This Check prevents jumping from wall when there is no ground after the wall object and we slide past wall, Coyote time causes unwanted double jump without
         {
-            //Debug.Log("Coyote walljump");
+            playerScript.SetCurrentState(Player.State.Jumping);
 
             // Replace or figure this out if else if is used above
             rb.velocity = new Vector2(jumpForce, jumpForce);
             // wallJumpDir here is opposite of opposite :)
             wallJumpDir = Mathf.Sign(-transform.localScale.x);
+        }
+
+        // -Air Dive-
+
+        // Shockwave dive while in the air
+        else if (context.started && !IsGrounded()
+            && playerScript.InputVertical == -1)
+        {
+            if (!(playerScript.GetCurrentState() == Player.State.Diving)) // First frame of diving
+                rb.velocity = new Vector2(0, -jumpForce); // Set velocity downwards
+
+            playerScript.SetCurrentState(Player.State.Diving);
+
+            // Air Dive functionality here
+            shockwaveTool.DoShockwaveDive(); // Activate VFX
+            rb.gravityScale = shockwaveDiveGravityScale;
         }
 
         // -Double Jump-
@@ -313,6 +352,9 @@ public class PlayerMovement : MonoBehaviour
             if (context.started && !shockwaveJumping
                 && !(Time.time - lastGroundedTime <= coyoteTime)) // Check if coyote time is online
             {
+                playerScript.SetCurrentState(Player.State.Jumping);
+                shockwaveTool.CancelShockwaveDive(); // Checks if shockwave dive graphics are on and disables them
+
                 // Activate the event through the ShockwaveTool script and do a double jump
                 shockwaveTool.ShockwaveJump(); // Activates VFX
                 rb.velocity = new Vector2(rb.velocity.x, jumpForce); // Jump in the air
@@ -328,22 +370,13 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
-        // -Air Dive-
-
-        // Shockwave dive while in the air
-        else if (context.started && !IsGrounded()
-            && playerScript.InputVertical == -1)
-        {
-            // Air Dive functionality here
-        }
-
         // -JUMP FROM GROUND-
 
         // If button was pressed
         if (context.performed && (Time.time - lastGroundedTime <= coyoteTime) // Check if coyote time is online
             && (Time.time - jumpButtonPressedTime <= coyoteTime) && !isClimbing) // Check if jump has been buffered
         {
-             rb.velocity = new Vector2(rb.velocity.x, jumpForce); // Keep player in upwards motion
+            rb.velocity = new Vector2(rb.velocity.x, jumpForce); // Keep player in upwards motion
         }
 
         // If button was released
