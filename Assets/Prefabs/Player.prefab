@@ -15261,12 +15261,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68279dc01e70bb34f9195b45b7234967, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  meleeDamage: 1
-  knockbackForceNormal: 600
-  knockbackForceLast: 750
-  meleeAttackRate: 0.5
-  comboCooldown: 1
-  comboBetweenTimer: 2
+  lightDamage: 1
+  heavyDamage: 2
+  knockbackForceLight: 500
+  knockbackForceHeavy: 750
   throwIndicator: {fileID: 533264429858380022}
   throwPoint: {fileID: 3243163536262417571}
   defaultThrowingForce: 15
@@ -15286,7 +15284,12 @@ MonoBehaviour:
   attackRangeY: 1.5
   meleeWeaponPrefab: {fileID: 3980506574090905470, guid: 3780bd19eaa15054a9ebdb884fa668ba, type: 3}
   isWeaponWielded: 0
-  meleeDebugParticles: {fileID: 2348619561095295728, guid: b91c261403e5483499fb278259253ca8, type: 3}
+  onIdle: 1
+  onTran1: 0
+  onTran2: 0
+  onTran3: 0
+  canReceiveInput: 0
+  inputReceived: 0
 --- !u!1 &2646993277219195829
 GameObject:
   m_ObjectHideFlags: 0

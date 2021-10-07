@@ -5,11 +5,20 @@ using UnityEngine.InputSystem;
 
 public class PlayerCombat : MonoBehaviour
 {
+    public static PlayerCombat instance; // Make instance so we can call this script from animations
+
     [Header("Player Variables")]
-    [SerializeField] private float meleeDamage; // Normal hits currentComboHit 1, 2 and 2*normal damage to last hit
+    [SerializeField] private float lightDamage; // Light hits 1, 2 and 3 = lightDamage + lightDamage/2 (pyoristettyna ylospain) 
+    [SerializeField] private float heavyDamage; // Same as above but with different float
     //[SerializeField] private float meleeComboLastDamage; // Last hit currentComboHit 3
-    [SerializeField] private float knockbackForceNormal;
-    [SerializeField] private float knockbackForceLast;
+    [SerializeField] private float knockbackForceLight;
+    [SerializeField] private float knockbackForceHeavy;
+
+    [Header("Attack Detection Variables")]
+    public LayerMask enemyLayer;
+    public Transform attackPoint; // Center of the hit point box we draw to check collisions
+    public float attackRangeX; // Width of the check box
+    public float attackRangeY; // Height
 
     [Header("Throwing")]
     [SerializeField] private GameObject throwIndicator; // Object used to rotate throwPoint and pointPrefabs
@@ -20,7 +29,7 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private float minDistance;
     [SerializeField] private float maxDistanceBetween;
 
-    [Header("Projection points")]
+    [Header("Throw projection points")]
     public GameObject pointPrefab;
     GameObject[] points; // Array of pointsPrefabs Instantiated
     private int numberOfPoints; // Amount should be same as maxDistance we can throw, 1 point = 1 distance unit
@@ -28,21 +37,15 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private int pointsShown;
     [SerializeField] private float pointScaleRatio;
 
-    [Header("Attack Detection Variables")]
-    public LayerMask enemyLayer;
-    public Transform attackPoint; // Center of the hit point box we draw to check collisions
-    public float attackRangeX; // Width of the check box
-    public float attackRangeY; // Height
-
     [Header("Weapon")]
     [SerializeField] private GameObject meleeWeaponPrefab;
-    private GameObject weaponInstance;
+    private GameObject weaponInstance; // Players weapon in scene after throwing used in pull backs
     [SerializeField] private bool isWeaponWielded;
 
     // State variables
-    private bool throwAim; // True if we are holdling Throw input
+    private bool throwAimHold; // True if we are holdling Throw input
 
-    private bool heavyComboHold;
+    private bool heavyHold;
 
     private float? throwButtonPressedTime; // Time when we start throwing
     private float throwChargeStartTime; // Time when we start charging
@@ -55,16 +58,17 @@ public class PlayerCombat : MonoBehaviour
 
     Vector2 vectorToTarget;
 
+    [Header("Placeholder anim debugs")]
     public bool onIdle = true;
     public bool onTran1 = false;
     public bool onTran2 = false;
     public bool onTran3 = false;
 
-    Coroutine tranToIdle;
-
-    public static PlayerCombat instance;
-    public bool canReceiveInput;
-    public bool inputReceived;
+    Coroutine tranToIdle; // This will be replaced with correct transittion animation
+    
+    // These will stay w
+    public bool canReceiveInput; // If this is true we can melee (no attack animation ongoing)
+    public bool inputReceived; // Used in transitions and idle to tell animator to start correct attack if this turns true
 
     private void Awake()
     {
@@ -119,38 +123,9 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
-    IEnumerator TranToIdle(int tranI)
-    {
-        Debug.Log("Transition enter");
-        yield return new WaitForSecondsRealtime(1f);
-        Debug.Log("Transition exit");
-        if (tranI == 1)
-            onTran1 = false;
-        else if (tranI == 2)
-            onTran2 = false;
-        else if (tranI == 3)
-            onTran3 = false;
-
-
-        gameObject.GetComponent<PlayerMovement>().enabled = true;
-        gameObject.GetComponent<Rigidbody2D>().gravityScale = 5f;
-
-        onIdle = true;
-        if (!canReceiveInput)
-        {
-            InputManager();
-        }
-        inputReceived = false;
-    }
-
     private void FixedUpdate()
     {
-        // If we updated maxDistance via pick up or debuff set numberOfPoints to same, aka show 1 pointPrefab per 1 distance unit 
-        if (numberOfPoints != (int)maxDistance)
-        {
-            numberOfPoints = (int)maxDistance;
-            InitPoints();
-        }
+        CheckIfMaxDistanceChanged();
 
         RotateIndicator();
 
@@ -163,33 +138,44 @@ public class PlayerCombat : MonoBehaviour
 
     public void Melee(InputAction.CallbackContext context)
     {
-        // Start Throwing
-        if (context.performed && isWeaponWielded && throwAim && meleeWeaponPrefab)
+        // Throw and melee
+        if (context.performed && isWeaponWielded)
         {
-            Debug.Log("Throw init");
-            // Set time here since we start charging
-            throwButtonPressedTime = Time.time;
+            // Start Throwing
+            if (throwAimHold && meleeWeaponPrefab)
+            {
+                Debug.Log("Throw init");
+                // Set time here since we start charging
+                throwButtonPressedTime = Time.time;
+            }
+
+            // Light melee
+            else if (!throwAimHold && canReceiveInput && !heavyHold)
+            {
+                inputReceived = true;
+                canReceiveInput = false;
+            }
+
+            // Heavy melee
+            else if (!throwAimHold && canReceiveInput && heavyHold)
+            {
+                inputReceived = true;
+                canReceiveInput = false;
+            }
         }
 
-        // Normal Melee
-        else if (context.performed && isWeaponWielded && !throwAim && canReceiveInput)
+        // Pull (and grappling hook control) 
+        else if (context.performed && !isWeaponWielded)
         {
-            Debug.Log("Input");
-            inputReceived = true;
-            canReceiveInput = false;
-        }
-
-
-
-        // Pull weapon if thrown
-        else if(context.performed && !isWeaponWielded && weaponInstance != null)
-        {
-            Debug.Log("Trying to pull weapon");
-            weaponInstance.GetComponent<MeleeWeapon>().PullWeapon(gameObject);          
+            if (weaponInstance != null && weaponInstance.TryGetComponent<MeleeWeapon>(out var weaponScript))
+            {
+                Debug.Log("Trying to pull weapon");
+                weaponScript.PullWeapon(gameObject);
+            }
         }
 
         // Throw on button release
-        if(context.canceled && isWeaponWielded && throwAim && meleeWeaponPrefab && throwButtonPressedTime != null)
+        if(context.canceled && isWeaponWielded && throwAimHold && meleeWeaponPrefab && throwButtonPressedTime != null)
         {
             // Instantiate meleeWeaponPrefab on attackPoint
             weaponInstance = Instantiate(meleeWeaponPrefab, throwPoint.position, Quaternion.identity);
@@ -225,12 +211,12 @@ public class PlayerCombat : MonoBehaviour
     {
         if (context.performed && isWeaponWielded)
         {
-            heavyComboHold = true;
+            heavyHold = true;
         }
 
         if (context.canceled)
         {
-            heavyComboHold = false;
+            heavyHold = false;
         }
     }
 
@@ -238,7 +224,7 @@ public class PlayerCombat : MonoBehaviour
     {
         if (context.performed && isWeaponWielded)
         {
-            throwAim = true;
+            throwAimHold = true;
 
             // Show minDistance amount of points
             ShowProjPoints((int)minDistance);
@@ -246,7 +232,7 @@ public class PlayerCombat : MonoBehaviour
 
         if (context.canceled)
         {
-            throwAim = false;
+            throwAimHold = false;
 
             // We release aim button hide points
             HideAllProjPoints();
@@ -256,11 +242,33 @@ public class PlayerCombat : MonoBehaviour
 
     // --- MELEE ---
 
+    IEnumerator TranToIdle(int tranI)
+    {
+        Debug.Log("Transition enter");
+        yield return new WaitForSecondsRealtime(1f);
+        Debug.Log("Transition exit");
+        if (tranI == 1)
+            onTran1 = false;
+        else if (tranI == 2)
+            onTran2 = false;
+        else if (tranI == 3)
+            onTran3 = false;
+
+
+        gameObject.GetComponent<PlayerMovement>().enabled = true;
+
+        onIdle = true;
+        if (!canReceiveInput)
+        {
+            InputManager();
+        }
+        inputReceived = false;
+    }
+
     IEnumerator PlaceHolderAttack1()
     {
         //Debug.Log("Started melee animation");
         gameObject.GetComponent<PlayerMovement>().enabled = false;
-        gameObject.GetComponent<Rigidbody2D>().gravityScale = 0f;
         gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
 
         yield return new WaitForSecondsRealtime(1f);
@@ -279,7 +287,7 @@ public class PlayerCombat : MonoBehaviour
     {
         //Debug.Log("Started melee animation");
         gameObject.GetComponent<PlayerMovement>().enabled = false;
-        gameObject.GetComponent<Rigidbody2D>().gravityScale = 0f;
+
         gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
 
         yield return new WaitForSecondsRealtime(1f);
@@ -298,7 +306,7 @@ public class PlayerCombat : MonoBehaviour
     {
         //Debug.Log("Started melee animation");
         gameObject.GetComponent<PlayerMovement>().enabled = false;
-        gameObject.GetComponent<Rigidbody2D>().gravityScale = 0f;
+
         gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
 
         yield return new WaitForSecondsRealtime(1f);
@@ -312,6 +320,7 @@ public class PlayerCombat : MonoBehaviour
         tranToIdle = StartCoroutine(TranToIdle(3));
     }
 
+    // Change canReceiveInput boolean to opposite
     public void InputManager()
     {
         if (!canReceiveInput)
@@ -325,76 +334,91 @@ public class PlayerCombat : MonoBehaviour
     }
 
     // Call this function on melee animation end when melee visually hits something
-    public void DealDamage(int attackI, bool heavyHit)
+    public void DealDamage(int comboIndex, bool heavyHit)
     {
         // Draws a box in scene if objects from enemyLayer overlap with this box store them in hitEnemies array
         Collider2D[] hitEnemies = Physics2D.OverlapBoxAll(attackPoint.position, new Vector2(attackRangeX, attackRangeY), 0f, enemyLayer);
 
-        Debug.Log("DEALING DMG combo hit: " + attackI + " Heavy?: " + heavyHit);
+        Debug.Log("DEALING DMG!! combo hit: " + comboIndex + " Heavy?: " + heavyHit);
 
         // Normal combo hits 1 and 2
-        if (attackI < 3 && !heavyHit)
+        if (comboIndex < 3 && !heavyHit)
         {
             // If there is elements on hitEnemies array go through it
             foreach (Collider2D enemy in hitEnemies)
             {
                 // Error check if there isn't Health script attached don't do damage
-                if (enemy.GetComponent<Health>() != null)
+                if (enemy.TryGetComponent<Health>(out var healthScript))
                 {
                     // Deal damage
-                    enemy.GetComponent<Health>().TakeDamage(meleeDamage);
+                    healthScript.TakeDamage(lightDamage);
                     
-                    // STUN
+                    // STUN OR KNOCKBACK + DASH?
                     // Knockback enemy
-                    //Knockback(enemy.gameObject, gameObject, knockbackForceNormal);
+                    //Knockback(enemy.gameObject, gameObject, knockbackForceLight);
                 }
             }
         }
         // Normal combo hit 3 aka last hit of combo
-        else if (attackI == 3 && !heavyHit)
+        else if (comboIndex == 3 && !heavyHit)
         {
             // If there is elements on hitEnemies array go through it
             foreach (Collider2D enemy in hitEnemies)
             {
                 // Error check if there isn't Health script attached don't do damage
-                if (enemy.GetComponent<Health>() != null)
+                if (enemy.TryGetComponent<Health>(out var healthScript))
                 {
                     // Deal damage
-                    enemy.GetComponent<Health>().TakeDamage(meleeDamage + Mathf.Ceil(meleeDamage / 2));
+                    // Example if lightDamage = 3 --> 3 / 2 = 1.5 --> Floor(1.5) = 1 total damage 4 OR Ceil(1.5) = 2 total damage 5 
+                    if (lightDamage % 2 == 1)
+                    {
+                        healthScript.TakeDamage(lightDamage + Mathf.Floor(lightDamage / 2));
+                    }
+                    else
+                    {
+                        healthScript.TakeDamage(lightDamage + Mathf.Ceil(lightDamage / 2));
+                    }
                     // Knockback enemy
-                    Knockback(enemy.gameObject, gameObject, knockbackForceLast);
+                    Knockback(enemy.gameObject, gameObject, knockbackForceHeavy);
                 }
             }
         }
         // Heavy combo hits 1 and 2
-        if (attackI < 3 && heavyHit)
+        if (comboIndex < 3 && heavyHit)
         {
             // If there is elements on hitEnemies array go through it
             foreach (Collider2D enemy in hitEnemies)
             {
                 // Error check if there isn't Health script attached don't do damage
-                if (enemy.GetComponent<Health>() != null)
+                if (enemy.TryGetComponent<Health>(out var healthScript))
                 {
                     // Deal damage
-                    enemy.GetComponent<Health>().TakeDamage(meleeDamage);
+                    healthScript.TakeDamage(heavyDamage);
                     // Knockback enemy
-                    Knockback(enemy.gameObject, gameObject, knockbackForceNormal);
+                    Knockback(enemy.gameObject, gameObject, knockbackForceLight);
                 }
             }
         }
         // Heavy combo hit 3 aka last hit of combo
-        else if (attackI == 3 && heavyHit)
+        else if (comboIndex == 3 && heavyHit)
         {
             // If there is elements on hitEnemies array go through it
             foreach (Collider2D enemy in hitEnemies)
             {
                 // Error check if there isn't Health script attached don't do damage
-                if (enemy.GetComponent<Health>() != null)
+                if (enemy.TryGetComponent<Health>(out var healthScript))
                 {
                     // Deal damage
-                    enemy.GetComponent<Health>().TakeDamage(meleeDamage + Mathf.Ceil(meleeDamage * 2));
+                    if (heavyDamage % 2 == 1) // Example if heavyDamage = 3 --> 3 / 2 = 1.5 --> Floor(1.5) = 1 total damage 4 OR Ceil(1.5) = 2 total damage 5 
+                    {
+                        healthScript.TakeDamage(heavyDamage + Mathf.Floor(heavyDamage / 2));
+                    }
+                    else
+                    {
+                        healthScript.TakeDamage(heavyDamage + Mathf.Ceil(heavyDamage / 2));
+                    }
                     // Knockback enemy
-                    Knockback(enemy.gameObject, gameObject, knockbackForceLast);
+                    Knockback(enemy.gameObject, gameObject, knockbackForceHeavy);
                 }
             }
         }
@@ -444,6 +468,16 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
+    private void CheckIfMaxDistanceChanged()
+    {
+        // If we updated maxDistance via pick up or debuff set numberOfPoints to same, aka show 1 pointPrefab per 1 distance unit 
+        if (numberOfPoints != (int)maxDistance)
+        {
+            numberOfPoints = (int)maxDistance;
+            InitPoints();
+        }
+    }
+
     // Calculate the position of next point
     Vector2 PointPosition(float t, Vector2 toTarget)
     {
@@ -455,7 +489,7 @@ public class PlayerCombat : MonoBehaviour
     // Rotates indicator to mouse position and adjusts the positions of points[] gameObjects
     private void RotateIndicator()
     {
-        if (throwAim)
+        if (throwAimHold)
         {
             // Get mouse position from mainCamera ScreenPointToRay
             mousePosRay = mainCamera.ScreenPointToRay(mouse.position.ReadValue());
@@ -479,7 +513,7 @@ public class PlayerCombat : MonoBehaviour
     private void Throwing()
     {
         // If we are throwing do these
-        if (throwAim)
+        if (throwAimHold)
         {
             // We are holding throw and melee button down
             if (Time.time - throwButtonPressedTime <= maxChargeTime)
@@ -565,13 +599,13 @@ public class PlayerCombat : MonoBehaviour
         maxDistance = d;
     }
 
-    public float getMeleeDamage()
+    public float getlightDamage()
     {
-        return meleeDamage;
+        return lightDamage;
     }
 
-    public void setMeleeDamage(float dmg)
+    public void setlightDamage(float dmg)
     {
-        meleeDamage = dmg;
+        lightDamage = dmg;
     }
 }
