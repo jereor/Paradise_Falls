@@ -50,14 +50,13 @@ public class GiveResource : MonoBehaviour
         }
     }
 
-    // When colliding with Resource item, give the target given resource amounts.
-    private void OnCollisionEnter2D(Collision2D collision)
+    //// When colliding with Resource item, give the target given resource amounts.
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.collider.CompareTag("Player"))
+        if (collision.gameObject.CompareTag("Player"))
         {
             GiveResources(health, energy, ammo);
             Destroy(gameObject);
         }
-
     }
 }

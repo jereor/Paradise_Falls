@@ -271,9 +271,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05926f1ba4bca4145b5f91c0b05b6b5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 0}
+  target: {fileID: 2646993275326716544, guid: 4154d57994558ff489a9180c3151e624, type: 3}
   enemyGFX: {fileID: 674690727670028638}
-  playerRB: {fileID: 0}
+  playerRB: {fileID: 2646993275326716665, guid: 4154d57994558ff489a9180c3151e624, type: 3}
   bullet: {fileID: 7057756548087642846, guid: f038b9176ac32cf4a83f1731b068bda7, type: 3}
   energyItem: {fileID: 7526672294046396501, guid: 4049d0c991ec2534dbef2099a278b67e, type: 3}
   healthItem: {fileID: 8475744114839058090, guid: 0aeb80a14b2a8254dbe07e4c54a022f6, type: 3}
@@ -286,14 +286,17 @@ MonoBehaviour:
   speed: 5
   chargeSpeed: 10
   roamSpeed: 5
-  nextWaypointDistance: 1
-  pathUpdateInterval: 1
   state: roam
   roamingRange: {x: 25.94, y: 17.59}
   aggroDistance: 8
   shootingDistance: 4.02
   wallCheckDistance: 1.5
   knockbackForce: 5
+  healthProbability: 99
+  energyProbability: 99
+  amountWhenHealthIsSpawnable: 0.5
+  nextWaypointDistance: 1
+  pathUpdateInterval: 1
 --- !u!50 &674690728015036903
 Rigidbody2D:
   serializedVersion: 4

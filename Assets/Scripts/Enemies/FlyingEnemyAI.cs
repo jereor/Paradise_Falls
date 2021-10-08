@@ -8,6 +8,7 @@ public class FlyingEnemyAI : MonoBehaviour
 {
     private Health _targetHealth;
     private Energy _targetEnergy;
+    private Shield targetShield;
 
     [Header("Transforms")]
     public Transform target;
@@ -27,8 +28,8 @@ public class FlyingEnemyAI : MonoBehaviour
     public float speed = 5f;
     public float chargeSpeed = 10f;
     public float roamSpeed = 5f;
-    public float nextWaypointDistance = 3f;
-    public float pathUpdateInterval = 1f;
+    public float attackPower = 1f;
+
 
     [Header("State and Parameters")]
     public string state = "roam";
@@ -38,11 +39,20 @@ public class FlyingEnemyAI : MonoBehaviour
     public float wallCheckDistance = 2f;
     public float knockbackForce = 5f;
 
+    [Header("Health and Energy Spawn values")]
+    public float healthProbability; // Value between 1-100. Higher the better chance.
+    public float energyProbability;
+    public float amountWhenHealthIsSpawnable; // MaxHealth value between 0-1. When your health sinks below a certain amount health becomes spawnable.
+
+    [Header("Pathfinding info")]
+    public float nextWaypointDistance = 1f;
+    public float pathUpdateInterval = 1f;
+
     private bool returningFromChase = false;
     private bool canShoot = true;
     private float shootCooldown = 1.5f;
     private bool isFacingRight = true;
-    private float vectorPathLength = 1;
+    //private float vectorPathLength = 1;
     private bool isTargetInBehaviourRange = false;
 
     private Collider2D _collider;
@@ -61,6 +71,7 @@ public class FlyingEnemyAI : MonoBehaviour
         seeker = GetComponent<Seeker>();
         rb = GetComponent<Rigidbody2D>();
         _targetHealth = GameObject.Find("Player").GetComponent<Health>();
+        targetShield = GameObject.Find("Player").GetComponent<Shield>();
         _collider = GetComponent<Collider2D>();
         spawnPosition = transform.position;
         gizmoPositionChange = false;
@@ -118,7 +129,7 @@ public class FlyingEnemyAI : MonoBehaviour
 
         // If the target is too far from the enemy unit, it respawns in to the spawn point and stays there until target is close enough again.
         // Enemy stops all actions for the time being.
-        if ((target.transform.position - transform.position).magnitude > 20)
+        if ((target.transform.position - transform.position).magnitude > 60 && !IsPlayerInRange())
         {
             transform.position = spawnPosition;
             isTargetInBehaviourRange = false;
@@ -332,6 +343,10 @@ public class FlyingEnemyAI : MonoBehaviour
             case "shoot":
                 // Bullets do the damage, this only checks if the bullet can hit the target from current angle.
                 Debug.DrawRay(transform.position, target.transform.position - transform.position, Color.blue);
+                if(targetShield.Blocking)
+                {
+                    state = "ram";
+                }
                 if (canShoot)
                 {
                     // Draws two rays in the direction of the target. First checks if there's ground in between the enemy unit and the target, second checks if it hit the target.
@@ -380,6 +395,30 @@ public class FlyingEnemyAI : MonoBehaviour
                     break;
                 }
                 break;
+
+            // RAM STATE
+            //------------------------------------------------------------------------------------------------------------------------
+            // Enemy unit rams into player if they're holding shield up, since shooting would only kill the enemy certainly.
+            case "ram":
+                // Make player and enemy colliders hit each other
+                if(Physics2D.GetIgnoreLayerCollision(3, 7) == true)
+                {
+                    Physics2D.IgnoreLayerCollision(3, 7, false);
+                }
+                // Check if player is still holding their shield up.
+                if (!targetShield.Blocking)
+                {
+                    state = "shoot";
+                    canShoot = true;
+                    Physics2D.IgnoreLayerCollision(3, 7);
+                    break;
+                }
+                // Ramming into player!
+                else
+                {
+                    rb.AddForce(force);
+                }
+                break;
         }
     }
 
@@ -393,12 +432,28 @@ public class FlyingEnemyAI : MonoBehaviour
 
     public void SpawnHealthOrEnergy()
     {
-        int rand = UnityEngine.Random.Range(0, 100);
-        if (_targetHealth.GetHealth() <= 3 && rand < 49)
+        int rand = UnityEngine.Random.Range(1, 101);
+        if (_targetHealth.GetHealth() <= _targetHealth.MaxHealth * amountWhenHealthIsSpawnable && rand <= healthProbability)
         {
+            // Debug.Log(rand);
             Instantiate(healthItem, transform.position, Quaternion.identity);
         }
-        else if (rand >= 49)
+        else if (rand <= energyProbability)
+        {
+            // Debug.Log(rand);
             Instantiate(energyItem, transform.position, Quaternion.identity);
+        }
+
+    }
+
+    // When enemy is ramming desperately into player
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if(collision.collider.tag == "Player" && canShoot)
+        {
+            _targetHealth.TakeDamage(attackPower);
+            StartCoroutine(ShootCoolDown());
+        }
+        
     }
 }
