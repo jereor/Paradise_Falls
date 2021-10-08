@@ -287,11 +287,13 @@ public class PlayerMovement : MonoBehaviour
     }
 
     // Boost Jump when player jumps on Boost Plant. Called by BoostPlant-script
-    public void BoostJump(Vector2 direction)
+    public void BoostJump(Vector2 plantFaceDirection)
     {
+        Debug.Log("Boost!");
         // Do a boost jump
         playerScript.SetCurrentState(Player.State.Jumping);
-        rb.velocity = new Vector2(0, jumpForce * 1.5f);
+        rb.velocity = plantFaceDirection * jumpForce;
+        Debug.Log("Velocity: " + rb.velocity);
     }
 
    

@@ -9,14 +9,25 @@ public class BoostPlant : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Player"))
+        {
             ActivateBoostJump();
+
+            //RaycastHit hit;
+            //Ray ray = new Ray(collision.gameObject.transform.position, this.transform.position);
+
+            //Vector2 plantFaceDirection;
+            //if (Physics.Raycast(ray, out hit))
+            //{
+            //    plantFaceDirection = hit.normal;
+            //    ActivateBoostJump(plantFaceDirection);
+            //}
+        }
     }
 
     // Activates boost jump from PlayerMovement-script
     private void ActivateBoostJump()
     {
-        // To-do: Jump direction based on plant rotation
-        var direction = Vector2.up;
-        movementScript.BoostJump(direction);
+        Debug.Log(transform.up);
+        movementScript.BoostJump(transform.up);
     }
 }
