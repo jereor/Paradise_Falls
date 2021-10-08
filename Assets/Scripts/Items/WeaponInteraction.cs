@@ -17,6 +17,15 @@ public class WeaponInteraction : MonoBehaviour
         else if(collision.gameObject.layer == LayerMask.NameToLayer("Enemy") && weaponScript.getBeingPulled())
         {
             weaponScript.DealDamage(collision);
+            weaponScript.Knockback(collision.gameObject, gameObject, weaponScript.knockbackForce);
+        }
+    }
+
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Player") && weaponScript.getLanded())
+        {
+            weaponScript.Interact(collision.gameObject);
         }
     }
 }

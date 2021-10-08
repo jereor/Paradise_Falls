@@ -8,6 +8,9 @@ public class SettingsController : MonoBehaviour
 {
     public CanvasGroup buttons;
     public RectTransform _options;
+    public bool settingsOpen;
+    public Button settingsBackButton;
+    public Button settingsButton;
     // Start is called before the first frame update
     void Start()
     {
@@ -36,6 +39,9 @@ public class SettingsController : MonoBehaviour
         _options
             .DOAnchorPos(Vector2.zero, .3f)
             .SetUpdate(true);
+
+        settingsOpen = true;
+        settingsBackButton.Select();
     }
 
     //Closes the settings while enabling the main menu buttons again.
@@ -47,5 +53,8 @@ public class SettingsController : MonoBehaviour
         _options
             .DOAnchorPos(new Vector2(0, -500), .3f)
             .SetUpdate(true);
+
+        settingsOpen = false;
+        settingsButton.Select();
     }
 }

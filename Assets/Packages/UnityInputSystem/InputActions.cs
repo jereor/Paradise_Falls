@@ -65,6 +65,14 @@ public class @InputActions : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""HeavyMelee"",
+                    ""type"": ""Button"",
+                    ""id"": ""1bf54e5f-a07a-4906-8ed7-95e291e94468"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -224,6 +232,17 @@ public class @InputActions : IInputActionCollection, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""b16e0e1c-c4b8-4000-8caf-df3762d7e80e"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Interact"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""53d98ce8-3f1a-4074-8638-1e616915ca4c"",
                     ""path"": ""<Keyboard>/ctrl"",
                     ""interactions"": """",
@@ -257,12 +276,45 @@ public class @InputActions : IInputActionCollection, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""bcd447bd-89c4-49d7-b63e-40150f84853e"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Melee"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""867f330b-b1c1-4ef5-9dbc-6f41956f057d"",
                     ""path"": ""<Mouse>/rightButton"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""ThrowAim"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9d793c12-3c49-499c-a918-3dbdcfc1f282"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ThrowAim"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3d7d8884-30e0-4358-9275-1649e2e5f5b1"",
+                    ""path"": ""<Keyboard>/leftShift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""HeavyMelee"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -285,6 +337,14 @@ public class @InputActions : IInputActionCollection, IDisposable
                     ""type"": ""Button"",
                     ""id"": ""8f0f6181-6114-4dcd-a121-0ccd035b4762"",
                     ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""Navigation"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""a7c0ba3c-2428-413f-8800-6de7baddeb0f"",
+                    ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
                     ""interactions"": """"
                 }
@@ -322,6 +382,72 @@ public class @InputActions : IInputActionCollection, IDisposable
                     ""action"": ""Map"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""715fa20b-7a63-451d-9e1b-ab6011b2cc4d"",
+                    ""path"": ""<Gamepad>/leftStick"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Navigation"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""2D Vector"",
+                    ""id"": ""6701f247-125c-4ee6-92f2-91497091351a"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Navigation"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""d6b9dd23-568f-4fd6-96ea-7c84f491f56b"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Navigation"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""707611a4-8760-42a0-9927-bf7f965c0007"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Navigation"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""8fca91b7-9ba8-4ae0-b858-1f552c1c515c"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Navigation"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""03968c15-6198-4f02-bd96-bf40183cde94"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Navigation"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         }
@@ -336,10 +462,12 @@ public class @InputActions : IInputActionCollection, IDisposable
         m_Player_Shield = m_Player.FindAction("Shield", throwIfNotFound: true);
         m_Player_Melee = m_Player.FindAction("Melee", throwIfNotFound: true);
         m_Player_ThrowAim = m_Player.FindAction("ThrowAim", throwIfNotFound: true);
+        m_Player_HeavyMelee = m_Player.FindAction("HeavyMelee", throwIfNotFound: true);
         // GameUI
         m_GameUI = asset.FindActionMap("GameUI", throwIfNotFound: true);
         m_GameUI_Pause = m_GameUI.FindAction("Pause", throwIfNotFound: true);
         m_GameUI_Map = m_GameUI.FindAction("Map", throwIfNotFound: true);
+        m_GameUI_Navigation = m_GameUI.FindAction("Navigation", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -395,6 +523,7 @@ public class @InputActions : IInputActionCollection, IDisposable
     private readonly InputAction m_Player_Shield;
     private readonly InputAction m_Player_Melee;
     private readonly InputAction m_Player_ThrowAim;
+    private readonly InputAction m_Player_HeavyMelee;
     public struct PlayerActions
     {
         private @InputActions m_Wrapper;
@@ -405,6 +534,7 @@ public class @InputActions : IInputActionCollection, IDisposable
         public InputAction @Shield => m_Wrapper.m_Player_Shield;
         public InputAction @Melee => m_Wrapper.m_Player_Melee;
         public InputAction @ThrowAim => m_Wrapper.m_Player_ThrowAim;
+        public InputAction @HeavyMelee => m_Wrapper.m_Player_HeavyMelee;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -432,6 +562,9 @@ public class @InputActions : IInputActionCollection, IDisposable
                 @ThrowAim.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnThrowAim;
                 @ThrowAim.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnThrowAim;
                 @ThrowAim.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnThrowAim;
+                @HeavyMelee.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnHeavyMelee;
+                @HeavyMelee.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnHeavyMelee;
+                @HeavyMelee.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnHeavyMelee;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -454,6 +587,9 @@ public class @InputActions : IInputActionCollection, IDisposable
                 @ThrowAim.started += instance.OnThrowAim;
                 @ThrowAim.performed += instance.OnThrowAim;
                 @ThrowAim.canceled += instance.OnThrowAim;
+                @HeavyMelee.started += instance.OnHeavyMelee;
+                @HeavyMelee.performed += instance.OnHeavyMelee;
+                @HeavyMelee.canceled += instance.OnHeavyMelee;
             }
         }
     }
@@ -464,12 +600,14 @@ public class @InputActions : IInputActionCollection, IDisposable
     private IGameUIActions m_GameUIActionsCallbackInterface;
     private readonly InputAction m_GameUI_Pause;
     private readonly InputAction m_GameUI_Map;
+    private readonly InputAction m_GameUI_Navigation;
     public struct GameUIActions
     {
         private @InputActions m_Wrapper;
         public GameUIActions(@InputActions wrapper) { m_Wrapper = wrapper; }
         public InputAction @Pause => m_Wrapper.m_GameUI_Pause;
         public InputAction @Map => m_Wrapper.m_GameUI_Map;
+        public InputAction @Navigation => m_Wrapper.m_GameUI_Navigation;
         public InputActionMap Get() { return m_Wrapper.m_GameUI; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -485,6 +623,9 @@ public class @InputActions : IInputActionCollection, IDisposable
                 @Map.started -= m_Wrapper.m_GameUIActionsCallbackInterface.OnMap;
                 @Map.performed -= m_Wrapper.m_GameUIActionsCallbackInterface.OnMap;
                 @Map.canceled -= m_Wrapper.m_GameUIActionsCallbackInterface.OnMap;
+                @Navigation.started -= m_Wrapper.m_GameUIActionsCallbackInterface.OnNavigation;
+                @Navigation.performed -= m_Wrapper.m_GameUIActionsCallbackInterface.OnNavigation;
+                @Navigation.canceled -= m_Wrapper.m_GameUIActionsCallbackInterface.OnNavigation;
             }
             m_Wrapper.m_GameUIActionsCallbackInterface = instance;
             if (instance != null)
@@ -495,6 +636,9 @@ public class @InputActions : IInputActionCollection, IDisposable
                 @Map.started += instance.OnMap;
                 @Map.performed += instance.OnMap;
                 @Map.canceled += instance.OnMap;
+                @Navigation.started += instance.OnNavigation;
+                @Navigation.performed += instance.OnNavigation;
+                @Navigation.canceled += instance.OnNavigation;
             }
         }
     }
@@ -507,10 +651,12 @@ public class @InputActions : IInputActionCollection, IDisposable
         void OnShield(InputAction.CallbackContext context);
         void OnMelee(InputAction.CallbackContext context);
         void OnThrowAim(InputAction.CallbackContext context);
+        void OnHeavyMelee(InputAction.CallbackContext context);
     }
     public interface IGameUIActions
     {
         void OnPause(InputAction.CallbackContext context);
         void OnMap(InputAction.CallbackContext context);
+        void OnNavigation(InputAction.CallbackContext context);
     }
 }
