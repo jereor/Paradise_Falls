@@ -65,6 +65,14 @@ public class @InputActions : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""HeavyMelee"",
+                    ""type"": ""Button"",
+                    ""id"": ""1bf54e5f-a07a-4906-8ed7-95e291e94468"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -298,6 +306,17 @@ public class @InputActions : IInputActionCollection, IDisposable
                     ""action"": ""ThrowAim"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3d7d8884-30e0-4358-9275-1649e2e5f5b1"",
+                    ""path"": ""<Keyboard>/leftShift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""HeavyMelee"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -443,6 +462,7 @@ public class @InputActions : IInputActionCollection, IDisposable
         m_Player_Shield = m_Player.FindAction("Shield", throwIfNotFound: true);
         m_Player_Melee = m_Player.FindAction("Melee", throwIfNotFound: true);
         m_Player_ThrowAim = m_Player.FindAction("ThrowAim", throwIfNotFound: true);
+        m_Player_HeavyMelee = m_Player.FindAction("HeavyMelee", throwIfNotFound: true);
         // GameUI
         m_GameUI = asset.FindActionMap("GameUI", throwIfNotFound: true);
         m_GameUI_Pause = m_GameUI.FindAction("Pause", throwIfNotFound: true);
@@ -503,6 +523,7 @@ public class @InputActions : IInputActionCollection, IDisposable
     private readonly InputAction m_Player_Shield;
     private readonly InputAction m_Player_Melee;
     private readonly InputAction m_Player_ThrowAim;
+    private readonly InputAction m_Player_HeavyMelee;
     public struct PlayerActions
     {
         private @InputActions m_Wrapper;
@@ -513,6 +534,7 @@ public class @InputActions : IInputActionCollection, IDisposable
         public InputAction @Shield => m_Wrapper.m_Player_Shield;
         public InputAction @Melee => m_Wrapper.m_Player_Melee;
         public InputAction @ThrowAim => m_Wrapper.m_Player_ThrowAim;
+        public InputAction @HeavyMelee => m_Wrapper.m_Player_HeavyMelee;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -540,6 +562,9 @@ public class @InputActions : IInputActionCollection, IDisposable
                 @ThrowAim.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnThrowAim;
                 @ThrowAim.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnThrowAim;
                 @ThrowAim.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnThrowAim;
+                @HeavyMelee.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnHeavyMelee;
+                @HeavyMelee.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnHeavyMelee;
+                @HeavyMelee.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnHeavyMelee;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -562,6 +587,9 @@ public class @InputActions : IInputActionCollection, IDisposable
                 @ThrowAim.started += instance.OnThrowAim;
                 @ThrowAim.performed += instance.OnThrowAim;
                 @ThrowAim.canceled += instance.OnThrowAim;
+                @HeavyMelee.started += instance.OnHeavyMelee;
+                @HeavyMelee.performed += instance.OnHeavyMelee;
+                @HeavyMelee.canceled += instance.OnHeavyMelee;
             }
         }
     }
@@ -623,6 +651,7 @@ public class @InputActions : IInputActionCollection, IDisposable
         void OnShield(InputAction.CallbackContext context);
         void OnMelee(InputAction.CallbackContext context);
         void OnThrowAim(InputAction.CallbackContext context);
+        void OnHeavyMelee(InputAction.CallbackContext context);
     }
     public interface IGameUIActions
     {
