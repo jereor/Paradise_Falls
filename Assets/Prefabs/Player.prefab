@@ -10304,6 +10304,22 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: a7c0ba3c-2428-413f-8800-6de7baddeb0f
     m_ActionName: GameUI/Navigation[/Keyboard/w,/Keyboard/s,/Keyboard/a,/Keyboard/d]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 7463911945564789779}
+        m_TargetAssemblyTypeName: PlayerCombat, Assembly-CSharp
+        m_MethodName: HeavyMelee
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 1bf54e5f-a07a-4906-8ed7-95e291e94468
+    m_ActionName: Player/HeavyMelee[/Keyboard/leftShift]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -10466,12 +10482,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68279dc01e70bb34f9195b45b7234967, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  meleeDamage: 1
-  knockbackForceNormal: 600
-  knockbackForceLast: 750
-  meleeAttackRate: 0.5
-  comboCooldown: 1
-  comboBetweenTimer: 2
+  lightDamage: 1
+  heavyDamage: 2
+  knockbackForceLight: 400
+  knockbackForceHeavy: 750
+  dashSpeed: 5
+  dashDistance: 0.4
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  attackPoint: {fileID: 7716404287092780390}
+  attackRangeX: 1.5
+  attackRangeY: 1.5
   throwIndicator: {fileID: 533264429858380022}
   throwPoint: {fileID: 3243163536262417571}
   defaultThrowingForce: 15
@@ -10483,14 +10505,14 @@ MonoBehaviour:
   spaceBetweenPoints: 0.02
   pointsShown: 7
   pointScaleRatio: 1.2
-  enemyLayer:
-    serializedVersion: 2
-    m_Bits: 128
-  attackPoint: {fileID: 7716404287092780390}
-  attackRangeX: 1.5
-  attackRangeY: 1.5
   meleeWeaponPrefab: {fileID: 3980506574090905470, guid: 3780bd19eaa15054a9ebdb884fa668ba, type: 3}
   isWeaponWielded: 0
+  onIdle: 1
+  onTran1: 0
+  onTran2: 0
+  onTran3: 0
+  canReceiveInput: 0
+  inputReceived: 0
 --- !u!1 &2646993277219195829
 GameObject:
   m_ObjectHideFlags: 0
