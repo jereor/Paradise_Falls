@@ -10123,7 +10123,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   allowLedgeClimb: 1
-  allowWallJump: 1
+  allowWallJump: 0
   allowCoyoteWallJump: 1
   allowShockwaveJump: 1
   ledgeCheck: {fileID: 2838063052809471023}
@@ -10454,7 +10454,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.9, y: 1.8102989}
+  m_Size: {x: 1, y: 1.8102989}
   m_EdgeRadius: 0
 --- !u!114 &1812080132
 MonoBehaviour:
@@ -10509,13 +10509,15 @@ MonoBehaviour:
   pointScaleRatio: 1.2
   meleeWeaponPrefab: {fileID: 3980506574090905470, guid: 3780bd19eaa15054a9ebdb884fa668ba, type: 3}
   isWeaponWielded: 0
+  pullCollisionCounter: 0
+  magnetTether: {fileID: 5454362082765361711}
+  timeBeforeRelease: 0.5
   onIdle: 1
   onTran1: 0
   onTran2: 0
   onTran3: 0
   canReceiveInput: 0
   meleeInputReceived: 0
-  magnetTether: {fileID: 0}
 --- !u!1 &2646993277219195829
 GameObject:
   m_ObjectHideFlags: 0
