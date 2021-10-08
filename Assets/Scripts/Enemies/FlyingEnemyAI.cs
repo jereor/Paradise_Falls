@@ -8,6 +8,7 @@ public class FlyingEnemyAI : MonoBehaviour
 {
     private Health _targetHealth;
     private Energy _targetEnergy;
+    private Shield targetShield;
 
     [Header("Transforms")]
     public Transform target;
@@ -27,6 +28,7 @@ public class FlyingEnemyAI : MonoBehaviour
     public float speed = 5f;
     public float chargeSpeed = 10f;
     public float roamSpeed = 5f;
+    public float attackPower = 1f;
 
 
     [Header("State and Parameters")]
@@ -50,7 +52,7 @@ public class FlyingEnemyAI : MonoBehaviour
     private bool canShoot = true;
     private float shootCooldown = 1.5f;
     private bool isFacingRight = true;
-    private float vectorPathLength = 1;
+    //private float vectorPathLength = 1;
     private bool isTargetInBehaviourRange = false;
 
     private Collider2D _collider;
@@ -69,6 +71,7 @@ public class FlyingEnemyAI : MonoBehaviour
         seeker = GetComponent<Seeker>();
         rb = GetComponent<Rigidbody2D>();
         _targetHealth = GameObject.Find("Player").GetComponent<Health>();
+        targetShield = GameObject.Find("Player").GetComponent<Shield>();
         _collider = GetComponent<Collider2D>();
         spawnPosition = transform.position;
         gizmoPositionChange = false;
@@ -340,6 +343,10 @@ public class FlyingEnemyAI : MonoBehaviour
             case "shoot":
                 // Bullets do the damage, this only checks if the bullet can hit the target from current angle.
                 Debug.DrawRay(transform.position, target.transform.position - transform.position, Color.blue);
+                if(targetShield.Blocking)
+                {
+                    state = "ram";
+                }
                 if (canShoot)
                 {
                     // Draws two rays in the direction of the target. First checks if there's ground in between the enemy unit and the target, second checks if it hit the target.
@@ -388,6 +395,30 @@ public class FlyingEnemyAI : MonoBehaviour
                     break;
                 }
                 break;
+
+            // RAM STATE
+            //------------------------------------------------------------------------------------------------------------------------
+            // Enemy unit rams into player if they're holding shield up, since shooting would only kill the enemy certainly.
+            case "ram":
+                // Make player and enemy colliders hit each other
+                if(Physics2D.GetIgnoreLayerCollision(3, 7) == true)
+                {
+                    Physics2D.IgnoreLayerCollision(3, 7, false);
+                }
+                // Check if player is still holding their shield up.
+                if (!targetShield.Blocking)
+                {
+                    state = "shoot";
+                    canShoot = true;
+                    Physics2D.IgnoreLayerCollision(3, 7);
+                    break;
+                }
+                // Ramming into player!
+                else
+                {
+                    rb.AddForce(force);
+                }
+                break;
         }
     }
 
@@ -413,5 +444,16 @@ public class FlyingEnemyAI : MonoBehaviour
             Instantiate(energyItem, transform.position, Quaternion.identity);
         }
 
+    }
+
+    // When enemy is ramming desperately into player
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if(collision.collider.tag == "Player" && canShoot)
+        {
+            _targetHealth.TakeDamage(attackPower);
+            StartCoroutine(ShootCoolDown());
+        }
+        
     }
 }
