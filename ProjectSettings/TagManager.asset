@@ -8,6 +8,7 @@ TagManager:
   - Drawbridge
   - Door
   - MeleeWeapon
+  - BoostPlant
   layers:
   - Default
   - TransparentFX

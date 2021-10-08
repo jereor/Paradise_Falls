@@ -61,7 +61,7 @@ public class Player : MonoBehaviour
 
     public void SetCurrentState(State newState)
     {
-        if (newState == currentState)
+        if (newState != currentState)
         {
             previousState = currentState;
         }
