@@ -303,7 +303,8 @@ public class PlayerMovement : MonoBehaviour
     // Launch when player jumps on Boost Plant. Called by BoostPlant-script
     public void ActivateLaunch(float launchDist, Vector2 launchDir)
     {
-        if (playerScript.GetPreviousState() == Player.State.Diving)
+        if (playerScript.GetCurrentState() == Player.State.Diving 
+            || playerScript.GetPreviousState() == Player.State.Diving)
             rb.velocity = launchDir * jumpForce * 1.2f;
         else
             rb.velocity = launchDir * jumpForce * .6f;
