@@ -32,9 +32,11 @@ public class Player : MonoBehaviour
         Diving,
         Grounded,
         WallSliding,
-        Climbing
+        Climbing,
+        Launched
     }
     State currentState;
+    State previousState;
 
     private void Start()
     {
@@ -52,8 +54,17 @@ public class Player : MonoBehaviour
         return currentState;
     }
 
+    public State GetPreviousState()
+    {
+        return currentState;
+    }
+
     public void SetCurrentState(State newState)
     {
+        if (newState != currentState)
+        {
+            previousState = currentState;
+        }
         currentState = newState;
     }
 
@@ -72,8 +83,8 @@ public class Player : MonoBehaviour
         GUI.Label(new Rect(10, 10, 300, 100), "Health: " + healthScript.GetHealth(), TextStyleHealth);
         GUI.Label(new Rect(200, 10, 300, 100), "Energy: " + energyScript.GetEnergy(), TextStyleEnergy);
 
-        GUI.Label(new Rect(700, 10, 300, 100), "State: " + currentState, TextStyleHealth);
-        GUI.Label(new Rect(1000, 10, 300, 100), "Gravity scale: " + rb.gravityScale, TextStyleEnergy);
+        GUI.Label(new Rect(700, 10, 300, 100), "Currently: " + currentState, TextStyleHealth);
+        GUI.Label(new Rect(1000, 10, 300, 100), "Previously: " + previousState, TextStyleEnergy);
     }
 
     // Move action: Called when the Move Action Button is pressed
