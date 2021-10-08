@@ -27,7 +27,7 @@ public class Lever : Interactable
     }
     private void OnTriggerStay2D(Collider2D collision)
     {
-        if (isLeverUsed)
+        if (collision.name.Contains("Player") && isLeverUsed)
         {
             collision.GetComponent<PlayerInteractions>().AllowInteract(false);
             collision.GetComponent<PlayerInteractions>().GiveGameObject(null);
