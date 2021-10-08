@@ -15,6 +15,7 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private float knockbackForceHeavy;
     [SerializeField] private float dashSpeed; // Velocity for dash if 0 no dash 
     [SerializeField] private float dashDistance; // Distance of dash
+    [SerializeField] private float playerPullForce;
 
     [Header("Attack Detection Variables")]
     public LayerMask enemyLayer;
@@ -43,6 +44,11 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private GameObject meleeWeaponPrefab;
     private GameObject weaponInstance; // Players weapon in scene after throwing used in pull backs
     [SerializeField] private bool isWeaponWielded;
+
+    [Header("Variables used with pulling player towards the weapon")]
+    [SerializeField] private float pullCollisionCounter = 0; // If player hits a collider during the pull, release the pull after a certain time.
+    [SerializeField] private GameObject magnetTether; // Magnet tether for the visual representation of the pull.
+    [SerializeField] private float timeBeforeRelease = 1f;
 
     // State variables
     private bool throwAimHold; // True if we are holdling Throw input (MouseR)
@@ -78,6 +84,8 @@ public class PlayerCombat : MonoBehaviour
     // Used in dash 
     private Vector3 posBeforeDash;
     private bool dash; // State variable if we are currently dashing
+
+    private bool isPlayerBeingPulled; // Is player being pulled
 
     private void Awake()
     {
@@ -191,6 +199,11 @@ public class PlayerCombat : MonoBehaviour
         //if (!movementScript.canMove)
           //  rb.velocity = Vector2.zero;
 
+        if(weaponInstance)
+        {
+            Debug.DrawRay(transform.position, weaponInstance.transform.position - transform.position, Color.red);
+        }
+
         CheckIfMaxDistanceChanged();
 
         RotateIndicator();
@@ -200,6 +213,8 @@ public class PlayerCombat : MonoBehaviour
         CheckMaxDistance();
 
         CheckAttackDashDistance();
+
+        PullingPlayer();
     }
 
     // --- INPUT FUNCITONS ---
@@ -237,9 +252,24 @@ public class PlayerCombat : MonoBehaviour
             }
             // Left click when right is held down
             else if (throwAimHold)
-            {
-                Debug.Log("DO GRAPPLING HOOK HERE");
+            {                
                 //weaponScript.PullWeapon(gameObject);
+
+                Vector2 vectorToWeapon = weaponInstance.transform.position - transform.position;
+                RaycastHit2D hitGround;
+                RaycastHit2D hitGrapplePoint;
+                hitGround = Physics2D.Raycast(transform.position, vectorToWeapon, vectorToWeapon.magnitude, LayerMask.GetMask("Ground"));
+                hitGrapplePoint = Physics2D.Raycast(transform.position, vectorToWeapon, vectorToWeapon.magnitude, LayerMask.GetMask("GrapplePoint"));
+
+                //Sets the collision between the player and weapon false again. Magnet tether becomes active during the flight to the weapon.
+                if (hitGround && hitGround.collider.tag == "MeleeWeapon" && !hitGrapplePoint)
+                {
+                    Debug.Log("Grappling to point!");
+                    Physics2D.IgnoreLayerCollision(3, 13);
+                    isPlayerBeingPulled = true;
+                    pullCollisionCounter = 0f;
+                    magnetTether.SetActive(true);
+                }
             }
         }
 
@@ -293,6 +323,17 @@ public class PlayerCombat : MonoBehaviour
             // We release aim button hide points
             HideAllProjPoints();
         }
+    }
+
+    private void PullingPlayer()
+    {
+        if (isPlayerBeingPulled)
+        {
+            Vector3 vectorToTarget = weaponInstance.transform.position - transform.position;
+            gameObject.GetComponent<Rigidbody2D>().gravityScale = 0f;
+            gameObject.GetComponent<Rigidbody2D>().velocity = vectorToTarget.normalized * playerPullForce * Time.deltaTime;
+        }
+
     }
 
 
@@ -740,6 +781,27 @@ public class PlayerCombat : MonoBehaviour
     {
         //Debug.Log("Picked weapon");
         isWeaponWielded = true;
+
+        //Deactivate the tether. Weapon reached.
+        magnetTether.SetActive(false);
+    }
+
+
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        // If player gets stuck during a pull, release.
+        if (isPlayerBeingPulled)
+        {
+            pullCollisionCounter += Time.deltaTime;
+            if (pullCollisionCounter >= timeBeforeRelease)
+            {
+                isPlayerBeingPulled = false;
+                magnetTether.SetActive(false);
+                gameObject.GetComponent<Rigidbody2D>().gravityScale = 5f;
+                gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
+                pullCollisionCounter = 0;
+            }
+        }
     }
 
 
@@ -773,5 +835,20 @@ public class PlayerCombat : MonoBehaviour
     public void setlightDamage(float dmg)
     {
         lightDamage = dmg;
+    }
+
+    public GameObject getWeaponInstance()
+    {
+        return weaponInstance;
+    }
+
+    public bool getIsPlayerBeingPulled()
+    {
+        return isPlayerBeingPulled;
+    }
+
+    public void setIsPlayerBeingPulled(bool isPulled)
+    {
+        isPlayerBeingPulled = isPulled;
     }
 }
