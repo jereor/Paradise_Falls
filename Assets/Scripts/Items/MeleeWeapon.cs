@@ -276,13 +276,13 @@ public class MeleeWeapon : MonoBehaviour
         Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("GrapplePoint"), LayerMask.NameToLayer("MeleeWeapon"), false);
 
         // If we are not attached to the grapple point, make the weapon pickable.
-        if(!attachedToGrapplePoint || (attachedToGrapplePoint && objectWhoPicksUp.GetComponent<PlayerCombat>().isPlayerBeingPulled))
+        if(!attachedToGrapplePoint || (attachedToGrapplePoint && objectWhoPicksUp.GetComponent<PlayerCombat>().getIsPlayerBeingPulled()))
         {
             // Inform Player to pickup
             objectWhoPicksUp.GetComponent<PlayerCombat>().PickUpWeapon();
 
             //Player was being pulled towards the weapon. Change the bool back to false and gravityscale to normal.
-            objectWhoPicksUp.GetComponent<PlayerCombat>().isPlayerBeingPulled = false;
+            objectWhoPicksUp.GetComponent<PlayerCombat>().setIsPlayerBeingPulled(false);
             objectWhoPicksUp.GetComponent<Rigidbody2D>().gravityScale = 5f;
             // Destroy instance form scene
             Destroy(gameObject);
