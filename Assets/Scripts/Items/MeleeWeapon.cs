@@ -141,7 +141,7 @@ public class MeleeWeapon : MonoBehaviour
             // Makes the player and melee weapon to collide until it is pulled again. Weapon can be used as a platform during grapple.
             Physics2D.IgnoreLayerCollision(3, 13, false);
 
-            // Change the meleeweapon layer to Ground here! Player can stand on the weapon while attached to the grapple point.
+            // Change the meleeweapon layer to Ground here! Player can stand adn jump on the weapon while attached to the grapple point.
             gameObject.layer = 6;
 
             // We are attached to a grappling point.
@@ -150,7 +150,9 @@ public class MeleeWeapon : MonoBehaviour
             SetEnemyIngoresOnLand();
 
             // Calculations for the angle where the weapon hit the block.
-            Vector2 normal = collision.GetContact(0).normal;
+            // Gets the last contact point from the list and uses it to calculate the angle. Is a bit more accurate than the first contact point to get the desired result.
+            int lastContact = collision.contactCount;
+            Vector2 normal = collision.GetContact(lastContact - 1).normal;
             float collisionAngle = Vector2.SignedAngle(Vector2.right, normal);
             //Debug.Log(collisionAngle);
 
@@ -163,6 +165,7 @@ public class MeleeWeapon : MonoBehaviour
 
                 transform.position = new Vector2(collision.transform.position.x + (collision.transform.localScale.x / meleeWeaponGrapplingDistance), collision.transform.position.y);
                 Quaternion q = Quaternion.AngleAxis(collisionAngle, Vector3.forward);
+
                 transform.rotation = Quaternion.Slerp(transform.rotation, q, Time.deltaTime * pullForce);
                 myRB.constraints = RigidbodyConstraints2D.FreezePosition;
                 myRB.freezeRotation = true;

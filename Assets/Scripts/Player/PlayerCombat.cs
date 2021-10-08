@@ -65,6 +65,8 @@ public class PlayerCombat : MonoBehaviour
     private bool comboOnCooldown; // boolean to check if we can attack
     private bool comboOnGoing; // Used in ComboCounter() calculates if we aren't attacking before comboBetweenTimer then we reset combo
 
+    private float pullCollisionCounter = 0;
+
     Mouse mouse = Mouse.current; // Mouse in use on Unity player
 
     Camera mainCamera;  // MainCamera
@@ -199,7 +201,6 @@ public class PlayerCombat : MonoBehaviour
             //Sets the collision between the player and weapon false again. Magnet tether becomes active during the flight to the weapon.
             if (hitGround && hitGround.collider.tag == "MeleeWeapon" && !hitGrapplePoint)
             {
-                Debug.Log("Joo");
                 Physics2D.IgnoreLayerCollision(3, 13);
                 isPlayerBeingPulled = true;
                 magnetTether.SetActive(true);
@@ -268,9 +269,9 @@ public class PlayerCombat : MonoBehaviour
     {
         if (isPlayerBeingPulled)
         {
-            Vector3 vectorToTarget = weaponInstance.transform.position - transform.position;
+            Vector3 vectorToWeapon = weaponInstance.transform.position - transform.position;
             gameObject.GetComponent<Rigidbody2D>().gravityScale = 0f;
-            gameObject.GetComponent<Rigidbody2D>().velocity = vectorToTarget.normalized * playerPullForce * Time.deltaTime;
+            gameObject.GetComponent<Rigidbody2D>().velocity = vectorToWeapon.normalized * playerPullForce * Time.deltaTime;
         }
 
     }
@@ -455,6 +456,22 @@ public class PlayerCombat : MonoBehaviour
         isWeaponWielded = true;
         //Deactivate the tether. Weapon reached.
         magnetTether.SetActive(false);
+    }
+
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        if(isPlayerBeingPulled)
+        {
+            pullCollisionCounter += Time.deltaTime;
+            if(pullCollisionCounter >= 1)
+            {
+                isPlayerBeingPulled = false;
+                magnetTether.SetActive(false);
+                gameObject.GetComponent<Rigidbody2D>().gravityScale = 5f;
+                gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
+                pullCollisionCounter = 0;
+            }
+        }
     }
 
 
