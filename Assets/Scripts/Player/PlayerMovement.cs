@@ -42,8 +42,15 @@ public class PlayerMovement : MonoBehaviour
     private float lastTimeClimbed; // This is used to prevent climbing steplike object instantly to the top from first step
     private float lastWallTouchTime;
 
-    private bool canClimb;
-    private bool isClimbing;
+    // Boost Plant launch
+    private bool launched = false;
+    private bool wasLaunched = false;
+    private Vector3 posBeforeLaunch;
+    private float launchDistance;
+    private Vector3 launchDirection;
+
+    private bool canClimb = false;
+    private bool isClimbing = false;
     private bool canMove = true;
     private bool canShockwaveJump = false;
     private bool canWallJump; // Tells jump function/event that we can jump this is set in CheckWallJump()
@@ -66,17 +73,24 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
+        // Movement
         if (canMove)
-        {
-            // Movement
             rb.velocity = new Vector2(horizontal * movementVelocity, rb.velocity.y); // Moves the player by horizontal input
 
-            // Character flip
-            if (!isFacingRight && horizontal > 0f) // Flip when turning right
-                Flip();
-            else if (isFacingRight && horizontal < 0f) // Flip when turning left
-                Flip();
-        }
+        /* DISABLED FOR NOW. Launch checks when using directional boost plant launch
+        if (launched && horizontal != 0)
+            rb.velocity = new Vector2(horizontal * movementVelocity, rb.velocity.y); // Lets the player move when launched
+        else if (wasLaunched) 
+            rb.velocity = new Vector2(movementVelocity, rb.velocity.y); // Don't let player horizontal take all speed
+        else if (canMove)
+            rb.velocity = new Vector2(horizontal * movementVelocity, rb.velocity.y); // Moves the player by horizontal input
+        */
+
+        // Character flip
+        if (!isFacingRight && horizontal > 0f) // Flip when turning right
+            Flip();
+        else if (isFacingRight && horizontal < 0f) // Flip when turning left
+            Flip();
 
         // Ground check to set state variables
         if (IsGrounded())
@@ -286,17 +300,43 @@ public class PlayerMovement : MonoBehaviour
         transform.localScale = localScale;
     }
 
-    // Boost Jump when player jumps on Boost Plant. Called by BoostPlant-script
-    public void BoostJump(Vector2 plantFaceDirection)
+    // Launch when player jumps on Boost Plant. Called by BoostPlant-script
+    public void ActivateLaunch(float launchDist, Vector2 launchDir)
     {
-        Debug.Log("Boost!");
-        // Do a boost jump
-        playerScript.SetCurrentState(Player.State.Jumping);
-        rb.velocity = plantFaceDirection * jumpForce;
-        Debug.Log("Velocity: " + rb.velocity);
+        if (playerScript.GetPreviousState() == Player.State.Diving)
+            rb.velocity = launchDir * jumpForce * 1.2f;
+        else
+            rb.velocity = launchDir * jumpForce * .6f;
+
+        /* DISABLED FOR NOW. USE THESE FOR LAUNCH DIRECTION
+        posBeforeLaunch = transform.position;
+        launchDistance = launchDist;
+        launchDirection = launchDir;
+        launched = true;
+        */
     }
 
-   
+    // DISABLED FOR NOW. CALL THIS FUNCTION FROM FIXED UPDATE WHEN USING LAUNCH DIRECTIONS
+    private void CheckLaunch()
+    {
+        // If launchDistance reached
+        if (launched && (posBeforeLaunch - transform.position).magnitude >= launchDistance)
+        {
+            launched = false; // Cancel launch
+            wasLaunched = true; // Activate post-launch checks in Update
+        }
+        else if (launched)
+        {
+            // Keep launch going
+            playerScript.SetCurrentState(Player.State.Launched);
+            rb.velocity = new Vector2(launchDirection.x * jumpForce, launchDirection.y * jumpForce);
+        }
+        // Stop launch when landing or stopping
+        // This does not work yet. For some reason, velocity checks fail and this returns true only when landing
+        else if (IsGrounded() || rb.velocity.x == 0 || rb.velocity.y == 0) 
+            wasLaunched = false;
+    }
+
     // Move action: Called when the Move Action Button is pressed
     public void Move(InputAction.CallbackContext context) // Context tells the function when the action is triggered
     {

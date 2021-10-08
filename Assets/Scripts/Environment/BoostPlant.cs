@@ -5,29 +5,12 @@ using UnityEngine;
 public class BoostPlant : MonoBehaviour
 {
     [SerializeField] private PlayerMovement movementScript;
+    [SerializeField] private float launchDistance;
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        var launchDirection = transform.up;
         if (collision.gameObject.CompareTag("Player"))
-        {
-            ActivateBoostJump();
-
-            //RaycastHit hit;
-            //Ray ray = new Ray(collision.gameObject.transform.position, this.transform.position);
-
-            //Vector2 plantFaceDirection;
-            //if (Physics.Raycast(ray, out hit))
-            //{
-            //    plantFaceDirection = hit.normal;
-            //    ActivateBoostJump(plantFaceDirection);
-            //}
-        }
-    }
-
-    // Activates boost jump from PlayerMovement-script
-    private void ActivateBoostJump()
-    {
-        Debug.Log(transform.up);
-        movementScript.BoostJump(transform.up);
+            movementScript.ActivateLaunch(launchDistance, launchDirection);
     }
 }
