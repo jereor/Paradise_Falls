@@ -62,6 +62,8 @@ public class PlayerMovement : MonoBehaviour
     private float defaultGravityScale;
     private ShockwaveTool shockwaveTool;
 
+
+    RaycastHit2D ledgeHitOffsetRay;
     private void Start()
     {
         rb = gameObject.GetComponent<Rigidbody2D>();
@@ -69,6 +71,10 @@ public class PlayerMovement : MonoBehaviour
         playerScript = gameObject.GetComponent<Player>();
         PlayerCamera.Instance.ChangeCameraOffset(0.2f, false, 1);
         defaultGravityScale = rb.gravityScale;
+
+        // Setting these to these values give smoother experience on climbing
+        climbYOffset = GetComponent<BoxCollider2D>().size.y;
+        climbXOffset = GetComponent<BoxCollider2D>().size.x;
     }
 
     private void Update()
@@ -150,7 +156,9 @@ public class PlayerMovement : MonoBehaviour
 
             if ((BodyIsTouchingWall() /*|| FeetAreTouchingWall()*/)
                 && !LedgeIsOccupied()
-                && Time.time - lastTimeClimbed >= climbTimeBuffer)
+                && Time.time - lastTimeClimbed >= climbTimeBuffer
+                && horizontal != 0) // Player is moving and wanting to climb if no move input fall
+
             {
                 //Debug.Log("Climb start: " + Time.time);
                 canClimb = true;
@@ -196,7 +204,7 @@ public class PlayerMovement : MonoBehaviour
     private void LedgeClimb()
     {
         // Move player for offset amount to X and Y directions. X dir will need localScale.x to track where player is looking
-        transform.position = new Vector2(transform.position.x + climbXOffset * transform.localScale.x, transform.position.y + climbYOffset);
+        transform.position = new Vector2(transform.position.x + climbXOffset * transform.localScale.x, transform.position.y + climbYOffset - ledgeHitOffsetRay.distance);
         shockwaveTool.CancelShockwaveDive(); // Checks if shockwave dive graphics are on and disables them
         rb.gravityScale = defaultGravityScale; // Set this to default here
         canWallJump = false; // Prevent wall jumps
@@ -211,8 +219,8 @@ public class PlayerMovement : MonoBehaviour
         // We have wall jumps enabled
         if (allowWallJump)
         {
-            // We are in air
-            if (!IsGrounded())
+            // We are in air and not climbing
+            if (!IsGrounded() && !isClimbing)
             {
                 // Feet and LedgeOccupation raycasts detect ground layer obj 
                 // We check that we are jumping form different wall or we havent walljumped in a while example: we jumped from left now we check we are trying to jump from right and allow walljump
@@ -276,12 +284,31 @@ public class PlayerMovement : MonoBehaviour
         return Physics2D.Raycast(wallCheckFeet.position, transform.right * transform.localScale.x, checkDistance, groundLayer); // Raycast from feet
     }
 
-    // Returns true if Raycast hits to something aka there is something on top of the wall we might be climbing
+    // Returns true if Raycast hits to something or OverlapBox overlaps with groundLayer object aka there is something on top of the wall we might be climbing
     private bool LedgeIsOccupied()
     {
-        Debug.DrawRay(ledgeCheck.position, transform.right * checkDistance * transform.localScale.x, Color.red);
-        // Check if there is something on top of the wall
-        return Physics2D.Raycast(ledgeCheck.position, transform.right * transform.localScale.x, checkDistance, groundLayer);
+        //Ledge check ray
+        //Debug.DrawRay(ledgeCheck.position, transform.right * checkDistance * transform.localScale.x, Color.red);
+        // ledgeHitOffsetRayRay
+        //Debug.DrawRay(ledgeCheck.position + new Vector3(transform.localScale.x * checkDistance, 0f, 0f), -transform.up * transform.localScale.x * (ledgeCheck.position - wallCheckBody.position).magnitude, Color.green);
+        if (!Physics2D.Raycast(ledgeCheck.position, transform.right * transform.localScale.x, checkDistance, groundLayer))
+        {
+            // Ray FROM end of ledgeCheck ray above TO wallCheckBody ray end if groundLayer object is between ray distance is float between [0 , ~ 0.5]
+            ledgeHitOffsetRay = Physics2D.Raycast(ledgeCheck.position + new Vector3(transform.localScale.x * checkDistance, 0f, 0f), -transform.up, (ledgeCheck.position - wallCheckBody.position).magnitude, groundLayer);
+           
+            // Draws a box in scene if objects from groundLayer are inside this box ledge is occupied use ledgeHitOffsetRay to lower box to jsut above object we are climbing
+            Collider2D[] colliders = Physics2D.OverlapBoxAll(new Vector2(transform.position.x + climbXOffset * transform.localScale.x, transform.position.y + climbYOffset - ledgeHitOffsetRay.distance), new Vector2(GetComponent<BoxCollider2D>().size.x, GetComponent<BoxCollider2D>().size.y), 0f, groundLayer);
+            // No objects in array aka no overlaps with groundLayer objects
+            if (colliders.Length == 0)
+            {
+                // Can climb only when ledgeCheck ray doesn't hit and box doesn't overlap 
+                return false;
+            }
+            // If goes here there was object on top of what we are climbing
+        }
+
+        // Default case there is something that block climbing
+        return true;     
     }
 
     // Returns true if ground check detects ground
