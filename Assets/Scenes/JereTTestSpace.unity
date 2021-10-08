@@ -3194,6 +3194,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2107239525}
     m_Modifications:
+    - target: {fileID: 2085753358315985748, guid: 77600955bab6e9a42b33ced08062f9d5, type: 3}
+      propertyPath: maxHealth
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 8401565248732910209, guid: 77600955bab6e9a42b33ced08062f9d5, type: 3}
       propertyPath: target
       value: 
@@ -3202,6 +3206,10 @@ PrefabInstance:
       propertyPath: playerRB
       value: 
       objectReference: {fileID: 604229746}
+    - target: {fileID: 8401565248732910209, guid: 77600955bab6e9a42b33ced08062f9d5, type: 3}
+      propertyPath: attackPower
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8401565248732910210, guid: 77600955bab6e9a42b33ced08062f9d5, type: 3}
       propertyPath: m_Name
       value: GroundEnemyOne

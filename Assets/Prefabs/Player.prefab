@@ -10482,10 +10482,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68279dc01e70bb34f9195b45b7234967, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lightDamage: 0
-  heavyDamage: 0
-  knockbackForceLight: 0
-  knockbackForceHeavy: 0
+  lightDamage: 1
+  heavyDamage: 2
+  knockbackForceLight: 400
+  knockbackForceHeavy: 750
+  dashSpeed: 5
+  dashDistance: 0.4
   enemyLayer:
     serializedVersion: 2
     m_Bits: 128

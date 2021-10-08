@@ -13,6 +13,8 @@ public class PlayerCombat : MonoBehaviour
     //[SerializeField] private float meleeComboLastDamage; // Last hit currentComboHit 3
     [SerializeField] private float knockbackForceLight;
     [SerializeField] private float knockbackForceHeavy;
+    [SerializeField] private float dashSpeed; // Velocity for dash if 0 no dash 
+    [SerializeField] private float dashDistance; // Distance of dash
 
     [Header("Attack Detection Variables")]
     public LayerMask enemyLayer;
@@ -43,9 +45,9 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private bool isWeaponWielded;
 
     // State variables
-    private bool throwAimHold; // True if we are holdling Throw input
+    private bool throwAimHold; // True if we are holdling Throw input (MouseR)
 
-    private bool heavyHold;
+    private bool heavyHold; // True if we are holding HeavyMelee input (LShift)
 
     private float? throwButtonPressedTime; // Time when we start throwing
     private float throwChargeStartTime; // Time when we start charging
@@ -56,7 +58,7 @@ public class PlayerCombat : MonoBehaviour
     Camera mainCamera;  // MainCamera
     Ray mousePosRay; // Ray from MainCamera to mouse position in screen (endpoint aka .origin vector is what we can use)
 
-    Vector2 vectorToTarget;
+    Vector2 vectorToTarget; // Vector to mousepos from player gameobject
 
     [Header("Placeholder anim debugs")]
     public bool onIdle = true;
@@ -66,17 +68,21 @@ public class PlayerCombat : MonoBehaviour
 
     Coroutine tranToIdle; // This will be replaced with correct transittion animation
     
-    // These will stay w
+    // These will stay 
     public bool canReceiveInput; // If this is true we can melee (no attack animation ongoing)
     public bool inputReceived; // Used in transitions and idle to tell animator to start correct attack if this turns true
+
+    Rigidbody2D rb;
+    PlayerMovement movementScript;
+
+    // Used in dash 
+    private Vector3 posBeforeDash;
+    private bool dash; // State variable if we are currently dashing
 
     private void Awake()
     {
         instance = this;
-        canReceiveInput = true;
     }
-
-
 
     // Start is called before the first frame update
     void Start()
@@ -87,6 +93,11 @@ public class PlayerCombat : MonoBehaviour
         numberOfPoints = (int)maxDistance;
         // Instantiate points and adjust their look
         InitPoints();
+
+        canReceiveInput = true;
+
+        rb = GetComponent<Rigidbody2D>();
+        movementScript = GetComponent<PlayerMovement>();
     }
 
     // PLACEHOLDER ANIMATOR STATES
@@ -95,15 +106,17 @@ public class PlayerCombat : MonoBehaviour
         // Idle
         if (onIdle && inputReceived && !heavyHold)
         {
-            // Attacks in air
-            //if (TryGetComponent<PlayerMovement>(out var movementScript))
-            //{
-            //    if (movementScript.GROUNDED();)
-            //    airAttackPosition = gameObject.transform.position;
-            //    GetComponent<Rigidbody2D>().gravityScale = 0f;
-            //    attackingInAir = true;
-            //}
 
+            // Attacks in air
+            //if (!movementScript.IsGrounded())
+            //{
+            //    Debug.Log("Attack in air");
+            //    movementScript.canMove = false;
+            //}
+            //movementScript.canMove = false;
+
+            rb.velocity = Vector2.zero; // Stop player from sliding
+           
             //Debug.Log("Attack1");
             StartCoroutine(PlaceHolderAttack1());
             InputManager();
@@ -134,14 +147,16 @@ public class PlayerCombat : MonoBehaviour
         // Heavy
         if (onIdle && inputReceived && heavyHold)
         {
+          
             // Attacks in air
-            //if(TryGetComponent<PlayerMovement>(out var movementScript))
+            //if (!movementScript.IsGrounded())
             //{
-            //    if (movementScript.GROUNDED();)
-            //    airAttackPosition = gameObject.transform.position;
-            //    GetComponent<Rigidbody2D>().gravityScale = 0f;
-            //    attackingInAir = true;
+            //    Debug.Log("Attack in air");
+            //    movementScript.canMove = false;
             //}
+            //movementScript.canMove = false;
+            rb.velocity = Vector2.zero; // Stop player from sliding
+            
             //Debug.Log("Attack1");
             StartCoroutine(PlaceHolderAttackH1());
             InputManager();
@@ -171,7 +186,10 @@ public class PlayerCombat : MonoBehaviour
     }
 
     private void FixedUpdate()
-    {
+    { 
+        // Stop plaeyr from getting too much velocity when hurt
+        //if (!movementScript.canMove)
+          //  rb.velocity = Vector2.zero;
 
         CheckIfMaxDistanceChanged();
 
@@ -180,10 +198,13 @@ public class PlayerCombat : MonoBehaviour
         Throwing();
 
         CheckMaxDistance();
+
+        CheckAttackDashDistance();
     }
 
     // --- INPUT FUNCITONS ---
 
+    // Input from mouse left
     public void Melee(InputAction.CallbackContext context)
     {
         // Throw and melee
@@ -236,6 +257,7 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
+    // Input from left shift
     public void HeavyMelee(InputAction.CallbackContext context)
     {
         if (context.performed)
@@ -249,6 +271,7 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
+    // Input from mouse right
     public void MeleeAimThrowing(InputAction.CallbackContext context)
     {
         if (context.performed)
@@ -275,6 +298,7 @@ public class PlayerCombat : MonoBehaviour
 
     // --- MELEE ---
 
+    // ----------- PLACEHOLDER ANIMATIONS -------------------
     IEnumerator TranToIdle(int tranI)
     {
         //Debug.Log("Transition enter");
@@ -288,7 +312,8 @@ public class PlayerCombat : MonoBehaviour
             onTran3 = false;
 
         // Allow movement
-        //gameObject.GetComponent<PlayerMovement>().enabled = true;
+        //movementScript.canMove = true;
+
 
         onIdle = true;
 
@@ -298,13 +323,11 @@ public class PlayerCombat : MonoBehaviour
         }
         inputReceived = false;
     }
-
+    
     IEnumerator PlaceHolderAttack1()
     {
         //Debug.Log("Started melee animation");
-        // Disable movement
-        //gameObject.GetComponent<PlayerMovement>().enabled = false;
-        //gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+        AttackDash();
 
         yield return new WaitForSecondsRealtime(1f);
 
@@ -323,8 +346,7 @@ public class PlayerCombat : MonoBehaviour
     IEnumerator PlaceHolderAttack2()
     {
         //Debug.Log("Started melee animation");
-        //gameObject.GetComponent<PlayerMovement>().enabled = false;
-        //gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+        AttackDash();
 
         yield return new WaitForSecondsRealtime(1f);
 
@@ -343,8 +365,7 @@ public class PlayerCombat : MonoBehaviour
     IEnumerator PlaceHolderAttack3()
     {
         //Debug.Log("Started melee animation");
-        //gameObject.GetComponent<PlayerMovement>().enabled = false;
-        //gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+        AttackDash();
 
         yield return new WaitForSecondsRealtime(1f);
 
@@ -362,11 +383,9 @@ public class PlayerCombat : MonoBehaviour
     IEnumerator PlaceHolderAttackH1()
     {
         //Debug.Log("Started melee animation");
-        // Disable movement
-        //gameObject.GetComponent<PlayerMovement>().enabled = false;
-        //gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+        AttackDash();
 
-        yield return new WaitForSecondsRealtime(1f);
+        yield return new WaitForSecondsRealtime(2f);
 
         Debug.Log("Ended heavy melee animation 1");
 
@@ -383,10 +402,9 @@ public class PlayerCombat : MonoBehaviour
     IEnumerator PlaceHolderAttackH2()
     {
         //Debug.Log("Started melee animation");
-        //gameObject.GetComponent<PlayerMovement>().enabled = false;
-        // gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+        AttackDash();
 
-        yield return new WaitForSecondsRealtime(1f);
+        yield return new WaitForSecondsRealtime(2f);
 
         Debug.Log("Ended heavy melee animation 2");
 
@@ -403,10 +421,9 @@ public class PlayerCombat : MonoBehaviour
     IEnumerator PlaceHolderAttackH3()
     {
         //Debug.Log("Started melee animation");
-        //gameObject.GetComponent<PlayerMovement>().enabled = false;
-        //gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+        AttackDash();
 
-        yield return new WaitForSecondsRealtime(1f);
+        yield return new WaitForSecondsRealtime(2f);
 
         Debug.Log("Ended heavy melee animation 3");
         
@@ -417,7 +434,31 @@ public class PlayerCombat : MonoBehaviour
 
         tranToIdle = StartCoroutine(TranToIdle(3));
     }
+    // ----------- PLACEHOLDER ANIMATIONS -------------------
 
+    // Put these functions in PlayerMovement????
+    public void AttackDash()
+    {
+        if (dashSpeed != 0)
+        {
+            posBeforeDash = transform.position;
+            dash = true;
+        }
+    }
+    private void CheckAttackDashDistance()
+    {
+        // We reach the dashDistance
+        if (dash && (posBeforeDash - transform.position).magnitude >= dashDistance)
+        {
+            rb.velocity = Vector2.zero;
+            dash = false;
+        }
+        // Dash needs continuous input since inactive
+        else if (dash)
+        {
+            rb.velocity = new Vector2(transform.localScale.x, 0f) * dashSpeed;
+        }
+    }
 
     // Change canReceiveInput boolean to opposite
     public void InputManager()
@@ -439,7 +480,6 @@ public class PlayerCombat : MonoBehaviour
         Collider2D[] hitEnemies = Physics2D.OverlapBoxAll(attackPoint.position, new Vector2(attackRangeX, attackRangeY), 0f, enemyLayer);
 
         Debug.Log("DEALING DMG!! combo hit: " + comboIndex + " Heavy?: " + heavyHit);
-
         // Normal combo hits 1 and 2
         if (comboIndex < 3 && !heavyHit)
         {
@@ -454,7 +494,7 @@ public class PlayerCombat : MonoBehaviour
                     
                     // STUN OR KNOCKBACK + DASH?
                     // Knockback enemy
-                    //Knockback(enemy.gameObject, gameObject, knockbackForceLight);
+                    Knockback(enemy.gameObject, gameObject, knockbackForceLight);
                 }
             }
         }
@@ -478,7 +518,7 @@ public class PlayerCombat : MonoBehaviour
                         healthScript.TakeDamage(lightDamage + Mathf.Ceil(lightDamage / 2));
                     }
                     // Knockback enemy
-                    Knockback(enemy.gameObject, gameObject, knockbackForceHeavy);
+                    Knockback(enemy.gameObject, gameObject, knockbackForceLight);
                 }
             }
         }
@@ -494,7 +534,7 @@ public class PlayerCombat : MonoBehaviour
                     // Deal damage
                     healthScript.TakeDamage(heavyDamage);
                     // Knockback enemy
-                    Knockback(enemy.gameObject, gameObject, knockbackForceLight);
+                    Knockback(enemy.gameObject, gameObject, knockbackForceHeavy);
                 }
             }
         }
@@ -681,10 +721,12 @@ public class PlayerCombat : MonoBehaviour
         // Give force to weaponInstance to throw
         if (ratio * maxDistance >= minDistance)
         {
+            // Throw with charged maxDistance (hold)
             if (weaponInstance.GetComponent<MeleeWeapon>().getMaxDistance() != maxDistance)
             {
                 weaponInstance.GetComponent<MeleeWeapon>().setMaxDistance(maxDistance * ratio); // Favor distance set in this script easier upgrade handling
             }
+            // Throw with default minDistance (tap)
             else
             {
                 weaponInstance.GetComponent<MeleeWeapon>().setMaxDistance(weaponInstance.GetComponent<MeleeWeapon>().getMaxDistance() * ratio);
