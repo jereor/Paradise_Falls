@@ -7,6 +7,8 @@ using UnityEngine.InputSystem;
 // Holds player components and state variables that can be accessed from anywhere
 public class Player : MonoBehaviour
 {
+    public static Player Instance;
+
     public float InputHorizontal { get; private set; }
     public float InputVertical { get; private set; }
 
@@ -23,8 +25,8 @@ public class Player : MonoBehaviour
     [SerializeField] private Energy energyScript;
 
     // Component references
-    private Animator animator;
-    private Rigidbody2D rb;
+    public Animator animator;
+    public Rigidbody2D rb;
 
     public enum State
     {
@@ -33,20 +35,65 @@ public class Player : MonoBehaviour
         Grounded,
         WallSliding,
         Climbing,
-        Launched
+        Launched,
+        Idle,
+        Attacking,
+        AttackTransition
     }
     State currentState;
     State previousState;
 
     private void Start()
     {
+        Instance = this;
+
         currentState = State.Grounded;
         rb = gameObject.GetComponent<Rigidbody2D>();
+        animator = gameObject.GetComponent<Animator>();
 
         TextStyleHealth.normal.textColor = Color.green;
         TextStyleEnergy.fontSize = 30;
         TextStyleHealth.fontSize = 30;
         TextStyleEnergy.normal.textColor = Color.red;
+    }
+
+    private void FixedUpdate()
+    {
+        HandleStateInputs();
+    }
+
+    void HandleStateInputs()
+    {
+
+        switch (currentState)
+        {
+            case State.Jumping:
+                combatScript.DisableInputMelee();
+                break;
+            case State.Diving:
+                break;
+            case State.Grounded:
+                break;
+            case State.WallSliding:
+                combatScript.DisableInputMelee();
+                break;
+            case State.Climbing:
+                combatScript.DisableInputMelee();
+                break;
+            case State.Launched:
+                break;
+            case State.Idle:
+                combatScript.EnableInputMelee();
+                combatScript.EnableInputThrowAim();
+                break;
+            case State.Attacking:
+                combatScript.DisableInputThrowAim();
+                break;
+            case State.AttackTransition:
+                break;
+            default:
+                break;
+        }
     }
 
     public State GetCurrentState()
