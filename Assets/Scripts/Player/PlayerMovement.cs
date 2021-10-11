@@ -58,6 +58,8 @@ public class PlayerMovement : MonoBehaviour
     // Allowance variables
     private bool canClimb = false;
     private bool canMove = true;
+    public bool canReceiveInputMove;
+    public bool canReceiveInputJump;
     private bool canShockwaveJump = false;
     private bool canWallJump; // Tells jump function/event that we can jump this is set in CheckWallJump()
     private float wallJumpDir = 0f; // Keeps track if we jump from the left or right (Mathf.Sign() == -1 jumped from left, == 1 jumped from right, == we havent jumped from wall)
@@ -78,6 +80,9 @@ public class PlayerMovement : MonoBehaviour
         playerScript = gameObject.GetComponent<Player>();
         PlayerCamera.Instance.ChangeCameraOffset(0.2f, false, 1);
         defaultGravityScale = rb.gravityScale;
+
+        EnableInputMove();
+        EnableInputJump();
 
         // Setting these to these values give smoother experience on climbing
         climbYOffset = GetComponent<BoxCollider2D>().size.y;
@@ -402,10 +407,30 @@ public class PlayerMovement : MonoBehaviour
         launched = false;
     }
 
+    public bool moveInputReceived = false;
+
     // Move action: Called when the Move Action Button is pressed
     public void Move(InputAction.CallbackContext context) // Context tells the function when the action is triggered
     {
         horizontal = Mathf.Round(context.ReadValue<Vector2>().x); // Updates the horizontal input direction
+
+        // We can move player
+        if (horizontal != 0 && canReceiveInputMove)
+        {
+            moveInputReceived = true;
+        }
+        // We cant move player but we still need horizontal to update to 0f
+        else if (horizontal != 0 && !canReceiveInputMove)
+        {
+            moveInputReceived = false;
+            horizontal = 0f;
+        }
+        // We arent giving any input
+        else
+        {
+            moveInputReceived = false;
+        } 
+                
     }
 
     // Jump action: Called when the Jump Action button is pressed
@@ -516,6 +541,27 @@ public class PlayerMovement : MonoBehaviour
             }
             lastLaunchTime = null;
         }
+    }
+
+
+    public void EnableInputMove()
+    {
+        canReceiveInputMove = true;
+    }
+
+    public void DisableInputMove()
+    {
+        canReceiveInputMove = false;
+    }
+
+    public void EnableInputJump()
+    {
+        canReceiveInputJump = true;
+    }
+
+    public void DisableInputJump()
+    {
+        canReceiveInputJump = false;
     }
 
     // Activated from pick up
