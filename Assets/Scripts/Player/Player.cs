@@ -35,7 +35,9 @@ public class Player : MonoBehaviour
         Diving,
         WallSliding,
         Climbing,
-        Launched
+        Launched,
+        Attacking,
+        AttackTransition
     }
     State currentState;
     State previousState;
@@ -49,6 +51,40 @@ public class Player : MonoBehaviour
         TextStyleEnergy.fontSize = 30;
         TextStyleHealth.fontSize = 30;
         TextStyleEnergy.normal.textColor = Color.red;
+    }
+
+    private void FixedUpdate()
+    {
+        HandleStateInputs();
+    }
+
+    private void HandleStateInputs()
+    {
+        switch (currentState)
+        {
+            case State.Idle:
+                break;
+            case State.Running:
+                break;
+            case State.Jumping:
+                break;
+            case State.Falling:
+                break;
+            case State.Diving:
+                break;
+            case State.WallSliding:
+                break;
+            case State.Climbing:
+                break;
+            case State.Launched:
+                break;
+            case State.Attacking:
+                break;
+            case State.AttackTransition:
+                break;
+            default:
+                break;
+        }
     }
 
     public State GetCurrentState()

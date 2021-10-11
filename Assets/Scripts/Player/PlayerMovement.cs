@@ -346,7 +346,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (Time.time - lastDiveTime <= 3)
             rb.velocity = launchDir * jumpForce * 1.2f;
-        else if (playerScript.GetCurrentState() == Player.State.Falling)
+        else
             rb.velocity = launchDir * jumpForce * .6f;
 
         launched = true;
