@@ -135,7 +135,7 @@ GameObject:
   - component: {fileID: 3218693}
   - component: {fileID: 3218692}
   - component: {fileID: 3218694}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Boost Plant
   m_TagString: BoostPlant
   m_Icon: {fileID: 0}
