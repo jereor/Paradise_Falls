@@ -34,13 +34,19 @@ public class PlayerMovement : MonoBehaviour
     private float horizontal; // Tracks horizontal input direction
     private bool moving = false;
     private bool falling = false;
+    private bool jumping = false;
+    private bool diving = false;
+    private bool climbing = false;
     public bool shockwaveJumping = false;
     public bool isFacingRight = true; // Tracks player sprite direction
+
+    // Last button press times
     private float? jumpButtonPressedTime; // Saves the time when player presses jump button
     private float? lastGroundedTime;
-
     private float lastTimeClimbed; // This is used to prevent climbing steplike object instantly to the top from first step
     private float lastWallTouchTime;
+    private float? lastDiveTime;
+    private float? lastLaunchTime;
 
     // Boost Plant launch
     private bool launched = false;
@@ -49,8 +55,8 @@ public class PlayerMovement : MonoBehaviour
     private float launchDistance;
     private Vector3 launchDirection;
 
+    // Allowance variables
     private bool canClimb = false;
-    private bool isClimbing = false;
     private bool canMove = true;
     private bool canShockwaveJump = false;
     private bool canWallJump; // Tells jump function/event that we can jump this is set in CheckWallJump()
@@ -62,6 +68,9 @@ public class PlayerMovement : MonoBehaviour
     private float defaultGravityScale;
     private ShockwaveTool shockwaveTool;
 
+    // Others
+    RaycastHit2D ledgeHitOffsetRay;
+
     private void Start()
     {
         rb = gameObject.GetComponent<Rigidbody2D>();
@@ -69,6 +78,10 @@ public class PlayerMovement : MonoBehaviour
         playerScript = gameObject.GetComponent<Player>();
         PlayerCamera.Instance.ChangeCameraOffset(0.2f, false, 1);
         defaultGravityScale = rb.gravityScale;
+
+        // Setting these to these values give smoother experience on climbing
+        climbYOffset = GetComponent<BoxCollider2D>().size.y;
+        climbXOffset = GetComponent<BoxCollider2D>().size.x;
     }
 
     private void Update()
@@ -77,7 +90,7 @@ public class PlayerMovement : MonoBehaviour
         if (canMove)
             rb.velocity = new Vector2(horizontal * movementVelocity, rb.velocity.y); // Moves the player by horizontal input
 
-        /* DISABLED FOR NOW. Launch checks when using directional boost plant launch
+        /* DISABLED FOR NOW. Launch checks to use when using directional boost plant launch
         if (launched && horizontal != 0)
             rb.velocity = new Vector2(horizontal * movementVelocity, rb.velocity.y); // Lets the player move when launched
         else if (wasLaunched) 
@@ -96,10 +109,9 @@ public class PlayerMovement : MonoBehaviour
         if (IsGrounded())
         {
             shockwaveTool.CancelShockwaveDive(); // Checks if shockwave dive graphics are on and disables them
+            diving = false;
             lastGroundedTime = Time.time;
             rb.gravityScale = defaultGravityScale;
-            if (playerScript.GetCurrentState() != Player.State.Jumping)
-                playerScript.SetCurrentState(Player.State.Grounded);
         }
         else
             CheckIfStuck();
@@ -107,10 +119,18 @@ public class PlayerMovement : MonoBehaviour
         // Update movement based state variables
         moving = rb.velocity.x != 0;
         falling = rb.velocity.y < -0.5f;
+        jumping = rb.velocity.y > 0.5;
 
-        // Offset camera while moving to create a feeling of momentum
-        if (moving)
+        // Check for idle, falling, jumping and running states
+        if (rb.velocity == Vector2.zero && !climbing) playerScript.SetCurrentState(Player.State.Idle);
+        if (falling && !diving) playerScript.SetCurrentState(Player.State.Falling);
+        if (jumping) playerScript.SetCurrentState(Player.State.Jumping);
+        if (moving && !falling && !jumping)
+        {
+            playerScript.SetCurrentState(Player.State.Running);
+            // Offset camera while moving to create a feeling of momentum
             PlayerCamera.Instance.ChangeCameraOffset(0.2f, falling, isFacingRight ? 0.8f : -0.8f); // Centers camera a little
+        }
         else
             PlayerCamera.Instance.ChangeCameraOffset(0.2f, falling, isFacingRight ? 1 : -1); // Offset camera with character front direction
     }
@@ -127,9 +147,8 @@ public class PlayerMovement : MonoBehaviour
     // This check eliminates those situations and enables jumping even when not grounded if player is clearly stuck
     private void CheckIfStuck()
     {
-        if (!isClimbing && rb.velocity == Vector2.zero)
+        if (!climbing && rb.velocity == Vector2.zero)
         {
-            playerScript.SetCurrentState(Player.State.Grounded);
             lastGroundedTime = Time.time;
             canShockwaveJump = true;
         }
@@ -138,7 +157,7 @@ public class PlayerMovement : MonoBehaviour
     private void CheckLedgeClimb()
     {
         // Allow ledgeclimb or we are currently climbing
-        if (allowLedgeClimb && !isClimbing)
+        if (allowLedgeClimb && !climbing)
         {
             // Nasty if combo:
             /* IF
@@ -150,7 +169,9 @@ public class PlayerMovement : MonoBehaviour
 
             if ((BodyIsTouchingWall() /*|| FeetAreTouchingWall()*/)
                 && !LedgeIsOccupied()
-                && Time.time - lastTimeClimbed >= climbTimeBuffer)
+                && Time.time - lastTimeClimbed >= climbTimeBuffer
+                && horizontal != 0) // Player is moving and wanting to climb if no move input fall
+
             {
                 //Debug.Log("Climb start: " + Time.time);
                 canClimb = true;
@@ -161,7 +182,7 @@ public class PlayerMovement : MonoBehaviour
             {
                 playerScript.SetCurrentState(Player.State.Climbing);
                 // Do these before animation
-                isClimbing = true;
+                climbing = true;
                 rb.velocity = new Vector2(0, 0); // Set velocity here to zero else movement bugs while climbing
 
                 canMove = false; // Prevent moving while climbing mostly for animations
@@ -176,8 +197,9 @@ public class PlayerMovement : MonoBehaviour
                 //LedgeClimb();
             }
         }
-        else if (isClimbing)
+        else if (climbing)
         {
+            playerScript.SetCurrentState(Player.State.Climbing);
             rb.gravityScale = 0f; // Keep gravity at zero so player stays still until climbing is done
             rb.velocity = Vector2.zero;
         }
@@ -196,12 +218,12 @@ public class PlayerMovement : MonoBehaviour
     private void LedgeClimb()
     {
         // Move player for offset amount to X and Y directions. X dir will need localScale.x to track where player is looking
-        transform.position = new Vector2(transform.position.x + climbXOffset * transform.localScale.x, transform.position.y + climbYOffset);
+        transform.position = new Vector2(transform.position.x + climbXOffset * transform.localScale.x, transform.position.y + climbYOffset - ledgeHitOffsetRay.distance);
         shockwaveTool.CancelShockwaveDive(); // Checks if shockwave dive graphics are on and disables them
         rb.gravityScale = defaultGravityScale; // Set this to default here
         canWallJump = false; // Prevent wall jumps
         canClimb = false; // We cannot climb after before we have checked Raycasts again with new position
-        isClimbing = false; // We end climbing
+        climbing = false; // We end climbing
         canMove = true; // We can move again
     }
 
@@ -211,8 +233,8 @@ public class PlayerMovement : MonoBehaviour
         // We have wall jumps enabled
         if (allowWallJump)
         {
-            // We are in air
-            if (!IsGrounded())
+            // We are in air and not climbing
+            if (!IsGrounded() && !climbing)
             {
                 // Feet and LedgeOccupation raycasts detect ground layer obj 
                 // We check that we are jumping form different wall or we havent walljumped in a while example: we jumped from left now we check we are trying to jump from right and allow walljump
@@ -220,7 +242,7 @@ public class PlayerMovement : MonoBehaviour
                     && (!Mathf.Sign(wallJumpDir).Equals(transform.localScale.x) || wallJumpDir == 0f))
                 {
                     // If we are sliding down a wall and we have gravityscale as default change gravityscale so it feel like there is kitka :) (JOrava EDIT: friction :D)
-                    if (!isClimbing && rb.velocity.y < 0 && rb.gravityScale == defaultGravityScale)
+                    if (!climbing && rb.velocity.y < 0 && rb.gravityScale == defaultGravityScale)
                     {
                         playerScript.SetCurrentState(Player.State.WallSliding);
                         rb.gravityScale = wallSlideGravityScale;
@@ -251,7 +273,7 @@ public class PlayerMovement : MonoBehaviour
     private void CheckShockwaveJump()
     {
         // If player is grounded, double jump is "reset" by changing ShockwaveJumpUsed state to false
-        if (IsGrounded()) shockwaveTool.ShockwaveJumpUsed = false;
+        if (IsGrounded()) shockwaveTool.ResetShockwaveJump();
 
         // If player has not double jumped since last touching the ground, set shockwaveJumping state to false
         if (!shockwaveTool.ShockwaveJumpUsed) shockwaveJumping = false;
@@ -259,7 +281,7 @@ public class PlayerMovement : MonoBehaviour
         // Lastly, set canShockwaveJump state to true or false
         // Making sure that they are not grounded or climbing so the ability can only be used when appropriate
         // And also making sure shockwaveJump has not yet been used
-        canShockwaveJump = (!IsGrounded() && !isClimbing && !shockwaveTool.ShockwaveJumpUsed) ? true : false;
+        canShockwaveJump = (!IsGrounded() && !climbing && !shockwaveTool.ShockwaveJumpUsed) ? true : false;
     }
 
     // Returns true if Raycast hits to something aka our body is so close to wall that it counts as touching
@@ -276,12 +298,31 @@ public class PlayerMovement : MonoBehaviour
         return Physics2D.Raycast(wallCheckFeet.position, transform.right * transform.localScale.x, checkDistance, groundLayer); // Raycast from feet
     }
 
-    // Returns true if Raycast hits to something aka there is something on top of the wall we might be climbing
+    // Returns true if Raycast hits to something or OverlapBox overlaps with groundLayer object aka there is something on top of the wall we might be climbing
     private bool LedgeIsOccupied()
     {
-        Debug.DrawRay(ledgeCheck.position, transform.right * checkDistance * transform.localScale.x, Color.red);
-        // Check if there is something on top of the wall
-        return Physics2D.Raycast(ledgeCheck.position, transform.right * transform.localScale.x, checkDistance, groundLayer);
+        //Ledge check ray
+        //Debug.DrawRay(ledgeCheck.position, transform.right * checkDistance * transform.localScale.x, Color.red);
+        // ledgeHitOffsetRayRay
+        //Debug.DrawRay(ledgeCheck.position + new Vector3(transform.localScale.x * checkDistance, 0f, 0f), -transform.up * transform.localScale.x * (ledgeCheck.position - wallCheckBody.position).magnitude, Color.green);
+        if (!Physics2D.Raycast(ledgeCheck.position, transform.right * transform.localScale.x, checkDistance, groundLayer))
+        {
+            // Ray FROM end of ledgeCheck ray above TO wallCheckBody ray end if groundLayer object is between ray distance is float between [0 , ~ 0.5]
+            ledgeHitOffsetRay = Physics2D.Raycast(ledgeCheck.position + new Vector3(transform.localScale.x * checkDistance, 0f, 0f), -transform.up, (ledgeCheck.position - wallCheckBody.position).magnitude, groundLayer);
+           
+            // Draws a box in scene if objects from groundLayer are inside this box ledge is occupied use ledgeHitOffsetRay to lower box to jsut above object we are climbing
+            Collider2D[] colliders = Physics2D.OverlapBoxAll(new Vector2(transform.position.x + climbXOffset * transform.localScale.x, transform.position.y + climbYOffset - ledgeHitOffsetRay.distance), new Vector2(GetComponent<BoxCollider2D>().size.x, GetComponent<BoxCollider2D>().size.y), 0f, groundLayer);
+            // No objects in array aka no overlaps with groundLayer objects
+            if (colliders.Length == 0)
+            {
+                // Can climb only when ledgeCheck ray doesn't hit and box doesn't overlap 
+                return false;
+            }
+            // If goes here there was object on top of what we are climbing
+        }
+
+        // Default case there is something that block climbing
+        return true;     
     }
 
     // Returns true if ground check detects ground
@@ -303,11 +344,18 @@ public class PlayerMovement : MonoBehaviour
     // Launch when player jumps on Boost Plant. Called by BoostPlant-script
     public void ActivateLaunch(float launchDist, Vector2 launchDir)
     {
-        if (playerScript.GetCurrentState() == Player.State.Diving 
-            || playerScript.GetPreviousState() == Player.State.Diving)
+        if (Time.time - lastDiveTime <= 3)
             rb.velocity = launchDir * jumpForce * 1.2f;
         else
             rb.velocity = launchDir * jumpForce * .6f;
+
+        launched = true;
+        lastLaunchTime = Time.time;
+
+        // Stop air dive
+        shockwaveTool.CancelShockwaveDive();
+        diving = false;
+        lastDiveTime = null;
 
         /* DISABLED FOR NOW. USE THESE FOR LAUNCH DIRECTION
         posBeforeLaunch = transform.position;
@@ -347,7 +395,7 @@ public class PlayerMovement : MonoBehaviour
     // Jump action: Called when the Jump Action button is pressed
     public void Jump(InputAction.CallbackContext context) // Context tells the function when the action is triggered
     {
-        if (isClimbing) return;
+        if (climbing) return;
         jumpButtonPressedTime = Time.time;
 
         // -WALLJUMP-
@@ -397,6 +445,8 @@ public class PlayerMovement : MonoBehaviour
                 rb.velocity = new Vector2(0, -jumpForce); // Set velocity downwards
 
             playerScript.SetCurrentState(Player.State.Diving);
+            diving = true;
+            lastDiveTime = Time.time;
 
             // Air Dive functionality here
             shockwaveTool.DoShockwaveDive(); // Activate VFX
@@ -420,7 +470,6 @@ public class PlayerMovement : MonoBehaviour
                 rb.velocity = new Vector2(rb.velocity.x, jumpForce); // Jump in the air
 
                 // Update ShockwaveJump state variables after the jump
-                shockwaveTool.ShockwaveJumpUsed = true;
                 shockwaveJumping = true;
                 canShockwaveJump = false;
 
@@ -434,17 +483,22 @@ public class PlayerMovement : MonoBehaviour
 
         // If button was pressed
         if (context.performed && (Time.time - lastGroundedTime <= coyoteTime) // Check if coyote time is online
-            && (Time.time - jumpButtonPressedTime <= coyoteTime) && !isClimbing) // Check if jump has been buffered
+            && (Time.time - jumpButtonPressedTime <= coyoteTime) && !climbing) // Check if jump has been buffered
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce); // Keep player in upwards motion
         }
 
         // If button was released
-        if (context.canceled && rb.velocity.y > 0f && !shockwaveTool.ShockwaveJumpUsed)
+        if (context.canceled && rb.velocity.y > 0f && !shockwaveTool.ShockwaveJumpUsed && !launched)
         {
-            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f); // Slow down player
-            jumpButtonPressedTime = null;
-            lastGroundedTime = null;
+            // Check that player is currently not being launched
+            if (Time.time - lastLaunchTime > 1)
+            {
+                rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f); // Slow down player
+                jumpButtonPressedTime = null;
+                lastGroundedTime = null;
+            }
+            lastLaunchTime = null;
         }
     }
 

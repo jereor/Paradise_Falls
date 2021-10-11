@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 
 public class PlayerCombat : MonoBehaviour
 {
-    public static PlayerCombat instance; // Make instance so we can call this script from animations
+    public static PlayerCombat Instance; // Make instance so we can call this script from animations
 
     [Header("Player Variables")]
     [SerializeField] private float lightDamage; // Light hits 1, 2 and 3 = lightDamage + lightDamage/2 (pyoristettyna ylospain) 
@@ -53,7 +53,7 @@ public class PlayerCombat : MonoBehaviour
     // State variables
     private bool throwAimHold; // True if we are holdling Throw input (MouseR)
 
-    private bool heavyHold; // True if we are holding HeavyMelee input (LShift)
+    public bool heavyHold; // True if we are holding HeavyMelee input (LShift)
 
     private float? throwButtonPressedTime; // Time when we start throwing
     private float throwChargeStartTime; // Time when we start charging
@@ -75,7 +75,8 @@ public class PlayerCombat : MonoBehaviour
     Coroutine tranToIdle; // This will be replaced with correct transittion animation
     
     // These will stay 
-    public bool canReceiveInput; // If this is true we can melee (no attack animation ongoing)
+    public bool canReceiveInputMelee; // If this is true we can melee (no attack animation ongoing)
+    public bool canReceiveInputThrow; // If this is true we can melee (no attack animation ongoing)
     public bool meleeInputReceived; // Used in transitions and idle to tell animator to start correct attack if this turns true
 
     Rigidbody2D rb;
@@ -89,7 +90,7 @@ public class PlayerCombat : MonoBehaviour
 
     private void Awake()
     {
-        instance = this;
+        Instance = this;
     }
 
     // Start is called before the first frame update
@@ -102,7 +103,10 @@ public class PlayerCombat : MonoBehaviour
         // Instantiate points and adjust their look
         InitPoints();
 
-        InputManager();
+        EnableInputMelee();
+        EnableInputThrowAim();
+        
+        //InputManager();
 
         rb = GetComponent<Rigidbody2D>();
         movementScript = GetComponent<PlayerMovement>();
@@ -112,45 +116,45 @@ public class PlayerCombat : MonoBehaviour
     private void Update()
     {
         // Idle
-        if (onIdle && meleeInputReceived && !heavyHold)
-        {
+        //if (onIdle && meleeInputReceived && !heavyHold)
+        //{
 
-            // Attacks in air
-            //if (!movementScript.IsGrounded())
-            //{
-            //    Debug.Log("Attack in air");
-            //    movementScript.canMove = false;
-            //}
-            //movementScript.canMove = false;
+        //    // Attacks in air
+        //    //if (!movementScript.IsGrounded())
+        //    //{
+        //    //    Debug.Log("Attack in air");
+        //    //    movementScript.canMove = false;
+        //    //}
+        //    //movementScript.canMove = false;
 
-            rb.velocity = Vector2.zero; // Stop player from sliding
+        //    rb.velocity = Vector2.zero; // Stop player from sliding
            
-            //Debug.Log("Attack1");
-            StartCoroutine(PlaceHolderAttack1());
-            //InputManager();
-            onIdle = false;
-            meleeInputReceived = false;
-        }
+        //    //Debug.Log("Attack1");
+        //    StartCoroutine(PlaceHolderAttack1());
+        //    //InputManager();
+        //    onIdle = false;
+        //    meleeInputReceived = false;
+        //}
 
-        if (onTran1 && meleeInputReceived && !heavyHold)
-        {
-            //Debug.Log("Attack2");
-            StopCoroutine(tranToIdle);
-            StartCoroutine(PlaceHolderAttack2());
-            //InputManager();
-            onTran1 = false;
-            meleeInputReceived = false;
-        }
+        //if (onTran1 && meleeInputReceived && !heavyHold)
+        //{
+        //    //Debug.Log("Attack2");
+        //    StopCoroutine(tranToIdle);
+        //    StartCoroutine(PlaceHolderAttack2());
+        //    //InputManager();
+        //    onTran1 = false;
+        //    meleeInputReceived = false;
+        //}
 
-        if (onTran2 && meleeInputReceived && !heavyHold)
-        {
-            //Debug.Log("Attack3");
-            StopCoroutine(tranToIdle);
-            StartCoroutine(PlaceHolderAttack3());
-            //InputManager();
-            onTran2 = false;
-            meleeInputReceived = false;
-        }
+        //if (onTran2 && meleeInputReceived && !heavyHold)
+        //{
+        //    //Debug.Log("Attack3");
+        //    StopCoroutine(tranToIdle);
+        //    StartCoroutine(PlaceHolderAttack3());
+        //    //InputManager();
+        //    onTran2 = false;
+        //    meleeInputReceived = false;
+        //}
 
         // Heavy
         if (onIdle && meleeInputReceived && heavyHold)
@@ -223,7 +227,7 @@ public class PlayerCombat : MonoBehaviour
     public void Melee(InputAction.CallbackContext context)
     {
         // Throw and melee
-        if (context.performed && isWeaponWielded && canReceiveInput)
+        if (context.performed && isWeaponWielded && canReceiveInputMelee)
         {
             // Start Throwing
             if (throwAimHold && meleeWeaponPrefab)
@@ -237,7 +241,6 @@ public class PlayerCombat : MonoBehaviour
             else if (!throwAimHold)
             {
                 meleeInputReceived = true;
-                InputManager();
             }
         }
 
@@ -304,7 +307,7 @@ public class PlayerCombat : MonoBehaviour
     // Input from mouse right
     public void MeleeAimThrowing(InputAction.CallbackContext context)
     {
-        if (context.performed && canReceiveInput)
+        if (context.performed && canReceiveInputThrow)
         {
             throwAimHold = true;
 
@@ -340,86 +343,86 @@ public class PlayerCombat : MonoBehaviour
     // --- MELEE ---
 
     // ----------- PLACEHOLDER ANIMATIONS -------------------
-    IEnumerator TranToIdle(int tranI)
-    {
-        //Debug.Log("Transition enter");
-        yield return new WaitForSecondsRealtime(1f);
-        //Debug.Log("Transition exit");
-        if (tranI == 1)
-            onTran1 = false;
-        else if (tranI == 2)
-            onTran2 = false;
-        else if (tranI == 3)
-            onTran3 = false;
+    //IEnumerator TranToIdle(int tranI)
+    //{
+    //    //Debug.Log("Transition enter");
+    //    yield return new WaitForSecondsRealtime(1f);
+    //    //Debug.Log("Transition exit");
+    //    if (tranI == 1)
+    //        onTran1 = false;
+    //    else if (tranI == 2)
+    //        onTran2 = false;
+    //    else if (tranI == 3)
+    //        onTran3 = false;
 
-        // Allow movement
-        //movementScript.canMove = true;
+    //    // Allow movement
+    //    //movementScript.canMove = true;
 
 
-        onIdle = true;
+    //    onIdle = true;
 
-        if (!canReceiveInput)
-        {
-            InputManager();
-        }
-        meleeInputReceived = false;
-    }
+    //    if (!canReceiveInput)
+    //    {
+    //        InputManager();
+    //    }
+    //    meleeInputReceived = false;
+    //}
     
-    IEnumerator PlaceHolderAttack1()
-    {
-        //Debug.Log("Started melee animation");
-        AttackDash();
+    //IEnumerator PlaceHolderAttack1()
+    //{
+    //    //Debug.Log("Started melee animation");
+    //    AttackDash();
 
-        yield return new WaitForSecondsRealtime(1f);
+    //    yield return new WaitForSecondsRealtime(1f);
 
-        Debug.Log("Ended light melee animation 1");
-
-
-        // Light attack animation 1
-        DealDamage(1, false);
-
-        InputManager();
-        onTran1 = true;
-
-        tranToIdle = StartCoroutine(TranToIdle(1));
-    }
-
-    IEnumerator PlaceHolderAttack2()
-    {
-        //Debug.Log("Started melee animation");
-        AttackDash();
-
-        yield return new WaitForSecondsRealtime(1f);
-
-        Debug.Log("Ended light melee animation 2");
+    //    Debug.Log("Ended light melee animation 1");
 
 
-        // Light attack animation 2
-        DealDamage(2, false);
+    //    // Light attack animation 1
+    //    DealDamage(1, false);
 
-        InputManager();
-        onTran2 = true;
+    //    InputManager();
+    //    onTran1 = true;
 
-        tranToIdle = StartCoroutine(TranToIdle(2));
-    }
+    //    tranToIdle = StartCoroutine(TranToIdle(1));
+    //}
 
-    IEnumerator PlaceHolderAttack3()
-    {
-        //Debug.Log("Started melee animation");
-        AttackDash();
+    //IEnumerator PlaceHolderAttack2()
+    //{
+    //    //Debug.Log("Started melee animation");
+    //    AttackDash();
 
-        yield return new WaitForSecondsRealtime(1f);
+    //    yield return new WaitForSecondsRealtime(1f);
 
-        Debug.Log("Ended light melee animation 3");
+    //    Debug.Log("Ended light melee animation 2");
 
 
-        // Light attack animation 3
-        DealDamage(3, false);
+    //    // Light attack animation 2
+    //    DealDamage(2, false);
 
-        onTran3 = true;
+    //    InputManager();
+    //    onTran2 = true;
 
-        tranToIdle = StartCoroutine(TranToIdle(3));
-    }
+    //    tranToIdle = StartCoroutine(TranToIdle(2));
+    //}
+
+    //IEnumerator PlaceHolderAttack3()
+    //{
+    //    //Debug.Log("Started melee animation");
+    //    AttackDash();
+
+    //    yield return new WaitForSecondsRealtime(1f);
+
+    //    Debug.Log("Ended light melee animation 3");
+
+
+    //    // Light attack animation 3
+    //    DealDamage(3, false);
+
+    //    onTran3 = true;
+
+    //    tranToIdle = StartCoroutine(TranToIdle(3));
+    //}
 
     IEnumerator PlaceHolderAttackH1()
     {
@@ -434,10 +437,10 @@ public class PlayerCombat : MonoBehaviour
         // Heavy attack animation 1
         DealDamage(1, true);
 
-        InputManager();
+        //InputManager();
         onTran1 = true;
 
-        tranToIdle = StartCoroutine(TranToIdle(1));
+        //tranToIdle = StartCoroutine(TranToIdle(1));
     }
 
     IEnumerator PlaceHolderAttackH2()
@@ -453,10 +456,10 @@ public class PlayerCombat : MonoBehaviour
         // Heavy attack animation 2
         DealDamage(2, true);
 
-        InputManager();
+        //InputManager();
         onTran2 = true;
 
-        tranToIdle = StartCoroutine(TranToIdle(2));
+        //tranToIdle = StartCoroutine(TranToIdle(2));
     }
 
     IEnumerator PlaceHolderAttackH3()
@@ -474,7 +477,7 @@ public class PlayerCombat : MonoBehaviour
 
         onTran3 = true;
 
-        tranToIdle = StartCoroutine(TranToIdle(3));
+        //tranToIdle = StartCoroutine(TranToIdle(3));
     }
     // ----------- PLACEHOLDER ANIMATIONS -------------------
 
@@ -503,9 +506,24 @@ public class PlayerCombat : MonoBehaviour
     }
 
     // Change canReceiveInput boolean to opposite
-    public void InputManager()
+    public void EnableInputMelee()
     {
-        canReceiveInput = !canReceiveInput;
+        canReceiveInputMelee = true;
+    }
+
+    public void DisableInputMelee()
+    {
+        canReceiveInputMelee = false;
+    }
+
+    public void EnableInputThrowAim()
+    {
+        canReceiveInputThrow = true;
+    }
+
+    public void DisableInputThrowAim()
+    {
+        canReceiveInputThrow = false;
     }
 
     // Call this function on melee animation end when melee visually hits something

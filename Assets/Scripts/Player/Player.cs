@@ -7,6 +7,8 @@ using UnityEngine.InputSystem;
 // Holds player components and state variables that can be accessed from anywhere
 public class Player : MonoBehaviour
 {
+    public static Player Instance;
+
     public float InputHorizontal { get; private set; }
     public float InputVertical { get; private set; }
 
@@ -23,30 +25,75 @@ public class Player : MonoBehaviour
     [SerializeField] private Energy energyScript;
 
     // Component references
-    private Animator animator;
-    private Rigidbody2D rb;
+    public Animator animator;
+    public Rigidbody2D rb;
 
     public enum State
     {
+        Idle,
+        Running,
         Jumping,
+        Falling,
         Diving,
-        Grounded,
         WallSliding,
         Climbing,
-        Launched
+        Launched,
+        Attacking,
+        AttackTransition
     }
     State currentState;
     State previousState;
 
     private void Start()
     {
-        currentState = State.Grounded;
+        Instance = this;
+
+        currentState = State.Idle;
         rb = gameObject.GetComponent<Rigidbody2D>();
+        animator = gameObject.GetComponent<Animator>();
 
         TextStyleHealth.normal.textColor = Color.green;
         TextStyleEnergy.fontSize = 30;
         TextStyleHealth.fontSize = 30;
         TextStyleEnergy.normal.textColor = Color.red;
+    }
+
+    private void FixedUpdate()
+    {
+        HandleStateInputs();
+    }
+
+    private void HandleStateInputs()
+    {
+        switch (currentState)
+        {
+            case State.Idle:
+                PlayerCombat.Instance.EnableInputMelee();
+                PlayerCombat.Instance.EnableInputThrowAim();
+                break;
+            case State.Running:
+                break;
+            case State.Jumping:
+                break;
+            case State.Falling:
+                break;
+            case State.Diving:
+                break;
+            case State.WallSliding:
+                break;
+            case State.Climbing:
+                PlayerCombat.Instance.DisableInputMelee();
+                break;
+            case State.Launched:
+                break;
+            case State.Attacking:
+                PlayerCombat.Instance.DisableInputThrowAim();
+                break;
+            case State.AttackTransition:
+                break;
+            default:
+                break;
+        }
     }
 
     public State GetCurrentState()
