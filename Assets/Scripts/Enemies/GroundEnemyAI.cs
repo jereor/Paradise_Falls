@@ -396,7 +396,7 @@ public class GroundEnemyAI : MonoBehaviour
                         if (shield.Parrying)
                         {
                             target.GetComponent<Shield>().HitWhileParried(); // Tell player parry was successful
-                            StartCoroutine(Stunned()); // Get stunned
+                            StartCoroutine(Stunned(1.5f)); // Get stunned
                         }
                         else
                         {
@@ -439,13 +439,13 @@ public class GroundEnemyAI : MonoBehaviour
         playerRB.AddForce(knockbackDirection * knockbackForce);
     }
 
-    IEnumerator Stunned()
+    IEnumerator Stunned(float stunTime)
     {
         Debug.Log("Stunned...");
         stunned = true;
         gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.red;
 
-        float timer = 5;
+        float timer = stunTime;
         while (timer > 0)
         {
             timer -= Time.deltaTime;
@@ -455,6 +455,14 @@ public class GroundEnemyAI : MonoBehaviour
         Debug.Log("Stun ended");
         stunned = false;
         gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.black;
+    }
+
+    // Small knockback that can be activated by player and environment. Knockback knocks slightly upwards so the friction doesn't stop it right away.
+    public void KnockBackEnemy(GameObject from, float force)
+    {
+        float pushbackX = transform.position.x - from.transform.position.x;
+        Vector2 knockbackDirection = new Vector2(pushbackX, Mathf.Abs(pushbackX / 4)).normalized;
+        rb.AddForce(knockbackDirection * force);
     }
 
     public void SpawnHealthOrEnergy()
