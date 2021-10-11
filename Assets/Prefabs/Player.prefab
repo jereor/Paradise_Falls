@@ -10050,6 +10050,7 @@ GameObject:
   - component: {fileID: 2646993275326716550}
   - component: {fileID: 1812080132}
   - component: {fileID: 7463911945564789779}
+  - component: {fileID: 3265684260011797273}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -10099,6 +10100,8 @@ MonoBehaviour:
   shockwaveTool: {fileID: 1940316768}
   healthScript: {fileID: 127911568793665776}
   energyScript: {fileID: 8760275387346948364}
+  animator: {fileID: 3265684260011797273}
+  rb: {fileID: 0}
 --- !u!114 &2646993275326716549
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10512,12 +10515,33 @@ MonoBehaviour:
   pullCollisionCounter: 0
   magnetTether: {fileID: 5454362082765361711}
   timeBeforeRelease: 0.5
+  heavyHold: 0
   onIdle: 1
   onTran1: 0
   onTran2: 0
   onTran3: 0
-  canReceiveInput: 0
+  canReceiveInputMelee: 0
+  canReceiveInputThrow: 0
   meleeInputReceived: 0
+--- !u!95 &3265684260011797273
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2646993275326716545}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 7f186fc45e1ad664faa12bce7a59d33f, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &2646993277219195829
 GameObject:
   m_ObjectHideFlags: 0
