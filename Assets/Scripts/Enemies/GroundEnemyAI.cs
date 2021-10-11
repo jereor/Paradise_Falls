@@ -39,8 +39,10 @@ public class GroundEnemyAI : MonoBehaviour
     [SerializeField] private string state = "roam";
     [SerializeField] private Vector2 roamingRange = new Vector2(10, 10);
     [SerializeField] private Vector2 aggroDistance = new Vector2(5f, 5f);
+    [SerializeField] private float aggroOffset = 5;
     [SerializeField] private float aggroDistanceLength = 5f;
-    [SerializeField] private Vector2 punchingDistance = new Vector2(3f, 3f);
+    [SerializeField] private Vector2 hitDistance = new Vector2(3f, 3f);
+    [SerializeField] private float hitOffset = 5;
     [SerializeField] private float knockbackForce = 5f;
     [SerializeField] private int jumpProbability = 10; // Range between 1 - 100. Lower number means lower chance to jump during chase. Creates variation to the enemy movement.
 
@@ -103,9 +105,9 @@ public class GroundEnemyAI : MonoBehaviour
             Gizmos.DrawWireCube(spawnPosition, roamingRange);
         }
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireCube(transform.position, aggroDistance);
+        Gizmos.DrawWireCube(new Vector2(transform.position.x + (transform.localScale.x * aggroOffset), transform.position.y), aggroDistance);
         Gizmos.color = Color.red;
-        Gizmos.DrawWireCube(transform.position, punchingDistance);
+        Gizmos.DrawWireCube(new Vector2(transform.position.x + (transform.localScale.x * hitOffset), transform.position.y), hitDistance);
 
     }
 
@@ -177,16 +179,6 @@ public class GroundEnemyAI : MonoBehaviour
         }
 
 
-    }
-
-    //Does not serve any purpose at the moment.
-    private IEnumerator UpdatePath(float waitTime)
-    {
-        if (seeker.IsDone())
-        {
-            seeker.StartPath(rb.position, target.position, OnPathComplete);
-        }
-        yield return new WaitForSeconds(waitTime);
     }
 
     //Cooldowns for walk, run, jump and punch.
@@ -308,12 +300,12 @@ public class GroundEnemyAI : MonoBehaviour
 
     private bool IsPlayerInPunchingRange()
     {
-        return Physics2D.OverlapBox(transform.position, punchingDistance, 0, playerLayer);
+        return Physics2D.OverlapBox(transform.position, hitDistance, 0, playerLayer);
     }
 
     private bool IsPlayerInAggroRange()
     {
-        return Physics2D.OverlapBox(transform.position, aggroDistance, 0, playerLayer);
+        return Physics2D.OverlapBox(new Vector2(transform.position.x + (transform.localScale.x * aggroOffset), transform.position.y), aggroDistance, 0, playerLayer);
     }
 
 

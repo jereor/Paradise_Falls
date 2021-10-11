@@ -1999,10 +1999,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: GroundEnemyOne
       objectReference: {fileID: 0}
-    - target: {fileID: 8401565248732910210, guid: 77600955bab6e9a42b33ced08062f9d5, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 8401565248732910214, guid: 77600955bab6e9a42b33ced08062f9d5, type: 3}
       propertyPath: m_RootOrder
       value: 6
@@ -2758,10 +2754,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: FlyingEnemyOne (3)
       objectReference: {fileID: 0}
-    - target: {fileID: 674690728015036898, guid: 41c2fc79220733a4abc856ee861da9f2, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 674690728015036902, guid: 41c2fc79220733a4abc856ee861da9f2, type: 3}
       propertyPath: m_RootOrder
       value: 1
@@ -3094,6 +3086,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 368704289}
     m_Modifications:
+    - target: {fileID: 127911568793665776, guid: 4154d57994558ff489a9180c3151e624, type: 3}
+      propertyPath: maxHealth
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 2646993275326716544, guid: 4154d57994558ff489a9180c3151e624, type: 3}
       propertyPath: m_RootOrder
       value: 2
