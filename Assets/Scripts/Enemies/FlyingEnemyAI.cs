@@ -11,12 +11,12 @@ public class FlyingEnemyAI : MonoBehaviour
     private Shield targetShield;
 
     [Header("Transforms")]
-    public Transform target;
-    public Transform enemyGFX;
-    public Rigidbody2D playerRB;
-    public GameObject bullet;
-    public GameObject energyItem;
-    public GameObject healthItem;
+    [SerializeField] private Transform target;
+    [SerializeField] private Transform enemyGFX;
+    [SerializeField] private Rigidbody2D playerRB;
+    [SerializeField] private GameObject bullet;
+    [SerializeField] private GameObject energyItem;
+    [SerializeField] private GameObject healthItem;
 
     [Header("Ground Check")]
     [SerializeField] LayerMask groundLayer;
@@ -25,28 +25,29 @@ public class FlyingEnemyAI : MonoBehaviour
     [SerializeField] LayerMask playerLayer;
 
     [Header("Mobility")]
-    public float speed = 5f;
-    public float chargeSpeed = 10f;
-    public float roamSpeed = 5f;
-    public float attackPower = 1f;
+    [SerializeField] private float speed = 250f;
+    [SerializeField] private float chargeSpeed = 400f;
+    [SerializeField] private float roamSpeed = 250f;
+    [SerializeField] private float attackPower = 1f;
+    [SerializeField] private float explosionPower = 2f;
 
 
     [Header("State and Parameters")]
-    public string state = "roam";
-    public Vector2 roamingRange = new Vector2(10, 10);
-    public float aggroDistance = 5f;
-    public float shootingDistance = 10f;
-    public float wallCheckDistance = 2f;
-    public float knockbackForce = 5f;
+    [SerializeField] private string state = "roam";
+    [SerializeField] private Vector2 roamingRange = new Vector2(10, 10);
+    [SerializeField] private float aggroDistance = 5f;
+    [SerializeField] private float shootingDistance = 10f;
+    [SerializeField] private float wallCheckDistance = 2f;
+    [SerializeField] private float knockbackForce = 5f;
 
     [Header("Health and Energy Spawn values")]
-    public float healthProbability; // Value between 1-100. Higher the better chance.
-    public float energyProbability;
-    public float amountWhenHealthIsSpawnable; // MaxHealth value between 0-1. When your health sinks below a certain amount health becomes spawnable.
+    [SerializeField] private float healthProbability; // Value between 1-100. Higher the better chance.
+    [SerializeField] private float energyProbability;
+    [SerializeField] private float amountWhenHealthIsSpawnable; // MaxHealth value between 0-1. When your health sinks below a certain amount health becomes spawnable.
 
     [Header("Pathfinding info")]
-    public float nextWaypointDistance = 1f;
-    public float pathUpdateInterval = 1f;
+    [SerializeField] private float nextWaypointDistance = 1f;
+    [SerializeField] private float pathUpdateInterval = 1f;
 
     private bool returningFromChase = false;
     private bool canShoot = true;
@@ -54,6 +55,7 @@ public class FlyingEnemyAI : MonoBehaviour
     private bool isFacingRight = true;
     //private float vectorPathLength = 1;
     private bool isTargetInBehaviourRange = false;
+    private Vector2 lastSeenTargetPosition;
 
     private Collider2D _collider;
     private Vector2 spawnPosition;
@@ -90,6 +92,12 @@ public class FlyingEnemyAI : MonoBehaviour
     {
         if (seeker.IsDone())
             seeker.StartPath(rb.position, spawnPosition, OnPathComplete);
+    }
+
+    void UpdatePathToLastSeenTargetLocation()
+    {
+        if (seeker.IsDone())
+            seeker.StartPath(rb.position, lastSeenTargetPosition, OnPathComplete);
     }
 
     //Draws gizmos for enemy's "territory".
@@ -154,7 +162,7 @@ public class FlyingEnemyAI : MonoBehaviour
 
             //Calculates the next path point and the amount of force applied
             Vector2 direction = ((Vector2)path.vectorPath[currentWaypoint] - rb.position).normalized;
-            Vector2 force = direction * speed;
+            Vector2 force = direction * speed * Time.deltaTime;
 
             //Distance between the enemy and next waypoint
             float distance = Vector2.Distance(rb.position, path.vectorPath[currentWaypoint]);
@@ -163,16 +171,7 @@ public class FlyingEnemyAI : MonoBehaviour
             if (distance < nextWaypointDistance) { currentWaypoint++; }
 
             //Used for turning the enemy sprite into the direction it is currently going towards to
-            if (rb.velocity.x >= 0.1f)
-            {
-                transform.localScale = new Vector3(1f, 1f, 1f);
-                isFacingRight = true;
-            }
-            else if (rb.velocity.x <= -0.1f)
-            {
-                transform.localScale = new Vector3(-1f, 1f, 1f);
-                isFacingRight = false;
-            }
+
             ObstacleCheck();
             EnemyStateChange(force);
         }
@@ -250,6 +249,7 @@ public class FlyingEnemyAI : MonoBehaviour
                 // Checks if enemy unit has given up a chase and is returning to spawn point. If target comes too close to the enemy, it begins to chase again.
                 if(returningFromChase && (!IsPlayerInAggroRange() || !IsPlayerInRange()))
                 {
+                    FlipLocalScaleWithForce(force);
                     rb.AddForce(force);
                     if (_collider.bounds.Contains(spawnPosition))
                     {
@@ -264,13 +264,13 @@ public class FlyingEnemyAI : MonoBehaviour
                 {
                     transform.localScale = new Vector3(-1f, 1f, 1f);
                     isFacingRight = false;
-                    rb.AddForce(new Vector2(transform.localScale.x * speed, 0));
+                    rb.AddForce(new Vector2(transform.localScale.x * speed * Time.deltaTime, 0));
                 }
                 else if (transform.position.x <= (spawnPosition.x - roamingRange.x/2))
                 {
                     transform.localScale = new Vector3(1f, 1f, 1f);
                     isFacingRight = true;
-                    rb.AddForce(new Vector2(transform.localScale.x * speed, 0));
+                    rb.AddForce(new Vector2(transform.localScale.x * speed * Time.deltaTime, 0));
                 }
 
                 //If target is close enough the enemy unit, charges it towards the player.              
@@ -306,7 +306,7 @@ public class FlyingEnemyAI : MonoBehaviour
                         }
                     }
 
-                    rb.AddForce(new Vector2(transform.localScale.x * speed, 0));
+                    rb.AddForce(new Vector2(transform.localScale.x * speed * Time.deltaTime, 0));
                 }
                 break;
 
@@ -316,23 +316,42 @@ public class FlyingEnemyAI : MonoBehaviour
             //Here enemy charges the player. Checks if player is inside enemy unit's roaming range.
             case "charge":
                 // Target is out of aggro range, return to roaming state.
-                if (!IsPlayerInAggroRange() || !IsPlayerInRange())
-                {
-                    returningFromChase = true;
-                    CancelInvoke();
-                    InvokeRepeating("UpdatePathReturn", 0f, pathUpdateInterval);
-                    state = "roam";
-                    speed = roamSpeed;
-                    break;
-                }
-                else if (IsPlayerInAggroRange() && !IsPlayerInShootingRange())
+                //if (!IsPlayerInAggroRange() || !IsPlayerInRange())
+                //{
+                //    returningFromChase = true;
+                //    CancelInvoke();
+                //    InvokeRepeating("UpdatePathReturn", 0f, pathUpdateInterval);
+                //    state = "roam";
+                //    speed = roamSpeed;
+                //    break;
+                //}
+
+                FlipLocalScaleWithForce(force);
+                if (IsPlayerInAggroRange() && !IsPlayerInShootingRange())
                 {
                     rb.AddForce(force);
                 }
+
                 //If target is close enough the enemy unit, it changes the state to "shoot"
                 else if (IsPlayerInShootingRange())
                 {
-                    state = "shoot";
+                    if (targetShield.Blocking)
+                    {
+                        state = "ram";
+                    }
+                    else
+                    {
+                        state = "shoot";
+                    }
+                    
+                }
+
+                if(!IsPlayerInAggroRange())
+                {
+                    lastSeenTargetPosition = target.transform.position;
+                    CancelInvoke();
+                    InvokeRepeating("UpdatePathToLastSeenTargetLocation", 0f, pathUpdateInterval);
+                    state = "alert";
                 }
                 break;
 
@@ -405,18 +424,58 @@ public class FlyingEnemyAI : MonoBehaviour
                 {
                     Physics2D.IgnoreLayerCollision(3, 7, false);
                 }
+
+                FlipLocalScaleWithForce(force);
                 // Check if player is still holding their shield up.
                 if (!targetShield.Blocking)
                 {
                     state = "shoot";
                     canShoot = true;
                     Physics2D.IgnoreLayerCollision(3, 7);
+                    gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.green;
                     break;
                 }
                 // Ramming into player!
                 else
                 {
+                    gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.red;
                     rb.AddForce(force);
+                }
+                break;
+
+            // ALERT STATE
+            //-------------------------------------------------------------------------------------------------------------------------
+            // If player escapes the range, enemy unit enters in a alert state where it will follow player to it's last seen position.
+            case "alert":
+                // Player is in shooting range. Shoot!
+                if (IsPlayerInShootingRange() && IsPlayerInRange())
+                {
+                    CancelInvoke();
+                    InvokeRepeating("UpdatePathToPlayer", 0f, pathUpdateInterval);
+                    state = "shoot";
+                    break;
+                }
+                // Player is in Aggro range. Charge towards the player.
+                else if (IsPlayerInAggroRange() && IsPlayerInRange())
+                {
+                    CancelInvoke();
+                    InvokeRepeating("UpdatePathToPlayer", 0f, pathUpdateInterval);
+                    state = "charge";
+                    break;
+                }
+                // In every other case find the last player location and go there. When the position is reached and player is nowhere to be seen, return to spawn position.
+                else
+                {
+                    rb.AddForce(force);
+                    if (_collider.bounds.Contains(lastSeenTargetPosition))
+                    {
+                        returningFromChase = true;
+                        rb.velocity = new Vector2(0, 0);
+                        CancelInvoke();
+                        InvokeRepeating("UpdatePathReturn", 0f, pathUpdateInterval);
+                        state = "roam";
+                        break;
+                    }
                 }
                 break;
         }
@@ -446,13 +505,28 @@ public class FlyingEnemyAI : MonoBehaviour
 
     }
 
-    // When enemy is ramming desperately into player
+    private void FlipLocalScaleWithForce(Vector2 force)
+    {
+        if (force.x >= 0.1f)
+        {
+            transform.localScale = new Vector3(1f, 1f, 1f);
+            isFacingRight = true;
+        }
+        else if (force.x <= -0.1f)
+        {
+            transform.localScale = new Vector3(-1f, 1f, 1f);
+            isFacingRight = false;
+        }
+    }
+
+    // When enemy is ramming desperately into player. If hit, EXPLODE and deal damage to player!
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if(collision.collider.tag == "Player" && canShoot)
         {
-            _targetHealth.TakeDamage(attackPower);
-            StartCoroutine(ShootCoolDown());
+            _targetHealth.TakeDamage(explosionPower);
+            Destroy(gameObject);
+            PlayerPushback();
         }
         
     }

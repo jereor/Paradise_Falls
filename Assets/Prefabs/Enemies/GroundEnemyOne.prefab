@@ -253,7 +253,9 @@ MonoBehaviour:
   playerLayer:
     serializedVersion: 2
     m_Bits: 8
-  speed: 200
+  speed: 10000
+  roamingSpeed: 10000
+  chargeSpeed: 15000
   jumpHeight: 13
   walkStepInterval: 1
   runStepInterval: 0.5
@@ -267,8 +269,8 @@ MonoBehaviour:
   healthProbability: 99
   energyProbability: 99
   amountWhenHealthIsSpawnable: 0.5
-  pathUpdateInterval: 0.5
   nextWaypointDistance: 1
+  pathUpdateInterval: 0.5
 --- !u!114 &2085753358315985748
 MonoBehaviour:
   m_ObjectHideFlags: 0
