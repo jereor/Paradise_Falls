@@ -4,6 +4,8 @@ using UnityEngine;
 using Pathfinding;
 using System;
 
+#pragma warning disable 0414
+
 public class GroundEnemyAI : MonoBehaviour
 {
     private Health _targetHealth;
@@ -38,11 +40,12 @@ public class GroundEnemyAI : MonoBehaviour
     [Header("State and Parameters")]
     [SerializeField] private string state = "roam";
     [SerializeField] private Vector2 roamingRange = new Vector2(10, 10);
+    [SerializeField] private Vector2 roamingOffset;
     [SerializeField] private Vector2 aggroDistance = new Vector2(5f, 5f);
-    [SerializeField] private float aggroOffset = 5;
+    [SerializeField] private Vector2 aggroOffset;
     [SerializeField] private float aggroDistanceLength = 5f;
     [SerializeField] private Vector2 hitDistance = new Vector2(3f, 3f);
-    [SerializeField] private float hitOffset = 5;
+    [SerializeField] private Vector2 hitOffset;
     [SerializeField] private float knockbackForce = 5f;
     [SerializeField] private int jumpProbability = 10; // Range between 1 - 100. Lower number means lower chance to jump during chase. Creates variation to the enemy movement.
 
@@ -98,16 +101,16 @@ public class GroundEnemyAI : MonoBehaviour
     {
         if (gizmoPositionChange)
         {
-            Gizmos.DrawWireCube(transform.position, roamingRange);
+            Gizmos.DrawWireCube(new Vector2(transform.position.x + roamingOffset.x, transform.position.y + roamingOffset.y), roamingRange);
         }
         else
         {
-            Gizmos.DrawWireCube(spawnPosition, roamingRange);
+            Gizmos.DrawWireCube(new Vector2(spawnPosition.x + roamingOffset.x, spawnPosition.y + roamingOffset.y), roamingRange);
         }
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireCube(new Vector2(transform.position.x + (transform.localScale.x * aggroOffset), transform.position.y), aggroDistance);
+        Gizmos.DrawWireCube(new Vector2(transform.position.x + (transform.localScale.x * aggroOffset.x), transform.position.y + aggroOffset.y), aggroDistance);
         Gizmos.color = Color.red;
-        Gizmos.DrawWireCube(new Vector2(transform.position.x + (transform.localScale.x * hitOffset), transform.position.y), hitDistance);
+        Gizmos.DrawWireCube(new Vector2(transform.position.x + (transform.localScale.x * hitOffset.x), transform.position.y + hitOffset.y), hitDistance);
 
     }
 
@@ -295,17 +298,17 @@ public class GroundEnemyAI : MonoBehaviour
     // Checks if target is in a box shaped area given by parameters.
     private bool IsPlayerInRange()
     {
-        return Physics2D.OverlapBox(spawnPosition, roamingRange, 0, playerLayer);
+        return Physics2D.OverlapBox(new Vector2(spawnPosition.x + roamingOffset.x, spawnPosition.y + roamingOffset.y), roamingRange, 0, playerLayer);
     }
 
     private bool IsPlayerInPunchingRange()
     {
-        return Physics2D.OverlapBox(transform.position, hitDistance, 0, playerLayer);
+        return Physics2D.OverlapBox(new Vector2(transform.position.x + (transform.localScale.x * hitOffset.x), transform.position.y + hitOffset.y), hitDistance, 0, playerLayer);
     }
 
     private bool IsPlayerInAggroRange()
     {
-        return Physics2D.OverlapBox(new Vector2(transform.position.x + (transform.localScale.x * aggroOffset), transform.position.y), aggroDistance, 0, playerLayer);
+        return Physics2D.OverlapBox(new Vector2(transform.position.x + (transform.localScale.x * aggroOffset.x), transform.position.y + aggroOffset.y), aggroDistance, 0, playerLayer);
     }
 
 
@@ -323,7 +326,7 @@ public class GroundEnemyAI : MonoBehaviour
             case "roam":
                 if (stunned) break;
                 // If the enemy unit tries to go outside of the given area parameters, it turns around.
-                if (transform.position.x >= (spawnPosition.x + roamingRange.x / 2) && canMove && IsGrounded())
+                if (transform.position.x >= (spawnPosition.x + roamingRange.x / 2 + roamingOffset.x) && canMove && IsGrounded())
                 {
                     //Debug.Log("Left");
                     transform.localScale = new Vector3(-1f, 1f, 1f);
@@ -332,7 +335,7 @@ public class GroundEnemyAI : MonoBehaviour
                     StartCoroutine(WalkCoolDown());
                     break;
                 }
-                else if (transform.position.x <= (spawnPosition.x - roamingRange.x / 2) && canMove && IsGrounded())
+                else if (transform.position.x <= (spawnPosition.x - roamingRange.x / 2 + roamingOffset.x) && canMove && IsGrounded())
                 {
                     //Debug.Log("Right");
                     transform.localScale = new Vector3(1f, 1f, 1f);
@@ -488,6 +491,27 @@ public class GroundEnemyAI : MonoBehaviour
         Debug.Log("Stun ended");
         stunned = false;
         gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.black;
+    }
+
+    IEnumerator PlayerHit()
+    {
+        GameObject.Find("Player").GetComponent<SpriteRenderer>().color = Color.red;
+        yield return new WaitForSeconds(0.1f);
+        GameObject.Find("Player").GetComponent<SpriteRenderer>().color = Color.white;
+    }
+
+    private void FlipLocalScaleWithForce(Vector2 force)
+    {
+        if (force.x >= 0.1f)
+        {
+            transform.localScale = new Vector3(1f, 1f, 1f);
+            isFacingRight = true;
+        }
+        else if (force.x <= -0.1f)
+        {
+            transform.localScale = new Vector3(-1f, 1f, 1f);
+            isFacingRight = false;
+        }
     }
 
     // Small knockback that can be activated by player and environment. Knockback knocks slightly upwards so the friction doesn't stop it right away.

@@ -4,6 +4,8 @@ using UnityEngine;
 using Pathfinding;
 using System;
 
+#pragma warning disable 0414
+
 public class FlyingEnemyAI : MonoBehaviour
 {
     private Health _targetHealth;
@@ -35,6 +37,7 @@ public class FlyingEnemyAI : MonoBehaviour
     [Header("State and Parameters")]
     [SerializeField] private string state = "roam";
     [SerializeField] private Vector2 roamingRange = new Vector2(10, 10);
+    [SerializeField] private Vector2 roamingOffset;
     [SerializeField] private float aggroDistance = 5f;
     [SerializeField] private float shootingDistance = 10f;
     [SerializeField] private float wallCheckDistance = 2f;
@@ -103,13 +106,13 @@ public class FlyingEnemyAI : MonoBehaviour
     //Draws gizmos for enemy's "territory".
     private void OnDrawGizmosSelected()
     {
-        if(gizmoPositionChange)
+        if (gizmoPositionChange)
         {
-            Gizmos.DrawWireCube(transform.position, roamingRange);
+            Gizmos.DrawWireCube(new Vector2(transform.position.x + roamingOffset.x, transform.position.y + roamingOffset.y), roamingRange);
         }
         else
         {
-            Gizmos.DrawWireCube(spawnPosition, roamingRange);
+            Gizmos.DrawWireCube(new Vector2(spawnPosition.x + roamingOffset.x, spawnPosition.y + roamingOffset.y), roamingRange);
         }
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, aggroDistance);
@@ -216,7 +219,7 @@ public class FlyingEnemyAI : MonoBehaviour
     // Checks if target is in a box shaped area given by parameters.
     private bool IsPlayerInRange()
     {
-        return Physics2D.OverlapBox(spawnPosition, roamingRange, 0, playerLayer);
+        return Physics2D.OverlapBox(new Vector2(spawnPosition.x + roamingOffset.x, spawnPosition.y + roamingOffset.y), roamingRange, 0, playerLayer);
     }
 
     private bool IsPlayerInAggroRange()
@@ -260,13 +263,13 @@ public class FlyingEnemyAI : MonoBehaviour
                     break;
                 }
                 //If the enemy unit tries to go outside of the given area parameters in X-axis, it turns around.
-                if (transform.position.x >= (spawnPosition.x + roamingRange.x/2))
+                if (transform.position.x >= (spawnPosition.x + roamingRange.x/2 + roamingOffset.x))
                 {
                     transform.localScale = new Vector3(-1f, 1f, 1f);
                     isFacingRight = false;
                     rb.AddForce(new Vector2(transform.localScale.x * speed * Time.deltaTime, 0));
                 }
-                else if (transform.position.x <= (spawnPosition.x - roamingRange.x/2))
+                else if (transform.position.x <= (spawnPosition.x - roamingRange.x/2 + roamingOffset.x))
                 {
                     transform.localScale = new Vector3(1f, 1f, 1f);
                     isFacingRight = true;

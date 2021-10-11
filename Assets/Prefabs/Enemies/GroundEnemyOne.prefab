@@ -263,12 +263,13 @@ MonoBehaviour:
   jumpChargeInterval: 1.5
   attackPower: 2
   state: roam
-  roamingRange: {x: 42.59, y: 10}
-  aggroDistance: {x: 9.99, y: 2.56}
-  aggroOffset: 2.78
+  roamingRange: {x: 32.23, y: 5.8}
+  roamingOffset: {x: 0, y: 0}
+  aggroDistance: {x: 9.99, y: 3.39}
+  aggroOffset: {x: 3.16, y: 0.7}
   aggroDistanceLength: 5
-  hitDistance: {x: 0.8, y: 1}
-  hitOffset: 0.28
+  hitDistance: {x: 0.9, y: 1}
+  hitOffset: {x: 0.3, y: 0}
   knockbackForce: 1000
   jumpProbability: 20
   healthProbability: 80
