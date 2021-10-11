@@ -122,7 +122,7 @@ public class PlayerMovement : MonoBehaviour
         jumping = rb.velocity.y > 0.5;
 
         // Check for idle, falling, jumping and running states
-        if (rb.velocity == Vector2.zero != climbing) playerScript.SetCurrentState(Player.State.Idle);
+        if (rb.velocity == Vector2.zero && !climbing) playerScript.SetCurrentState(Player.State.Idle);
         if (falling && !diving) playerScript.SetCurrentState(Player.State.Falling);
         if (jumping) playerScript.SetCurrentState(Player.State.Jumping);
         if (moving && !falling && !jumping)
