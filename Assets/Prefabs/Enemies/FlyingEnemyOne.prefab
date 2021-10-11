@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 674690726183442598}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.152, y: -0.105, z: 0}
-  m_LocalScale: {x: 0.19, y: 0.2566, z: 1}
+  m_LocalScale: {x: 0.2, y: 0.2, z: 1}
   m_Children: []
   m_Father: {fileID: 674690728015036902}
   m_RootOrder: 1
@@ -93,7 +93,7 @@ GameObject:
   - component: {fileID: 674690727670028638}
   - component: {fileID: 674690727670028637}
   m_Layer: 7
-  m_Name: GroundEnemyOneSprite
+  m_Name: FlyingEnemyOneSprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -271,9 +271,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05926f1ba4bca4145b5f91c0b05b6b5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 2646993275326716544, guid: 4154d57994558ff489a9180c3151e624, type: 3}
+  target: {fileID: 0}
   enemyGFX: {fileID: 674690727670028638}
-  playerRB: {fileID: 2646993275326716665, guid: 4154d57994558ff489a9180c3151e624, type: 3}
+  playerRB: {fileID: 0}
   bullet: {fileID: 7057756548087642846, guid: f038b9176ac32cf4a83f1731b068bda7, type: 3}
   energyItem: {fileID: 7526672294046396501, guid: 4049d0c991ec2534dbef2099a278b67e, type: 3}
   healthItem: {fileID: 8475744114839058090, guid: 0aeb80a14b2a8254dbe07e4c54a022f6, type: 3}
@@ -283,18 +283,21 @@ MonoBehaviour:
   playerLayer:
     serializedVersion: 2
     m_Bits: 8
-  speed: 5
-  chargeSpeed: 10
-  roamSpeed: 5
+  speed: 250
+  chargeSpeed: 400
+  roamSpeed: 250
+  attackPower: 1
+  explosionPower: 4
   state: roam
-  roamingRange: {x: 25.94, y: 17.59}
+  roamingRange: {x: 22.2, y: 13.82}
+  roamingOffset: {x: 0, y: 0}
   aggroDistance: 8
   shootingDistance: 4.02
-  wallCheckDistance: 1.5
-  knockbackForce: 5
-  healthProbability: 99
-  energyProbability: 99
-  amountWhenHealthIsSpawnable: 0.5
+  wallCheckDistance: 0.5
+  knockbackForce: 1500
+  healthProbability: 80
+  energyProbability: 80
+  amountWhenHealthIsSpawnable: 0.7
   nextWaypointDistance: 1
   pathUpdateInterval: 1
 --- !u!50 &674690728015036903
@@ -333,4 +336,4 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: -0.00000018348712}
   serializedVersion: 2
-  m_Radius: 0.6
+  m_Radius: 0.4
