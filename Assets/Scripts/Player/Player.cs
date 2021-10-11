@@ -28,9 +28,11 @@ public class Player : MonoBehaviour
 
     public enum State
     {
+        Idle,
+        Running,
         Jumping,
+        Falling,
         Diving,
-        Grounded,
         WallSliding,
         Climbing,
         Launched
@@ -40,7 +42,7 @@ public class Player : MonoBehaviour
 
     private void Start()
     {
-        currentState = State.Grounded;
+        currentState = State.Idle;
         rb = gameObject.GetComponent<Rigidbody2D>();
 
         TextStyleHealth.normal.textColor = Color.green;
