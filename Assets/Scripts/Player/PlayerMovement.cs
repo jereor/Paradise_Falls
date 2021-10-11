@@ -127,13 +127,13 @@ public class PlayerMovement : MonoBehaviour
         jumping = rb.velocity.y > 0.5;
 
         // Check for idle, falling, jumping, launched and running states
-        if (rb.velocity == Vector2.zero && !climbing) playerScript.SetCurrentState(Player.State.Idle);
-        if (falling && !diving) playerScript.SetCurrentState(Player.State.Falling);
-        if (jumping && !launched) playerScript.SetCurrentState(Player.State.Jumping);
-        if (launched) playerScript.SetCurrentState(Player.State.Launched);
+        //if (rb.velocity == Vector2.zero && !climbing) playerScript.SetCurrentState(Player.State.Idle);
+        //if (falling && !diving) playerScript.SetCurrentState(Player.State.Falling);
+        //if (jumping && !launched) playerScript.SetCurrentState(Player.State.Jumping);
+        //if (launched) playerScript.SetCurrentState(Player.State.Launched);
         if (moving && !falling && !jumping && !launched)
         {
-            playerScript.SetCurrentState(Player.State.Running);
+            //playerScript.SetCurrentState(Player.State.Running);
             // Offset camera while moving to create a feeling of momentum
             PlayerCamera.Instance.ChangeCameraOffset(0.2f, falling, isFacingRight ? 0.8f : -0.8f); // Centers camera a little
         }
@@ -186,7 +186,7 @@ public class PlayerMovement : MonoBehaviour
             // We can climb so we climb
             if (canClimb)
             {
-                playerScript.SetCurrentState(Player.State.Climbing);
+                //playerScript.SetCurrentState(Player.State.Climbing);
                 // Do these before animation
                 climbing = true;
                 rb.velocity = new Vector2(0, 0); // Set velocity here to zero else movement bugs while climbing
@@ -205,7 +205,7 @@ public class PlayerMovement : MonoBehaviour
         }
         else if (climbing)
         {
-            playerScript.SetCurrentState(Player.State.Climbing);
+            //playerScript.SetCurrentState(Player.State.Climbing);
             rb.gravityScale = 0f; // Keep gravity at zero so player stays still until climbing is done
             rb.velocity = Vector2.zero;
         }
@@ -215,6 +215,10 @@ public class PlayerMovement : MonoBehaviour
     private IEnumerator Climb()
     {
         //Debug.Log("Climbing: " + Time.time);
+        playerScript.SetCurrentState(Player.State.Climbing);
+        GetComponent<Animator>().SetBool("isRunning", false);
+
+
         yield return new WaitForSecondsRealtime(climbTimeBuffer);
         //Debug.Log("Ended Climbing: " + Time.time);
         LedgeClimb();
@@ -261,7 +265,7 @@ public class PlayerMovement : MonoBehaviour
                 // If we are in air but Raycasts and wall side tests are not going through
                 else if (canWallJump)
                 {
-                    playerScript.SetCurrentState(Player.State.Jumping);
+                    //playerScript.SetCurrentState(Player.State.Jumping);
                     rb.gravityScale = defaultGravityScale;
                     canWallJump = false;
                 }
@@ -384,7 +388,7 @@ public class PlayerMovement : MonoBehaviour
         else if (launched)
         {
             // Keep launch going
-            playerScript.SetCurrentState(Player.State.Launched);
+            //playerScript.SetCurrentState(Player.State.Launched);
             rb.velocity = new Vector2(launchDirection.x * jumpForce, launchDirection.y * jumpForce);
         }
         // Stop launch when landing or stopping
@@ -442,9 +446,9 @@ public class PlayerMovement : MonoBehaviour
         // -WALLJUMP-
 
         // If button is pressed and we are in allowed walljump position
-        if (context.started && canWallJump)
+        if (context.started && canWallJump && canReceiveInputJump)
         {
-            playerScript.SetCurrentState(Player.State.Jumping);
+            //playerScript.SetCurrentState(Player.State.Jumping);
 
             // Use this commented else if, if we want to give player boost to the left or right when walljumping
             // Jumping from left wall
@@ -497,7 +501,7 @@ public class PlayerMovement : MonoBehaviour
         // -DOUBLE JUMP-
 
         // Double jump while in the air
-        else if (allowShockwaveJump && canShockwaveJump) // Make sure player has acquired Shockwave Jump and that they can currently double jump
+        else if (allowShockwaveJump && canShockwaveJump && canReceiveInputJump) // Make sure player has acquired Shockwave Jump and that they can currently double jump
         {
             // If button is pressed and player has not yet double jumped
             if (context.started && !shockwaveJumping
@@ -524,7 +528,7 @@ public class PlayerMovement : MonoBehaviour
 
         // If button was pressed
         if (context.performed && (Time.time - lastGroundedTime <= coyoteTime) // Check if coyote time is online
-            && (Time.time - jumpButtonPressedTime <= coyoteTime) && !climbing) // Check if jump has been buffered
+            && (Time.time - jumpButtonPressedTime <= coyoteTime) && !climbing && canReceiveInputJump) // Check if jump has been buffered
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce); // Keep player in upwards motion
         }

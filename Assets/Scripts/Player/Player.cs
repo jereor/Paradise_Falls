@@ -105,6 +105,13 @@ public class Player : MonoBehaviour
                 movementScript.DisableInputMove();
                 break;
             case State.AttackTransition:
+                // Combat
+                combatScript.EnableInputMelee();
+                combatScript.EnableInputThrowAim();
+
+                // Movement
+                movementScript.EnableInputJump();
+                movementScript.EnableInputMove();
                 break;
             default:
                 break;
