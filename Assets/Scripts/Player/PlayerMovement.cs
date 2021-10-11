@@ -31,7 +31,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float climbYOffset;
 
     // State variables
-    private float horizontal; // Tracks horizontal input direction
+    public float horizontal; // Tracks horizontal input direction
     private bool moving = false;
     private bool falling = false;
     private bool jumping = false;
@@ -57,7 +57,6 @@ public class PlayerMovement : MonoBehaviour
 
     // Allowance variables
     private bool canClimb = false;
-    private bool canMove = true;
     public bool canReceiveInputMove;
     public bool canReceiveInputJump;
     private bool canShockwaveJump = false;
@@ -92,8 +91,7 @@ public class PlayerMovement : MonoBehaviour
     private void Update()
     {
         // Movement
-        if (canMove)
-            rb.velocity = new Vector2(horizontal * movementVelocity, rb.velocity.y); // Moves the player by horizontal input
+        rb.velocity = new Vector2(horizontal * movementVelocity, rb.velocity.y); // Moves the player by horizontal input
 
         /* DISABLED FOR NOW. Launch checks to use when using directional boost plant launch
         if (launched && horizontal != 0)
@@ -191,7 +189,6 @@ public class PlayerMovement : MonoBehaviour
                 climbing = true;
                 rb.velocity = new Vector2(0, 0); // Set velocity here to zero else movement bugs while climbing
 
-                canMove = false; // Prevent moving while climbing mostly for animations
                 canShockwaveJump = false; // Prevent double jumping
 
                 lastTimeClimbed = Time.time; // We start climbing set time here
@@ -234,7 +231,6 @@ public class PlayerMovement : MonoBehaviour
         canWallJump = false; // Prevent wall jumps
         canClimb = false; // We cannot climb after before we have checked Raycasts again with new position
         climbing = false; // We end climbing
-        canMove = true; // We can move again
     }
 
     // Check if Raycasts hit wall and we are in air to set canWallJump
@@ -416,6 +412,11 @@ public class PlayerMovement : MonoBehaviour
     // Move action: Called when the Move Action Button is pressed
     public void Move(InputAction.CallbackContext context) // Context tells the function when the action is triggered
     {
+        if (!canReceiveInputMove)
+            return;
+
+        Debug.Log(context.ToString());
+
         horizontal = Mathf.Round(context.ReadValue<Vector2>().x); // Updates the horizontal input direction
 
         // We can move player
@@ -424,17 +425,17 @@ public class PlayerMovement : MonoBehaviour
             moveInputReceived = true;
         }
         // We cant move player but we still need horizontal to update to 0f
-        else if (horizontal != 0 && !canReceiveInputMove)
-        {
-            moveInputReceived = false;
-            horizontal = 0f;
-        }
+        //else if (horizontal != 0 && !canReceiveInputMove)
+        //{
+        //    moveInputReceived = false;
+        //    horizontal = 0f;
+        //}
         // We arent giving any input
         else
         {
             moveInputReceived = false;
-        } 
-                
+            horizontal = 0f;
+        }
     }
 
     // Jump action: Called when the Jump Action button is pressed
