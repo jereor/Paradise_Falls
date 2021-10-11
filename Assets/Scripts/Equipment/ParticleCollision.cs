@@ -20,16 +20,13 @@ public class ParticleCollision : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Enemy"))
         {
-            var numCollisionEvents = ps.GetCollisionEvents(collision, collisionEvents);
             var direction = collision.transform.position - transform.position;
-
             collision.GetComponent<Rigidbody2D>().AddForceAtPosition(direction.normalized * knockbackForce, collisionEvents[0].intersection, ForceMode2D.Impulse);
+        }
 
-            if (collision.TryGetComponent(out GroundEnemyAI enemyScript))
-            {
-                //enemyScript.KnockBackEnemy(transform.gameObject , knockbackForce);
-            }
-
+        if (collision.gameObject.CompareTag("MeleeWeapon"))
+        {
+            // Power Boost the weapon and set it flying forwards
         }
     }
 }
