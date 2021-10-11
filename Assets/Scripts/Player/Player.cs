@@ -7,8 +7,6 @@ using UnityEngine.InputSystem;
 // Holds player components and state variables that can be accessed from anywhere
 public class Player : MonoBehaviour
 {
-    public static Player Instance;
-
     public float InputHorizontal { get; private set; }
     public float InputVertical { get; private set; }
 
@@ -25,18 +23,19 @@ public class Player : MonoBehaviour
     [SerializeField] private Energy energyScript;
 
     // Component references
-    public Animator animator;
-    public Rigidbody2D rb;
+    private Animator animator;
+    private Rigidbody2D rb;
 
     public enum State
     {
+        Idle,
+        Running,
         Jumping,
+        Falling,
         Diving,
-        Grounded,
         WallSliding,
         Climbing,
         Launched,
-        Idle,
         Attacking,
         AttackTransition
     }
@@ -45,11 +44,8 @@ public class Player : MonoBehaviour
 
     private void Start()
     {
-        Instance = this;
-
-        currentState = State.Grounded;
+        currentState = State.Idle;
         rb = gameObject.GetComponent<Rigidbody2D>();
-        animator = gameObject.GetComponent<Animator>();
 
         TextStyleHealth.normal.textColor = Color.green;
         TextStyleEnergy.fontSize = 30;
@@ -62,32 +58,27 @@ public class Player : MonoBehaviour
         HandleStateInputs();
     }
 
-    void HandleStateInputs()
+    private void HandleStateInputs()
     {
-
         switch (currentState)
         {
+            case State.Idle:
+                break;
+            case State.Running:
+                break;
             case State.Jumping:
-                combatScript.DisableInputMelee();
+                break;
+            case State.Falling:
                 break;
             case State.Diving:
                 break;
-            case State.Grounded:
-                break;
             case State.WallSliding:
-                combatScript.DisableInputMelee();
                 break;
             case State.Climbing:
-                combatScript.DisableInputMelee();
                 break;
             case State.Launched:
                 break;
-            case State.Idle:
-                combatScript.EnableInputMelee();
-                combatScript.EnableInputThrowAim();
-                break;
             case State.Attacking:
-                combatScript.DisableInputThrowAim();
                 break;
             case State.AttackTransition:
                 break;

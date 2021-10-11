@@ -5,8 +5,9 @@ using UnityEngine.InputSystem;
 
 public class ShockwaveTool : MonoBehaviour
 {
-    public bool ShockwaveJumpUsed { get; set; }
-    public bool ShockwaveAttackUsed { get; set; }
+    public bool ShockwaveJumpUsed { get; private set; }
+    public bool ShockwaveAttackUsed { get; private set; }
+    public bool ShockwaveDiveUsed { get; private set; }
 
     [Header("Shockwave parameters")]
     [SerializeField] private float attackCooldown;
@@ -21,17 +22,25 @@ public class ShockwaveTool : MonoBehaviour
     // Shockwave Jump: Triggered from PlayerMovement when double jumping
     public void ShockwaveJump()
     {
+        ShockwaveJumpUsed = true;
         shockwaveJumpEffect.Play();
+    }
+
+    public void ResetShockwaveJump()
+    {
+        ShockwaveJumpUsed = false;
     }
 
     // Shockwave Dive: Triggered from PlayerMovement when activating dive
     public void DoShockwaveDive()
     {
+        ShockwaveDiveUsed = true;
         shockwaveDiveGraphics.SetActive(true);
     }
 
     public void CancelShockwaveDive()
     {
+        ShockwaveDiveUsed = false;
         if (shockwaveDiveGraphics.activeInHierarchy)
             shockwaveDiveGraphics.SetActive(false);
     }
