@@ -271,7 +271,7 @@ MonoBehaviour:
   hitDistance: {x: 1.1, y: 1}
   hitOffset: {x: 0.3, y: 0}
   knockbackForce: 1000
-  jumpProbability: 100
+  jumpProbability: 15
   healthProbability: 80
   energyProbability: 80
   amountWhenHealthIsSpawnable: 0.7
