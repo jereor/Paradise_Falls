@@ -5,6 +5,8 @@ using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
+    public static PlayerMovement Instance;
+
     [Header("Player Variables")]
     [SerializeField] private float movementVelocity; // Movement speed variable
     [SerializeField] private float jumpForce; // Jump height variable
@@ -74,6 +76,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void Start()
     {
+        Instance = this;
+
         rb = gameObject.GetComponent<Rigidbody2D>();
         shockwaveTool = gameObject.GetComponentInChildren<ShockwaveTool>();
         playerScript = gameObject.GetComponent<Player>();
@@ -89,7 +93,8 @@ public class PlayerMovement : MonoBehaviour
     }
 
     private void Update()
-    {
+    { 
+
         // Movement
         rb.velocity = new Vector2(horizontal * movementVelocity, rb.velocity.y); // Moves the player by horizontal input
 
@@ -412,29 +417,17 @@ public class PlayerMovement : MonoBehaviour
     // Move action: Called when the Move Action Button is pressed
     public void Move(InputAction.CallbackContext context) // Context tells the function when the action is triggered
     {
-        if (!canReceiveInputMove)
-            return;
-
-        Debug.Log(context.ToString());
-
-        horizontal = Mathf.Round(context.ReadValue<Vector2>().x); // Updates the horizontal input direction
-
-        // We can move player
-        if (horizontal != 0 && canReceiveInputMove)
+        // We cant receive input OR we stop
+        if (!canReceiveInputMove || Mathf.Abs(context.ReadValue<Vector2>().x) == 0)
         {
-            moveInputReceived = true;
+            horizontal = 0f;
+            moveInputReceived = false;
         }
-        // We cant move player but we still need horizontal to update to 0f
-        //else if (horizontal != 0 && !canReceiveInputMove)
-        //{
-        //    moveInputReceived = false;
-        //    horizontal = 0f;
-        //}
-        // We arent giving any input
+        // We can move and our input for horizontal is greater than 0f
         else
         {
-            moveInputReceived = false;
-            horizontal = 0f;
+            horizontal = Mathf.Round(context.ReadValue<Vector2>().x); // Updates the horizontal input direction
+            moveInputReceived = true;
         }
     }
 

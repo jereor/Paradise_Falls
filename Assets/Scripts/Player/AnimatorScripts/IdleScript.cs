@@ -19,9 +19,9 @@ public class IdleScript : StateMachineBehaviour
             Player.Instance.animator.Play("LAttack1");
         }
 
-        if (animator.gameObject.GetComponent<PlayerMovement>().moveInputReceived)
+        if (PlayerMovement.Instance.moveInputReceived)
         {
-            animator.SetBool("isRunning", true);
+            animator.SetBool("IsRunning", true);
         }
     }
 
