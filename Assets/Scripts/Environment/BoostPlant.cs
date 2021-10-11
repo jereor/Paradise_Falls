@@ -13,11 +13,4 @@ public class BoostPlant : MonoBehaviour
         if (collision.gameObject.CompareTag("Player"))
             movementScript.ActivateLaunch(launchDistance, launchDirection);
     }
-
-    private void OnCollisionStay2D(Collision2D collision)
-    {
-        var launchDirection = transform.up;
-        if (collision.gameObject.CompareTag("Player"))
-            movementScript.ActivateLaunch(launchDistance, launchDirection);
-    }
 }

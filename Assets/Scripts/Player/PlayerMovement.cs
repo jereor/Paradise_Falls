@@ -121,11 +121,12 @@ public class PlayerMovement : MonoBehaviour
         falling = rb.velocity.y < -0.5f;
         jumping = rb.velocity.y > 0.5;
 
-        // Check for idle, falling, jumping and running states
+        // Check for idle, falling, jumping, launched and running states
         if (rb.velocity == Vector2.zero && !climbing) playerScript.SetCurrentState(Player.State.Idle);
         if (falling && !diving) playerScript.SetCurrentState(Player.State.Falling);
-        if (jumping) playerScript.SetCurrentState(Player.State.Jumping);
-        if (moving && !falling && !jumping)
+        if (jumping && !launched) playerScript.SetCurrentState(Player.State.Jumping);
+        if (launched) playerScript.SetCurrentState(Player.State.Launched);
+        if (moving && !falling && !jumping && !launched)
         {
             playerScript.SetCurrentState(Player.State.Running);
             // Offset camera while moving to create a feeling of momentum
@@ -345,17 +346,18 @@ public class PlayerMovement : MonoBehaviour
     public void ActivateLaunch(float launchDist, Vector2 launchDir)
     {
         if (Time.time - lastDiveTime <= 3)
+        {
+            // Dived, so activate higher jump
+            StartCoroutine(Launch());
             rb.velocity = launchDir * jumpForce * 1.2f;
+
+            // Stop air dive
+            shockwaveTool.CancelShockwaveDive();
+            diving = false;
+            lastDiveTime = null;
+        }
         else
             rb.velocity = launchDir * jumpForce * .6f;
-
-        launched = true;
-        lastLaunchTime = Time.time;
-
-        // Stop air dive
-        shockwaveTool.CancelShockwaveDive();
-        diving = false;
-        lastDiveTime = null;
 
         /* DISABLED FOR NOW. USE THESE FOR LAUNCH DIRECTION
         posBeforeLaunch = transform.position;
@@ -384,6 +386,20 @@ public class PlayerMovement : MonoBehaviour
         // This does not work yet. For some reason, velocity checks fail and this returns true only when landing
         else if (IsGrounded() || rb.velocity.x == 0 || rb.velocity.y == 0) 
             wasLaunched = false;
+    }
+
+    private IEnumerator Launch()
+    {
+        launched = true;
+
+        float launchTimer = 0;
+        while (launchTimer <= 0.5f)
+        {
+            launchTimer += Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+
+        launched = false;
     }
 
     // Move action: Called when the Move Action Button is pressed
@@ -492,7 +508,7 @@ public class PlayerMovement : MonoBehaviour
         if (context.canceled && rb.velocity.y > 0f && !shockwaveTool.ShockwaveJumpUsed && !launched)
         {
             // Check that player is currently not being launched
-            if (Time.time - lastLaunchTime > 1)
+            if (Time.time - lastLaunchTime > 1 || lastLaunchTime == null)
             {
                 rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f); // Slow down player
                 jumpButtonPressedTime = null;
