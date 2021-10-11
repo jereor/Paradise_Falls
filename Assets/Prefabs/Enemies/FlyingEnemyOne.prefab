@@ -289,7 +289,7 @@ MonoBehaviour:
   attackPower: 1
   explosionPower: 4
   state: roam
-  roamingRange: {x: 19.99, y: 13.83}
+  roamingRange: {x: 22.2, y: 13.82}
   roamingOffset: {x: 0, y: 0}
   aggroDistance: 8
   shootingDistance: 4.02
