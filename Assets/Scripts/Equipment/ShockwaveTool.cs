@@ -11,11 +11,13 @@ public class ShockwaveTool : MonoBehaviour
 
     [Header("Shockwave parameters")]
     [SerializeField] private float attackCooldown;
+    [SerializeField] private float attackCost;
 
     [Header("References")]
     [SerializeField] private ParticleSystem shockwaveAttackEffect;
     [SerializeField] private ParticleSystem shockwaveJumpEffect;
     [SerializeField] private GameObject shockwaveDiveGraphics;
+    [SerializeField] private Energy energyScript;
 
     private float nextShockwave = -1; // Initialize as -1. First time it will always be less than the current time so use it can be used. 
 
@@ -50,12 +52,18 @@ public class ShockwaveTool : MonoBehaviour
     {
         if (context.started && Time.time >= nextShockwave)
         {
-            nextShockwave = Time.time + attackCooldown; // Sets a time when attack can be used again
-            shockwaveAttackEffect.Play();
+            if (energyScript.CheckForEnergy(attackCost))
+            {
+                nextShockwave = Time.time + attackCooldown; // Sets a time when attack can be used again
+                shockwaveAttackEffect.Play();
+                energyScript.UseEnergy(attackCost);
 
-            // Shockwave attack functionality here
+                // Shockwave attack functionality here
 
-            StartCoroutine(ActivateAttackCooldown(attackCooldown));
+                StartCoroutine(ActivateAttackCooldown(attackCooldown));
+            }
+            else
+                Debug.Log("Not enough energy!");
         }
     }
 

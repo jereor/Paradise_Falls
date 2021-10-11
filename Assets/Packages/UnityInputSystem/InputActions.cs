@@ -73,6 +73,14 @@ public class @InputActions : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""ShockwaveAttack"",
+                    ""type"": ""Button"",
+                    ""id"": ""b838cc22-8c8f-49c6-b10d-194504f72a64"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -317,6 +325,28 @@ public class @InputActions : IInputActionCollection, IDisposable
                     ""action"": ""HeavyMelee"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""cbc4b4ff-7e2e-412e-9eaf-512e943381b3"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ShockwaveAttack"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""683e2ddc-4781-43ee-ac0f-2adfb875d285"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ShockwaveAttack"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -463,6 +493,7 @@ public class @InputActions : IInputActionCollection, IDisposable
         m_Player_Melee = m_Player.FindAction("Melee", throwIfNotFound: true);
         m_Player_ThrowAim = m_Player.FindAction("ThrowAim", throwIfNotFound: true);
         m_Player_HeavyMelee = m_Player.FindAction("HeavyMelee", throwIfNotFound: true);
+        m_Player_ShockwaveAttack = m_Player.FindAction("ShockwaveAttack", throwIfNotFound: true);
         // GameUI
         m_GameUI = asset.FindActionMap("GameUI", throwIfNotFound: true);
         m_GameUI_Pause = m_GameUI.FindAction("Pause", throwIfNotFound: true);
@@ -524,6 +555,7 @@ public class @InputActions : IInputActionCollection, IDisposable
     private readonly InputAction m_Player_Melee;
     private readonly InputAction m_Player_ThrowAim;
     private readonly InputAction m_Player_HeavyMelee;
+    private readonly InputAction m_Player_ShockwaveAttack;
     public struct PlayerActions
     {
         private @InputActions m_Wrapper;
@@ -535,6 +567,7 @@ public class @InputActions : IInputActionCollection, IDisposable
         public InputAction @Melee => m_Wrapper.m_Player_Melee;
         public InputAction @ThrowAim => m_Wrapper.m_Player_ThrowAim;
         public InputAction @HeavyMelee => m_Wrapper.m_Player_HeavyMelee;
+        public InputAction @ShockwaveAttack => m_Wrapper.m_Player_ShockwaveAttack;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -565,6 +598,9 @@ public class @InputActions : IInputActionCollection, IDisposable
                 @HeavyMelee.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnHeavyMelee;
                 @HeavyMelee.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnHeavyMelee;
                 @HeavyMelee.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnHeavyMelee;
+                @ShockwaveAttack.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnShockwaveAttack;
+                @ShockwaveAttack.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnShockwaveAttack;
+                @ShockwaveAttack.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnShockwaveAttack;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -590,6 +626,9 @@ public class @InputActions : IInputActionCollection, IDisposable
                 @HeavyMelee.started += instance.OnHeavyMelee;
                 @HeavyMelee.performed += instance.OnHeavyMelee;
                 @HeavyMelee.canceled += instance.OnHeavyMelee;
+                @ShockwaveAttack.started += instance.OnShockwaveAttack;
+                @ShockwaveAttack.performed += instance.OnShockwaveAttack;
+                @ShockwaveAttack.canceled += instance.OnShockwaveAttack;
             }
         }
     }
@@ -652,6 +691,7 @@ public class @InputActions : IInputActionCollection, IDisposable
         void OnMelee(InputAction.CallbackContext context);
         void OnThrowAim(InputAction.CallbackContext context);
         void OnHeavyMelee(InputAction.CallbackContext context);
+        void OnShockwaveAttack(InputAction.CallbackContext context);
     }
     public interface IGameUIActions
     {
