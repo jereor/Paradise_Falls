@@ -246,6 +246,12 @@ public class Player : MonoBehaviour
         currentState = newState;
     }
 
+    // Used in climbing to check if we are attackin we cant climb
+    public bool GetIsAttacking()
+    {
+        return animator.GetBool("isAttacking");
+    }
+
     public bool IsFacingRight()
     {
         return movementScript.isFacingRight;
