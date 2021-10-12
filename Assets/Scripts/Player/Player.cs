@@ -68,6 +68,20 @@ public class Player : MonoBehaviour
 
     private void HandleAnimations()
     {
+        if (movementScript.getClimbing())
+        {
+            animator.SetBool("canLedgeClimb", true);
+        }
+
+        if (movementScript.getWallSliding())
+        {
+            animator.SetBool("isWallSliding", true);
+        }
+        else
+        {
+            animator.SetBool("isWallSliding", false);
+        }
+        
         // If we are jumping we check when we land with negative or zero y velo to set jump boolean false aka landed
         if (animator.GetBool("jump") && movementScript.IsGrounded() && rb.velocity.y <= 0f)
         {
@@ -77,6 +91,8 @@ public class Player : MonoBehaviour
         {
             animator.SetBool("jump", true);
         }
+
+        
     }
 
     private void HandleStateInputs()

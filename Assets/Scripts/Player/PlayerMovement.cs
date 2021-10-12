@@ -35,11 +35,13 @@ public class PlayerMovement : MonoBehaviour
     // State variables
     public float horizontal; // Tracks horizontal input direction
     public float horizontalBuffer; // Tracks horizontal input regardles of canReceiveInputMove bool
+
     private bool moving = false;
     private bool falling = false;
     private bool jumping = false;
     private bool diving = false;
     private bool climbing = false;
+    private bool currentlyWallSliding = false;
     public bool shockwaveJumping = false;
     public bool isFacingRight = true; // Tracks player sprite direction
     public bool jumpInputReceived = false;
@@ -213,7 +215,7 @@ public class PlayerMovement : MonoBehaviour
                 lastTimeClimbed = Time.time; // We start climbing set time here
 
                 // START CLIMBING ANIMATION HERE FOR DEMO COROUTINE TO STOP MOVEMENT WHILE CLIMBING
-                StartCoroutine(Climb());
+                //StartCoroutine(Climb());
 
                 // Start this when climbing animation is completed aka not here
                 //LedgeClimb();
@@ -239,7 +241,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     // Moves player instantly on top of the ledge he is climbing
-    private void LedgeClimb()
+    public void LedgeClimb()
     {
         // Move player for offset amount to X and Y directions. X dir will need localScale.x to track where player is looking
         transform.position = new Vector2(transform.position.x + climbXOffset * transform.localScale.x, transform.position.y + climbYOffset - ledgeHitOffsetRay.distance);
@@ -269,7 +271,8 @@ public class PlayerMovement : MonoBehaviour
                     // If we are sliding down a wall and we have gravityscale as default change gravityscale so it feel like there is kitka :) (JOrava EDIT: friction :D)
                     if (!climbing && rb.velocity.y < 0 && rb.gravityScale == defaultGravityScale)
                     {
-                        playerScript.SetCurrentState(Player.State.WallSliding);
+                        //playerScript.SetCurrentState(Player.State.WallSliding);
+                        currentlyWallSliding = true;
                         rb.gravityScale = wallSlideGravityScale;
                     }
                     // We are facing to the wall and we can jump off the wall
@@ -280,6 +283,7 @@ public class PlayerMovement : MonoBehaviour
                 // If we are in air but Raycasts and wall side tests are not going through
                 else if (canWallJump)
                 {
+                    currentlyWallSliding = false;
                     //playerScript.SetCurrentState(Player.State.Jumping);
                     rb.gravityScale = defaultGravityScale;
                     canWallJump = false;
@@ -597,5 +601,15 @@ public class PlayerMovement : MonoBehaviour
     public bool getAllowWallJump()
     {
         return allowWallJump;
+    }
+
+    public bool getClimbing()
+    {
+        return climbing;
+    }
+
+    public bool getWallSliding()
+    {
+        return currentlyWallSliding;
     }
 }
