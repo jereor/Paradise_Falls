@@ -23,7 +23,7 @@ public class IdleScript : StateMachineBehaviour
         // Player starts moving
         if (PlayerMovement.Instance.horizontal != 0f)
         {
-            animator.SetBool("IsRunning", true);
+            animator.SetBool("isRunning", true);
         }
     }
 

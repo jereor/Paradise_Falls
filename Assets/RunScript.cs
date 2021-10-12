@@ -16,7 +16,7 @@ public class RunScript : StateMachineBehaviour
         // Input is false we arent giving input
         if (PlayerMovement.Instance.horizontal == 0f)
         {
-            animator.SetBool("IsRunning", false);
+            animator.SetBool("isRunning", false);
         }
 
         // From running to Light attack
