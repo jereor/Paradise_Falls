@@ -39,7 +39,9 @@ public class Player : MonoBehaviour
         Climbing,
         Launched,
         Attacking,
-        AttackTransition
+        AttackTransition,
+        Aiming,
+        Throwing
     }
     State currentState;
     State previousState;
@@ -70,7 +72,7 @@ public class Player : MonoBehaviour
     {
         // LedgeClimb animation
         // LedgeChecks return true
-        if (movementScript.getClimbing() && !animator.GetBool("isAttacking"))
+        if (movementScript.getClimbing() && !animator.GetBool("isAttacking") && !animator.GetBool("isAiming"))
         {
             animator.SetBool("isClimbing", true);
         }
@@ -96,7 +98,16 @@ public class Player : MonoBehaviour
             animator.SetBool("jump", true);
         }
 
-        
+        // Aiming
+        // UNCOMMENT WHEN getThrowAiming() created in PlayerCombat
+        //if (combatScript.getThrowAiming() && combatScript.getWeaponWielded() && !animator.GetBool("isRunning"))
+        //{
+        //    animator.SetBool("isAiming", true);
+        //}
+        //else
+        //{
+        //    animator.SetBool("isAiming", false);
+        //}
     }
 
     private void HandleStateInputs()
@@ -165,6 +176,10 @@ public class Player : MonoBehaviour
                 // Movement
                 movementScript.EnableInputJump();
                 movementScript.EnableInputMove();
+                break;
+            case State.Aiming:
+                break;
+            case State.Throwing:
                 break;
             default:
                 break;
