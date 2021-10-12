@@ -14,7 +14,7 @@ public class RunScript : StateMachineBehaviour
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         // Input is false 
-        if (!PlayerMovement.Instance.moveInputReceived)
+        if (PlayerMovement.Instance.horizontal == 0f)
         {
             animator.SetBool("IsRunning", false);
         }
@@ -24,17 +24,15 @@ public class RunScript : StateMachineBehaviour
         {
             animator.SetBool("IsRunning", false);
 
-            PlayerMovement.Instance.horizontal = 0f;
-
             Player.Instance.animator.Play("LAttack1");
         }
     }
 
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
-    override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
-    {
-        animator.gameObject.GetComponent<PlayerMovement>().moveInputReceived = false;
-    }
+    //override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+    //{
+
+    //}
 
     // OnStateMove is called right after Animator.OnAnimatorMove()
     //override public void OnStateMove(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)

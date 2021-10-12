@@ -34,6 +34,7 @@ public class PlayerMovement : MonoBehaviour
 
     // State variables
     public float horizontal; // Tracks horizontal input direction
+    public float horizontalBuffer; // Tracks horizontal input regardles of canReceiveInputMove bool
     private bool moving = false;
     private bool falling = false;
     private bool jumping = false;
@@ -41,6 +42,7 @@ public class PlayerMovement : MonoBehaviour
     private bool climbing = false;
     public bool shockwaveJumping = false;
     public bool isFacingRight = true; // Tracks player sprite direction
+    public bool jumpInputReceived = false;
 
     // Last button press times
     private float? jumpButtonPressedTime; // Saves the time when player presses jump button
@@ -93,9 +95,19 @@ public class PlayerMovement : MonoBehaviour
     }
 
     private void Update()
-    { 
+    {
 
         // Movement
+        if (!canReceiveInputMove && horizontal != 0f)
+        {
+            horizontal = 0f; // Stop moving because we cant give input to horizontal
+        }
+        // We were stopped by our attack and our horizontalBuffer was not reseted during attack (we want to continue moving to the direction we were pressing before attack)
+        else if(canReceiveInputMove && horizontalBuffer != horizontal)
+        {
+            // Replace with our desired movement if we were pressing move during !canReceiveInputMove
+            horizontal = horizontalBuffer;
+        }
         rb.velocity = new Vector2(horizontal * movementVelocity, rb.velocity.y); // Moves the player by horizontal input
 
         /* DISABLED FOR NOW. Launch checks to use when using directional boost plant launch
@@ -162,6 +174,8 @@ public class PlayerMovement : MonoBehaviour
             canShockwaveJump = true;
         }
     }
+
+    // ---- LEDGE ----
 
     private void CheckLedgeClimb()
     {
@@ -238,6 +252,8 @@ public class PlayerMovement : MonoBehaviour
         climbing = false; // We end climbing
     }
 
+    // ---- WALLJUMP ----
+    
     // Check if Raycasts hit wall and we are in air to set canWallJump
     private void CheckWallJump()
     {
@@ -249,7 +265,7 @@ public class PlayerMovement : MonoBehaviour
             {
                 // Feet and LedgeOccupation raycasts detect ground layer obj 
                 // We check that we are jumping form different wall or we havent walljumped in a while example: we jumped from left now we check we are trying to jump from right and allow walljump
-                if (FeetAreTouchingWall() && LedgeIsOccupied()
+                if (FeetAreTouchingWall() && LedgeIsOccupied() && LedgeIsOccupied()
                     && (!Mathf.Sign(wallJumpDir).Equals(transform.localScale.x) || wallJumpDir == 0f))
                 {
                     // If we are sliding down a wall and we have gravityscale as default change gravityscale so it feel like there is kitka :) (JOrava EDIT: friction :D)
@@ -281,6 +297,8 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    // ---- SHOCKWAWE ----
+
     private void CheckShockwaveJump()
     {
         // If player is grounded, double jump is "reset" by changing ShockwaveJumpUsed state to false
@@ -294,6 +312,8 @@ public class PlayerMovement : MonoBehaviour
         // And also making sure shockwaveJump has not yet been used
         canShockwaveJump = (!IsGrounded() && !climbing && !shockwaveTool.ShockwaveJumpUsed) ? true : false;
     }
+
+    // ---- THOUCH / GROUNDED FUNCTIONS ----
 
     // Returns true if Raycast hits to something aka our body is so close to wall that it counts as touching
     private bool BodyIsTouchingWall()
@@ -351,6 +371,8 @@ public class PlayerMovement : MonoBehaviour
         localScale.x *= -1f;
         transform.localScale = localScale;
     }
+
+    // ---- LAUNCH ----
 
     // Launch when player jumps on Boost Plant. Called by BoostPlant-script
     public void ActivateLaunch(float launchDist, Vector2 launchDir)
@@ -412,7 +434,7 @@ public class PlayerMovement : MonoBehaviour
         launched = false;
     }
 
-    public bool moveInputReceived = false;
+    // ---- INPUTS -----
 
     // Move action: Called when the Move Action Button is pressed
     public void Move(InputAction.CallbackContext context) // Context tells the function when the action is triggered
@@ -421,26 +443,27 @@ public class PlayerMovement : MonoBehaviour
         if (!canReceiveInputMove || Mathf.Abs(context.ReadValue<Vector2>().x) == 0)
         {
             horizontal = 0f;
-            moveInputReceived = false;
         }
         // We can move and our input for horizontal is greater than 0f
         else
         {
             horizontal = Mathf.Round(context.ReadValue<Vector2>().x); // Updates the horizontal input direction
-            moveInputReceived = true;
         }
+
+        // We need this when we do not want to stop after attacks
+        horizontalBuffer = Mathf.Round(context.ReadValue<Vector2>().x);
     }
 
     // Jump action: Called when the Jump Action button is pressed
     public void Jump(InputAction.CallbackContext context) // Context tells the function when the action is triggered
     {
-        if (climbing) return;
+        if (climbing || !canReceiveInputJump) return;
         jumpButtonPressedTime = Time.time;
 
         // -WALLJUMP-
 
         // If button is pressed and we are in allowed walljump position
-        if (context.started && canWallJump && canReceiveInputJump)
+        if (context.started && canWallJump)
         {
             //playerScript.SetCurrentState(Player.State.Jumping);
 
@@ -495,7 +518,7 @@ public class PlayerMovement : MonoBehaviour
         // -DOUBLE JUMP-
 
         // Double jump while in the air
-        else if (allowShockwaveJump && canShockwaveJump && canReceiveInputJump) // Make sure player has acquired Shockwave Jump and that they can currently double jump
+        else if (allowShockwaveJump && canShockwaveJump) // Make sure player has acquired Shockwave Jump and that they can currently double jump
         {
             // If button is pressed and player has not yet double jumped
             if (context.started && !shockwaveJumping
@@ -522,7 +545,7 @@ public class PlayerMovement : MonoBehaviour
 
         // If button was pressed
         if (context.performed && (Time.time - lastGroundedTime <= coyoteTime) // Check if coyote time is online
-            && (Time.time - jumpButtonPressedTime <= coyoteTime) && !climbing && canReceiveInputJump) // Check if jump has been buffered
+            && (Time.time - jumpButtonPressedTime <= coyoteTime) && !climbing) // Check if jump has been buffered
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce); // Keep player in upwards motion
         }
@@ -541,26 +564,27 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    // ---- Input Enable/Disable functions ----
 
     public void EnableInputMove()
     {
         canReceiveInputMove = true;
     }
-
     public void DisableInputMove()
     {
         canReceiveInputMove = false;
     }
-
     public void EnableInputJump()
     {
         canReceiveInputJump = true;
     }
-
     public void DisableInputJump()
     {
         canReceiveInputJump = false;
     }
+
+
+    // ---- OTHER ----
 
     // Activated from pick up
     public void AllowWallJump()

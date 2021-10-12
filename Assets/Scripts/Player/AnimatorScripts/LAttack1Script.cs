@@ -9,6 +9,7 @@ public class LAttack1Script : StateMachineBehaviour
     {
         Player.Instance.SetCurrentState(Player.State.Attacking);
 
+
         PlayerCombat.Instance.AttackDash();
     }
 

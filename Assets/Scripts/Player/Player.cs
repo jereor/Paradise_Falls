@@ -110,8 +110,8 @@ public class Player : MonoBehaviour
                 combatScript.EnableInputThrowAim();
 
                 // Movement
-                movementScript.EnableInputJump();
-                movementScript.EnableInputMove();
+                //movementScript.EnableInputJump();
+                //movementScript.EnableInputMove();
                 break;
             default:
                 break;
