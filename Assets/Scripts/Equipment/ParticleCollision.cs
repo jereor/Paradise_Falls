@@ -7,27 +7,28 @@ public class ParticleCollision : MonoBehaviour
 {
     [SerializeField] float knockbackForce;
 
-    private ParticleSystem ps;
-    public List<ParticleCollisionEvent> collisionEvents;
-
-    private void Start()
-    {
-        ps = GetComponent<ParticleSystem>();
-        collisionEvents = new List<ParticleCollisionEvent>();
-    }
+    private bool collisionEnabled = true;
 
     private void OnParticleCollision(GameObject collision)
     {
         if (collision.gameObject.CompareTag("Enemy"))
         {
-            // Knockback enemy
-            Knockback(collision.gameObject, gameObject, knockbackForce);
+            if (collisionEnabled)
+            {
+                // knockback enemy
+                Knockback(collision.gameObject, gameObject, knockbackForce);
+                StartCoroutine(CollisionCooldown(1));
+            }
         }
 
         if (collision.gameObject.CompareTag("MeleeWeapon"))
         {
-            // Power Boost the weapon and set it flying forwards
-            Debug.Log("Weapon hit!");
+            if (collisionEnabled)
+            {
+                // Power Boost the weapon and set it flying forwards
+                Knockback(collision.gameObject, gameObject, knockbackForce); // Replace this knock back with a hardcoded cool one
+                StartCoroutine(CollisionCooldown(1));
+            }
         }
     }
 
@@ -37,5 +38,19 @@ public class ParticleCollision : MonoBehaviour
         float pushbackX = target.transform.position.x - from.transform.position.x;
         Vector2 knockbackDirection = new Vector2(pushbackX, Mathf.Abs(pushbackX / 4)).normalized;
         target.GetComponent<Rigidbody2D>().AddForce(knockbackDirection * knockbackForce);
+    }
+
+    private IEnumerator CollisionCooldown(float cooldownTime)
+    {
+        collisionEnabled = false;
+
+        float collisionTimer = 0;
+        while (collisionTimer <= cooldownTime)
+        {
+            collisionTimer += Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+
+        collisionEnabled = true;
     }
 }
