@@ -7,8 +7,8 @@ public class LAttack1Script : StateMachineBehaviour
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+        Debug.Log("Mlee");
         Player.Instance.SetCurrentState(Player.State.Attacking);
-
 
         PlayerCombat.Instance.AttackDash();
     }

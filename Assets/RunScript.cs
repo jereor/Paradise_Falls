@@ -7,10 +7,14 @@ public class RunScript : StateMachineBehaviour
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+        // If we were running before jumping setBool to false
+        // OR we start running in air setBool to false
+        // RESULT we run only Jump animation in air (no running in air!)
         if (animator.GetBool("jump"))
         {
             animator.SetBool("isRunning", false);
         }
+        // We are really running set state
         else
         {
             Player.Instance.SetCurrentState(Player.State.Running);
@@ -30,12 +34,6 @@ public class RunScript : StateMachineBehaviour
         if (PlayerCombat.Instance.meleeInputReceived && !PlayerCombat.Instance.heavyHold)
         {
             Player.Instance.animator.Play("LAttack1");
-        }
-
-        // Jumping
-        if (PlayerMovement.Instance.jumpInputReceived)
-        {
-            animator.SetBool("jump", true);
         }
     }
 

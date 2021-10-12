@@ -62,9 +62,14 @@ public class Player : MonoBehaviour
     {
         HandleStateInputs();
 
-        if (movementScript.IsGrounded() && rb.velocity.y <= 0f)
+        // If we are jumping we check when we land with negative or zero y velo to set jump boolean false aka landed
+        if (animator.GetBool("jump") && movementScript.IsGrounded() && rb.velocity.y <= 0f)
         {
             animator.SetBool("jump", false);
+        }
+        else if(!animator.GetBool("jump") && !movementScript.IsGrounded() && rb.velocity.y != 0f)
+        {
+            animator.SetBool("jump", true);
         }
     }
 
@@ -84,20 +89,10 @@ public class Player : MonoBehaviour
             case State.Running:
                 break;
             case State.Jumping:
-
                 animator.SetFloat("yVelocity", rb.velocity.y);
-
-                //if(animator.GetFloat("yVelocity") <= 0f)
-                //    SetCurrentState(State.Falling);
-
                 break;
             case State.Falling:
                 animator.SetFloat("yVelocity", rb.velocity.y);
-
-                //if (animator.GetFloat("yVelocity") > 0f)
-                //    SetCurrentState(State.Jumping);
-
-
                 break;
             case State.Diving:
                 break;

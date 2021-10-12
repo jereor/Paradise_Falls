@@ -458,9 +458,11 @@ public class PlayerMovement : MonoBehaviour
         if (climbing || !canReceiveInputJump) return;
         jumpButtonPressedTime = Time.time;
 
-        // -WALLJUMP-
-        if(context.started)
+        // For RunScript and IdleScript to know if we jumped
+        if (context.started)
             jumpInputReceived = true;
+
+        // -WALLJUMP-
 
         // If button is pressed and we are in allowed walljump position
         if (context.started && canWallJump)

@@ -25,18 +25,6 @@ public class IdleScript : StateMachineBehaviour
         {
             animator.SetBool("isRunning", true);
         }
-
-        // Jumping
-        if (PlayerMovement.Instance.jumpInputReceived)
-        {
-            animator.SetBool("jump", true);
-        }
-
-        //if (PlayerMovement.Instance.IsGrounded())
-        //{
-        //    animator.SetBool("jump", false);
-        //    PlayerMovement.Instance.jumpInputReceived = false;
-        //}
     }
 
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
