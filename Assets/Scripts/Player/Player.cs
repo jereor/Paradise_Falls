@@ -68,8 +68,13 @@ public class Player : MonoBehaviour
         switch (currentState)
         {
             case State.Idle:
-                PlayerCombat.Instance.EnableInputMelee();
-                PlayerCombat.Instance.EnableInputThrowAim();
+                // Combat
+                combatScript.EnableInputMelee();
+                combatScript.EnableInputThrowAim();
+
+                // Movement
+                movementScript.EnableInputJump();
+                movementScript.EnableInputMove();
                 break;
             case State.Running:
                 break;
@@ -82,14 +87,31 @@ public class Player : MonoBehaviour
             case State.WallSliding:
                 break;
             case State.Climbing:
-                PlayerCombat.Instance.DisableInputMelee();
+                // Combat
+                combatScript.DisableInputMelee();
+
+                // Movement
+                movementScript.DisableInputJump();
+                movementScript.DisableInputMove();
                 break;
             case State.Launched:
                 break;
             case State.Attacking:
-                PlayerCombat.Instance.DisableInputThrowAim();
+                // Combat
+                combatScript.DisableInputThrowAim();
+
+                // Movement
+                movementScript.DisableInputJump();
+                movementScript.DisableInputMove();
                 break;
             case State.AttackTransition:
+                // Combat
+                combatScript.EnableInputMelee();
+                combatScript.EnableInputThrowAim();
+
+                // Movement
+                //movementScript.EnableInputJump();
+                //movementScript.EnableInputMove();
                 break;
             default:
                 break;
@@ -132,6 +154,8 @@ public class Player : MonoBehaviour
 
         GUI.Label(new Rect(700, 10, 300, 100), "Currently: " + currentState, TextStyleHealth);
         GUI.Label(new Rect(1000, 10, 300, 100), "Previously: " + previousState, TextStyleEnergy);
+
+        GUI.Label(new Rect(1500, 10, 300, 100), "Horizontal: " + movementScript.horizontal, TextStyleEnergy);
     }
 
     // Move action: Called when the Move Action Button is pressed
