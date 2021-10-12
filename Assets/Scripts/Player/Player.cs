@@ -62,12 +62,18 @@ public class Player : MonoBehaviour
     {
         HandleStateInputs();
 
+
+        HandleAnimations();
+    }
+
+    private void HandleAnimations()
+    {
         // If we are jumping we check when we land with negative or zero y velo to set jump boolean false aka landed
         if (animator.GetBool("jump") && movementScript.IsGrounded() && rb.velocity.y <= 0f)
         {
             animator.SetBool("jump", false);
         }
-        else if(!animator.GetBool("jump") && !movementScript.IsGrounded() && rb.velocity.y != 0f)
+        else if (!animator.GetBool("jump") && !movementScript.IsGrounded() && rb.velocity.y != 0f)
         {
             animator.SetBool("jump", true);
         }
