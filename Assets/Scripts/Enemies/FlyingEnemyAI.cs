@@ -20,19 +20,15 @@ public class FlyingEnemyAI : MonoBehaviour
     [SerializeField] private GameObject energyItem;
     [SerializeField] private GameObject healthItem;
 
-    [Header("Ground Check")]
+    [Header("Layer Checks")]
     [SerializeField] LayerMask groundLayer;
-
-    [Header("Player Check")]
     [SerializeField] LayerMask playerLayer;
 
     [Header("Mobility")]
     [SerializeField] private float speed = 250f;
     [SerializeField] private float chargeSpeed = 400f;
     [SerializeField] private float roamSpeed = 250f;
-    [SerializeField] private float attackPower = 1f;
-    [SerializeField] private float explosionPower = 2f;
-
+    [SerializeField] private float explosionPower = 2f; // Attack power for when the enemy is ramming into player and hits.
 
     [Header("State and Parameters")]
     [SerializeField] private string state = "roam";
@@ -40,7 +36,7 @@ public class FlyingEnemyAI : MonoBehaviour
     [SerializeField] private Vector2 roamingOffset;
     [SerializeField] private float aggroDistance = 5f;
     [SerializeField] private float shootingDistance = 10f;
-    [SerializeField] private float wallCheckDistance = 2f;
+    [SerializeField] private float wallCheckDistance = 2f; // How far of a wall the enemy truns around.
     [SerializeField] private float knockbackForce = 5f;
 
     [Header("Health and Energy Spawn values")]
@@ -59,6 +55,7 @@ public class FlyingEnemyAI : MonoBehaviour
     //private float vectorPathLength = 1;
     private bool isTargetInBehaviourRange = false;
     private Vector2 lastSeenTargetPosition;
+    private bool isFlashingRed = true;
 
     private Collider2D _collider;
     private Vector2 spawnPosition;
@@ -199,6 +196,17 @@ public class FlyingEnemyAI : MonoBehaviour
         canShoot = true;
     }
 
+    // Numerator for flashing red color when ramming into player, making it visible that enemy unit is dangerous.
+    private IEnumerator FlashCoolDown()
+    {
+        isFlashingRed = false;
+        gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.red;
+        yield return new WaitForSeconds(0.3f);
+        gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.green;
+        yield return new WaitForSeconds(0.3f);
+        isFlashingRed = true;
+    }
+
     //Trying to raycast and check if there's an obstacle below the enemy unit
     private void ObstacleCheck()
     {
@@ -319,15 +327,15 @@ public class FlyingEnemyAI : MonoBehaviour
             //Here enemy charges the player. Checks if player is inside enemy unit's roaming range.
             case "charge":
                 // Target is out of aggro range, return to roaming state.
-                //if (!IsPlayerInAggroRange() || !IsPlayerInRange())
-                //{
-                //    returningFromChase = true;
-                //    CancelInvoke();
-                //    InvokeRepeating("UpdatePathReturn", 0f, pathUpdateInterval);
-                //    state = "roam";
-                //    speed = roamSpeed;
-                //    break;
-                //}
+                if (!IsPlayerInAggroRange() && !IsPlayerInRange())
+                {
+                    returningFromChase = true;
+                    CancelInvoke();
+                    InvokeRepeating("UpdatePathReturn", 0f, pathUpdateInterval);
+                    state = "roam";
+                    speed = roamSpeed;
+                    break;
+                }
 
                 FlipLocalScaleWithForce(force);
                 if (IsPlayerInAggroRange() && !IsPlayerInShootingRange())
@@ -349,7 +357,8 @@ public class FlyingEnemyAI : MonoBehaviour
                     
                 }
 
-                if(!IsPlayerInAggroRange())
+                // Target disappears from sight, start seraching them from the last seen location.
+                if(!IsPlayerInAggroRange() && IsPlayerInRange())
                 {
                     lastSeenTargetPosition = target.transform.position;
                     CancelInvoke();
@@ -364,6 +373,7 @@ public class FlyingEnemyAI : MonoBehaviour
             //Does damage to target if close enough. Otherwise goes to roam or charge state.
             case "shoot":
                 // Bullets do the damage, this only checks if the bullet can hit the target from current angle.
+                gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.green;
                 Debug.DrawRay(transform.position, target.transform.position - transform.position, Color.blue);
                 if(targetShield.Blocking)
                 {
@@ -400,7 +410,7 @@ public class FlyingEnemyAI : MonoBehaviour
                         transform.localScale = new Vector3(-1f, 1f, 1f);
                     }
                 }
-                // If target goes out of enemy's bounds, return to "roam" state
+                // If target goes out of enemy's bounds, return to "roam" state, otherwise start chasing again.
                 if (!IsPlayerInRange())
                 {
                     returningFromChase = true;
@@ -432,18 +442,22 @@ public class FlyingEnemyAI : MonoBehaviour
                 // Check if player is still holding their shield up.
                 if (!targetShield.Blocking)
                 {
+                    StartCoroutine(ShootCoolDown());
                     state = "shoot";
-                    canShoot = true;
                     Physics2D.IgnoreLayerCollision(3, 7);
-                    gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.green;
                     break;
                 }
                 // Ramming into player!
                 else
                 {
-                    gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.red;
                     rb.AddForce(force);
                 }
+                // Flash red color when ramming.
+                if(isFlashingRed)
+                {
+                    StartCoroutine(FlashCoolDown());
+                }
+                
                 break;
 
             // ALERT STATE
@@ -508,6 +522,7 @@ public class FlyingEnemyAI : MonoBehaviour
 
     }
 
+    // Flips the localscale of the enemy unit by given force.
     private void FlipLocalScaleWithForce(Vector2 force)
     {
         if (force.x >= 0.1f)

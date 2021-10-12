@@ -1995,6 +1995,10 @@ PrefabInstance:
       propertyPath: playerRB
       value: 
       objectReference: {fileID: 1859845175}
+    - target: {fileID: 8401565248732910209, guid: 77600955bab6e9a42b33ced08062f9d5, type: 3}
+      propertyPath: roamingRange.x
+      value: 22.9
+      objectReference: {fileID: 0}
     - target: {fileID: 8401565248732910210, guid: 77600955bab6e9a42b33ced08062f9d5, type: 3}
       propertyPath: m_Name
       value: GroundEnemyOne

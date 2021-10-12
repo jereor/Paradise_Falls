@@ -57,15 +57,20 @@ public class GroundEnemyAI : MonoBehaviour
     [Header("Pathfinding info")]
     [SerializeField] private float nextWaypointDistance = 1f;
     [SerializeField] private float pathUpdateInterval = 1f;
-    
+    [SerializeField] private bool isFacingRight = true;
+
+    private float hurtCounter = 0f;
+    private bool isHurt = false;
+
     private float wallCheckDistance = 1.5f;
     private float higherWallCheckDistance = 1.5f;
     private float groundCheckDistance = 2f;
-    [SerializeField] private bool isFacingRight = true;
+  
     private bool stunned = false;
     private bool canMove = true;
     private bool canJump = true;
     private bool canPunch = true;
+
     private float punchCooldown = 1.5f;
 
     private Vector2 spawnPosition;
@@ -168,6 +173,17 @@ public class GroundEnemyAI : MonoBehaviour
 
             obstacleBetweenTarget = Physics2D.Raycast(transform.position, (target.transform.position - transform.position).normalized, (target.transform.position - transform.position).magnitude, LayerMask.GetMask("Ground"));
             Debug.DrawRay(transform.position, target.transform.position - transform.position, Color.blue);
+
+            if(isHurt)
+            {
+                hurtCounter += Time.deltaTime;
+            }
+            if(hurtCounter >= 5)
+            {
+                isHurt = false;
+                hurtCounter = 0;
+            }
+            //Debug.Log(obstacleBetweenTarget.collider.name);
 
             ObstacleCheck();
 
@@ -338,8 +354,7 @@ public class GroundEnemyAI : MonoBehaviour
                     break;
                 }
                 // If target is close enough the enemy unit, charges it towards the player.
-                // If there's ground between the target and enemy, it doesn't see the target and continues to roam until target is in sight.
-                else if (IsPlayerInAggroRange() && IsPlayerInRange() && !obstacleBetweenTarget)
+                if ((IsPlayerInAggroRange() || isHurt) && IsPlayerInRange() && !obstacleBetweenTarget)
                 {
                     speed = chargeSpeed;
                     state = "charge";
@@ -360,29 +375,29 @@ public class GroundEnemyAI : MonoBehaviour
                 gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.red;
                 if (stunned) break;
                 // Outside the range, return to roam state.
-                if (!IsPlayerInAggroRange() || !IsPlayerInRange())
+                if ((!IsPlayerInAggroRange() && !isHurt) || !IsPlayerInRange())
                 {
                     gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.black;
                     speed = roamingSpeed;
                     state = "roam";
                     break;
                 }
-                // Inside the range, runs towards the target.
-                if (IsPlayerInAggroRange() && !IsPlayerInPunchingRange() && canMove)
+                // Inside the range, runs towards the target or jump randomly towards the target
+                if ((IsPlayerInAggroRange() && canMove && !IsPlayerInPunchingRange()) || (!IsPlayerInAggroRange() && canMove && isHurt && !IsPlayerInPunchingRange()))
                 {
                     int rand = UnityEngine.Random.Range(1, 101);
                     FlipLocalScaleWithForce(forceX);
                     if(rand <= jumpProbability)
                     {
                         Vector2 force = new Vector2(transform.localScale.x * jumpHeight * 1.5f, jumpHeight).normalized;
-                        rb.AddForce(force * jumpChargeSpeed * Time.deltaTime, ForceMode2D.Impulse);
-                        FlipLocalScaleWithForce(force);
+                        FlipLocalScaleWithForce(force);                        
+                        rb.AddForce(force * jumpChargeSpeed * Time.deltaTime, ForceMode2D.Impulse);                       
                         StartCoroutine(JumpChargeCoolDown());
                     }
                     else
                     {
-                        rb.AddForce(forceX);
                         FlipLocalScaleWithForce(forceX);
+                        rb.AddForce(forceX);                       
                         StartCoroutine(RunCoolDown());
                     }
                     break;
@@ -533,6 +548,15 @@ public class GroundEnemyAI : MonoBehaviour
             Instantiate(energyItem, transform.position, Quaternion.identity);
         }
 
+    }
+
+    // If enemy is hit by the flying melee weapon, it gets hurt and sees the player right away.
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if(collision.collider.tag == "MeleeWeapon")
+        {
+            isHurt = true;
+        }
     }
 }
 
