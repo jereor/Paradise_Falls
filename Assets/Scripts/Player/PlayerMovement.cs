@@ -232,8 +232,6 @@ public class PlayerMovement : MonoBehaviour
     {
         //Debug.Log("Climbing: " + Time.time);
         playerScript.SetCurrentState(Player.State.Climbing);
-        GetComponent<Animator>().SetBool("isRunning", false);
-
 
         yield return new WaitForSecondsRealtime(climbTimeBuffer);
         //Debug.Log("Ended Climbing: " + Time.time);

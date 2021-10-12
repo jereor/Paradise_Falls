@@ -13,7 +13,7 @@ public class RunScript : StateMachineBehaviour
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        // Input is false 
+        // Input is false we arent giving input
         if (PlayerMovement.Instance.horizontal == 0f)
         {
             animator.SetBool("IsRunning", false);
@@ -22,8 +22,6 @@ public class RunScript : StateMachineBehaviour
         // From running to Light attack
         if (PlayerCombat.Instance.meleeInputReceived && !PlayerCombat.Instance.heavyHold)
         {
-            animator.SetBool("IsRunning", false);
-
             Player.Instance.animator.Play("LAttack1");
         }
     }
