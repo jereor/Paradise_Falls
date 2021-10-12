@@ -62,9 +62,11 @@ public class GroundEnemyAI : MonoBehaviour
     private float hurtCounter = 0f;
     private bool isHurt = false;
 
-    private float wallCheckDistance = 1.5f;
-    private float higherWallCheckDistance = 1.5f;
-    private float groundCheckDistance = 2f;
+    [Header("Check Distances for Behaviours")]
+    [SerializeField] private float wallCheckDistance = 1.5f;
+    [SerializeField] private float higherWallCheckDistance = 1.5f;
+    [SerializeField] private float groundCheckDistance = 2f;
+    [SerializeField] private Vector2 angularUpDistance;
   
     private bool stunned = false;
     private bool canMove = true;
@@ -251,20 +253,20 @@ public class GroundEnemyAI : MonoBehaviour
         if (isFacingRight)
         {
             hitHorizontal = Physics2D.Raycast(transform.position, transform.right, wallCheckDistance, groundLayer);
-            hitAngularUp = Physics2D.Raycast(transform.position, new Vector2(1, 1), higherWallCheckDistance, groundLayer);
+            hitAngularUp = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + 1), angularUpDistance.normalized, higherWallCheckDistance, groundLayer);
             hitDown = Physics2D.Raycast(groundDetection.transform.position, Vector2.down, groundCheckDistance, groundLayer);
             Debug.DrawRay(transform.position, transform.right * wallCheckDistance, Color.red);
-            Debug.DrawRay(transform.position, new Vector2(1, 1) * higherWallCheckDistance, Color.red);
+            Debug.DrawRay(new Vector2(transform.position.x, transform.position.y + 1), angularUpDistance.normalized * higherWallCheckDistance, Color.red);
             Debug.DrawRay(groundDetection.transform.position, Vector2.down * groundCheckDistance, Color.red);
             jumpDirection = 1;
         }
         else
         {
             hitHorizontal = Physics2D.Raycast(transform.position, -transform.right, wallCheckDistance, groundLayer);
-            hitAngularUp = Physics2D.Raycast(transform.position, new Vector2(-1, 1), higherWallCheckDistance, groundLayer);
+            hitAngularUp = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + 1), new Vector2(-angularUpDistance.x, angularUpDistance.y).normalized, higherWallCheckDistance, groundLayer);
             hitDown = Physics2D.Raycast(groundDetection.transform.position, Vector2.down, groundCheckDistance, groundLayer);
             Debug.DrawRay(transform.position, -transform.right * wallCheckDistance, Color.red);
-            Debug.DrawRay(transform.position, new Vector2(-1, 1) * higherWallCheckDistance, Color.red);
+            Debug.DrawRay(new Vector2(transform.position.x, transform.position.y + 1), new Vector2(-angularUpDistance.x, angularUpDistance.y).normalized * higherWallCheckDistance, Color.red);
             Debug.DrawRay(groundDetection.transform.position, Vector2.down * groundCheckDistance, Color.red);
             jumpDirection = -1;
         }

@@ -1997,7 +1997,19 @@ PrefabInstance:
       objectReference: {fileID: 1859845175}
     - target: {fileID: 8401565248732910209, guid: 77600955bab6e9a42b33ced08062f9d5, type: 3}
       propertyPath: roamingRange.x
-      value: 22.9
+      value: 31.98
+      objectReference: {fileID: 0}
+    - target: {fileID: 8401565248732910209, guid: 77600955bab6e9a42b33ced08062f9d5, type: 3}
+      propertyPath: angularUpDistance.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8401565248732910209, guid: 77600955bab6e9a42b33ced08062f9d5, type: 3}
+      propertyPath: angularUpDistance.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8401565248732910209, guid: 77600955bab6e9a42b33ced08062f9d5, type: 3}
+      propertyPath: higherWallCheckDistance
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 8401565248732910210, guid: 77600955bab6e9a42b33ced08062f9d5, type: 3}
       propertyPath: m_Name
