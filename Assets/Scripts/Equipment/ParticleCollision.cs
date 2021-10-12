@@ -20,13 +20,22 @@ public class ParticleCollision : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Enemy"))
         {
-            var direction = collision.transform.position - transform.position;
-            collision.GetComponent<Rigidbody2D>().AddForceAtPosition(direction.normalized * knockbackForce, collisionEvents[0].intersection, ForceMode2D.Impulse);
+            // Knockback enemy
+            Knockback(collision.gameObject, gameObject, knockbackForce);
         }
 
         if (collision.gameObject.CompareTag("MeleeWeapon"))
         {
             // Power Boost the weapon and set it flying forwards
+            Debug.Log("Weapon hit!");
         }
+    }
+
+    // Small knockback to the target. Knockback knocks slightly upwards so the friction doesn't stop the target right away.
+    private void Knockback(GameObject target, GameObject from, float knockbackForce)
+    {
+        float pushbackX = target.transform.position.x - from.transform.position.x;
+        Vector2 knockbackDirection = new Vector2(pushbackX, Mathf.Abs(pushbackX / 4)).normalized;
+        target.GetComponent<Rigidbody2D>().AddForce(knockbackDirection * knockbackForce);
     }
 }
