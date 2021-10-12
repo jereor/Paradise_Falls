@@ -75,6 +75,8 @@ public class GroundEnemyAI : MonoBehaviour
     private bool gizmoPositionChange = true;
     private bool isTargetInBehaviourRange = false;
 
+    private RaycastHit2D obstacleBetweenTarget;
+
     private Seeker seeker;
     private Rigidbody2D rb;
 
@@ -164,21 +166,12 @@ public class GroundEnemyAI : MonoBehaviour
             //Keeps the count of the waypoints
             if (distance < nextWaypointDistance) { currentWaypoint++; }
 
-            //Used for turning the enemy sprite into the direction it is currently going towards to
-            //if (rb.velocity.x >= 1f)
-            //{
-            //    transform.localScale = new Vector3(1f, 1f, 1f);
-            //    isFacingRight = true;
-            //}
-            //else if (rb.velocity.x <= -1f)
-            //{
-            //    transform.localScale = new Vector3(-1f, 1f, 1f);
-            //    isFacingRight = false;
-            //}
+            obstacleBetweenTarget = Physics2D.Raycast(transform.position, (target.transform.position - transform.position).normalized, (target.transform.position - transform.position).magnitude, LayerMask.GetMask("Ground"));
+            Debug.DrawRay(transform.position, target.transform.position - transform.position, Color.blue);
 
             ObstacleCheck();
 
-            EnemyStateChange(forceX);
+            EnemyStateChange(forceX, obstacleBetweenTarget);
         }
 
 
@@ -315,7 +308,7 @@ public class GroundEnemyAI : MonoBehaviour
 
     // ENEMY BEHAVIOUR STATES
     // ---------------------------------------------------------------------------------------------------------------
-    private void EnemyStateChange(Vector2 forceX)
+    private void EnemyStateChange(Vector2 forceX, RaycastHit2D obstacleBetweenTarget)
     {
         // switch-case system between different enemy states.
         switch (state)
@@ -345,7 +338,8 @@ public class GroundEnemyAI : MonoBehaviour
                     break;
                 }
                 // If target is close enough the enemy unit, charges it towards the player.
-                else if (IsPlayerInAggroRange() && IsPlayerInRange())
+                // If there's ground between the target and enemy, it doesn't see the target and continues to roam until target is in sight.
+                else if (IsPlayerInAggroRange() && IsPlayerInRange() && !obstacleBetweenTarget)
                 {
                     speed = chargeSpeed;
                     state = "charge";
@@ -493,6 +487,7 @@ public class GroundEnemyAI : MonoBehaviour
         gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.black;
     }
 
+    // Briefly flashes player sprite red when enemy hits them.
     IEnumerator PlayerHit()
     {
         GameObject.Find("Player").GetComponent<SpriteRenderer>().color = Color.red;
@@ -500,6 +495,7 @@ public class GroundEnemyAI : MonoBehaviour
         GameObject.Find("Player").GetComponent<SpriteRenderer>().color = Color.white;
     }
 
+    // Flip the local scale of the enemy by force value.
     private void FlipLocalScaleWithForce(Vector2 force)
     {
         if (force.x >= 0.1f)
@@ -521,7 +517,8 @@ public class GroundEnemyAI : MonoBehaviour
         Vector2 knockbackDirection = new Vector2(pushbackX, Mathf.Abs(pushbackX / 4)).normalized;
         rb.AddForce(knockbackDirection * force);
     }
-
+    
+    // Function for energy or health drop when enemy dies or in any other conditions. Probabilites are assigned with the probability values and health amount. Both drops cannot spawn at the same time.
     public void SpawnHealthOrEnergy()
     {
         int rand = UnityEngine.Random.Range(1, 101);
