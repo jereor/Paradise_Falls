@@ -61,6 +61,11 @@ public class Player : MonoBehaviour
     private void FixedUpdate()
     {
         HandleStateInputs();
+
+        if (movementScript.IsGrounded() && rb.velocity.y <= 0f)
+        {
+            animator.SetBool("jump", false);
+        }
     }
 
     private void HandleStateInputs()
@@ -79,8 +84,20 @@ public class Player : MonoBehaviour
             case State.Running:
                 break;
             case State.Jumping:
+
+                animator.SetFloat("yVelocity", rb.velocity.y);
+
+                //if(animator.GetFloat("yVelocity") <= 0f)
+                //    SetCurrentState(State.Falling);
+
                 break;
             case State.Falling:
+                animator.SetFloat("yVelocity", rb.velocity.y);
+
+                //if (animator.GetFloat("yVelocity") > 0f)
+                //    SetCurrentState(State.Jumping);
+
+
                 break;
             case State.Diving:
                 break;

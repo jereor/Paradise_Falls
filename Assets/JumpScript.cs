@@ -2,48 +2,36 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RunScript : StateMachineBehaviour
+public class JumpScript : StateMachineBehaviour
 {
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        if (animator.GetBool("jump"))
-        {
-            animator.SetBool("isRunning", false);
-        }
-        else
-        {
-            Player.Instance.SetCurrentState(Player.State.Running);
-        }
+        Player.Instance.SetCurrentState(Player.State.Jumping);
+        Debug.Log("Enter");
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        // Input is false we arent giving input
-        if (PlayerMovement.Instance.horizontal == 0f)
-        {
-            animator.SetBool("isRunning", false);
-        }
+        Debug.Log("up");
 
-        // From running to Light attack
-        if (PlayerCombat.Instance.meleeInputReceived && !PlayerCombat.Instance.heavyHold)
+        // State update
+        if (animator.GetFloat("yVelocity") < 0f)
         {
-            Player.Instance.animator.Play("LAttack1");
+            Player.Instance.SetCurrentState(Player.State.Falling);
         }
-
-        // Jumping
-        if (PlayerMovement.Instance.jumpInputReceived)
+        else if(animator.GetFloat("yVelocity") >= 0f)
         {
-            animator.SetBool("jump", true);
+            Player.Instance.SetCurrentState(Player.State.Jumping);
         }
     }
 
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
-    //override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
-    //{
-
-    //}
+    override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+    {
+        PlayerMovement.Instance.jumpInputReceived = false;
+    }
 
     // OnStateMove is called right after Animator.OnAnimatorMove()
     //override public void OnStateMove(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)

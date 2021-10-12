@@ -355,7 +355,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     // Returns true if ground check detects ground
-    private bool IsGrounded()
+    public bool IsGrounded()
     {
         return Physics2D.OverlapCircle(groundCheck.position, checkRadius, groundLayer);
     }
@@ -459,6 +459,8 @@ public class PlayerMovement : MonoBehaviour
         jumpButtonPressedTime = Time.time;
 
         // -WALLJUMP-
+        if(context.started)
+            jumpInputReceived = true;
 
         // If button is pressed and we are in allowed walljump position
         if (context.started && canWallJump)
@@ -487,7 +489,7 @@ public class PlayerMovement : MonoBehaviour
             && (Time.time - lastWallTouchTime <= coyoteTime / 2) // With full coyoteTime handling feels weird
             && !LedgeIsOccupied()) // This Check prevents jumping from wall when there is no ground after the wall object and we slide past wall, Coyote time causes unwanted double jump without
         {
-            playerScript.SetCurrentState(Player.State.Jumping);
+            //playerScript.SetCurrentState(Player.State.Jumping);
 
             // Replace or figure this out if else if is used above
             rb.velocity = new Vector2(jumpForce, jumpForce);
@@ -504,7 +506,7 @@ public class PlayerMovement : MonoBehaviour
             if (!(playerScript.GetCurrentState() == Player.State.Diving)) // First frame of diving
                 rb.velocity = new Vector2(0, -jumpForce); // Set velocity downwards
 
-            playerScript.SetCurrentState(Player.State.Diving);
+            //playerScript.SetCurrentState(Player.State.Diving);
             diving = true;
             lastDiveTime = Time.time;
 
@@ -522,7 +524,7 @@ public class PlayerMovement : MonoBehaviour
             if (context.started && !shockwaveJumping
                 && !(Time.time - lastGroundedTime <= coyoteTime)) // Check if coyote time is online (if yes, no double jump needed)
             {
-                playerScript.SetCurrentState(Player.State.Jumping);
+                //playerScript.SetCurrentState(Player.State.Jumping);
                 shockwaveTool.CancelShockwaveDive(); // Checks if shockwave dive graphics are on and disables them
 
                 // Activate the event through the ShockwaveTool script and do a double jump
