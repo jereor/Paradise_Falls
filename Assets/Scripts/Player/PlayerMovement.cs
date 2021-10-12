@@ -272,9 +272,9 @@ public class PlayerMovement : MonoBehaviour
                     if (!climbing && rb.velocity.y < 0 && rb.gravityScale == defaultGravityScale)
                     {
                         //playerScript.SetCurrentState(Player.State.WallSliding);
-                        currentlyWallSliding = true;
                         rb.gravityScale = wallSlideGravityScale;
                     }
+                    currentlyWallSliding = true;
                     // We are facing to the wall and we can jump off the wall
                     canWallJump = true;
                     // This is used in Wall Jump Coyote time check
@@ -292,6 +292,7 @@ public class PlayerMovement : MonoBehaviour
             // We land set wall jump wall direction tracking to zero
             if (IsGrounded())
             {
+                currentlyWallSliding = false;
                 rb.gravityScale = defaultGravityScale;
                 wallJumpDir = 0f;
                 canWallJump = false;

@@ -31,7 +31,7 @@ public class RunScript : StateMachineBehaviour
         }
 
         // From running to Light attack
-        if (PlayerCombat.Instance.meleeInputReceived && !PlayerCombat.Instance.heavyHold)
+        if (PlayerCombat.Instance.meleeInputReceived && !PlayerCombat.Instance.heavyHold && !animator.GetBool("isClimbing"))
         {
             Player.Instance.animator.Play("LAttack1");
         }

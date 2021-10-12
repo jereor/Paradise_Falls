@@ -7,7 +7,11 @@ public class LAttack3Script : StateMachineBehaviour
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+        PlayerCombat.Instance.meleeInputReceived = false;
+
         Player.Instance.SetCurrentState(Player.State.Attacking);
+
+        animator.SetBool("isAttacking", true);
 
         PlayerCombat.Instance.AttackDash();
     }
@@ -22,6 +26,8 @@ public class LAttack3Script : StateMachineBehaviour
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         PlayerCombat.Instance.DealDamage(3, false);
+
+        //animator.SetBool("isAttacking", false);
     }
 
     // OnStateMove is called right after Animator.OnAnimatorMove()

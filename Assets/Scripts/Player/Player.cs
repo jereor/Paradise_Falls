@@ -68,12 +68,15 @@ public class Player : MonoBehaviour
 
     private void HandleAnimations()
     {
-        if (movementScript.getClimbing())
+        // LedgeClimb animation
+        // LedgeChecks return true
+        if (movementScript.getClimbing() && !animator.GetBool("isAttacking"))
         {
-            animator.SetBool("canLedgeClimb", true);
+            animator.SetBool("isClimbing", true);
         }
 
-        if (movementScript.getWallSliding())
+        // WallSlide animation
+        if (movementScript.getWallSliding() && !movementScript.getClimbing())
         {
             animator.SetBool("isWallSliding", true);
         }
@@ -82,6 +85,7 @@ public class Player : MonoBehaviour
             animator.SetBool("isWallSliding", false);
         }
         
+        // Jump / Fall animation
         // If we are jumping we check when we land with negative or zero y velo to set jump boolean false aka landed
         if (animator.GetBool("jump") && movementScript.IsGrounded() && rb.velocity.y <= 0f)
         {
@@ -109,6 +113,13 @@ public class Player : MonoBehaviour
                 movementScript.EnableInputMove();
                 break;
             case State.Running:
+                // Combat
+                combatScript.EnableInputMelee();
+                combatScript.EnableInputThrowAim();
+
+                // Movement
+                movementScript.EnableInputJump();
+                movementScript.EnableInputMove();
                 break;
             case State.Jumping:
                 animator.SetFloat("yVelocity", rb.velocity.y);
@@ -119,10 +130,18 @@ public class Player : MonoBehaviour
             case State.Diving:
                 break;
             case State.WallSliding:
+                // Combat
+                combatScript.DisableInputMelee();
+                combatScript.EnableInputThrowAim();
+
+                // Movement
+                movementScript.EnableInputJump();
+                movementScript.EnableInputMove();
                 break;
             case State.Climbing:
                 // Combat
                 combatScript.DisableInputMelee();
+                combatScript.DisableInputThrowAim();
 
                 // Movement
                 movementScript.DisableInputJump();
@@ -144,8 +163,8 @@ public class Player : MonoBehaviour
                 combatScript.EnableInputThrowAim();
 
                 // Movement
-                //movementScript.EnableInputJump();
-                //movementScript.EnableInputMove();
+                movementScript.EnableInputJump();
+                movementScript.EnableInputMove();
                 break;
             default:
                 break;

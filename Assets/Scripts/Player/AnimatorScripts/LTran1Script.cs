@@ -7,13 +7,14 @@ public class LTran1Script : StateMachineBehaviour
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+        // Set transition state
         Player.Instance.SetCurrentState(Player.State.AttackTransition);
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        if (PlayerCombat.Instance.meleeInputReceived && !PlayerCombat.Instance.heavyHold)
+        if (PlayerCombat.Instance.meleeInputReceived && !PlayerCombat.Instance.heavyHold && !animator.GetBool("isClimbing"))
         {
             Player.Instance.animator.Play("LAttack2");
         }
@@ -22,7 +23,8 @@ public class LTran1Script : StateMachineBehaviour
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        PlayerCombat.Instance.meleeInputReceived = false;
+        // Set this false here so we can for example use running animations
+        animator.SetBool("isAttacking", false);
     }
 
     // OnStateMove is called right after Animator.OnAnimatorMove()

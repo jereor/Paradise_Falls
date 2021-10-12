@@ -20,7 +20,7 @@ public class LedgeClimbScript : StateMachineBehaviour
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         PlayerMovement.Instance.LedgeClimb();
-        animator.SetBool("canLedgeClimb", false);
+        animator.SetBool("isClimbing", false);
     }
 
     // OnStateMove is called right after Animator.OnAnimatorMove()
