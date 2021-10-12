@@ -28,6 +28,10 @@ public class Player : MonoBehaviour
     public Animator animator;
     public Rigidbody2D rb;
 
+    // If state is changed this will be true so we know in FixedUpdate to HandleStateInput() only when we change state
+    // If this is not used HandleStateUpdate() will be called every FixedUpdate() call aka Disables and Enables are done each FixedUpdate() -> potatocomputers cannot run our game
+    private bool statesChanged = false;
+
     public enum State
     {
         Idle,
@@ -62,8 +66,9 @@ public class Player : MonoBehaviour
 
     private void FixedUpdate()
     {
-        HandleStateInputs();
-
+        // If game is not paused and state has changed handle state inputs
+        if(!PauseMenuController.GameIsPaused && statesChanged)
+            HandleStateInputs();
 
         HandleAnimations();
     }
@@ -88,14 +93,20 @@ public class Player : MonoBehaviour
         }
         
         // Jump / Fall animation
-        // If we are jumping we check when we land with negative or zero y velo to set jump boolean false aka landed
+        // We are in air and we land with rb velocity downwards or zero 
         if (animator.GetBool("jump") && movementScript.IsGrounded() && rb.velocity.y <= 0f)
         {
             animator.SetBool("jump", false);
         }
-        else if (!animator.GetBool("jump") && !movementScript.IsGrounded() && rb.velocity.y != 0f)
+        // We are in air and we are currently moving upwards or downwards
+        else if (!movementScript.IsGrounded() && rb.velocity.y != 0f)
         {
-            animator.SetBool("jump", true);
+            // If this is false set it to true since we are either jumping or falling
+            if(!animator.GetBool("jump"))
+                animator.SetBool("jump", true);
+            // Update float yVelocity to be used in blend tree 
+            // if negative value -> falling(decreasing) animation OR if positive/zero -> jumping(ascending) animation 
+            animator.SetFloat("yVelocity", rb.velocity.y);
         }
 
         // Aiming
@@ -110,8 +121,10 @@ public class Player : MonoBehaviour
         //}
     }
 
+    // Enables and Disables inputs
     private void HandleStateInputs()
     {
+        //Debug.Log("State update frequency");
         switch (currentState)
         {
             case State.Idle:
@@ -133,10 +146,8 @@ public class Player : MonoBehaviour
                 movementScript.EnableInputMove();
                 break;
             case State.Jumping:
-                animator.SetFloat("yVelocity", rb.velocity.y);
                 break;
             case State.Falling:
-                animator.SetFloat("yVelocity", rb.velocity.y);
                 break;
             case State.Diving:
                 break;
@@ -184,6 +195,34 @@ public class Player : MonoBehaviour
             default:
                 break;
         }
+        // We updated states -> we can set this to false -> no need to check again if we stay in same state
+        statesChanged = false;
+    }
+
+    // Called from PauseMenuController on Pause() and Resume()
+    // Add enables and disables as they are made in scripts ---- CURRENT: melee, aim, jump, move
+    public void HandleAllPlayerControlInputs(bool activate)
+    {
+        if (!activate)
+        {
+            // Combat
+            combatScript.DisableInputMelee();
+            combatScript.DisableInputThrowAim();
+
+            // Movement
+            movementScript.DisableInputJump();
+            movementScript.DisableInputMove();
+        }
+        else
+        {
+            // Combat
+            combatScript.EnableInputMelee();
+            combatScript.EnableInputThrowAim();
+
+            // Movement
+            movementScript.EnableInputJump();
+            movementScript.EnableInputMove();
+        }
     }
 
     public State GetCurrentState()
@@ -202,6 +241,8 @@ public class Player : MonoBehaviour
         {
             previousState = currentState;
         }
+        // Set this to true so we know in FixedUpdate() that we have to call HandleStateInputs()
+        statesChanged = true;
         currentState = newState;
     }
 
