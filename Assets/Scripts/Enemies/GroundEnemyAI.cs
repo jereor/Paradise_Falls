@@ -11,6 +11,8 @@ public class GroundEnemyAI : MonoBehaviour
     private Health _targetHealth;
     private Energy _targetEnergy;
 
+    private Health health;
+
     [Header("Transforms")]
     [SerializeField] private Transform target;
     [SerializeField] private Transform enemyGFX;
@@ -63,10 +65,10 @@ public class GroundEnemyAI : MonoBehaviour
     private bool isHurt = false;
 
     [Header("Check Distances for Behaviours")]
-    [SerializeField] private float wallCheckDistance = 1.5f;
+    [SerializeField] private float jumpableWallCheckDistance = 1.5f;
     [SerializeField] private float higherWallCheckDistance = 1.5f;
     [SerializeField] private float groundCheckDistance = 2f;
-    [SerializeField] private Vector2 angularUpDistance;
+    [SerializeField] private Vector2 wallCheckDirection;
   
     private bool stunned = false;
     private bool canMove = true;
@@ -74,6 +76,7 @@ public class GroundEnemyAI : MonoBehaviour
     private bool canPunch = true;
 
     private float punchCooldown = 1.5f;
+    private float healthCount;
 
     private Vector2 spawnPosition;
     private Path path;
@@ -93,6 +96,8 @@ public class GroundEnemyAI : MonoBehaviour
         seeker = GetComponent<Seeker>();
         rb = GetComponent<Rigidbody2D>();
         _targetHealth = target.GetComponent<Health>();
+        health = GetComponent<Health>();
+        healthCount = health.CurrentHealth;
         spawnPosition = transform.position;
         gizmoPositionChange = false;
 
@@ -173,9 +178,20 @@ public class GroundEnemyAI : MonoBehaviour
             //Keeps the count of the waypoints
             if (distance < nextWaypointDistance) { currentWaypoint++; }
 
+            // Has enemy unit taken damage after last update.
+            if(health.CurrentHealth < healthCount && state == "roam" && !isHurt)
+            {
+                Debug.Log("It hurts...");
+                healthCount = health.CurrentHealth;
+                StartCoroutine(Stunned(2));
+                state = "charge";
+                isHurt = true;
+            }
+
             obstacleBetweenTarget = Physics2D.Raycast(transform.position, (target.transform.position - transform.position).normalized, (target.transform.position - transform.position).magnitude, LayerMask.GetMask("Ground"));
             Debug.DrawRay(transform.position, target.transform.position - transform.position, Color.blue);
 
+            // If enemy is hurt, it chases the target.
             if(isHurt)
             {
                 hurtCounter += Time.deltaTime;
@@ -185,7 +201,6 @@ public class GroundEnemyAI : MonoBehaviour
                 isHurt = false;
                 hurtCounter = 0;
             }
-            //Debug.Log(obstacleBetweenTarget.collider.name);
 
             ObstacleCheck();
 
@@ -252,21 +267,21 @@ public class GroundEnemyAI : MonoBehaviour
         // Casts rays in the direction enemy unit is facing.
         if (isFacingRight)
         {
-            hitHorizontal = Physics2D.Raycast(transform.position, transform.right, wallCheckDistance, groundLayer);
-            hitAngularUp = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + 1), angularUpDistance.normalized, higherWallCheckDistance, groundLayer);
+            hitHorizontal = Physics2D.Raycast(transform.position, transform.right, jumpableWallCheckDistance, groundLayer);
+            hitAngularUp = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + 1), wallCheckDirection.normalized, higherWallCheckDistance, groundLayer);
             hitDown = Physics2D.Raycast(groundDetection.transform.position, Vector2.down, groundCheckDistance, groundLayer);
-            Debug.DrawRay(transform.position, transform.right * wallCheckDistance, Color.red);
-            Debug.DrawRay(new Vector2(transform.position.x, transform.position.y + 1), angularUpDistance.normalized * higherWallCheckDistance, Color.red);
+            Debug.DrawRay(transform.position, transform.right * jumpableWallCheckDistance, Color.red);
+            Debug.DrawRay(new Vector2(transform.position.x, transform.position.y + 1), wallCheckDirection.normalized * higherWallCheckDistance, Color.red);
             Debug.DrawRay(groundDetection.transform.position, Vector2.down * groundCheckDistance, Color.red);
             jumpDirection = 1;
         }
         else
         {
-            hitHorizontal = Physics2D.Raycast(transform.position, -transform.right, wallCheckDistance, groundLayer);
-            hitAngularUp = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + 1), new Vector2(-angularUpDistance.x, angularUpDistance.y).normalized, higherWallCheckDistance, groundLayer);
+            hitHorizontal = Physics2D.Raycast(transform.position, -transform.right, jumpableWallCheckDistance, groundLayer);
+            hitAngularUp = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + 1), new Vector2(-wallCheckDirection.x, wallCheckDirection.y).normalized, higherWallCheckDistance, groundLayer);
             hitDown = Physics2D.Raycast(groundDetection.transform.position, Vector2.down, groundCheckDistance, groundLayer);
-            Debug.DrawRay(transform.position, -transform.right * wallCheckDistance, Color.red);
-            Debug.DrawRay(new Vector2(transform.position.x, transform.position.y + 1), new Vector2(-angularUpDistance.x, angularUpDistance.y).normalized * higherWallCheckDistance, Color.red);
+            Debug.DrawRay(transform.position, -transform.right * jumpableWallCheckDistance, Color.red);
+            Debug.DrawRay(new Vector2(transform.position.x, transform.position.y + 1), new Vector2(-wallCheckDirection.x, wallCheckDirection.y).normalized * higherWallCheckDistance, Color.red);
             Debug.DrawRay(groundDetection.transform.position, Vector2.down * groundCheckDistance, Color.red);
             jumpDirection = -1;
         }
@@ -373,9 +388,9 @@ public class GroundEnemyAI : MonoBehaviour
             // CHARGE STATE
             //------------------------------------------------------------------------------------------------------------------
             //Here enemy charges the target. Checks if target is inside enemy unit's roaming range.
-            case "charge":
-                gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.red;
+            case "charge":                
                 if (stunned) break;
+                gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.red;
                 // Outside the range, return to roam state.
                 if ((!IsPlayerInAggroRange() && !isHurt) || !IsPlayerInRange())
                 {
