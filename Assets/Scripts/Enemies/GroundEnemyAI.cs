@@ -4,18 +4,20 @@ using UnityEngine;
 using Pathfinding;
 using System;
 
+#pragma warning disable 0414
+
 public class GroundEnemyAI : MonoBehaviour
 {
     private Health _targetHealth;
     private Energy _targetEnergy;
 
     [Header("Transforms")]
-    public Transform target;
-    public Transform enemyGFX;
-    public Rigidbody2D playerRB;
-    public Transform groundDetection;
-    public GameObject energyItem;
-    public GameObject healthItem;
+    [SerializeField] private Transform target;
+    [SerializeField] private Transform enemyGFX;
+    [SerializeField] private Rigidbody2D playerRB;
+    [SerializeField] private Transform groundDetection;
+    [SerializeField] private GameObject energyItem;
+    [SerializeField] private GameObject healthItem;
 
     [Header("Ground Check")]
     [SerializeField] private Transform groundCheck; // GameObject attached to player that checks if touching ground
@@ -25,40 +27,46 @@ public class GroundEnemyAI : MonoBehaviour
     [SerializeField] LayerMask playerLayer;
 
     [Header("Mobility")]
-    public float speed = 200f;
-    public float jumpHeight = 500f;
-    public float walkStepInterval = 1f;
-    public float runStepInterval = 0.5f;
-    public float attackPower = 1f;
+    [SerializeField] private float speed = 10000f;
+    [SerializeField] private float roamingSpeed = 10000f;
+    [SerializeField] private float chargeSpeed = 15000f;
+    [SerializeField] private float jumpChargeSpeed = 700f;
+    [SerializeField] private float jumpHeight = 500f;
+    [SerializeField] private float walkStepInterval = 1f;
+    [SerializeField] private float runStepInterval = 0.5f;
+    [SerializeField] private float jumpChargeInterval = 1f;
+    [SerializeField] private float attackPower = 2f;
 
     [Header("State and Parameters")]
-    public string state = "roam";
-    public Vector2 roamingRange = new Vector2(10, 10);
-    public Vector2 aggroDistance = new Vector2(5f, 5f);
-    public float aggroDistanceLength = 5f;
-    public Vector2 punchingDistance = new Vector2(3f, 3f);
-    public float knockbackForce = 5f;
+    [SerializeField] private string state = "roam";
+    [SerializeField] private Vector2 roamingRange = new Vector2(10, 10);
+    [SerializeField] private Vector2 roamingOffset;
+    [SerializeField] private Vector2 aggroDistance = new Vector2(5f, 5f);
+    [SerializeField] private Vector2 aggroOffset;
+    [SerializeField] private float aggroDistanceLength = 5f;
+    [SerializeField] private Vector2 hitDistance = new Vector2(3f, 3f);
+    [SerializeField] private Vector2 hitOffset;
+    [SerializeField] private float knockbackForce = 5f;
+    [SerializeField] private int jumpProbability = 10; // Range between 1 - 100. Lower number means lower chance to jump during chase. Creates variation to the enemy movement.
 
     [Header("Health and Energy Spawn values")]
-    public float healthProbability; // Value between 1-100. Higher the better chance.
-    public float energyProbability;
-    public float amountWhenHealthIsSpawnable; // MaxHealth value between 0-1. When your health sinks below a certain amount health becomes spawnable.
+    [SerializeField] private float healthProbability; // Value between 1-100. Higher the better chance.
+    [SerializeField] private float energyProbability;
+    [SerializeField] private float amountWhenHealthIsSpawnable; // MaxHealth value between 0-1. When your health sinks below a certain amount health becomes spawnable.
 
     [Header("Pathfinding info")]
-    public float nextWaypointDistance = 1f;
-    public float pathUpdateInterval = 1f;
+    [SerializeField] private float nextWaypointDistance = 1f;
+    [SerializeField] private float pathUpdateInterval = 1f;
     
     private float wallCheckDistance = 1.5f;
     private float higherWallCheckDistance = 1.5f;
     private float groundCheckDistance = 2f;
-    private bool isFacingRight = true;
+    [SerializeField] private bool isFacingRight = true;
     private bool stunned = false;
     private bool canMove = true;
     private bool canJump = true;
     private bool canPunch = true;
     private float punchCooldown = 1.5f;
-
-
 
     private Vector2 spawnPosition;
     private Path path;
@@ -78,7 +86,6 @@ public class GroundEnemyAI : MonoBehaviour
         _targetHealth = target.GetComponent<Health>();
         spawnPosition = transform.position;
         gizmoPositionChange = false;
-        Physics2D.IgnoreLayerCollision(3, 7);
 
         //Updates the path repeatedly with a chosen time interval
         InvokeRepeating("UpdatePath", 0f, 0.5f);
@@ -94,16 +101,16 @@ public class GroundEnemyAI : MonoBehaviour
     {
         if (gizmoPositionChange)
         {
-            Gizmos.DrawWireCube(transform.position, roamingRange);
+            Gizmos.DrawWireCube(new Vector2(transform.position.x + roamingOffset.x, transform.position.y + roamingOffset.y), roamingRange);
         }
         else
         {
-            Gizmos.DrawWireCube(spawnPosition, roamingRange);
+            Gizmos.DrawWireCube(new Vector2(spawnPosition.x + roamingOffset.x, spawnPosition.y + roamingOffset.y), roamingRange);
         }
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireCube(transform.position, aggroDistance);
+        Gizmos.DrawWireCube(new Vector2(transform.position.x + (transform.localScale.x * aggroOffset.x), transform.position.y + aggroOffset.y), aggroDistance);
         Gizmos.color = Color.red;
-        Gizmos.DrawWireCube(transform.position, punchingDistance);
+        Gizmos.DrawWireCube(new Vector2(transform.position.x + (transform.localScale.x * hitOffset.x), transform.position.y + hitOffset.y), hitDistance);
 
     }
 
@@ -149,7 +156,7 @@ public class GroundEnemyAI : MonoBehaviour
 
             //Calculates the next path point and the amount of force applied on X-axis
             Vector2 direction = ((Vector2)path.vectorPath[currentWaypoint] - rb.position).normalized;
-            Vector2 forceX = new Vector2(direction.x, 0).normalized * speed;
+            Vector2 forceX = new Vector2(direction.x, 0).normalized * speed * Time.deltaTime;
 
             //Distance between the enemy and next waypoint
             float distance = Vector2.Distance(rb.position, path.vectorPath[currentWaypoint]);
@@ -158,16 +165,16 @@ public class GroundEnemyAI : MonoBehaviour
             if (distance < nextWaypointDistance) { currentWaypoint++; }
 
             //Used for turning the enemy sprite into the direction it is currently going towards to
-            if (rb.velocity.x >= 1f)
-            {
-                transform.localScale = new Vector3(1f, 1f, 1f);
-                isFacingRight = true;
-            }
-            else if (rb.velocity.x <= -1f)
-            {
-                transform.localScale = new Vector3(-1f, 1f, 1f);
-                isFacingRight = false;
-            }
+            //if (rb.velocity.x >= 1f)
+            //{
+            //    transform.localScale = new Vector3(1f, 1f, 1f);
+            //    isFacingRight = true;
+            //}
+            //else if (rb.velocity.x <= -1f)
+            //{
+            //    transform.localScale = new Vector3(-1f, 1f, 1f);
+            //    isFacingRight = false;
+            //}
 
             ObstacleCheck();
 
@@ -175,16 +182,6 @@ public class GroundEnemyAI : MonoBehaviour
         }
 
 
-    }
-
-    //Does not serve any purpose at the moment.
-    private IEnumerator UpdatePath(float waitTime)
-    {
-        if (seeker.IsDone())
-        {
-            seeker.StartPath(rb.position, target.position, OnPathComplete);
-        }
-        yield return new WaitForSeconds(waitTime);
     }
 
     //Cooldowns for walk, run, jump and punch.
@@ -199,6 +196,13 @@ public class GroundEnemyAI : MonoBehaviour
     {
         canMove = false;
         yield return new WaitForSeconds(runStepInterval);
+        canMove = true;
+    }
+
+    private IEnumerator JumpChargeCoolDown()
+    {
+        canMove = false;
+        yield return new WaitForSeconds(jumpChargeInterval);
         canMove = true;
     }
 
@@ -264,6 +268,14 @@ public class GroundEnemyAI : MonoBehaviour
             {
                 Debug.Log("No ground ahead!");
             }
+            if(isFacingRight)
+            {
+                isFacingRight = false;
+            }
+            else
+            {
+                isFacingRight = true;
+            }
             transform.localScale = new Vector3(-jumpDirection, 1f, 1f);
         }
         // If the ray collides with ground layer, unit is grounded and jump is not on cooldown, performs a jump.
@@ -286,17 +298,17 @@ public class GroundEnemyAI : MonoBehaviour
     // Checks if target is in a box shaped area given by parameters.
     private bool IsPlayerInRange()
     {
-        return Physics2D.OverlapBox(spawnPosition, roamingRange, 0, playerLayer);
+        return Physics2D.OverlapBox(new Vector2(spawnPosition.x + roamingOffset.x, spawnPosition.y + roamingOffset.y), roamingRange, 0, playerLayer);
     }
 
     private bool IsPlayerInPunchingRange()
     {
-        return Physics2D.OverlapBox(transform.position, punchingDistance, 0, playerLayer);
+        return Physics2D.OverlapBox(new Vector2(transform.position.x + (transform.localScale.x * hitOffset.x), transform.position.y + hitOffset.y), hitDistance, 0, playerLayer);
     }
 
     private bool IsPlayerInAggroRange()
     {
-        return Physics2D.OverlapBox(transform.position, aggroDistance, 0, playerLayer);
+        return Physics2D.OverlapBox(new Vector2(transform.position.x + (transform.localScale.x * aggroOffset.x), transform.position.y + aggroOffset.y), aggroDistance, 0, playerLayer);
     }
 
 
@@ -314,34 +326,35 @@ public class GroundEnemyAI : MonoBehaviour
             case "roam":
                 if (stunned) break;
                 // If the enemy unit tries to go outside of the given area parameters, it turns around.
-                if (transform.position.x >= (spawnPosition.x + roamingRange.x / 2) && canMove && IsGrounded())
+                if (transform.position.x >= (spawnPosition.x + roamingRange.x / 2 + roamingOffset.x) && canMove && IsGrounded())
                 {
                     //Debug.Log("Left");
                     transform.localScale = new Vector3(-1f, 1f, 1f);
                     isFacingRight = false;
-                    rb.AddForce(new Vector2(transform.localScale.x * speed, 0));
+                    rb.AddForce(new Vector2(transform.localScale.x * speed * Time.deltaTime, 0));
                     StartCoroutine(WalkCoolDown());
                     break;
                 }
-                else if (transform.position.x <= (spawnPosition.x - roamingRange.x / 2) && canMove && IsGrounded())
+                else if (transform.position.x <= (spawnPosition.x - roamingRange.x / 2 + roamingOffset.x) && canMove && IsGrounded())
                 {
                     //Debug.Log("Right");
                     transform.localScale = new Vector3(1f, 1f, 1f);
                     isFacingRight = true;
-                    rb.AddForce(new Vector2(transform.localScale.x * speed, 0));
+                    rb.AddForce(new Vector2(transform.localScale.x * speed * Time.deltaTime, 0));
                     StartCoroutine(WalkCoolDown());
                     break;
                 }
                 // If target is close enough the enemy unit, charges it towards the player.
                 else if (IsPlayerInAggroRange() && IsPlayerInRange())
                 {
+                    speed = chargeSpeed;
                     state = "charge";
                     break;
                 }
                 // If the enemy unit is inside the given roaming range and target is nowhere near, it roams around.
                 if (transform.position.x <= (spawnPosition.x + roamingRange.x) && transform.position.x >= (spawnPosition.x - roamingRange.x) && canMove && IsGrounded())
                 {
-                    rb.AddForce(new Vector2(transform.localScale.x * speed, 0));
+                    rb.AddForce(new Vector2(transform.localScale.x * speed * Time.deltaTime, 0));
                     StartCoroutine(WalkCoolDown());
                 }
                 break;
@@ -350,18 +363,34 @@ public class GroundEnemyAI : MonoBehaviour
             //------------------------------------------------------------------------------------------------------------------
             //Here enemy charges the target. Checks if target is inside enemy unit's roaming range.
             case "charge":
+                gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.red;
                 if (stunned) break;
                 // Outside the range, return to roam state.
                 if (!IsPlayerInAggroRange() || !IsPlayerInRange())
                 {
+                    gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.black;
+                    speed = roamingSpeed;
                     state = "roam";
                     break;
                 }
                 // Inside the range, runs towards the target.
                 if (IsPlayerInAggroRange() && !IsPlayerInPunchingRange() && canMove)
                 {
-                    rb.AddForce(forceX);
-                    StartCoroutine(RunCoolDown());
+                    int rand = UnityEngine.Random.Range(1, 101);
+                    FlipLocalScaleWithForce(forceX);
+                    if(rand <= jumpProbability)
+                    {
+                        Vector2 force = new Vector2(transform.localScale.x * jumpHeight * 1.5f, jumpHeight).normalized;
+                        rb.AddForce(force * jumpChargeSpeed * Time.deltaTime, ForceMode2D.Impulse);
+                        FlipLocalScaleWithForce(force);
+                        StartCoroutine(JumpChargeCoolDown());
+                    }
+                    else
+                    {
+                        rb.AddForce(forceX);
+                        FlipLocalScaleWithForce(forceX);
+                        StartCoroutine(RunCoolDown());
+                    }
                     break;
                 }
                 //If target is close enough the enemy unit, it changes the state to "punch"
@@ -384,10 +413,12 @@ public class GroundEnemyAI : MonoBehaviour
                     // Turns the enemy unit torwards the target when punching.
                     if (target.transform.position.x - transform.position.x >= 0)
                     {
+                        isFacingRight = true;
                         transform.localScale = new Vector3(1f, 1f, 1f);
                     }
                     else
                     {
+                        isFacingRight = false;
                         transform.localScale = new Vector3(-1f, 1f, 1f);
                     }
 
@@ -396,21 +427,23 @@ public class GroundEnemyAI : MonoBehaviour
                         if (shield.Parrying)
                         {
                             target.GetComponent<Shield>().HitWhileParried(); // Tell player parry was successful
-                            StartCoroutine(Stunned()); // Get stunned
+                            StartCoroutine(Stunned(1.5f)); // Get stunned
                         }
                         else
                         {
                             _targetHealth.TakeDamage(attackPower);
 
-                            PlayerPushback();
+                            //PlayerPushback();
+                            StartCoroutine(PlayerHit());
                             StartCoroutine(PunchCoolDown());
                         }
                     }
                     else
                     {
-                        _targetHealth.TakeDamage(4);
+                        _targetHealth.TakeDamage(attackPower);
 
-                        PlayerPushback();
+                        //PlayerPushback();
+                        StartCoroutine(PlayerHit());
                         StartCoroutine(PunchCoolDown());
                     }
                 }
@@ -418,11 +451,14 @@ public class GroundEnemyAI : MonoBehaviour
                 // If target goes out of enemy's bounds, return to "roam" state
                 if (!IsPlayerInRange())
                 {
+                    gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.black;
+                    speed = roamingSpeed;
                     state = "roam";
                     break;
                 }
                 else if (!IsPlayerInPunchingRange() && IsPlayerInAggroRange())
                 {
+                    speed = chargeSpeed;
                     state = "charge";
                     //Debug.Log("Charge again!");
                     break;
@@ -439,13 +475,13 @@ public class GroundEnemyAI : MonoBehaviour
         playerRB.AddForce(knockbackDirection * knockbackForce);
     }
 
-    IEnumerator Stunned()
+    IEnumerator Stunned(float stunTime)
     {
         Debug.Log("Stunned...");
         stunned = true;
-        gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.red;
+        gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.blue;
 
-        float timer = 5;
+        float timer = stunTime;
         while (timer > 0)
         {
             timer -= Time.deltaTime;
@@ -455,6 +491,35 @@ public class GroundEnemyAI : MonoBehaviour
         Debug.Log("Stun ended");
         stunned = false;
         gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.black;
+    }
+
+    IEnumerator PlayerHit()
+    {
+        GameObject.Find("Player").GetComponent<SpriteRenderer>().color = Color.red;
+        yield return new WaitForSeconds(0.1f);
+        GameObject.Find("Player").GetComponent<SpriteRenderer>().color = Color.white;
+    }
+
+    private void FlipLocalScaleWithForce(Vector2 force)
+    {
+        if (force.x >= 0.1f)
+        {
+            transform.localScale = new Vector3(1f, 1f, 1f);
+            isFacingRight = true;
+        }
+        else if (force.x <= -0.1f)
+        {
+            transform.localScale = new Vector3(-1f, 1f, 1f);
+            isFacingRight = false;
+        }
+    }
+
+    // Small knockback that can be activated by player and environment. Knockback knocks slightly upwards so the friction doesn't stop it right away.
+    public void KnockBackEnemy(GameObject from, float force)
+    {
+        float pushbackX = transform.position.x - from.transform.position.x;
+        Vector2 knockbackDirection = new Vector2(pushbackX, Mathf.Abs(pushbackX / 4)).normalized;
+        rb.AddForce(knockbackDirection * force);
     }
 
     public void SpawnHealthOrEnergy()

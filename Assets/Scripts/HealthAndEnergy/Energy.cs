@@ -10,7 +10,7 @@ public class Energy : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        currentEnergy = 0;
+        currentEnergy = maxEnergy;
     }
 
     // This function uses the energy. If current energy amount tries to go below 0, function sets it to 0.
@@ -22,7 +22,7 @@ public class Energy : MonoBehaviour
             currentEnergy -= amount;
     }
 
-    // Setter for CurrentEnergy.
+    // Setter for CurrentEnergy
     public void SetEnergy(float amount)
     {
         if (currentEnergy + amount >= maxEnergy)
@@ -34,5 +34,15 @@ public class Energy : MonoBehaviour
     public float GetEnergy()
     {
         return currentEnergy;
+    }
+
+    public bool CheckForEnergy(float cost)
+    {
+        return currentEnergy - cost >= 0;
+    }
+
+    public bool OutOfEnergy()
+    {
+        return currentEnergy == 0;
     }
 }
