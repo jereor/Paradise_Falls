@@ -130,8 +130,8 @@ TextureImporter:
       name: cambot_run_sheet_0
       rect:
         serializedVersion: 2
-        x: 15
-        y: 6
+        x: 22
+        y: 9
         width: 134
         height: 170
       alignment: 0
@@ -151,8 +151,8 @@ TextureImporter:
       name: cambot_run_sheet_1
       rect:
         serializedVersion: 2
-        x: 175
-        y: 3
+        x: 182
+        y: 6
         width: 106
         height: 156
       alignment: 0
@@ -172,8 +172,8 @@ TextureImporter:
       name: cambot_run_sheet_2
       rect:
         serializedVersion: 2
-        x: 338
-        y: 6
+        x: 345
+        y: 9
         width: 90
         height: 162
       alignment: 0
@@ -193,8 +193,8 @@ TextureImporter:
       name: cambot_run_sheet_3
       rect:
         serializedVersion: 2
-        x: 432
-        y: 7
+        x: 439
+        y: 10
         width: 105
         height: 172
       alignment: 0
@@ -214,8 +214,8 @@ TextureImporter:
       name: cambot_run_sheet_4
       rect:
         serializedVersion: 2
-        x: 550
-        y: 7
+        x: 557
+        y: 10
         width: 123
         height: 177
       alignment: 0
@@ -235,8 +235,8 @@ TextureImporter:
       name: cambot_run_sheet_5
       rect:
         serializedVersion: 2
-        x: 690
-        y: 19
+        x: 697
+        y: 22
         width: 152
         height: 166
       alignment: 0
@@ -256,8 +256,8 @@ TextureImporter:
       name: cambot_run_sheet_6
       rect:
         serializedVersion: 2
-        x: 859
-        y: 7
+        x: 866
+        y: 10
         width: 134
         height: 165
       alignment: 0
@@ -277,8 +277,8 @@ TextureImporter:
       name: cambot_run_sheet_7
       rect:
         serializedVersion: 2
-        x: 1013
-        y: 6
+        x: 1020
+        y: 9
         width: 105
         height: 154
       alignment: 0
@@ -298,8 +298,8 @@ TextureImporter:
       name: cambot_run_sheet_8
       rect:
         serializedVersion: 2
-        x: 1160
-        y: 7
+        x: 1167
+        y: 10
         width: 76
         height: 165
       alignment: 0
@@ -319,8 +319,8 @@ TextureImporter:
       name: cambot_run_sheet_9
       rect:
         serializedVersion: 2
-        x: 1264
-        y: 7
+        x: 1271
+        y: 10
         width: 103
         height: 171
       alignment: 0
@@ -340,8 +340,8 @@ TextureImporter:
       name: cambot_run_sheet_10
       rect:
         serializedVersion: 2
-        x: 1372
-        y: 7
+        x: 1379
+        y: 10
         width: 120
         height: 176
       alignment: 0
@@ -361,8 +361,8 @@ TextureImporter:
       name: cambot_run_sheet_11
       rect:
         serializedVersion: 2
-        x: 1500
-        y: 20
+        x: 1507
+        y: 23
         width: 147
         height: 162
       alignment: 0
