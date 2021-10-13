@@ -14,9 +14,16 @@ public class IdleScript : StateMachineBehaviour
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+        // Player melees
         if (PlayerCombat.Instance.meleeInputReceived && !PlayerCombat.Instance.heavyHold)
         {
             Player.Instance.animator.Play("LAttack1");
+        }
+
+        // Player starts moving
+        if (PlayerMovement.Instance.horizontal != 0f)
+        {
+            animator.SetBool("isRunning", true);
         }
     }
 

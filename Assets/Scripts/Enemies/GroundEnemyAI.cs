@@ -11,6 +11,8 @@ public class GroundEnemyAI : MonoBehaviour
     private Health _targetHealth;
     private Energy _targetEnergy;
 
+    private Health health;
+
     [Header("Transforms")]
     [SerializeField] private Transform target;
     [SerializeField] private Transform enemyGFX;
@@ -35,6 +37,7 @@ public class GroundEnemyAI : MonoBehaviour
     [SerializeField] private float walkStepInterval = 1f;
     [SerializeField] private float runStepInterval = 0.5f;
     [SerializeField] private float jumpChargeInterval = 1f;
+    [SerializeField] private float punchCooldown = 1.5f;
     [SerializeField] private float attackPower = 2f;
 
     [Header("State and Parameters")]
@@ -48,6 +51,7 @@ public class GroundEnemyAI : MonoBehaviour
     [SerializeField] private Vector2 hitOffset;
     [SerializeField] private float knockbackForce = 5f;
     [SerializeField] private int jumpProbability = 10; // Range between 1 - 100. Lower number means lower chance to jump during chase. Creates variation to the enemy movement.
+    [SerializeField] private float forcedAggroTime = 3f;
 
     [Header("Health and Energy Spawn values")]
     [SerializeField] private float healthProbability; // Value between 1-100. Higher the better chance.
@@ -57,16 +61,24 @@ public class GroundEnemyAI : MonoBehaviour
     [Header("Pathfinding info")]
     [SerializeField] private float nextWaypointDistance = 1f;
     [SerializeField] private float pathUpdateInterval = 1f;
-    
-    private float wallCheckDistance = 1.5f;
-    private float higherWallCheckDistance = 1.5f;
-    private float groundCheckDistance = 2f;
     [SerializeField] private bool isFacingRight = true;
+
+    private float hurtCounter = 0f;  
+    private bool isForcedToAggro = false;
+
+    [Header("Check Distances for Behaviours")]
+    [SerializeField] private float jumpableWallCheckDistance = 1.5f;
+    [SerializeField] private float higherWallCheckDistance = 1.5f;
+    [SerializeField] private float groundCheckDistance = 2f;
+    [SerializeField] private Vector2 wallCheckDirection;
+  
     private bool stunned = false;
     private bool canMove = true;
     private bool canJump = true;
     private bool canPunch = true;
-    private float punchCooldown = 1.5f;
+
+    
+    private float healthCount;
 
     private Vector2 spawnPosition;
     private Path path;
@@ -74,6 +86,8 @@ public class GroundEnemyAI : MonoBehaviour
     private bool reachedEndOfPath = false;
     private bool gizmoPositionChange = true;
     private bool isTargetInBehaviourRange = false;
+
+    private RaycastHit2D obstacleBetweenTarget;
 
     private Seeker seeker;
     private Rigidbody2D rb;
@@ -84,6 +98,8 @@ public class GroundEnemyAI : MonoBehaviour
         seeker = GetComponent<Seeker>();
         rb = GetComponent<Rigidbody2D>();
         _targetHealth = target.GetComponent<Health>();
+        health = GetComponent<Health>();
+        healthCount = health.CurrentHealth;
         spawnPosition = transform.position;
         gizmoPositionChange = false;
 
@@ -141,6 +157,7 @@ public class GroundEnemyAI : MonoBehaviour
             isTargetInBehaviourRange = true;
         }
 
+        // Every action enemy takes falls under this if-statement. If target is absolutely out of reach (currently hard coded as 60), start the action.
         if (isTargetInBehaviourRange)
         {
             //Checks if the enemy is in the end of the path
@@ -164,24 +181,45 @@ public class GroundEnemyAI : MonoBehaviour
             //Keeps the count of the waypoints
             if (distance < nextWaypointDistance) { currentWaypoint++; }
 
-            //Used for turning the enemy sprite into the direction it is currently going towards to
-            //if (rb.velocity.x >= 1f)
-            //{
-            //    transform.localScale = new Vector3(1f, 1f, 1f);
-            //    isFacingRight = true;
-            //}
-            //else if (rb.velocity.x <= -1f)
-            //{
-            //    transform.localScale = new Vector3(-1f, 1f, 1f);
-            //    isFacingRight = false;
-            //}
+            obstacleBetweenTarget = Physics2D.Raycast(transform.position, (target.transform.position - transform.position).normalized, (target.transform.position - transform.position).magnitude, LayerMask.GetMask("Ground"));
+            Debug.DrawRay(transform.position, target.transform.position - transform.position, Color.blue);
 
+            // Has enemy unit taken damage after last update without noticing it itself.
+            if (health.CurrentHealth < healthCount)
+            {
+                // If there's damage taken and enemy isn't aggroed, force the aggro on enemy towards the target.
+                // This means that player has done a surprise attack. Stun the enemy briefly by given parameter.
+                healthCount = health.CurrentHealth;
+                hurtCounter = 0;
+                if (state == "roam" && !obstacleBetweenTarget)
+                {
+                    Debug.Log("It hurts...");
+                    healthCount = health.CurrentHealth;
+                    if (!stunned)
+                    {
+                        StartCoroutine(Stunned(1));
+                    }
+                    state = "charge";
+                    isForcedToAggro = true;
+                }
+            }
+
+            // Forced aggro timer. If it reaches the given parameter and target isn't in aggro range, return to normal roam state. (This is done in the state function.)
+            if(isForcedToAggro)
+            {
+                hurtCounter += Time.deltaTime;
+            }
+            if(hurtCounter >= forcedAggroTime)
+            {
+                isForcedToAggro = false;
+                hurtCounter = 0;
+            }
+
+            // Checks only for ground ahead, jumpable obstacles and walls.
             ObstacleCheck();
 
-            EnemyStateChange(forceX);
+            EnemyStateChange(forceX, obstacleBetweenTarget);
         }
-
-
     }
 
     //Cooldowns for walk, run, jump and punch.
@@ -201,9 +239,11 @@ public class GroundEnemyAI : MonoBehaviour
 
     private IEnumerator JumpChargeCoolDown()
     {
+        canJump = false;
         canMove = false;
         yield return new WaitForSeconds(jumpChargeInterval);
         canMove = true;
+        canJump = true;
     }
 
     private IEnumerator JumpCoolDown()
@@ -236,26 +276,25 @@ public class GroundEnemyAI : MonoBehaviour
         RaycastHit2D hitDown;
         float jumpDirection;
         Vector2 force;
-        Vector2 jumpPosition = transform.position;
 
         // Casts rays in the direction enemy unit is facing.
         if (isFacingRight)
         {
-            hitHorizontal = Physics2D.Raycast(transform.position, transform.right, wallCheckDistance, groundLayer);
-            hitAngularUp = Physics2D.Raycast(transform.position, new Vector2(1, 1), higherWallCheckDistance, groundLayer);
+            hitHorizontal = Physics2D.Raycast(transform.position, transform.right, jumpableWallCheckDistance, groundLayer);
+            hitAngularUp = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + 1), wallCheckDirection.normalized, higherWallCheckDistance, groundLayer);
             hitDown = Physics2D.Raycast(groundDetection.transform.position, Vector2.down, groundCheckDistance, groundLayer);
-            Debug.DrawRay(transform.position, transform.right * wallCheckDistance, Color.red);
-            Debug.DrawRay(transform.position, new Vector2(1, 1) * higherWallCheckDistance, Color.red);
+            Debug.DrawRay(transform.position, transform.right * jumpableWallCheckDistance, Color.red);
+            Debug.DrawRay(new Vector2(transform.position.x, transform.position.y + 1), wallCheckDirection.normalized * higherWallCheckDistance, Color.red);
             Debug.DrawRay(groundDetection.transform.position, Vector2.down * groundCheckDistance, Color.red);
             jumpDirection = 1;
         }
         else
         {
-            hitHorizontal = Physics2D.Raycast(transform.position, -transform.right, wallCheckDistance, groundLayer);
-            hitAngularUp = Physics2D.Raycast(transform.position, new Vector2(-1, 1), higherWallCheckDistance, groundLayer);
+            hitHorizontal = Physics2D.Raycast(transform.position, -transform.right, jumpableWallCheckDistance, groundLayer);
+            hitAngularUp = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + 1), new Vector2(-wallCheckDirection.x, wallCheckDirection.y).normalized, higherWallCheckDistance, groundLayer);
             hitDown = Physics2D.Raycast(groundDetection.transform.position, Vector2.down, groundCheckDistance, groundLayer);
-            Debug.DrawRay(transform.position, -transform.right * wallCheckDistance, Color.red);
-            Debug.DrawRay(transform.position, new Vector2(-1, 1) * higherWallCheckDistance, Color.red);
+            Debug.DrawRay(transform.position, -transform.right * jumpableWallCheckDistance, Color.red);
+            Debug.DrawRay(new Vector2(transform.position.x, transform.position.y + 1), new Vector2(-wallCheckDirection.x, wallCheckDirection.y).normalized * higherWallCheckDistance, Color.red);
             Debug.DrawRay(groundDetection.transform.position, Vector2.down * groundCheckDistance, Color.red);
             jumpDirection = -1;
         }
@@ -315,7 +354,7 @@ public class GroundEnemyAI : MonoBehaviour
 
     // ENEMY BEHAVIOUR STATES
     // ---------------------------------------------------------------------------------------------------------------
-    private void EnemyStateChange(Vector2 forceX)
+    private void EnemyStateChange(Vector2 forceX, RaycastHit2D obstacleBetweenTarget)
     {
         // switch-case system between different enemy states.
         switch (state)
@@ -345,7 +384,7 @@ public class GroundEnemyAI : MonoBehaviour
                     break;
                 }
                 // If target is close enough the enemy unit, charges it towards the player.
-                else if (IsPlayerInAggroRange() && IsPlayerInRange())
+                if ((IsPlayerInAggroRange() || isForcedToAggro) && IsPlayerInRange() && !obstacleBetweenTarget)
                 {
                     speed = chargeSpeed;
                     state = "charge";
@@ -362,33 +401,33 @@ public class GroundEnemyAI : MonoBehaviour
             // CHARGE STATE
             //------------------------------------------------------------------------------------------------------------------
             //Here enemy charges the target. Checks if target is inside enemy unit's roaming range.
-            case "charge":
-                gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.red;
+            case "charge":                
                 if (stunned) break;
+                gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.red;
                 // Outside the range, return to roam state.
-                if (!IsPlayerInAggroRange() || !IsPlayerInRange())
+                if ((!IsPlayerInAggroRange() && !isForcedToAggro) || !IsPlayerInRange())
                 {
                     gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.black;
                     speed = roamingSpeed;
                     state = "roam";
                     break;
                 }
-                // Inside the range, runs towards the target.
-                if (IsPlayerInAggroRange() && !IsPlayerInPunchingRange() && canMove)
+                // Inside the range, runs towards the target or jump randomly towards the target
+                if ((IsPlayerInAggroRange() && canMove && !IsPlayerInPunchingRange()) || (!IsPlayerInAggroRange() && canMove && isForcedToAggro && !IsPlayerInPunchingRange()))
                 {
                     int rand = UnityEngine.Random.Range(1, 101);
                     FlipLocalScaleWithForce(forceX);
-                    if(rand <= jumpProbability)
+                    if(rand <= jumpProbability && IsGrounded())
                     {
                         Vector2 force = new Vector2(transform.localScale.x * jumpHeight * 1.5f, jumpHeight).normalized;
-                        rb.AddForce(force * jumpChargeSpeed * Time.deltaTime, ForceMode2D.Impulse);
-                        FlipLocalScaleWithForce(force);
+                        FlipLocalScaleWithForce(force);                        
+                        rb.AddForce(force * jumpChargeSpeed * Time.deltaTime, ForceMode2D.Impulse);                       
                         StartCoroutine(JumpChargeCoolDown());
                     }
                     else
                     {
-                        rb.AddForce(forceX);
                         FlipLocalScaleWithForce(forceX);
+                        rb.AddForce(forceX);                       
                         StartCoroutine(RunCoolDown());
                     }
                     break;
@@ -405,7 +444,7 @@ public class GroundEnemyAI : MonoBehaviour
             //Does damage to target if close enough. Otherwise goes to roam or charge state.
             case "punch":
                 if (stunned) break;
-                if (canPunch)
+                if (canPunch && IsPlayerInPunchingRange())
                 {
                     //Do damage to player here
                     Debug.Log("Player hit");
@@ -456,8 +495,9 @@ public class GroundEnemyAI : MonoBehaviour
                     state = "roam";
                     break;
                 }
-                else if (!IsPlayerInPunchingRange() && IsPlayerInAggroRange())
+                else if (!IsPlayerInPunchingRange())
                 {
+                    isForcedToAggro = true;
                     speed = chargeSpeed;
                     state = "charge";
                     //Debug.Log("Charge again!");
@@ -493,6 +533,7 @@ public class GroundEnemyAI : MonoBehaviour
         gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.black;
     }
 
+    // Briefly flashes player sprite red when enemy hits them.
     IEnumerator PlayerHit()
     {
         GameObject.Find("Player").GetComponent<SpriteRenderer>().color = Color.red;
@@ -500,6 +541,7 @@ public class GroundEnemyAI : MonoBehaviour
         GameObject.Find("Player").GetComponent<SpriteRenderer>().color = Color.white;
     }
 
+    // Flip the local scale of the enemy by force value.
     private void FlipLocalScaleWithForce(Vector2 force)
     {
         if (force.x >= 0.1f)
@@ -521,7 +563,8 @@ public class GroundEnemyAI : MonoBehaviour
         Vector2 knockbackDirection = new Vector2(pushbackX, Mathf.Abs(pushbackX / 4)).normalized;
         rb.AddForce(knockbackDirection * force);
     }
-
+    
+    // Function for energy or health drop when enemy dies or in any other conditions. Probabilites are assigned with the probability values and health amount. Both drops cannot spawn at the same time.
     public void SpawnHealthOrEnergy()
     {
         int rand = UnityEngine.Random.Range(1, 101);
@@ -536,6 +579,16 @@ public class GroundEnemyAI : MonoBehaviour
             Instantiate(energyItem, transform.position, Quaternion.identity);
         }
 
+    }
+
+    // If enemy is hit by the flying melee weapon, enemy is forced to aggro.
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if(collision.collider.tag == "MeleeWeapon")
+        {
+            isForcedToAggro = true;
+            hurtCounter = 0;
+        }
     }
 }
 

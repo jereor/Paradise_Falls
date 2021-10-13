@@ -1,0 +1,396 @@
+fileFormatVersion: 2
+guid: 15bc79b69febce24c827cbc3cf770335
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 1332229815576501784
+    second: cambot_run_sheet_0
+  - first:
+      213: -1707091968445690119
+    second: cambot_run_sheet_1
+  - first:
+      213: -4888472813904574778
+    second: cambot_run_sheet_2
+  - first:
+      213: 5094716421875647491
+    second: cambot_run_sheet_3
+  - first:
+      213: 1768072272864728086
+    second: cambot_run_sheet_4
+  - first:
+      213: -3528302528915194119
+    second: cambot_run_sheet_5
+  - first:
+      213: 8676127361051027227
+    second: cambot_run_sheet_6
+  - first:
+      213: 7135758038119537470
+    second: cambot_run_sheet_7
+  - first:
+      213: -4341155770994645706
+    second: cambot_run_sheet_8
+  - first:
+      213: 7950246199615066747
+    second: cambot_run_sheet_9
+  - first:
+      213: 7008062965872204650
+    second: cambot_run_sheet_10
+  - first:
+      213: -7694952531558256499
+    second: cambot_run_sheet_11
+  externalObjects: {}
+  serializedVersion: 11
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: cambot_run_sheet_0
+      rect:
+        serializedVersion: 2
+        x: 22
+        y: 9
+        width: 134
+        height: 170
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 81e1f9475f70d7210800000000000000
+      internalID: 1332229815576501784
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cambot_run_sheet_1
+      rect:
+        serializedVersion: 2
+        x: 182
+        y: 6
+        width: 106
+        height: 156
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9fe4fd536e03f48e0800000000000000
+      internalID: -1707091968445690119
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cambot_run_sheet_2
+      rect:
+        serializedVersion: 2
+        x: 345
+        y: 9
+        width: 90
+        height: 162
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6c6401140e7a82cb0800000000000000
+      internalID: -4888472813904574778
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cambot_run_sheet_3
+      rect:
+        serializedVersion: 2
+        x: 439
+        y: 10
+        width: 105
+        height: 172
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3044f3db79114b640800000000000000
+      internalID: 5094716421875647491
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cambot_run_sheet_4
+      rect:
+        serializedVersion: 2
+        x: 557
+        y: 10
+        width: 123
+        height: 177
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 614d1515d54798810800000000000000
+      internalID: 1768072272864728086
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cambot_run_sheet_5
+      rect:
+        serializedVersion: 2
+        x: 697
+        y: 22
+        width: 152
+        height: 166
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9feb5ef2b83f80fc0800000000000000
+      internalID: -3528302528915194119
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cambot_run_sheet_6
+      rect:
+        serializedVersion: 2
+        x: 866
+        y: 10
+        width: 134
+        height: 165
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b176e75eddbc76870800000000000000
+      internalID: 8676127361051027227
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cambot_run_sheet_7
+      rect:
+        serializedVersion: 2
+        x: 1020
+        y: 9
+        width: 105
+        height: 154
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e3bd049f02e470360800000000000000
+      internalID: 7135758038119537470
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cambot_run_sheet_8
+      rect:
+        serializedVersion: 2
+        x: 1167
+        y: 10
+        width: 76
+        height: 165
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6352a33a3dd11c3c0800000000000000
+      internalID: -4341155770994645706
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cambot_run_sheet_9
+      rect:
+        serializedVersion: 2
+        x: 1271
+        y: 10
+        width: 103
+        height: 171
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b7294fcdbc2f45e60800000000000000
+      internalID: 7950246199615066747
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cambot_run_sheet_10
+      rect:
+        serializedVersion: 2
+        x: 1379
+        y: 10
+        width: 120
+        height: 176
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a6b126c1324a14160800000000000000
+      internalID: 7008062965872204650
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cambot_run_sheet_11
+      rect:
+        serializedVersion: 2
+        x: 1507
+        y: 23
+        width: 147
+        height: 162
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d803af03179063590800000000000000
+      internalID: -7694952531558256499
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+  spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
