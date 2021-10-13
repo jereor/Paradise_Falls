@@ -2033,6 +2033,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   knockbackForce: 800
+  collisionDetector: {fileID: 5126511340998217563, guid: d0d21bca4dc664747bb93577f364d0c6, type: 3}
 --- !u!1 &882921844
 GameObject:
   m_ObjectHideFlags: 0
@@ -3124,11 +3125,11 @@ PrefabInstance:
       objectReference: {fileID: 729320505}
     - target: {fileID: 284613507, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: m_TrackedObjectOffset.x
-      value: 0.7999995
+      value: 0.8019998
       objectReference: {fileID: 0}
     - target: {fileID: 284613507, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: m_TrackedObjectOffset.y
-      value: -2.42873e-18
+      value: -0.4644918
       objectReference: {fileID: 0}
     - target: {fileID: 505850491, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: m_Follow
@@ -3136,11 +3137,11 @@ PrefabInstance:
       objectReference: {fileID: 729320505}
     - target: {fileID: 1012424850, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: m_TrackedObjectOffset.x
-      value: -0.9091488
+      value: -0.9999997
       objectReference: {fileID: 0}
     - target: {fileID: 1012424850, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: m_TrackedObjectOffset.y
-      value: -2.069425e-25
+      value: -7.33e-43
       objectReference: {fileID: 0}
     - target: {fileID: 1348274982, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: currentCamera
@@ -3248,12 +3249,24 @@ PrefabInstance:
       value: 270
       objectReference: {fileID: 0}
     - target: {fileID: 1691313839, guid: 4154d57994558ff489a9180c3151e624, type: 3}
+      propertyPath: TriggerModule.enter
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1691313839, guid: 4154d57994558ff489a9180c3151e624, type: 3}
       propertyPath: CollisionModule.type
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1691313839, guid: 4154d57994558ff489a9180c3151e624, type: 3}
-      propertyPath: CollisionModule.enabled
+      propertyPath: TriggerModule.inside
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1691313839, guid: 4154d57994558ff489a9180c3151e624, type: 3}
+      propertyPath: TriggerModule.enabled
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1691313839, guid: 4154d57994558ff489a9180c3151e624, type: 3}
+      propertyPath: CollisionModule.enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1691313839, guid: 4154d57994558ff489a9180c3151e624, type: 3}
       propertyPath: ShapeModule.radius.value
@@ -3285,7 +3298,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1691313839, guid: 4154d57994558ff489a9180c3151e624, type: 3}
       propertyPath: CollisionModule.m_EnergyLossOnCollision.scalar
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1691313839, guid: 4154d57994558ff489a9180c3151e624, type: 3}
       propertyPath: CollisionModule.multiplyColliderForceByParticleSize

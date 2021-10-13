@@ -44,7 +44,7 @@ public class MeleeWeapon : MonoBehaviour
         if (worldPickUp)
         {
             landed = true;
-            SetEnemyIngoresOnLand();
+            SetEnemyIgnoresOnLand();
         }
         else
             // Weapon is not landed since it is just thrown
@@ -108,7 +108,7 @@ public class MeleeWeapon : MonoBehaviour
                 myRB.velocity = tmp.normalized + new Vector2(0, ricochetYImpulse) * ricochetImpulseForce;
 
                 landed = true;
-                SetEnemyIngoresOnLand();
+                SetEnemyIgnoresOnLand();
             }
         }
         // Enemy
@@ -132,7 +132,7 @@ public class MeleeWeapon : MonoBehaviour
                 // Cant deal damage twice
                 landed = true;
                 // Ignore enemy collisions
-                SetEnemyIngoresOnLand();
+                SetEnemyIgnoresOnLand();
             }      
         }
         // Collision with GrapplePoint
@@ -147,7 +147,7 @@ public class MeleeWeapon : MonoBehaviour
             // We are attached to a grappling point.
             attachedToGrapplePoint = true;
             landed = true;
-            SetEnemyIngoresOnLand();
+            SetEnemyIgnoresOnLand();
 
             // Calculations for the angle where the weapon hit the block.
             // Gets the last contact point from the list and uses it to calculate the angle. Is a bit more accurate than the first contact point to get the desired result.
@@ -238,7 +238,7 @@ public class MeleeWeapon : MonoBehaviour
     }
 
     // Ignore enemylayer colliders when we land
-    private void SetEnemyIngoresOnLand()
+    private void SetEnemyIgnoresOnLand()
     {
         if (!Physics2D.GetIgnoreLayerCollision(LayerMask.NameToLayer("Enemy"), LayerMask.NameToLayer("MeleeWeapon")))
             Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Enemy"), LayerMask.NameToLayer("MeleeWeapon"), true);
@@ -288,7 +288,44 @@ public class MeleeWeapon : MonoBehaviour
             Destroy(gameObject);
 
         }
+    }
 
+    public void ActivatePowerBoost()
+    {
+        // Power boost functionality here
+    }
+
+    // NOT IN USE NOW BUT SAVING FOR LATER. THIS DESTROYS SHOCKWAVES WHEN THEY HIT THE WEAPON.
+    private void DestroyShockwave(GameObject particle)
+    {
+        List<ParticleCollisionEvent> events; // List of particle collision events currently happening
+        events = new List<ParticleCollisionEvent>(); // Initialize it
+
+        ParticleSystem ps = particle.GetComponent<ParticleSystem>();
+        ParticleSystem.Particle[] particleList; // List of all the particles of the Particle System
+        particleList = new ParticleSystem.Particle[ps.main.maxParticles]; // Initialize it
+
+        // Collect and go through all the collision events currently happening
+        ParticlePhysicsExtensions.GetCollisionEvents(particle.GetComponent<ParticleSystem>(), gameObject, events);
+        foreach (ParticleCollisionEvent coll in events)
+        {
+            if (coll.intersection != Vector3.zero) // Continue only when collision point is away from origin
+            {
+                int numParticlesAlive = ps.GetParticles(particleList); // Get a list of currently alive particles
+
+                // Check only the particles that are alive
+                for (int i = 0; i < numParticlesAlive; i++)
+                {
+                    // If the collision was close enough to the particle position, destroy it
+                    if (Vector3.Magnitude(particleList[i].position - coll.intersection) < 0.05f)
+                    {
+                        particleList[i].remainingLifetime = -1; // Kills the particle
+                        ps.SetParticles(particleList); // Update particle system
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     public bool getBeingPulled()

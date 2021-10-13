@@ -5,16 +5,44 @@ using Cinemachine;
 
 public class ParticleCollision : MonoBehaviour
 {
-    [SerializeField] float knockbackForce;
+    [SerializeField] private float knockbackForce;
+    [SerializeField] private GameObject collisionDetector;
 
-    private bool weaponCollisionEnabled = true; // Bool for checking if collision has already been calculated for the weapon
-    private bool enemyCollisionEnabled = true;// Bool for checking if collision has already been calculated for the enemy
+    // State bools
+    private bool weaponTriggerEnabled = true; // Bool for checking if collision has already been calculated for the weapon
+    private bool enemyTriggerEnabled = true;// Bool for checking if collision has already been calculated for the enemy
 
-    private void OnParticleCollision(GameObject collision)
+    // References
+    private ParticleSystem ps;
+    List<ParticleSystem.Particle> enterList = new List<ParticleSystem.Particle>();
+
+    private void Start()
     {
-        if (collision.gameObject.CompareTag("Enemy"))
+        ps = GetComponent<ParticleSystem>();
+    }
+
+    private void OnParticleTrigger()
+    {
+        // Get trigger enters from particle system
+        int numEnter = ps.GetTriggerParticles(ParticleSystemTriggerEventType.Enter, enterList);
+
+        // Iterate
+        for (int i = 0; i < numEnter; i++)
         {
-            if (enemyCollisionEnabled) // Make sure collision has not yet been activated for the enemy
+            ParticleSystem.Particle particle = enterList[i];
+            // Instantiate a game object to get what object this particle triggered
+            Instantiate(collisionDetector, particle.position, Quaternion.identity);
+            enterList[i] = particle;
+        }
+
+        // Tell trigger enters to particle system too
+        ps.SetTriggerParticles(ParticleSystemTriggerEventType.Enter, enterList);
+
+
+        /* OLD WAY USING ONCOLLISIONENTER2D
+        if (enemyTriggerEnabled) // Make sure trigger has not yet been activated for the enemy
+        {
+            if (collision.gameObject.CompareTag("Enemy"))
             {
                 // knockback enemy
                 Knockback(collision.gameObject, gameObject, knockbackForce);
@@ -22,15 +50,19 @@ public class ParticleCollision : MonoBehaviour
             }
         }
 
-        if (collision.gameObject.CompareTag("MeleeWeapon"))
+        if (weaponTriggerEnabled) // Make sure trigger has not yet been activated for the weapon
         {
-            if (weaponCollisionEnabled) // Make sure collision has not yet been activated for the weapon
+            MeleeWeapon meleeScript = collision.GetComponent<MeleeWeapon>();
+            if (meleeScript.getBeingPulled()) // Activate weapon power boost only if being pulled
             {
-                // Power Boost the weapon and set it flying forwards
-                Knockback(collision.gameObject, gameObject, knockbackForce); // Replace this knock back with a hardcoded cool one
-                StartCoroutine(WeaponCollisionCooldown(1));
+                if (collision.gameObject.CompareTag("MeleeWeapon"))
+                {
+                    meleeScript.ActivatePowerBoost();
+                    StartCoroutine(WeaponCollisionCooldown(1));
+                }
             }
         }
+        */
     }
 
     // Small knockback to the target. Knockback knocks slightly upwards so the friction doesn't stop the target right away.
@@ -43,7 +75,7 @@ public class ParticleCollision : MonoBehaviour
 
     private IEnumerator EnemyCollisionCooldown(float cooldownTime)
     {
-        enemyCollisionEnabled = false;
+        enemyTriggerEnabled = false;
 
         float collisionTimer = 0;
         while (collisionTimer <= cooldownTime)
@@ -52,13 +84,13 @@ public class ParticleCollision : MonoBehaviour
             yield return new WaitForEndOfFrame();
         }
 
-        enemyCollisionEnabled = true;
+        enemyTriggerEnabled = true;
     }
 
     // This cooldown makes it so objects are never affected twice by the same shockwave
     private IEnumerator WeaponCollisionCooldown(float cooldownTime)
     {
-        weaponCollisionEnabled = false;
+        weaponTriggerEnabled = false;
 
         float collisionTimer = 0;
         while (collisionTimer <= cooldownTime)
@@ -67,6 +99,12 @@ public class ParticleCollision : MonoBehaviour
             yield return new WaitForEndOfFrame();
         }
 
-        weaponCollisionEnabled = true;
+        weaponTriggerEnabled = true;
+    }
+
+    // MeleeWeapon needs to know if collision has been done so it doesn't trigger twice
+    public bool WeaponCollisionEnabled()
+    {
+        return weaponTriggerEnabled;
     }
 }
