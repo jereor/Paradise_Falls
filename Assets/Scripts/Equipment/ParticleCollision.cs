@@ -7,27 +7,28 @@ public class ParticleCollision : MonoBehaviour
 {
     [SerializeField] float knockbackForce;
 
-    private bool collisionEnabled = true;
+    private bool weaponCollisionEnabled = true; // Bool for checking if collision has already been calculated for the weapon
+    private bool enemyCollisionEnabled = true;// Bool for checking if collision has already been calculated for the enemy
 
     private void OnParticleCollision(GameObject collision)
     {
         if (collision.gameObject.CompareTag("Enemy"))
         {
-            if (collisionEnabled)
+            if (enemyCollisionEnabled) // Make sure collision has not yet been activated for the enemy
             {
                 // knockback enemy
                 Knockback(collision.gameObject, gameObject, knockbackForce);
-                StartCoroutine(CollisionCooldown(1));
+                StartCoroutine(EnemyCollisionCooldown(1));
             }
         }
 
         if (collision.gameObject.CompareTag("MeleeWeapon"))
         {
-            if (collisionEnabled)
+            if (weaponCollisionEnabled) // Make sure collision has not yet been activated for the weapon
             {
                 // Power Boost the weapon and set it flying forwards
                 Knockback(collision.gameObject, gameObject, knockbackForce); // Replace this knock back with a hardcoded cool one
-                StartCoroutine(CollisionCooldown(1));
+                StartCoroutine(WeaponCollisionCooldown(1));
             }
         }
     }
@@ -40,9 +41,9 @@ public class ParticleCollision : MonoBehaviour
         target.GetComponent<Rigidbody2D>().AddForce(knockbackDirection * knockbackForce);
     }
 
-    private IEnumerator CollisionCooldown(float cooldownTime)
+    private IEnumerator EnemyCollisionCooldown(float cooldownTime)
     {
-        collisionEnabled = false;
+        enemyCollisionEnabled = false;
 
         float collisionTimer = 0;
         while (collisionTimer <= cooldownTime)
@@ -51,6 +52,21 @@ public class ParticleCollision : MonoBehaviour
             yield return new WaitForEndOfFrame();
         }
 
-        collisionEnabled = true;
+        enemyCollisionEnabled = true;
+    }
+
+    // This cooldown makes it so objects are never affected twice by the same shockwave
+    private IEnumerator WeaponCollisionCooldown(float cooldownTime)
+    {
+        weaponCollisionEnabled = false;
+
+        float collisionTimer = 0;
+        while (collisionTimer <= cooldownTime)
+        {
+            collisionTimer += Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+
+        weaponCollisionEnabled = true;
     }
 }
