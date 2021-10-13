@@ -75,9 +75,10 @@ public class PlayerCombat : MonoBehaviour
     Coroutine tranToIdle; // This will be replaced with correct transittion animation
     
     // These will stay 
-    public bool canReceiveInputMelee; // If this is true we can melee (no attack animation ongoing)
-    public bool canReceiveInputThrow; // If this is true we can melee (no attack animation ongoing)
-    public bool meleeInputReceived; // Used in transitions and idle to tell animator to start correct attack if this turns true
+    public bool canReceiveInputMelee = false; // If this is true we can melee (no attack animation ongoing)
+    public bool canReceiveInputThrow = false; // If this is true we can melee (no attack animation ongoing)
+    public bool meleeInputReceived = false; // Used in transitions and idle to tell animator to start correct attack if this turns true
+    public bool throwInputReceived = false;
 
     Rigidbody2D rb;
     PlayerMovement movementScript;
@@ -279,6 +280,8 @@ public class PlayerCombat : MonoBehaviour
         // Throw on button release
         if(context.canceled && isWeaponWielded && throwAimHold && meleeWeaponPrefab && throwButtonPressedTime != null)
         {
+            throwInputReceived = true;
+
             ThrowWeapon();
 
             // We don't have weapon anymore
@@ -868,5 +871,10 @@ public class PlayerCombat : MonoBehaviour
     public void setIsPlayerBeingPulled(bool isPulled)
     {
         isPlayerBeingPulled = isPulled;
+    }
+
+    public bool getThrowAiming()
+    {
+        return throwAimHold;
     }
 }

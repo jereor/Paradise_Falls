@@ -110,15 +110,15 @@ public class Player : MonoBehaviour
         }
 
         // Aiming
-        // UNCOMMENT WHEN getThrowAiming() created in PlayerCombat
-        //if (combatScript.getThrowAiming() && combatScript.getWeaponWielded() && !animator.GetBool("isRunning"))
-        //{
-        //    animator.SetBool("isAiming", true);
-        //}
-        //else
-        //{
-        //    animator.SetBool("isAiming", false);
-        //}
+        //UNCOMMENT WHEN getThrowAiming() created in PlayerCombat
+        if (combatScript.getThrowAiming() && combatScript.getWeaponWielded() && !animator.GetBool("isRunning") && !animator.GetBool("isClimbing"))
+        {
+            animator.SetBool("isAiming", true);
+        }
+        else
+        {
+            animator.SetBool("isAiming", false);
+        }
     }
 
     // Enables and Disables inputs
