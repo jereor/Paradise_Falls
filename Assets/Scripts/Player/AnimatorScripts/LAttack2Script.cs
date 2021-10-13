@@ -27,7 +27,7 @@ public class LAttack2Script : StateMachineBehaviour
     {
         PlayerCombat.Instance.DealDamage(2, false);
 
-        //animator.SetBool("isAttacking", false);
+        animator.SetBool("isAttacking", false);
     }
 
     // OnStateMove is called right after Animator.OnAnimatorMove()

@@ -29,6 +29,9 @@ public class LAttack1Script : StateMachineBehaviour
     {
         // Deal damage when we hit enemy
         PlayerCombat.Instance.DealDamage(1, false);
+
+        // Set this false here so we can for example use running animations
+        animator.SetBool("isAttacking", false);
     }
 
     // OnStateMove is called right after Animator.OnAnimatorMove()
