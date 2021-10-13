@@ -17,8 +17,6 @@ public class BulletBehaviour : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         target = GameObject.Find("Player");
 
-        Physics2D.IgnoreLayerCollision(7, 9, true);
-
         Vector2 force = (target.transform.position - transform.position).normalized * bulletSpeed;
         rb.AddForce(force, ForceMode2D.Impulse);
     }
