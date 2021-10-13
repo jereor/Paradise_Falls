@@ -252,6 +252,16 @@ public class Player : MonoBehaviour
         return animator.GetBool("isAttacking");
     }
 
+    public bool GetIsAiming()
+    {
+        return combatScript.getThrowAiming();
+    }
+
+    public bool GetIsRunning()
+    {
+        return animator.GetBool("isRunning");
+    }
+
     public bool IsFacingRight()
     {
         return movementScript.isFacingRight;

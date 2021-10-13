@@ -14,6 +14,9 @@ public class JumpScript : StateMachineBehaviour
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+        if (Player.Instance.GetIsAiming())
+            animator.gameObject.transform.localScale = new Vector3(Player.Instance.rb.velocity.normalized.x > 0 ? 1 : -1, 1, 1); // Flip player to face towards the shooting direction
+
         // State updated according to the velocity y we are currently traveling yVelocity get value from Player.cs HandleStateInputs()
         if (animator.GetFloat("yVelocity") < 0f)
         {
@@ -37,6 +40,12 @@ public class JumpScript : StateMachineBehaviour
         if (PlayerCombat.Instance.meleeInputReceived && !PlayerCombat.Instance.heavyHold)
         {
             Player.Instance.animator.Play("LAttack1");
+        }
+
+        // Throw
+        if (PlayerCombat.Instance.throwInputReceived)
+        {
+            animator.Play("Throw");
         }
     }
 

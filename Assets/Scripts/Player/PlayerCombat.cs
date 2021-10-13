@@ -199,12 +199,12 @@ public class PlayerCombat : MonoBehaviour
     }
 
     private void FixedUpdate()
-    { 
-        // Stop plaeyr from getting too much velocity when hurt
-        //if (!movementScript.canMove)
-          //  rb.velocity = Vector2.zero;
+    {
+        // Update vectorToTarget only when aim button held down
+        if(throwAimHold)
+            vectorToTarget = new Vector2(mousePosRay.origin.x - gameObject.transform.position.x, mousePosRay.origin.y - gameObject.transform.position.y);
 
-        if(weaponInstance)
+        if (weaponInstance)
         {
             Debug.DrawRay(transform.position, weaponInstance.transform.position - transform.position, Color.red);
         }
@@ -328,6 +328,8 @@ public class PlayerCombat : MonoBehaviour
 
             // We release aim button hide points
             HideAllProjPoints();
+
+            //gameObject.transform.localScale = new Vector3(vectorToTarget.normalized.x > 0 ? 1 : -1, 1, 1); // Flip player to face towards the shooting direction
         }
     }
 
@@ -335,9 +337,9 @@ public class PlayerCombat : MonoBehaviour
     {
         if (isPlayerBeingPulled)
         {
-            Vector3 vectorToTarget = weaponInstance.transform.position - transform.position;
+            Vector3 vectorToTargetWeapon = weaponInstance.transform.position - transform.position;
             gameObject.GetComponent<Rigidbody2D>().gravityScale = 0f;
-            gameObject.GetComponent<Rigidbody2D>().velocity = vectorToTarget.normalized * playerPullForce * Time.deltaTime;
+            gameObject.GetComponent<Rigidbody2D>().velocity = vectorToTargetWeapon.normalized * playerPullForce * Time.deltaTime;
         }
 
     }
@@ -679,7 +681,7 @@ public class PlayerCombat : MonoBehaviour
             // Get mouse position from mainCamera ScreenPointToRay
             mousePosRay = mainCamera.ScreenPointToRay(mouse.position.ReadValue());
 
-            vectorToTarget = new Vector2(mousePosRay.origin.x - gameObject.transform.position.x, mousePosRay.origin.y - gameObject.transform.position.y);
+            //vectorToTarget = new Vector2(mousePosRay.origin.x - gameObject.transform.position.x, mousePosRay.origin.y - gameObject.transform.position.y);
 
             // Positions of points[]
             for (int i = 0; i < numberOfPoints; i++)
@@ -876,5 +878,10 @@ public class PlayerCombat : MonoBehaviour
     public bool getThrowAiming()
     {
         return throwAimHold;
+    }
+
+    public Vector2 getVectorToMouse()
+    {
+        return vectorToTarget;
     }
 }

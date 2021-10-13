@@ -8,8 +8,10 @@ public class ThrowScript : StateMachineBehaviour
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         Player.Instance.SetCurrentState(Player.State.Throwing);
+
+        // Do not show aiming animation after throw animation
         animator.SetBool("isAiming", false);
-        Debug.Log("yes");
+        animator.SetBool("isThrowing", true);
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
@@ -22,7 +24,9 @@ public class ThrowScript : StateMachineBehaviour
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         Debug.Log("yes");
+        // We can receive input for throwing
         PlayerCombat.Instance.throwInputReceived = false;
+        animator.SetBool("isThrowing", false);
     }
 
     // OnStateMove is called right after Animator.OnAnimatorMove()

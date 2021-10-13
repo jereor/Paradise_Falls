@@ -13,6 +13,11 @@ public class AimScript : StateMachineBehaviour
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+        // If we need to flip we setFacingRight correctly
+        PlayerMovement.Instance.setFacingRight(PlayerCombat.Instance.getVectorToMouse().normalized.x > 0 ? true : false);
+        // Flip local scale if aiming is to the other x
+        animator.gameObject.transform.localScale = new Vector3(PlayerCombat.Instance.getVectorToMouse().normalized.x > 0 ? 1 : -1, 1, 1); // Flip player to face towards the shooting direction
+
         // Player starts moving
         if (PlayerMovement.Instance.horizontal != 0f)
         {

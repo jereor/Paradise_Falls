@@ -24,6 +24,12 @@ public class IdleScript : StateMachineBehaviour
         {
             animator.SetBool("isRunning", true);
         }
+
+        // Throw
+        if (PlayerCombat.Instance.throwInputReceived)
+        {
+            animator.Play("Throw");
+        }
     }
 
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state

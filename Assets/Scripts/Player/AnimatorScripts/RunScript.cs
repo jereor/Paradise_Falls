@@ -35,6 +35,12 @@ public class RunScript : StateMachineBehaviour
         {
             Player.Instance.animator.Play("LAttack1");
         }
+
+        // Throw
+        if (PlayerCombat.Instance.throwInputReceived)
+        {
+            animator.Play("Throw");
+        }
     }
 
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state

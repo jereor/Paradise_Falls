@@ -313,7 +313,8 @@ public class PlayerMovement : MonoBehaviour
                 && !LedgeIsOccupied()                                       // Player sees(raycasts) ledge and space is vacant to climb
                 && Time.time - lastTimeClimbed >= climbTimeBuffer           // We have to climb stairlike object step by step not instantly to the top
                 && horizontal != 0                                          // Player is moving and wanting to climb if no move input fall
-                && !Player.Instance.GetIsAttacking())                       // If we are attacking we cannot climb at the same time
+                && !Player.Instance.GetIsAttacking()
+                && !Player.Instance.GetIsAiming())                       // If we are attacking we cannot climb at the same time
 
             {
                 canClimb = true;
@@ -576,5 +577,10 @@ public class PlayerMovement : MonoBehaviour
     public bool getWallSliding()
     {
         return currentlyWallSliding;
+    }
+
+    public void setFacingRight(bool b)
+    {
+        isFacingRight = b;
     }
 }
