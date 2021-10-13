@@ -7,7 +7,7 @@ public class RiotControlDrone : MonoBehaviour
 
 
     [Header("Current State")]
-    [SerializeField] private RiotState state = RiotState.Moving;
+    [SerializeField] private RiotState state = RiotState.Idle;
 
     [SerializeField] LayerMask playerLayer;
 
@@ -57,20 +57,28 @@ public class RiotControlDrone : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+        // Used to determine the direction where boss is going.
         vectorToTarget = (target.position - transform.position).normalized;
 
+        // Flip the localscale of the boss.
         if (!isFacingRight && rb.velocity.x > 0.5f)
             Flip();
         else if (isFacingRight && rb.velocity.x < -0.5f)
             Flip();
 
+        // Riot Drone state machine.
         switch (state)
         {
+            case RiotState.Idle:
+                HandleIdleState();
+                break;
+
             case RiotState.Moving:
                 HandleMovingState();
                 break;
 
             case RiotState.ShieldCharge:
+                HandleShieldChargeState();
                 break;
 
             case RiotState.LightAttack:
@@ -78,22 +86,26 @@ public class RiotControlDrone : MonoBehaviour
                 break;
 
             case RiotState.HeavyAttack:
+                HandleHeavyAttackState();
                 break;
 
             case RiotState.TaserShoot:
+                HandleTaserShootState();
                 break;
 
             case RiotState.Stunned:
+                HandleStunnedState();
                 break;
 
             case RiotState.SeedShoot:
+                HandleSeedShootState();
                 break;
 
 
         }
 
 
-
+        // If bosses health goes down more that 50%, change phase. The way of handling the state variation changes most likely in the future.
         if(health.CurrentHealth <= health.MaxHealth * 0.5f)
         {
             isEnraged = true;
@@ -102,6 +114,13 @@ public class RiotControlDrone : MonoBehaviour
 
     // STATE HANDLING
     //---------------------------------------------------------------------------------------------------------------------------------
+
+    private void HandleIdleState()
+    {
+
+    }
+
+    // Moves the boss in the direction of player only on X-axis. If target is in hit range, change state.
     private void HandleMovingState()
     {
         if(!isEnraged && canMove)
@@ -121,6 +140,12 @@ public class RiotControlDrone : MonoBehaviour
         
     }
 
+    private void HandleShieldChargeState()
+    {
+
+    }
+
+    // Simple light attack state where boss swings the weapon. Checks if target was in the hit area before doing damage to it.
     private void HandleLightAttackState()
     {
         if(canLightAttack)
@@ -130,6 +155,27 @@ public class RiotControlDrone : MonoBehaviour
 
     }
 
+    private void HandleHeavyAttackState()
+    {
+
+    }
+
+    private void HandleTaserShootState()
+    {
+
+    }
+
+    private void HandleStunnedState()
+    {
+
+    }
+
+    private void HandleSeedShootState()
+    {
+
+    }
+
+    // Cooldowns for walking, running etc.
     private IEnumerator WalkCoolDown()
     {
         canMove = false;
@@ -143,6 +189,8 @@ public class RiotControlDrone : MonoBehaviour
         yield return new WaitForSeconds(runStepInterval);
         canMove = true;
     }
+
+
 
     private IEnumerator LightAttack()
     {
@@ -163,6 +211,7 @@ public class RiotControlDrone : MonoBehaviour
         canLightAttack = true;
     }
 
+    // Overlaps for various checks.
     private bool IsTargetInHitRange()
     {
         return Physics2D.OverlapBox(new Vector2(transform.position.x + (transform.localScale.x * hitOffset.x), transform.position.y + hitOffset.y), areaToAttack, 0, playerLayer);
@@ -189,6 +238,7 @@ public class RiotControlDrone : MonoBehaviour
 
     // COLLISIONS WITH PLAYER
     //---------------------------------------------------------------------------------------------------------------------------------
+    // Used for stopping the target from moving the boss. Not sure if this is a good method of doing it. Otherwise we would have to increase mass and gravity, meaning the force amounts are going to be massive.
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if(collision.collider.tag == "Player")
@@ -214,8 +264,10 @@ public class RiotControlDrone : MonoBehaviour
         }
     }
 
+    // State names.
     public enum RiotState
     {
+        Idle,
         Moving,
         ShieldCharge,
         LightAttack,
