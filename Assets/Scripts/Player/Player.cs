@@ -37,11 +37,13 @@ public class Player : MonoBehaviour
         Idle,
         Running,
         Jumping,
+        Ascending,
         Falling,
+        Landing,
         Diving,
         WallSliding,
         Climbing,
-        Launched,
+        Launching,
         Attacking,
         AttackTransition,
         Aiming,
@@ -91,7 +93,7 @@ public class Player : MonoBehaviour
         {
             animator.SetBool("isWallSliding", false);
         }
-        
+ 
         // Jump / Fall animation
         // We are in air and we land with rb velocity downwards or zero 
         if (animator.GetBool("jump") && movementScript.IsGrounded() && rb.velocity.y <= 0f)
@@ -147,7 +149,18 @@ public class Player : MonoBehaviour
                 break;
             case State.Jumping:
                 break;
+            case State.Ascending:
+                break;
             case State.Falling:
+                break;
+            case State.Landing:
+                // Combat
+                combatScript.DisableInputMelee();
+                combatScript.DisableInputThrowAim();
+
+                // Movement
+                movementScript.DisableInputJump();
+                movementScript.DisableInputMove();
                 break;
             case State.Diving:
                 break;
@@ -169,7 +182,7 @@ public class Player : MonoBehaviour
                 movementScript.DisableInputJump();
                 movementScript.DisableInputMove();
                 break;
-            case State.Launched:
+            case State.Launching:
                 break;
             case State.Attacking:
                 // Combat
@@ -246,6 +259,15 @@ public class Player : MonoBehaviour
         currentState = newState;
     }
 
+    public void SetWillLand(bool b)
+    {
+        animator.SetBool("willLand", b);
+    }
+    public bool GetWillLand()
+    {
+        return animator.GetBool("willLand");
+    }
+
     // Used in climbing to check if we are attackin we cant climb
     public bool GetIsAttacking()
     {
@@ -261,6 +283,12 @@ public class Player : MonoBehaviour
     {
         return animator.GetBool("isRunning");
     }
+
+    public bool GetLaunching()
+    {
+        return animator.GetBool("isLaunching");
+    }
+
 
     public bool IsFacingRight()
     {

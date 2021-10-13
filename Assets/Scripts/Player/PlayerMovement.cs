@@ -68,6 +68,8 @@ public class PlayerMovement : MonoBehaviour
     private bool canWallJump; // Tells jump function/event that we can jump this is set in CheckWallJump()
     private float wallJumpDir = 0f; // Keeps track if we jump from the left or right (Mathf.Sign() == -1 jumped from left, == 1 jumped from right, == we havent jumped from wall)
 
+    public bool jumpInputReceived = false;
+
     // References
     private Player playerScript;
     private Rigidbody2D rb;
@@ -110,6 +112,7 @@ public class PlayerMovement : MonoBehaviour
             horizontal = horizontalBuffer;
         }
         rb.velocity = new Vector2(horizontal * movementVelocity, rb.velocity.y); // Moves the player by horizontal input
+
 
         /* DISABLED FOR NOW. Launch checks to use when using directional boost plant launch
         if (launched && horizontal != 0)
@@ -273,6 +276,10 @@ public class PlayerMovement : MonoBehaviour
         if (context.performed && (Time.time - lastGroundedTime <= coyoteTime) // Check if coyote time is online
             && (Time.time - jumpButtonPressedTime <= coyoteTime) && !climbing) // Check if jump has been buffered
         {
+            if (!jumpInputReceived)
+                jumpInputReceived = true;
+
+            //Debug.Log("Jump " + Time.time);
             rb.velocity = new Vector2(rb.velocity.x, jumpForce); // Keep player in upwards motion
         }
 

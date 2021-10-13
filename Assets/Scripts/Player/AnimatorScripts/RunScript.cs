@@ -41,6 +41,12 @@ public class RunScript : StateMachineBehaviour
         {
             animator.Play("Throw");
         }
+
+        // Jump Launch
+        if (PlayerMovement.Instance.jumpInputReceived)
+        {
+            animator.Play("Launch");
+        }
     }
 
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
