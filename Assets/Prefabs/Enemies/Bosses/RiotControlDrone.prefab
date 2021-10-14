@@ -129,16 +129,16 @@ Rigidbody2D:
   m_GameObject: {fileID: 8410908677858590963}
   m_BodyType: 0
   m_Simulated: 1
-  m_UseFullKinematicContacts: 0
+  m_UseFullKinematicContacts: 1
   m_UseAutoMass: 0
-  m_Mass: 4
-  m_LinearDrag: 5
+  m_Mass: 25
+  m_LinearDrag: 15
   m_AngularDrag: 0.05
-  m_GravityScale: 5
+  m_GravityScale: 8
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!114 &8410908677858590965
 MonoBehaviour:
@@ -152,23 +152,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 517377c16d932914da0d4e83fac53951, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  state: 0
+  shield: {fileID: 8410908679192793482}
+  playerRB: {fileID: 0}
+  state: 1
   playerLayer:
     serializedVersion: 2
     m_Bits: 8
-  walkingSpeed: 100000
-  runningSpeed: 130000
+  walkingSpeed: 600000
+  runningSpeed: 500000
+  chargeSpeed: 300000
   isEnraged: 0
   walkStepInterval: 1
-  runStepInterval: 0
-  areaToCharge: {x: 0, y: 0}
-  chargeOffset: {x: 0, y: 0}
-  areaToAttack: {x: 1.54, y: 2.34}
+  runStepInterval: 0.6
+  chargeStepInterval: 0
+  stunTime: 4
+  chargeReadyTime: 1
+  areaToCharge: {x: 4.53, y: 2.63}
+  chargeOffset: {x: 8.48, y: 0}
+  areaToAttack: {x: 1.72, y: 2.34}
   hitOffset: {x: 1, y: -0.15}
-  lightAttackCoolDown: 1
+  velocity: {x: 0, y: 0}
+  velocityPlayer: {x: 0, y: 0}
+  lightAttackCoolDown: 0.51
   lightAttackDamage: 2
+  heavyAttackChargeTime: 0
   heavyAttackCoolDown: 2
   heavyAttackDamage: 4
+  knockbackForce: 100
+  isFacingRight: 0
 --- !u!114 &8410908677858590967
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -428,6 +439,7 @@ GameObject:
   - component: {fileID: 8410908679192793485}
   - component: {fileID: 8410908679192793484}
   - component: {fileID: 8410908679192793487}
+  - component: {fileID: 442696107}
   m_Layer: 0
   m_Name: RiotShield
   m_TagString: Untagged
@@ -526,3 +538,15 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &442696107
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8410908679192793482}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 341f3494049e67b448df3bf212115e9c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

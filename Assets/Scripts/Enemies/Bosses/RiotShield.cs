@@ -4,23 +4,14 @@ using UnityEngine;
 
 public class RiotShield : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
+    // Used to check if the shield hit the ground collider. This happens when riot drone is charging towards the player but they dodge the charge. Set state to "Stunned".
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if(collision.collider.gameObject.layer == 6)
+        if(collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
         {
-            GameObject.Find("RiotControlDrone").GetComponent<RiotControlDrone>().getState();
+            GameObject.Find("RiotControlDrone").GetComponent<RiotControlDrone>().state = RiotControlDrone.RiotState.Stunned;
+            Debug.Log("RiotChargedWall");
         }
     }
 }
