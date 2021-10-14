@@ -9,8 +9,9 @@ public class ParticleCollision : MonoBehaviour
     [SerializeField] private GameObject collisionDetector;
 
     // State bools
-    private bool weaponTriggerEnabled = true; // Bool for checking if collision has already been calculated for the weapon
-    private bool enemyTriggerEnabled = true;// Bool for checking if collision has already been calculated for the enemy
+    private bool weaponCollisionEnabled = true; // Bool for checking if collision has already been calculated for the weapon
+    private bool enemyCollisionEnabled = true; // Bool for checking if collision has already been calculated for the enemy
+    private bool triggerEnabled = true; // Bool for checking if trigger has already happened
 
     // References
     private ParticleSystem ps;
@@ -29,6 +30,7 @@ public class ParticleCollision : MonoBehaviour
         // Iterate
         for (int i = 0; i < numEnter; i++)
         {
+            Debug.Log("Instantiate collision detector!");
             ParticleSystem.Particle particle = enterList[i];
             // Instantiate a game object to get what object this particle triggered
             Instantiate(collisionDetector, particle.position, Quaternion.identity);
@@ -73,9 +75,9 @@ public class ParticleCollision : MonoBehaviour
         target.GetComponent<Rigidbody2D>().AddForce(knockbackDirection * knockbackForce);
     }
 
-    private IEnumerator EnemyCollisionCooldown(float cooldownTime)
+    private IEnumerator TriggerCooldown(float cooldownTime)
     {
-        enemyTriggerEnabled = false;
+        triggerEnabled = false;
 
         float collisionTimer = 0;
         while (collisionTimer <= cooldownTime)
@@ -84,13 +86,27 @@ public class ParticleCollision : MonoBehaviour
             yield return new WaitForEndOfFrame();
         }
 
-        enemyTriggerEnabled = true;
+        triggerEnabled = true;
+    }
+
+    private IEnumerator EnemyCollisionCooldown(float cooldownTime)
+    {
+        enemyCollisionEnabled = false;
+
+        float collisionTimer = 0;
+        while (collisionTimer <= cooldownTime)
+        {
+            collisionTimer += Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+
+        enemyCollisionEnabled = true;
     }
 
     // This cooldown makes it so objects are never affected twice by the same shockwave
     private IEnumerator WeaponCollisionCooldown(float cooldownTime)
     {
-        weaponTriggerEnabled = false;
+        weaponCollisionEnabled = false;
 
         float collisionTimer = 0;
         while (collisionTimer <= cooldownTime)
@@ -99,12 +115,12 @@ public class ParticleCollision : MonoBehaviour
             yield return new WaitForEndOfFrame();
         }
 
-        weaponTriggerEnabled = true;
+        weaponCollisionEnabled = true;
     }
 
     // MeleeWeapon needs to know if collision has been done so it doesn't trigger twice
     public bool WeaponCollisionEnabled()
     {
-        return weaponTriggerEnabled;
+        return weaponCollisionEnabled;
     }
 }

@@ -3125,11 +3125,11 @@ PrefabInstance:
       objectReference: {fileID: 729320505}
     - target: {fileID: 284613507, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: m_TrackedObjectOffset.x
-      value: 0.8019998
+      value: 0.999999
       objectReference: {fileID: 0}
     - target: {fileID: 284613507, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: m_TrackedObjectOffset.y
-      value: -0.4644918
+      value: -0.0000001093419
       objectReference: {fileID: 0}
     - target: {fileID: 505850491, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: m_Follow
@@ -3296,6 +3296,14 @@ PrefabInstance:
       propertyPath: CollisionModule.collidesWithDynamic
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1691313839, guid: 4154d57994558ff489a9180c3151e624, type: 3}
+      propertyPath: TriggerModule.primitives.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1691313839, guid: 4154d57994558ff489a9180c3151e624, type: 3}
+      propertyPath: TriggerModule.primitives.Array.data[0]
+      value: 
+      objectReference: {fileID: 3980506574090905466, guid: 3780bd19eaa15054a9ebdb884fa668ba, type: 3}
     - target: {fileID: 1691313839, guid: 4154d57994558ff489a9180c3151e624, type: 3}
       propertyPath: CollisionModule.m_EnergyLossOnCollision.scalar
       value: 0

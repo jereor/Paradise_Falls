@@ -43,3 +43,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 630bd9157b0e23c42a97da8d65a803ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  weaponLayer:
+    serializedVersion: 2
+    m_Bits: 8192
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 128
