@@ -64,9 +64,6 @@ public class Player : MonoBehaviour
         TextStyleEnergy.fontSize = 30;
         TextStyleHealth.fontSize = 30;
         TextStyleEnergy.normal.textColor = Color.red;
-
-
-        movementScript.launchAnimLenght = GetTransitionTime();
     }
 
     private void FixedUpdate()
@@ -128,7 +125,6 @@ public class Player : MonoBehaviour
             // Jump Launch
             if (PlayerMovement.Instance.jumpInputReceived)
             {
-                animator.SetBool("isRunning", false);
                 animator.Play("Launch");
             }
         }
@@ -206,22 +202,8 @@ public class Player : MonoBehaviour
             case State.Jumping:
                 break;
             case State.Ascending:
-                // Combat
-                combatScript.EnableInputMelee();
-                combatScript.EnableInputThrowAim();
-
-                // Movement
-                movementScript.EnableInputJump();
-                movementScript.EnableInputMove();
                 break;
             case State.Falling:
-                // Combat
-                combatScript.EnableInputMelee();
-                combatScript.EnableInputThrowAim();
-
-                // Movement
-                movementScript.EnableInputJump();
-                movementScript.EnableInputMove();
                 break;
             case State.Landing:
                 // Combat
@@ -253,13 +235,6 @@ public class Player : MonoBehaviour
                 movementScript.DisableInputMove();
                 break;
             case State.Launching:
-                // Combat
-                combatScript.DisableInputMelee();
-                combatScript.DisableInputThrowAim();
-
-                // Movement
-                //movementScript.DisableInputJump();
-                movementScript.DisableInputMove();
                 break;
             case State.Attacking:
                 // Combat
@@ -372,7 +347,7 @@ public class Player : MonoBehaviour
         AnimationClip[] clips = animator.runtimeAnimatorController.animationClips;
         foreach (AnimationClip clip in clips)
         {
-            if (clip.name == "Launch")
+            if (clip.name == "LTran1")
                 return clip.length;
         }
         // Needs to return something should always find Transition animation

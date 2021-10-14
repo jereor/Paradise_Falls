@@ -79,8 +79,6 @@ public class PlayerMovement : MonoBehaviour
     // Others
     RaycastHit2D ledgeHitOffsetRay;
 
-    public float launchAnimLenght = 0f;
-
     private void Start()
     {
         Instance = this;
@@ -99,40 +97,8 @@ public class PlayerMovement : MonoBehaviour
         climbXOffset = GetComponent<BoxCollider2D>().size.x;
     }
 
-    private bool stop = false;
-    private bool once = false;
-    private float firstJumpBuffer = 0.35f;
-    public float counter = 0f;
     private void Update()
     {
-        if (counter <= firstJumpBuffer)
-            counter += Time.deltaTime;
-
-        if (animLaunched)
-        {
-            if (!once)
-            {
-                JumpAscend();
-                stop = true;
-                once = true;
-            }
-            //if (jumpButtonHeld)
-            //{
-            //    Debug.Log("Jumped " + Time.deltaTime);
-            //    JumpAscend();
-            //    //animLaunched = false;
-            //    stop = true;
-            //}
-            if (!jumpButtonHeld && stop && counter > firstJumpBuffer)
-            {
-                Debug.Log("relesed " + Time.deltaTime);
-                StopAscend();
-                stop = false;
-                once = false;
-                animLaunched = false;
-            }
-        }
-
         // Movement
         // We cannot move and horizontal is something else than zero 
         if (!canReceiveInputMove && horizontal != 0f)
@@ -140,7 +106,7 @@ public class PlayerMovement : MonoBehaviour
             horizontal = 0f; // Stop moving because we update rb.velocity every frame with horizontal (if this logic is changed other scripts might need tweaking -> RB. force, velocity etc.)
         }
         // We were stopped by our attack and our horizontalBuffer was not reseted during attack (we want to continue moving to the direction we were pressing before attack)
-        else if (canReceiveInputMove && horizontalBuffer != horizontal)
+        else if(canReceiveInputMove && horizontalBuffer != horizontal)
         {
             // Replace with our desired movement if we were pressing move during !canReceiveInputMove or before action that stops movement
             horizontal = horizontalBuffer;
@@ -313,24 +279,8 @@ public class PlayerMovement : MonoBehaviour
             if (!jumpInputReceived)
                 jumpInputReceived = true;
 
-            jumpButtonHeld = true;
             //Debug.Log("Jump " + Time.time);
-
-            //rb.velocity = new Vector2(rb.velocity.x, jumpForce); // Keep player in upwards motion
-        }
-        //if (context.started)
-        //{
-        //    jumpButtonHeld = true;
-        //}
-        //else if (context.canceled)
-        //{
-        //    Debug.Log("Cancel");
-        //    jumpButtonHeld = false;
-        //}
-        if (context.canceled)
-        {
-            Debug.Log("Cancel");
-            jumpButtonHeld = false;
+            rb.velocity = new Vector2(rb.velocity.x, jumpForce); // Keep player in upwards motion
         }
 
         // If button was released
@@ -339,27 +289,13 @@ public class PlayerMovement : MonoBehaviour
             // Check that player is currently not being launched
             if (Time.time - lastLaunchTime > 1 || lastLaunchTime == null)
             {
-                //rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f); // Slow down player
+                rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f); // Slow down player
                 jumpButtonPressedTime = null;
                 lastGroundedTime = null;
             }
             lastLaunchTime = null;
-            //jumpButtonHeld = false;
         }
     }
-
-    private void JumpAscend()
-    {
-        rb.velocity = new Vector2(rb.velocity.x, jumpForce); // Keep player in upwards motion
-    }
-
-    private void StopAscend()
-    {
-        rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f); // Slow down player
-    }
-
-    public bool animLaunched = false;
-    public bool jumpButtonHeld = false;
 
     // Player can sometimes get stuck and not be able to jump because ground check fails
     // This check eliminates those situations and enables jumping even when not grounded if player is clearly stuck
