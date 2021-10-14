@@ -8,7 +8,7 @@ public class JumpScript : StateMachineBehaviour
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         // Usually we are firstly jumping so we can set our state to Jumping if we are Falling OnStateUpdate() will update it instantly 
-        Player.Instance.SetCurrentState(Player.State.Jumping);
+        Player.Instance.SetCurrentState(Player.State.Ascending);
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
@@ -29,9 +29,9 @@ public class JumpScript : StateMachineBehaviour
         else if(animator.GetFloat("yVelocity") >= 0f)
         {
             // Dont update state if our current state is Jumping
-            if (Player.Instance.GetCurrentState() != Player.State.Jumping)
+            if (Player.Instance.GetCurrentState() != Player.State.Ascending)
             {
-                Player.Instance.SetCurrentState(Player.State.Jumping);
+                Player.Instance.SetCurrentState(Player.State.Ascending);
             }
         }
 

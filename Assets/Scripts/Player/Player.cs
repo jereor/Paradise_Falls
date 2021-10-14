@@ -36,14 +36,12 @@ public class Player : MonoBehaviour
     {
         Idle,
         Running,
-        Jumping,
         Ascending,
         Falling,
         Landing,
         Diving,
         WallSliding,
         Climbing,
-        Launching,
         Attacking,
         AttackTransition,
         Aiming,
@@ -97,11 +95,6 @@ public class Player : MonoBehaviour
             {
                 animator.Play("Throw");
             }
-            // Jump Launch
-            if (PlayerMovement.Instance.jumpInputReceived)
-            {
-                animator.Play("Launch");
-            }
         }
 
         // When currentState is Running
@@ -121,11 +114,6 @@ public class Player : MonoBehaviour
             if (PlayerCombat.Instance.throwInputReceived)
             {
                 animator.Play("Throw");
-            }
-            // Jump Launch
-            if (PlayerMovement.Instance.jumpInputReceived)
-            {
-                animator.Play("Launch");
             }
         }
 
@@ -199,8 +187,6 @@ public class Player : MonoBehaviour
                 movementScript.EnableInputJump();
                 movementScript.EnableInputMove();
                 break;
-            case State.Jumping:
-                break;
             case State.Ascending:
                 break;
             case State.Falling:
@@ -233,8 +219,6 @@ public class Player : MonoBehaviour
                 // Movement
                 movementScript.DisableInputJump();
                 movementScript.DisableInputMove();
-                break;
-            case State.Launching:
                 break;
             case State.Attacking:
                 // Combat
@@ -339,19 +323,6 @@ public class Player : MonoBehaviour
     public bool GetLaunching()
     {
         return animator.GetBool("isLaunching");
-    }
-
-    public float GetTransitionTime()
-    {
-        // Get all clips and use LTran1 legth as combo timer
-        AnimationClip[] clips = animator.runtimeAnimatorController.animationClips;
-        foreach (AnimationClip clip in clips)
-        {
-            if (clip.name == "LTran1")
-                return clip.length;
-        }
-        // Needs to return something should always find Transition animation
-        return 0f;
     }
 
     public bool IsFacingRight()
