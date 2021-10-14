@@ -7,7 +7,7 @@ public class PlayerCombat : MonoBehaviour
 {
     public static PlayerCombat Instance; // Make instance so we can call this script from animations
 
-    [Header("Player Variables")]
+    [Header("Melee Variables")]
     [SerializeField] private float lightDamage; // Light hits 1, 2 and 3 = lightDamage + lightDamage/2 (pyoristettyna ylospain) 
     [SerializeField] private float heavyDamage; // Same as above but with different float
     //[SerializeField] private float meleeComboLastDamage; // Last hit currentComboHit 3
@@ -16,6 +16,15 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private float dashSpeed; // Velocity for dash if 0 no dash 
     [SerializeField] private float dashDistance; // Distance of dash
     [SerializeField] private float playerPullForce;
+    [SerializeField] private bool kbOnLight;
+    [SerializeField] private bool kbOnLightLast;
+
+    [Header("Combo Variables")]
+    private bool comboOnCooldown = false; // Boolean of active combo cooldown
+    private bool comboActive = false; // Boolean of active combo set
+    private int currentComboIndex = 0; // What hit we did last
+    private Coroutine comboTimerCoroutine; // Used to stop comboTimer for attack animation duration if we detect input
+    [SerializeField] private float comboCooldownTime; // Time between combo sets example: we hit once wait comboTimerCoroutine to finish -> ComboCooldown starts we cannot attack during this
 
     [Header("Attack Detection Variables")]
     public LayerMask enemyLayer;
@@ -75,9 +84,10 @@ public class PlayerCombat : MonoBehaviour
     Coroutine tranToIdle; // This will be replaced with correct transittion animation
     
     // These will stay 
-    public bool canReceiveInputMelee; // If this is true we can melee (no attack animation ongoing)
-    public bool canReceiveInputThrow; // If this is true we can melee (no attack animation ongoing)
-    public bool meleeInputReceived; // Used in transitions and idle to tell animator to start correct attack if this turns true
+    public bool canReceiveInputMelee = false; // If this is true we can melee (no attack animation ongoing)
+    public bool canReceiveInputThrow = false; // If this is true we can melee (no attack animation ongoing)
+    public bool meleeInputReceived = false; // Used in transitions and idle to tell animator to start correct attack if this turns true
+    public bool throwInputReceived = false;
 
     Rigidbody2D rb;
     PlayerMovement movementScript;
@@ -198,12 +208,12 @@ public class PlayerCombat : MonoBehaviour
     }
 
     private void FixedUpdate()
-    { 
-        // Stop plaeyr from getting too much velocity when hurt
-        //if (!movementScript.canMove)
-          //  rb.velocity = Vector2.zero;
+    {
+        // Update vectorToTarget only when aim button held down
+        if(throwAimHold)
+            vectorToTarget = new Vector2(mousePosRay.origin.x - gameObject.transform.position.x, mousePosRay.origin.y - gameObject.transform.position.y);
 
-        if(weaponInstance)
+        if (weaponInstance)
         {
             Debug.DrawRay(transform.position, weaponInstance.transform.position - transform.position, Color.red);
         }
@@ -238,7 +248,7 @@ public class PlayerCombat : MonoBehaviour
 
             // Input for melee 
             // Melee type checked in Idle and transitions if heavyHold is true or false
-            else if (!throwAimHold)
+            else if (!throwAimHold && !getComboOnCooldown())
             {
                 meleeInputReceived = true;
             }
@@ -279,6 +289,8 @@ public class PlayerCombat : MonoBehaviour
         // Throw on button release
         if(context.canceled && isWeaponWielded && throwAimHold && meleeWeaponPrefab && throwButtonPressedTime != null)
         {
+            throwInputReceived = true;
+
             ThrowWeapon();
 
             // We don't have weapon anymore
@@ -325,6 +337,8 @@ public class PlayerCombat : MonoBehaviour
 
             // We release aim button hide points
             HideAllProjPoints();
+
+            //gameObject.transform.localScale = new Vector3(vectorToTarget.normalized.x > 0 ? 1 : -1, 1, 1); // Flip player to face towards the shooting direction
         }
     }
 
@@ -332,9 +346,9 @@ public class PlayerCombat : MonoBehaviour
     {
         if (isPlayerBeingPulled)
         {
-            Vector3 vectorToTarget = weaponInstance.transform.position - transform.position;
+            Vector3 vectorToTargetWeapon = weaponInstance.transform.position - transform.position;
             gameObject.GetComponent<Rigidbody2D>().gravityScale = 0f;
-            gameObject.GetComponent<Rigidbody2D>().velocity = vectorToTarget.normalized * playerPullForce * Time.deltaTime;
+            gameObject.GetComponent<Rigidbody2D>().velocity = vectorToTargetWeapon.normalized * playerPullForce * Time.deltaTime;
         }
 
     }
@@ -481,6 +495,76 @@ public class PlayerCombat : MonoBehaviour
     }
     // ----------- PLACEHOLDER ANIMATIONS -------------------
 
+    // --- COMBO ---
+    
+    // Called from Transition animation scripts they know their attack animation and how long current transition would be
+    public void UpdateCombo(int attackIndex, float transitionTime)
+    {
+        currentComboIndex = attackIndex;
+
+        // Start timer if this runs out we go cooldown no spamming
+        comboTimerCoroutine = StartCoroutine(ComboTimer(transitionTime));
+    }
+
+    // Stops timer (kills coroutine) for until started again
+    public void StopComboTimer()
+    {
+        StopCoroutine(comboTimerCoroutine);
+    }
+
+    // Calculates time between attacks (attack transition time) if it runs out we set combo on cooldown if we melee before Player.cs calls StopComboTimer() and 
+    // timer starts again when LTran# animation starts
+    private IEnumerator ComboTimer(float transitionTime)
+    {
+        yield return new WaitForSeconds(transitionTime);
+        // If we go here we didn't melee before attack transition (if we started running transitionTime) ended
+        setComboOnCooldown(true);
+    }
+
+    private IEnumerator ComboCooldown()
+    {
+        // We are on cooldown and we don not have combo active
+        setComboActive(false);
+        yield return new WaitForSeconds(comboCooldownTime);
+        // Set this to false so we do not attack instatly when we com out of cooldown
+        meleeInputReceived = false;
+        // We did our time
+        setComboOnCooldown(false);
+        // We start from combo index 0 aka first hit of combo
+        currentComboIndex = 0;
+    }
+
+    public bool getComboOnCooldown()
+    {
+        return comboOnCooldown;
+    }
+    public void setComboOnCooldown(bool b)
+    {
+        // If we set (true) combo on cooldown start coroutine to calculate passed time
+        if (b)
+            StartCoroutine(ComboCooldown());
+
+        comboOnCooldown = b;
+    }
+
+    // Called from Player.cs
+    public bool getComboActive()
+    {
+        return comboActive;
+    }
+    public void setComboActive(bool b)
+    {
+        comboActive = b;
+    }
+
+    // Used in Player.cs HandleAnimations() to play correct attack animation
+    public int getCurrentComboIndex()
+    {
+        return currentComboIndex;
+    }
+
+    // --- DASH ---
+
     // Put these functions in PlayerMovement????
     public void AttackDash()
     {
@@ -547,7 +631,8 @@ public class PlayerCombat : MonoBehaviour
                     
                     // STUN OR KNOCKBACK + DASH?
                     // Knockback enemy
-                    Knockback(enemy.gameObject, gameObject, knockbackForceLight);
+                    if(kbOnLight)
+                        Knockback(enemy.gameObject, gameObject, knockbackForceLight);
                 }
             }
         }
@@ -571,7 +656,8 @@ public class PlayerCombat : MonoBehaviour
                         healthScript.TakeDamage(lightDamage + Mathf.Ceil(lightDamage / 2));
                     }
                     // Knockback enemy
-                    Knockback(enemy.gameObject, gameObject, knockbackForceLight);
+                    if(kbOnLightLast)
+                        Knockback(enemy.gameObject, gameObject, knockbackForceLight);
                 }
             }
         }
@@ -676,7 +762,7 @@ public class PlayerCombat : MonoBehaviour
             // Get mouse position from mainCamera ScreenPointToRay
             mousePosRay = mainCamera.ScreenPointToRay(mouse.position.ReadValue());
 
-            vectorToTarget = new Vector2(mousePosRay.origin.x - gameObject.transform.position.x, mousePosRay.origin.y - gameObject.transform.position.y);
+            //vectorToTarget = new Vector2(mousePosRay.origin.x - gameObject.transform.position.x, mousePosRay.origin.y - gameObject.transform.position.y);
 
             // Positions of points[]
             for (int i = 0; i < numberOfPoints; i++)
@@ -874,5 +960,15 @@ public class PlayerCombat : MonoBehaviour
     public void setIsPlayerBeingPulled(bool isPulled)
     {
         isPlayerBeingPulled = isPulled;
+    }
+
+    public bool getThrowAiming()
+    {
+        return throwAimHold;
+    }
+
+    public Vector2 getVectorToMouse()
+    {
+        return vectorToTarget;
     }
 }

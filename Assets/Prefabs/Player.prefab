@@ -9935,9 +9935,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attackCooldown: 0
+  attackCost: 0
   shockwaveAttackEffect: {fileID: 1691313839}
   shockwaveJumpEffect: {fileID: 212109729}
   shockwaveDiveGraphics: {fileID: 1851797149}
+  energyScript: {fileID: 0}
 --- !u!1 &221694810971202532
 GameObject:
   m_ObjectHideFlags: 0
@@ -10135,8 +10137,12 @@ MonoBehaviour:
   checkDistance: 0.7
   climbXOffset: 1
   climbYOffset: 1
+  horizontal: 0
+  horizontalBuffer: 0
   shockwaveJumping: 0
   isFacingRight: 1
+  canReceiveInputMove: 0
+  canReceiveInputJump: 0
 --- !u!114 &2646993275326716546
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10324,6 +10330,10 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 1bf54e5f-a07a-4906-8ed7-95e291e94468
     m_ActionName: Player/HeavyMelee[/Keyboard/leftShift]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: b838cc22-8c8f-49c6-b10d-194504f72a64
+    m_ActionName: Player/ShockwaveAttack[/Keyboard/q]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -10488,11 +10498,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lightDamage: 1
   heavyDamage: 2
-  knockbackForceLight: 400
+  knockbackForceLight: 300
   knockbackForceHeavy: 750
   dashSpeed: 5
-  dashDistance: 0.4
+  dashDistance: 0.05
   playerPullForce: 750
+  kbOnLight: 1
+  kbOnLightLast: 1
+  comboCooldownTime: 0.5
   enemyLayer:
     serializedVersion: 2
     m_Bits: 128
@@ -10523,6 +10536,7 @@ MonoBehaviour:
   canReceiveInputMelee: 0
   canReceiveInputThrow: 0
   meleeInputReceived: 0
+  throwInputReceived: 0
 --- !u!95 &3265684260011797273
 Animator:
   serializedVersion: 3

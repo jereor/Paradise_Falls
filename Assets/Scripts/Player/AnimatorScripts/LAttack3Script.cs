@@ -9,6 +9,8 @@ public class LAttack3Script : StateMachineBehaviour
     {
         Player.Instance.SetCurrentState(Player.State.Attacking);
 
+        animator.SetBool("isAttacking", true);
+
         PlayerCombat.Instance.AttackDash();
     }
 
@@ -21,7 +23,11 @@ public class LAttack3Script : StateMachineBehaviour
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+        PlayerCombat.Instance.meleeInputReceived = false;
+
         PlayerCombat.Instance.DealDamage(3, false);
+
+        animator.SetBool("isAttacking", false);
     }
 
     // OnStateMove is called right after Animator.OnAnimatorMove()

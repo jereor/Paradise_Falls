@@ -56,6 +56,8 @@ public class PauseMenuController : MonoBehaviour
         // Time scale back to default
         Time.timeScale = 1f;
         GameIsPaused = false;
+        // Activate inputs
+        Player.Instance.HandleAllPlayerControlInputs(true);
     }
 
     // Pause and open pauseMenuUI, called from Pause input
@@ -68,6 +70,8 @@ public class PauseMenuController : MonoBehaviour
         // Freeze time
         Time.timeScale = 0f;
         GameIsPaused = true;
+        // Disable inputs
+        Player.Instance.HandleAllPlayerControlInputs(false);
     }
 
     //Button action for leaving to Main Menu
