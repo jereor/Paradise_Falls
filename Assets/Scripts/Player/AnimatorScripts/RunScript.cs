@@ -22,32 +22,10 @@ public class RunScript : StateMachineBehaviour
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
-    override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
-    {
-        // Input is false we arent giving input
-        if (PlayerMovement.Instance.horizontal == 0f)
-        {
-            animator.SetBool("isRunning", false);
-        }
+    //override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+    //{
 
-        // From running to Light attack
-        if (PlayerCombat.Instance.meleeInputReceived && !PlayerCombat.Instance.heavyHold && !animator.GetBool("isClimbing"))
-        {
-            Player.Instance.animator.Play("LAttack1");
-        }
-
-        // Throw
-        if (PlayerCombat.Instance.throwInputReceived)
-        {
-            animator.Play("Throw");
-        }
-
-        // Jump Launch
-        if (PlayerMovement.Instance.jumpInputReceived)
-        {
-            animator.Play("Launch");
-        }
-    }
+    //}
 
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
     //override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)

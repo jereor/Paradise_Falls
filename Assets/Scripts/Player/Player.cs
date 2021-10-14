@@ -75,8 +75,60 @@ public class Player : MonoBehaviour
         HandleAnimations();
     }
 
+    // Most of the animations are started from this function some are in JumpScript, Jump animation blendtree
     private void HandleAnimations()
     {
+
+        // When currentState is Idle
+        if(currentState == State.Idle)
+        {
+            // Player melees light attack and we arent currently climbing
+            if (PlayerCombat.Instance.meleeInputReceived && !PlayerCombat.Instance.heavyHold && !animator.GetBool("isClimbing"))
+            {
+                animator.Play("LAttack1");
+            }
+            // Player starts moving
+            if (PlayerMovement.Instance.horizontal != 0f)
+            {
+                animator.SetBool("isRunning", true);
+            }
+            // Throw
+            if (PlayerCombat.Instance.throwInputReceived)
+            {
+                animator.Play("Throw");
+            }
+            // Jump Launch
+            if (PlayerMovement.Instance.jumpInputReceived)
+            {
+                animator.Play("Launch");
+            }
+        }
+
+        // When currentState is Running
+        if (currentState == State.Running)
+        {
+            // Input is false we arent giving input
+            if (PlayerMovement.Instance.horizontal == 0f)
+            {
+                animator.SetBool("isRunning", false);
+            }
+            // From running to Light attack
+            if (PlayerCombat.Instance.meleeInputReceived && !PlayerCombat.Instance.heavyHold && !animator.GetBool("isClimbing"))
+            {
+                animator.Play("LAttack1");
+            }
+            // Throw
+            if (PlayerCombat.Instance.throwInputReceived)
+            {
+                animator.Play("Throw");
+            }
+            // Jump Launch
+            if (PlayerMovement.Instance.jumpInputReceived)
+            {
+                animator.Play("Launch");
+            }
+        }
+
         // LedgeClimb animation
         // LedgeChecks return true
         if (movementScript.getClimbing() && !animator.GetBool("isAttacking") && !animator.GetBool("isAiming"))
@@ -289,6 +341,18 @@ public class Player : MonoBehaviour
         return animator.GetBool("isLaunching");
     }
 
+    public float GetTransitionTime()
+    {
+        // Get all clips and use LTran1 legth as combo timer
+        AnimationClip[] clips = animator.runtimeAnimatorController.animationClips;
+        foreach (AnimationClip clip in clips)
+        {
+            if (clip.name == "LTran1")
+                return clip.length;
+        }
+        // Needs to return something should always find Transition animation
+        return 0f;
+    }
 
     public bool IsFacingRight()
     {
