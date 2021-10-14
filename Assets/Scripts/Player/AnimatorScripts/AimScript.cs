@@ -2,29 +2,38 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LTran1Script : StateMachineBehaviour
+public class AimScript : StateMachineBehaviour
 {
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        // Set transition state
-        Player.Instance.SetCurrentState(Player.State.AttackTransition);
-
-        // Tell combat script of last attacks comboIndex LTran1 = (1) and lenght of this animationclip
-        PlayerCombat.Instance.UpdateCombo(1, animator.GetCurrentAnimatorStateInfo(0).length);
+        Player.Instance.SetCurrentState(Player.State.Aiming);
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
-    //override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
-    //{
+    override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+    {
+        // If we need to flip we setFacingRight correctly
+        PlayerMovement.Instance.setFacingRight(PlayerCombat.Instance.getVectorToMouse().normalized.x > 0 ? true : false);
+        // Flip local scale if aiming is to the other x
+        animator.gameObject.transform.localScale = new Vector3(PlayerCombat.Instance.getVectorToMouse().normalized.x > 0 ? 1 : -1, 1, 1); // Flip player to face towards the shooting direction
 
-    //}
+        // Player starts moving
+        if (PlayerMovement.Instance.horizontal != 0f)
+        {
+            animator.SetBool("isRunning", true);
+        }
+
+        if (PlayerCombat.Instance.throwInputReceived)
+        {
+            animator.Play("Throw");
+        }
+    }
 
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
     //override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     //{
-    //    // Set this false here so we can for example use running animations
-    //    animator.SetBool("isAttacking", false);
+    //    
     //}
 
     // OnStateMove is called right after Animator.OnAnimatorMove()

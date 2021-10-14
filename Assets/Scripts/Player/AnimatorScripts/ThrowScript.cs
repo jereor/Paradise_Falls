@@ -2,30 +2,31 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LTran1Script : StateMachineBehaviour
+public class ThrowScript : StateMachineBehaviour
 {
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        // Set transition state
-        Player.Instance.SetCurrentState(Player.State.AttackTransition);
+        Player.Instance.SetCurrentState(Player.State.Throwing);
 
-        // Tell combat script of last attacks comboIndex LTran1 = (1) and lenght of this animationclip
-        PlayerCombat.Instance.UpdateCombo(1, animator.GetCurrentAnimatorStateInfo(0).length);
+        // Do not show aiming animation after throw animation
+        animator.SetBool("isAiming", false);
+        animator.SetBool("isThrowing", true);
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
     //override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     //{
-
+    //    
     //}
 
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
-    //override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
-    //{
-    //    // Set this false here so we can for example use running animations
-    //    animator.SetBool("isAttacking", false);
-    //}
+    override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+    {
+        // We can receive input for throwing
+        PlayerCombat.Instance.throwInputReceived = false;
+        animator.SetBool("isThrowing", false);
+    }
 
     // OnStateMove is called right after Animator.OnAnimatorMove()
     //override public void OnStateMove(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)

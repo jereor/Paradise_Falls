@@ -28,18 +28,24 @@ public class Player : MonoBehaviour
     public Animator animator;
     public Rigidbody2D rb;
 
+    // If state is changed this will be true so we know in FixedUpdate to HandleStateInput() only when we change state
+    // If this is not used HandleStateUpdate() will be called every FixedUpdate() call aka Disables and Enables are done each FixedUpdate() -> potatocomputers cannot run our game
+    private bool statesChanged = false;
+
     public enum State
     {
         Idle,
         Running,
-        Jumping,
+        Ascending,
         Falling,
+        Landing,
         Diving,
         WallSliding,
         Climbing,
-        Launched,
         Attacking,
-        AttackTransition
+        AttackTransition,
+        Aiming,
+        Throwing
     }
     State currentState;
     State previousState;
@@ -56,15 +62,223 @@ public class Player : MonoBehaviour
         TextStyleEnergy.fontSize = 30;
         TextStyleHealth.fontSize = 30;
         TextStyleEnergy.normal.textColor = Color.red;
+
+        //combatScript.comboTime = GetTransitionAnimTime();
     }
 
     private void FixedUpdate()
     {
-        HandleStateInputs();
+        // If game is not paused and state has changed handle state inputs
+        if(!PauseMenuController.GameIsPaused && statesChanged)
+            HandleStateInputs();
+
+        HandleAnimations();
     }
 
+    // Most of the animations are started from this function some are in JumpScript, Jump animation blendtree
+    private void HandleAnimations()
+    {
+        // When currentState is Idle
+        if(currentState == State.Idle)
+        {
+            // Player melees light attack and we arent currently climbing and combo is not on cooldown
+            if (combatScript.meleeInputReceived && !combatScript.heavyHold && !animator.GetBool("isClimbing") && !combatScript.getComboOnCooldown())
+            {
+                // Combo is not active we set it to active since we attack
+                if (!combatScript.getComboActive())
+                    combatScript.setComboActive(true);
+
+                switch (combatScript.getCurrentComboIndex())
+                {
+                    case 0:
+                        animator.Play("LAttack1");       
+                        break;
+                    case 1:
+                        animator.Play("LAttack2");
+                        // Stop this for the duration of LAttack2 clip LTran2 will start timer again when clip starts
+                        combatScript.StopComboTimer();
+                        break;
+                    case 2:
+                        animator.Play("LAttack3");
+                        // Stop this so cooldown starts after LTran3 clip has "played" or should have played if we started running during the clip
+                        combatScript.StopComboTimer();
+                        break;
+                    default:
+                        break;
+                }
+            }
+            // Player starts moving
+            if (PlayerMovement.Instance.horizontal != 0f)
+            {
+                animator.SetBool("isRunning", true);
+            }
+            // Throw
+            if (PlayerCombat.Instance.throwInputReceived)
+            {
+                animator.Play("Throw");
+            }
+        }
+
+        // When currentState is Running
+        if (currentState == State.Running)
+        {
+            // Input is false we arent giving input
+            if (PlayerMovement.Instance.horizontal == 0f)
+            {
+                animator.SetBool("isRunning", false);
+            }
+            // From running to Light attack
+            if (combatScript.meleeInputReceived && !combatScript.heavyHold && !animator.GetBool("isClimbing") && !combatScript.getComboOnCooldown())
+            {
+                if (!combatScript.getComboActive())
+                    combatScript.setComboActive(true);
+
+                switch (combatScript.getCurrentComboIndex())
+                {
+                    case 0:
+                        animator.Play("LAttack1");
+                        break;
+                    case 1:
+                        animator.Play("LAttack2");
+                        combatScript.StopComboTimer();
+                        break;
+                    case 2:
+                        animator.Play("LAttack3");
+                        combatScript.StopComboTimer();
+                        break;
+                    default:
+                        break;
+                }
+            }
+            // Throw
+            if (PlayerCombat.Instance.throwInputReceived)
+            {
+                animator.Play("Throw");
+            }
+        }
+
+        // When current state is attack transition
+        if(currentState == State.AttackTransition)
+        {
+            // Player starts moving
+            if (PlayerMovement.Instance.horizontal != 0f)
+            {
+                animator.SetBool("isRunning", true);
+            }
+            // From transition to Light attack
+            if (combatScript.meleeInputReceived && !combatScript.heavyHold && !animator.GetBool("isClimbing") && !combatScript.getComboOnCooldown())
+            {
+                if (!combatScript.getComboActive())
+                    combatScript.setComboActive(true);
+
+                switch (combatScript.getCurrentComboIndex())
+                {
+                    case 0:
+                        animator.Play("LAttack1");
+                        break;
+                    case 1:
+                        animator.Play("LAttack2");
+                        combatScript.StopComboTimer();
+                        break;
+                    case 2:
+                        animator.Play("LAttack3");
+                        combatScript.StopComboTimer();
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        // When the current state is Ascending or Falling
+        if (currentState == State.Ascending || currentState == State.Falling)
+        {
+            // From ascending or falling to Light attack
+            if (combatScript.meleeInputReceived && !combatScript.heavyHold && !animator.GetBool("isClimbing") && !combatScript.getComboOnCooldown())
+            {
+                if (!combatScript.getComboActive())
+                    combatScript.setComboActive(true);
+
+                switch (combatScript.getCurrentComboIndex())
+                {
+                    case 0:
+                        animator.Play("LAttack1");
+                        break;
+                    case 1:
+                        animator.Play("LAttack2");
+                        combatScript.StopComboTimer();
+                        break;
+                    case 2:
+                        animator.Play("LAttack3");
+                        combatScript.StopComboTimer();
+                        break;
+                    default:
+                        break;
+                }
+
+                //if (currentState == State.Ascending)
+                //    animator.Play("LAttack2");
+                //else if (currentState == State.Falling)
+                //    animator.Play("LAttack3");
+            }
+
+            // Throw
+            if (PlayerCombat.Instance.throwInputReceived)
+            {
+                animator.Play("Throw");
+            }
+        }
+
+        // LedgeClimb animation
+        // LedgeChecks return true
+        if (movementScript.getClimbing() && !animator.GetBool("isAttacking") && !animator.GetBool("isAiming"))
+        {
+            animator.SetBool("isClimbing", true);
+        }
+
+        // WallSlide animation
+        if (movementScript.getWallSliding() && !movementScript.getClimbing())
+        {
+            animator.SetBool("isWallSliding", true);
+        }
+        else
+        {
+            animator.SetBool("isWallSliding", false);
+        }
+ 
+        // Jump / Fall animation
+        // We are in air and we land with rb velocity downwards or zero 
+        if (animator.GetBool("jump") && movementScript.IsGrounded() && rb.velocity.y <= 0f)
+        {
+            animator.SetBool("jump", false);
+        }
+        // We are in air and we are currently moving upwards or downwards
+        else if (!movementScript.IsGrounded() && rb.velocity.y != 0f)
+        {
+            // If this is false set it to true since we are either jumping or falling
+            if(!animator.GetBool("jump"))
+                animator.SetBool("jump", true);
+            // Update float yVelocity to be used in blend tree 
+            // if negative value -> falling(decreasing) animation OR if positive/zero -> jumping(ascending) animation 
+            animator.SetFloat("yVelocity", rb.velocity.y);
+        }
+
+        // Aiming
+        //UNCOMMENT WHEN getThrowAiming() created in PlayerCombat
+        if (combatScript.getThrowAiming() && combatScript.getWeaponWielded() && !animator.GetBool("isRunning") && !animator.GetBool("isClimbing"))
+        {
+            animator.SetBool("isAiming", true);
+        }
+        else
+        {
+            animator.SetBool("isAiming", false);
+        }
+    }
+
+    // Enables and Disables inputs
     private void HandleStateInputs()
     {
+        //Debug.Log("State update frequency");
         switch (currentState)
         {
             case State.Idle:
@@ -77,24 +291,60 @@ public class Player : MonoBehaviour
                 movementScript.EnableInputMove();
                 break;
             case State.Running:
+                // Combat
+                combatScript.EnableInputMelee();
+                combatScript.EnableInputThrowAim();
+
+                // Movement
+                movementScript.EnableInputJump();
+                movementScript.EnableInputMove();
                 break;
-            case State.Jumping:
+            case State.Ascending:
+                // Combat
+                combatScript.EnableInputMelee();
+                combatScript.EnableInputThrowAim();
+
+                // Movement
+                movementScript.EnableInputJump();
+                movementScript.EnableInputMove();
                 break;
             case State.Falling:
+                // Combat
+                combatScript.EnableInputMelee();
+                combatScript.EnableInputThrowAim();
+
+                // Movement
+                movementScript.EnableInputJump();
+                movementScript.EnableInputMove();
                 break;
-            case State.Diving:
-                break;
-            case State.WallSliding:
-                break;
-            case State.Climbing:
+            case State.Landing:
                 // Combat
                 combatScript.DisableInputMelee();
+                combatScript.DisableInputThrowAim();
 
                 // Movement
                 movementScript.DisableInputJump();
                 movementScript.DisableInputMove();
                 break;
-            case State.Launched:
+            case State.Diving:
+                break;
+            case State.WallSliding:
+                // Combat
+                combatScript.DisableInputMelee();
+                combatScript.EnableInputThrowAim();
+
+                // Movement
+                movementScript.EnableInputJump();
+                movementScript.EnableInputMove();
+                break;
+            case State.Climbing:
+                // Combat
+                combatScript.DisableInputMelee();
+                combatScript.DisableInputThrowAim();
+
+                // Movement
+                movementScript.DisableInputJump();
+                movementScript.DisableInputMove();
                 break;
             case State.Attacking:
                 // Combat
@@ -110,11 +360,43 @@ public class Player : MonoBehaviour
                 combatScript.EnableInputThrowAim();
 
                 // Movement
-                //movementScript.EnableInputJump();
-                //movementScript.EnableInputMove();
+                movementScript.EnableInputJump();
+                movementScript.EnableInputMove();
+                break;
+            case State.Aiming:
+                break;
+            case State.Throwing:
                 break;
             default:
                 break;
+        }
+        // We updated states -> we can set this to false -> no need to check again if we stay in same state
+        statesChanged = false;
+    }
+
+    // Called from PauseMenuController on Pause() and Resume()
+    // Add enables and disables as they are made in scripts ---- CURRENT: melee, aim, jump, move
+    public void HandleAllPlayerControlInputs(bool activate)
+    {
+        if (!activate)
+        {
+            // Combat
+            combatScript.DisableInputMelee();
+            combatScript.DisableInputThrowAim();
+
+            // Movement
+            movementScript.DisableInputJump();
+            movementScript.DisableInputMove();
+        }
+        else
+        {
+            // Combat
+            combatScript.EnableInputMelee();
+            combatScript.EnableInputThrowAim();
+
+            // Movement
+            movementScript.EnableInputJump();
+            movementScript.EnableInputMove();
         }
     }
 
@@ -134,7 +416,50 @@ public class Player : MonoBehaviour
         {
             previousState = currentState;
         }
+        // Set this to true so we know in FixedUpdate() that we have to call HandleStateInputs()
+        statesChanged = true;
         currentState = newState;
+    }
+
+    public void SetWillLand(bool b)
+    {
+        animator.SetBool("willLand", b);
+    }
+    public bool GetWillLand()
+    {
+        return animator.GetBool("willLand");
+    }
+
+    // Used in climbing to check if we are attackin we cant climb
+    public bool GetIsAttacking()
+    {
+        return animator.GetBool("isAttacking");
+    }
+
+    public bool GetIsAiming()
+    {
+        return combatScript.getThrowAiming();
+    }
+
+    public bool GetIsRunning()
+    {
+        return animator.GetBool("isRunning");
+    }
+
+    public bool GetLaunching()
+    {
+        return animator.GetBool("isLaunching");
+    }
+
+    public float GetTransitionAnimTime()
+    {
+        AnimationClip[] clips = animator.runtimeAnimatorController.animationClips;
+        foreach (AnimationClip clip in clips)
+        {
+            if (clip.name == "LTran1")
+                return clip.length;
+        }
+        return 0f;
     }
 
     public bool IsFacingRight()

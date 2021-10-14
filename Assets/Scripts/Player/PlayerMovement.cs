@@ -35,14 +35,15 @@ public class PlayerMovement : MonoBehaviour
     // State variables
     public float horizontal; // Tracks horizontal input direction
     public float horizontalBuffer; // Tracks horizontal input regardles of canReceiveInputMove bool
+
     private bool moving = false;
     private bool falling = false;
     private bool jumping = false;
     private bool diving = false;
     private bool climbing = false;
+    private bool currentlyWallSliding = false;
     public bool shockwaveJumping = false;
     public bool isFacingRight = true; // Tracks player sprite direction
-    public bool jumpInputReceived = false;
 
     // Last button press times
     private float? jumpButtonPressedTime; // Saves the time when player presses jump button
@@ -96,19 +97,20 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-
         // Movement
+        // We cannot move and horizontal is something else than zero 
         if (!canReceiveInputMove && horizontal != 0f)
         {
-            horizontal = 0f; // Stop moving because we cant give input to horizontal
+            horizontal = 0f; // Stop moving because we update rb.velocity every frame with horizontal (if this logic is changed other scripts might need tweaking -> RB. force, velocity etc.)
         }
         // We were stopped by our attack and our horizontalBuffer was not reseted during attack (we want to continue moving to the direction we were pressing before attack)
         else if(canReceiveInputMove && horizontalBuffer != horizontal)
         {
-            // Replace with our desired movement if we were pressing move during !canReceiveInputMove
+            // Replace with our desired movement if we were pressing move during !canReceiveInputMove or before action that stops movement
             horizontal = horizontalBuffer;
         }
         rb.velocity = new Vector2(horizontal * movementVelocity, rb.velocity.y); // Moves the player by horizontal input
+
 
         /* DISABLED FOR NOW. Launch checks to use when using directional boost plant launch
         if (launched && horizontal != 0)
@@ -141,11 +143,12 @@ public class PlayerMovement : MonoBehaviour
         falling = rb.velocity.y < -0.5f;
         jumping = rb.velocity.y > 0.5;
 
-        // Check for idle, falling, jumping, launched and running states
+        // Check for idle, falling, jumping, launched and running states                             EDIT JTallbacka: no need for these (states set in animations) if lines can be removed (left if needed for debugs)
         //if (rb.velocity == Vector2.zero && !climbing) playerScript.SetCurrentState(Player.State.Idle);
         //if (falling && !diving) playerScript.SetCurrentState(Player.State.Falling);
         //if (jumping && !launched) playerScript.SetCurrentState(Player.State.Jumping);
         //if (launched) playerScript.SetCurrentState(Player.State.Launched);
+
         if (moving && !falling && !jumping && !launched)
         {
             //playerScript.SetCurrentState(Player.State.Running);
@@ -162,6 +165,130 @@ public class PlayerMovement : MonoBehaviour
         CheckLedgeClimb();
         CheckWallJump();
         CheckShockwaveJump();
+    }
+
+    // ---- INPUTS -----
+
+    // Move action: Called when the Move Action Button is pressed
+    public void Move(InputAction.CallbackContext context) // Context tells the function when the action is triggered
+    {
+        // We cant receive input OR we stop
+        if (!canReceiveInputMove || Mathf.Abs(context.ReadValue<Vector2>().x) == 0)
+        {
+            horizontal = 0f;
+        }
+        // We can move and our input for horizontal is greater than 0f
+        else
+        {
+            horizontal = Mathf.Round(context.ReadValue<Vector2>().x); // Updates the horizontal input direction
+        }
+
+        // We need this when we do not want to stop after attacks
+        horizontalBuffer = Mathf.Round(context.ReadValue<Vector2>().x);
+    }
+
+    // Jump action: Called when the Jump Action button is pressed
+    public void Jump(InputAction.CallbackContext context) // Context tells the function when the action is triggered
+    {
+        if (climbing || !canReceiveInputJump) return;
+        jumpButtonPressedTime = Time.time;
+
+        // -WALLJUMP-
+
+        // If button is pressed and we are in allowed walljump position
+        if (context.started && canWallJump)
+        {
+            // Use this commented else if, if we want to give player boost to the left or right when walljumping
+            // Jumping from left wall
+            //if (Mathf.Sign(transform.localScale.x) == -1)
+            //{
+            //    rb.velocity = new Vector2(jumpForce, jumpForce); // add x parameter to jump left or right currently jumps straight up
+            //}
+            //// Jumping from right wall
+            //else if (Mathf.Sign(transform.localScale.x) == 1)
+            //{
+            //    rb.velocity = new Vector2(-jumpForce, jumpForce); // add x parameter to jump left or right currently jumps straight up
+            //}
+
+            // Comment this if above is used 
+            rb.velocity = new Vector2(jumpForce, jumpForce);
+            // Set tracking float here that we jumped from some wall
+            wallJumpDir = Mathf.Sign(transform.localScale.x);
+        }
+        // Coyotetime wall jump 
+        else if (context.started && allowCoyoteWallJump
+            && (Time.time - lastWallTouchTime <= coyoteTime / 2) // With full coyoteTime handling feels weird
+            && !LedgeIsOccupied()) // This Check prevents jumping from wall when there is no ground after the wall object and we slide past wall, Coyote time causes unwanted double jump without
+        {
+            // Replace or figure this out if else if is used above
+            rb.velocity = new Vector2(jumpForce, jumpForce);
+            // wallJumpDir here is opposite of opposite :)
+            wallJumpDir = Mathf.Sign(-transform.localScale.x);
+        }
+
+        // -AIR DIVE-
+
+        // Air dive while in the air
+        else if (context.started && !IsGrounded()
+            && playerScript.InputVertical == -1)
+        {
+            if (!(playerScript.GetCurrentState() == Player.State.Diving)) // First frame of diving
+                rb.velocity = new Vector2(0, -jumpForce); // Set velocity downwards
+
+            diving = true;
+            lastDiveTime = Time.time;
+
+            // Air Dive functionality here
+            shockwaveTool.DoShockwaveDive(); // Activate VFX
+            rb.gravityScale = shockwaveDiveGravityScale;
+        }
+
+        // -DOUBLE JUMP-
+
+        // Double jump while in the air
+        else if (allowShockwaveJump && canShockwaveJump) // Make sure player has acquired Shockwave Jump and that they can currently double jump
+        {
+            // If button is pressed and player has not yet double jumped
+            if (context.started && !shockwaveJumping
+                && !(Time.time - lastGroundedTime <= coyoteTime)) // Check if coyote time is online (if yes, no double jump needed)
+            {
+                shockwaveTool.CancelShockwaveDive(); // Checks if shockwave dive graphics are on and disables them
+
+                // Activate the event through the ShockwaveTool script and do a double jump
+                shockwaveTool.ShockwaveJump(); // Activates VFX
+                rb.velocity = new Vector2(rb.velocity.x, jumpForce); // Jump in the air
+
+                // Update ShockwaveJump state variables after the jump
+                shockwaveJumping = true;
+                canShockwaveJump = false;
+
+                // Reset Jump state variables
+                jumpButtonPressedTime = null;
+                lastGroundedTime = null;
+            }
+        }
+
+        // -JUMP FROM GROUND-
+
+        // If button was pressed
+        if (context.performed && (Time.time - lastGroundedTime <= coyoteTime) // Check if coyote time is online
+            && (Time.time - jumpButtonPressedTime <= coyoteTime) && !climbing) // Check if jump has been buffered
+        {
+            rb.velocity = new Vector2(rb.velocity.x, jumpForce); // Keep player in upwards motion
+        }
+
+        // If button was released
+        if (context.canceled && rb.velocity.y > 0f && !shockwaveTool.ShockwaveJumpUsed && !launched)
+        {
+            // Check that player is currently not being launched
+            if (Time.time - lastLaunchTime > 1 || lastLaunchTime == null)
+            {
+                rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f); // Slow down player
+                jumpButtonPressedTime = null;
+                lastGroundedTime = null;
+            }
+            lastLaunchTime = null;
+        }
     }
 
     // Player can sometimes get stuck and not be able to jump because ground check fails
@@ -183,63 +310,38 @@ public class PlayerMovement : MonoBehaviour
         if (allowLedgeClimb && !climbing)
         {
             // Nasty if combo:
-            /* IF
-             * body OR feet are tounging wall
-             * AND ledge isn't occupied
-             * AND ( IsGrounded OR Time - lastGroundedTime is greater than climbTimeBuffer )    This is to prevent walking of a cliff and climbing soon as you step off the ledge
-             * AND Time - lastTimeClimbed is greater that climbTimeBuffer                       Prevents climbing super fast
-             */
-
-            if ((BodyIsTouchingWall() /*|| FeetAreTouchingWall()*/)
-                && !LedgeIsOccupied()
-                && Time.time - lastTimeClimbed >= climbTimeBuffer
-                && horizontal != 0) // Player is moving and wanting to climb if no move input fall
+            if ((BodyIsTouchingWall())
+                && !LedgeIsOccupied()                                       // Player sees(raycasts) ledge and space is vacant to climb
+                && Time.time - lastTimeClimbed >= climbTimeBuffer           // We have to climb stairlike object step by step not instantly to the top
+                && horizontal != 0                                          // Player is moving and wanting to climb if no move input fall
+                && !Player.Instance.GetIsAttacking()
+                && !Player.Instance.GetIsAiming())                       // If we are attacking we cannot climb at the same time
 
             {
-                //Debug.Log("Climb start: " + Time.time);
                 canClimb = true;
             }
 
             // We can climb so we climb
             if (canClimb)
             {
-                //playerScript.SetCurrentState(Player.State.Climbing);
-                // Do these before animation
                 climbing = true;
                 rb.velocity = new Vector2(0, 0); // Set velocity here to zero else movement bugs while climbing
 
                 canShockwaveJump = false; // Prevent double jumping
 
                 lastTimeClimbed = Time.time; // We start climbing set time here
-
-                // START CLIMBING ANIMATION HERE FOR DEMO COROUTINE TO STOP MOVEMENT WHILE CLIMBING
-                StartCoroutine(Climb());
-
-                // Start this when climbing animation is completed aka not here
-                //LedgeClimb();
             }
         }
         else if (climbing)
         {
-            //playerScript.SetCurrentState(Player.State.Climbing);
-            rb.gravityScale = 0f; // Keep gravity at zero so player stays still until climbing is done
+            rb.gravityScale = 0f; // Keep gravity at zero so player stays still until climbing animation is done
             rb.velocity = Vector2.zero;
         }
     }
 
-    // Simulation of LedgeClimb animation
-    private IEnumerator Climb()
-    {
-        //Debug.Log("Climbing: " + Time.time);
-        playerScript.SetCurrentState(Player.State.Climbing);
-
-        yield return new WaitForSecondsRealtime(climbTimeBuffer);
-        //Debug.Log("Ended Climbing: " + Time.time);
-        LedgeClimb();
-    }
-
     // Moves player instantly on top of the ledge he is climbing
-    private void LedgeClimb()
+    // Called from LedgeClimbScript OnStateExit() aka animation end
+    public void LedgeClimb()
     {
         // Move player for offset amount to X and Y directions. X dir will need localScale.x to track where player is looking
         transform.position = new Vector2(transform.position.x + climbXOffset * transform.localScale.x, transform.position.y + climbYOffset - ledgeHitOffsetRay.distance);
@@ -251,7 +353,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     // ---- WALLJUMP ----
-    
+
     // Check if Raycasts hit wall and we are in air to set canWallJump
     private void CheckWallJump()
     {
@@ -269,9 +371,9 @@ public class PlayerMovement : MonoBehaviour
                     // If we are sliding down a wall and we have gravityscale as default change gravityscale so it feel like there is kitka :) (JOrava EDIT: friction :D)
                     if (!climbing && rb.velocity.y < 0 && rb.gravityScale == defaultGravityScale)
                     {
-                        playerScript.SetCurrentState(Player.State.WallSliding);
                         rb.gravityScale = wallSlideGravityScale;
                     }
+                    currentlyWallSliding = true;
                     // We are facing to the wall and we can jump off the wall
                     canWallJump = true;
                     // This is used in Wall Jump Coyote time check
@@ -280,7 +382,7 @@ public class PlayerMovement : MonoBehaviour
                 // If we are in air but Raycasts and wall side tests are not going through
                 else if (canWallJump)
                 {
-                    //playerScript.SetCurrentState(Player.State.Jumping);
+                    currentlyWallSliding = false;
                     rb.gravityScale = defaultGravityScale;
                     canWallJump = false;
                 }
@@ -288,6 +390,7 @@ public class PlayerMovement : MonoBehaviour
             // We land set wall jump wall direction tracking to zero
             if (IsGrounded())
             {
+                currentlyWallSliding = false;
                 rb.gravityScale = defaultGravityScale;
                 wallJumpDir = 0f;
                 canWallJump = false;
@@ -330,15 +433,17 @@ public class PlayerMovement : MonoBehaviour
     // Returns true if Raycast hits to something or OverlapBox overlaps with groundLayer object aka there is something on top of the wall we might be climbing
     private bool LedgeIsOccupied()
     {
+        // DEBUG RAYS IF CHECK BREAKS (takes time to calculate again)
         //Ledge check ray
         //Debug.DrawRay(ledgeCheck.position, transform.right * checkDistance * transform.localScale.x, Color.red);
         // ledgeHitOffsetRayRay
         //Debug.DrawRay(ledgeCheck.position + new Vector3(transform.localScale.x * checkDistance, 0f, 0f), -transform.up * transform.localScale.x * (ledgeCheck.position - wallCheckBody.position).magnitude, Color.green);
+
         if (!Physics2D.Raycast(ledgeCheck.position, transform.right * transform.localScale.x, checkDistance, groundLayer))
         {
             // Ray FROM end of ledgeCheck ray above TO wallCheckBody ray end if groundLayer object is between ray distance is float between [0 , ~ 0.5]
             ledgeHitOffsetRay = Physics2D.Raycast(ledgeCheck.position + new Vector3(transform.localScale.x * checkDistance, 0f, 0f), -transform.up, (ledgeCheck.position - wallCheckBody.position).magnitude, groundLayer);
-           
+
             // Draws a box in scene if objects from groundLayer are inside this box ledge is occupied use ledgeHitOffsetRay to lower box to jsut above object we are climbing
             Collider2D[] colliders = Physics2D.OverlapBoxAll(new Vector2(transform.position.x + climbXOffset * transform.localScale.x, transform.position.y + climbYOffset - ledgeHitOffsetRay.distance), new Vector2(GetComponent<BoxCollider2D>().size.x, GetComponent<BoxCollider2D>().size.y), 0f, groundLayer);
             // No objects in array aka no overlaps with groundLayer objects
@@ -351,11 +456,11 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // Default case there is something that block climbing
-        return true;     
+        return true;
     }
 
     // Returns true if ground check detects ground
-    private bool IsGrounded()
+    public bool IsGrounded()
     {
         return Physics2D.OverlapCircle(groundCheck.position, checkRadius, groundLayer);
     }
@@ -414,7 +519,7 @@ public class PlayerMovement : MonoBehaviour
         }
         // Stop launch when landing or stopping
         // This does not work yet. For some reason, velocity checks fail and this returns true only when landing
-        else if (IsGrounded() || rb.velocity.x == 0 || rb.velocity.y == 0) 
+        else if (IsGrounded() || rb.velocity.x == 0 || rb.velocity.y == 0)
             wasLaunched = false;
     }
 
@@ -430,136 +535,6 @@ public class PlayerMovement : MonoBehaviour
         }
 
         launched = false;
-    }
-
-    // ---- INPUTS -----
-
-    // Move action: Called when the Move Action Button is pressed
-    public void Move(InputAction.CallbackContext context) // Context tells the function when the action is triggered
-    {
-        // We cant receive input OR we stop
-        if (!canReceiveInputMove || Mathf.Abs(context.ReadValue<Vector2>().x) == 0)
-        {
-            horizontal = 0f;
-        }
-        // We can move and our input for horizontal is greater than 0f
-        else
-        {
-            horizontal = Mathf.Round(context.ReadValue<Vector2>().x); // Updates the horizontal input direction
-        }
-
-        // We need this when we do not want to stop after attacks
-        horizontalBuffer = Mathf.Round(context.ReadValue<Vector2>().x);
-    }
-
-    // Jump action: Called when the Jump Action button is pressed
-    public void Jump(InputAction.CallbackContext context) // Context tells the function when the action is triggered
-    {
-        if (climbing || !canReceiveInputJump) return;
-        jumpButtonPressedTime = Time.time;
-
-        // -WALLJUMP-
-
-        // If button is pressed and we are in allowed walljump position
-        if (context.started && canWallJump)
-        {
-            //playerScript.SetCurrentState(Player.State.Jumping);
-
-            // Use this commented else if, if we want to give player boost to the left or right when walljumping
-            // Jumping from left wall
-            //if (Mathf.Sign(transform.localScale.x) == -1)
-            //{
-            //    rb.velocity = new Vector2(jumpForce, jumpForce); // add x parameter to jump left or right currently jumps straight up
-            //}
-            //// Jumping from right wall
-            //else if (Mathf.Sign(transform.localScale.x) == 1)
-            //{
-            //    rb.velocity = new Vector2(-jumpForce, jumpForce); // add x parameter to jump left or right currently jumps straight up
-            //}
-
-            // Comment this if above is used 
-            rb.velocity = new Vector2(jumpForce, jumpForce);
-            // Set tracking float here that we jumped from some wall
-            wallJumpDir = Mathf.Sign(transform.localScale.x);
-        }
-        // Coyotetime wall jump 
-        else if (context.started && allowCoyoteWallJump
-            && (Time.time - lastWallTouchTime <= coyoteTime / 2) // With full coyoteTime handling feels weird
-            && !LedgeIsOccupied()) // This Check prevents jumping from wall when there is no ground after the wall object and we slide past wall, Coyote time causes unwanted double jump without
-        {
-            playerScript.SetCurrentState(Player.State.Jumping);
-
-            // Replace or figure this out if else if is used above
-            rb.velocity = new Vector2(jumpForce, jumpForce);
-            // wallJumpDir here is opposite of opposite :)
-            wallJumpDir = Mathf.Sign(-transform.localScale.x);
-        }
-
-        // -AIR DIVE-
-
-        // Air dive while in the air
-        else if (context.started && !IsGrounded()
-            && playerScript.InputVertical == -1)
-        {
-            if (!(playerScript.GetCurrentState() == Player.State.Diving)) // First frame of diving
-                rb.velocity = new Vector2(0, -jumpForce); // Set velocity downwards
-
-            playerScript.SetCurrentState(Player.State.Diving);
-            diving = true;
-            lastDiveTime = Time.time;
-
-            // Air Dive functionality here
-            shockwaveTool.DoShockwaveDive(); // Activate VFX
-            rb.gravityScale = shockwaveDiveGravityScale;
-        }
-
-        // -DOUBLE JUMP-
-
-        // Double jump while in the air
-        else if (allowShockwaveJump && canShockwaveJump) // Make sure player has acquired Shockwave Jump and that they can currently double jump
-        {
-            // If button is pressed and player has not yet double jumped
-            if (context.started && !shockwaveJumping
-                && !(Time.time - lastGroundedTime <= coyoteTime)) // Check if coyote time is online (if yes, no double jump needed)
-            {
-                playerScript.SetCurrentState(Player.State.Jumping);
-                shockwaveTool.CancelShockwaveDive(); // Checks if shockwave dive graphics are on and disables them
-
-                // Activate the event through the ShockwaveTool script and do a double jump
-                shockwaveTool.ShockwaveJump(); // Activates VFX
-                rb.velocity = new Vector2(rb.velocity.x, jumpForce); // Jump in the air
-
-                // Update ShockwaveJump state variables after the jump
-                shockwaveJumping = true;
-                canShockwaveJump = false;
-
-                // Reset Jump state variables
-                jumpButtonPressedTime = null;
-                lastGroundedTime = null;
-            }
-        }
-
-        // -JUMP FROM GROUND-
-
-        // If button was pressed
-        if (context.performed && (Time.time - lastGroundedTime <= coyoteTime) // Check if coyote time is online
-            && (Time.time - jumpButtonPressedTime <= coyoteTime) && !climbing) // Check if jump has been buffered
-        {
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce); // Keep player in upwards motion
-        }
-
-        // If button was released
-        if (context.canceled && rb.velocity.y > 0f && !shockwaveTool.ShockwaveJumpUsed && !launched)
-        {
-            // Check that player is currently not being launched
-            if (Time.time - lastLaunchTime > 1 || lastLaunchTime == null)
-            {
-                rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f); // Slow down player
-                jumpButtonPressedTime = null;
-                lastGroundedTime = null;
-            }
-            lastLaunchTime = null;
-        }
     }
 
     // ---- Input Enable/Disable functions ----
@@ -582,7 +557,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
 
-    // ---- OTHER ----
+    // ---- OTHERS ----
 
     // Activated from pick up
     public void AllowWallJump()
@@ -593,5 +568,20 @@ public class PlayerMovement : MonoBehaviour
     public bool getAllowWallJump()
     {
         return allowWallJump;
+    }
+
+    public bool getClimbing()
+    {
+        return climbing;
+    }
+
+    public bool getWallSliding()
+    {
+        return currentlyWallSliding;
+    }
+
+    public void setFacingRight(bool b)
+    {
+        isFacingRight = b;
     }
 }
