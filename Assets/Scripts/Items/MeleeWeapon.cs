@@ -312,6 +312,11 @@ public class MeleeWeapon : MonoBehaviour
         return powerBoosted;
     }
 
+    public Vector2 getDirection()
+    {
+        return myRB.velocity;
+    }
+
     public bool getBeingPulled()
     {
         return beingPulled;

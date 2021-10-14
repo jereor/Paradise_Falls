@@ -20,7 +20,7 @@ public class ParticleCollision : MonoBehaviour
 
     private void OnParticleCollision(GameObject other)
     {
-        if (enemyCollisionEnabled) // Make sure trigger has not yet been activated for the enemy
+        if (enemyCollisionEnabled) // Make sure collision has not yet been activated for the enemy
         {
             if (other.gameObject.CompareTag("Enemy"))
             {
@@ -30,14 +30,15 @@ public class ParticleCollision : MonoBehaviour
             }
         }
 
-        if (weaponCollisionEnabled) // Make sure trigger has not yet been activated for the weapon
+        if (weaponCollisionEnabled) // Make sure collision has not yet been activated for the weapon
         {
             if (other.gameObject.CompareTag("MeleeWeapon"))
             {
                 MeleeWeapon meleeScript = other.gameObject.GetComponent<MeleeWeapon>();
                 if (meleeScript.getBeingPulled()) // Activate weapon power boost only if being pulled
                 {
-                    meleeScript.ActivatePowerBoost(new Vector2(1, 0));
+                    var direction = -1 * meleeScript.getDirection();
+                    meleeScript.ActivatePowerBoost(direction);
                 }
                 StartCoroutine(WeaponCollisionCooldown(1));
             }
