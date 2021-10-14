@@ -2,18 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LAttack3Script : StateMachineBehaviour
+public class ThrowScript : StateMachineBehaviour
 {
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        PlayerCombat.Instance.meleeInputReceived = false;
+        Player.Instance.SetCurrentState(Player.State.Throwing);
 
-        Player.Instance.SetCurrentState(Player.State.Attacking);
-
-        animator.SetBool("isAttacking", true);
-
-        PlayerCombat.Instance.AttackDash();
+        // Do not show aiming animation after throw animation
+        animator.SetBool("isAiming", false);
+        animator.SetBool("isThrowing", true);
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
@@ -25,9 +23,9 @@ public class LAttack3Script : StateMachineBehaviour
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        PlayerCombat.Instance.DealDamage(3, false);
-
-        animator.SetBool("isAttacking", false);
+        // We can receive input for throwing
+        PlayerCombat.Instance.throwInputReceived = false;
+        animator.SetBool("isThrowing", false);
     }
 
     // OnStateMove is called right after Animator.OnAnimatorMove()
