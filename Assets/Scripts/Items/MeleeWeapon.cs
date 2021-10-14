@@ -8,11 +8,13 @@ public class MeleeWeapon : MonoBehaviour
 {
     [Header("Variables from This script")]
     [SerializeField] private float weaponThrowDamage; // Damage dealt if hits enemy
+    [SerializeField] private float powerBoostedDamage; // Damage dealt if hits enemy power boosted
     [SerializeField] private float weaponPullDamage;
     [SerializeField] private float rotSpeed; // Rotation angle to spin when thowing
     [SerializeField] private float ricochetImpulseForce; // Force of hit ricochet on enemies and gorund elements
     [SerializeField] private float ricochetYImpulse; // Float parameter if we want to ricochet weapon slightly upward feels better and tell player that we hit and dealt damage to something
     [SerializeField] private float pullForce; // Force we are pulling
+    [SerializeField] private float powerBoostForce; // Force of shockwave power boost
     [SerializeField] private float maxDistance; // Max distance to travel with gravityscale 0
     [SerializeField] private float meleeWeaponGrapplingDistance;
 
@@ -28,8 +30,10 @@ public class MeleeWeapon : MonoBehaviour
     private bool landed; // If weapon can deal damage
 
     private GameObject pullingObject; // Object that is pulling given in PullWeapon()
-    private bool beingPulled;
+    public bool beingPulled;
     private bool attachedToGrapplePoint = false;
+    public bool powerBoosted = false;
+
 
     private void Start()
     {
@@ -113,7 +117,8 @@ public class MeleeWeapon : MonoBehaviour
         }
         // Enemy
         else if (collision.gameObject.layer == LayerMask.NameToLayer("Enemy"))
-        {          
+        {
+            Debug.Log("Enemy hit");
             // Hits enemy when can deal damage
             if (!landed)
             {
@@ -247,16 +252,12 @@ public class MeleeWeapon : MonoBehaviour
     // Deal damage to given Collider2D
     public void DealDamage(Collider2D col)
     {
-        if (beingPulled)
-        {
-            //Debug.Log("Dealing Pull Damage");
+        if (powerBoosted)
+            col.gameObject.GetComponent<Health>().TakeDamage(powerBoostedDamage);
+        else if (beingPulled)
             col.gameObject.GetComponent<Health>().TakeDamage(weaponPullDamage);
-        }
         else
-        {
-            //Debug.Log("Dealing Throw Damage");
             col.gameObject.GetComponent<Health>().TakeDamage(weaponThrowDamage);
-        }
     }
 
     public void Knockback(GameObject target, GameObject from, float knockbackForce)
@@ -290,9 +291,25 @@ public class MeleeWeapon : MonoBehaviour
         }
     }
 
-    public void ActivatePowerBoost()
+    public void ActivatePowerBoost(Vector2 direction)
     {
-        // Power boost functionality here
+        beingPulled = false; // No longer pulled
+        powerBoosted = true; // Now power boosted
+        gameObject.layer = 13; // Layer back to MeleeWeapon.
+
+        myRB.constraints = RigidbodyConstraints2D.FreezePositionY;
+        myRB.velocity = direction.normalized * powerBoostForce;
+    }
+
+    public void StopPowerBoost()
+    {
+        powerBoosted = false;
+        myRB.constraints = RigidbodyConstraints2D.None;
+    }
+
+    public bool isPowerBoosted()
+    {
+        return powerBoosted;
     }
 
     public bool getBeingPulled()

@@ -251,15 +251,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weaponThrowDamage: 1
+  powerBoostedDamage: 10
   weaponPullDamage: 1
   rotSpeed: 360
   ricochetImpulseForce: 5
   ricochetYImpulse: 3
   pullForce: 750
+  powerBoostForce: 30
   maxDistance: 7
   meleeWeaponGrapplingDistance: 1.2
   worldPickUp: 0
   knockbackForce: 500
+  beingPulled: 0
+  powerBoosted: 0
 --- !u!1 &5856179217451215588
 GameObject:
   m_ObjectHideFlags: 0

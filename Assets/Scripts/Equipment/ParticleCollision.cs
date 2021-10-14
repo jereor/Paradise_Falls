@@ -2,10 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
+using System;
 
 public class ParticleCollision : MonoBehaviour
 {
     [SerializeField] private float knockbackForce;
+    [SerializeField] private Transform player;
     // [SerializeField] private GameObject collisionDetector;
 
     // State bools
@@ -22,7 +24,6 @@ public class ParticleCollision : MonoBehaviour
         {
             if (other.gameObject.CompareTag("Enemy"))
             {
-                Debug.Log("Enemy collision!");
                 // knockback enemy
                 Knockback(other.gameObject, gameObject, knockbackForce);
                 StartCoroutine(EnemyCollisionCooldown(1));
@@ -36,8 +37,7 @@ public class ParticleCollision : MonoBehaviour
                 MeleeWeapon meleeScript = other.gameObject.GetComponent<MeleeWeapon>();
                 if (meleeScript.getBeingPulled()) // Activate weapon power boost only if being pulled
                 {
-                    Debug.Log("Weapon collision!");
-                    meleeScript.ActivatePowerBoost();
+                    meleeScript.ActivatePowerBoost(new Vector2(1, 0));
                 }
                 StartCoroutine(WeaponCollisionCooldown(1));
             }

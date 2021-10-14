@@ -14,7 +14,7 @@ public class WeaponInteraction : MonoBehaviour
         {
             weaponScript.Interact(collision.gameObject);
         }
-        else if(collision.gameObject.layer == LayerMask.NameToLayer("Enemy") && weaponScript.getBeingPulled())
+        else if(collision.gameObject.layer == LayerMask.NameToLayer("Enemy") && weaponScript.getBeingPulled() || weaponScript.isPowerBoosted())
         {
             weaponScript.DealDamage(collision);
             weaponScript.Knockback(collision.gameObject, gameObject, weaponScript.knockbackForce);
