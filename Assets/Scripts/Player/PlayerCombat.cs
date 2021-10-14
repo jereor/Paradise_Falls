@@ -7,7 +7,7 @@ public class PlayerCombat : MonoBehaviour
 {
     public static PlayerCombat Instance; // Make instance so we can call this script from animations
 
-    [Header("Player Variables")]
+    [Header("Melee Variables")]
     [SerializeField] private float lightDamage; // Light hits 1, 2 and 3 = lightDamage + lightDamage/2 (pyoristettyna ylospain) 
     [SerializeField] private float heavyDamage; // Same as above but with different float
     //[SerializeField] private float meleeComboLastDamage; // Last hit currentComboHit 3
@@ -16,6 +16,8 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private float dashSpeed; // Velocity for dash if 0 no dash 
     [SerializeField] private float dashDistance; // Distance of dash
     [SerializeField] private float playerPullForce;
+    [SerializeField] private bool kbOnLight;
+    [SerializeField] private bool kbOnLightLast;
 
     [Header("Attack Detection Variables")]
     public LayerMask enemyLayer;
@@ -552,7 +554,8 @@ public class PlayerCombat : MonoBehaviour
                     
                     // STUN OR KNOCKBACK + DASH?
                     // Knockback enemy
-                    Knockback(enemy.gameObject, gameObject, knockbackForceLight);
+                    if(kbOnLight)
+                        Knockback(enemy.gameObject, gameObject, knockbackForceLight);
                 }
             }
         }
@@ -576,7 +579,8 @@ public class PlayerCombat : MonoBehaviour
                         healthScript.TakeDamage(lightDamage + Mathf.Ceil(lightDamage / 2));
                     }
                     // Knockback enemy
-                    Knockback(enemy.gameObject, gameObject, knockbackForceLight);
+                    if(kbOnLightLast)
+                        Knockback(enemy.gameObject, gameObject, knockbackForceLight);
                 }
             }
         }
