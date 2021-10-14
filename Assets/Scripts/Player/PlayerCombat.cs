@@ -19,6 +19,13 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private bool kbOnLight;
     [SerializeField] private bool kbOnLightLast;
 
+    [Header("Combo Variables")]
+    private bool comboOnCooldown = false; // Boolean of active combo cooldown
+    private bool comboActive = false; // Boolean of active combo set
+    private int currentComboIndex = 0; // What hit we did last
+    private Coroutine comboTimerCoroutine; // Used to stop comboTimer for attack animation duration if we detect input
+    [SerializeField] private float comboCooldownTime; // Time between combo sets example: we hit once wait comboTimerCoroutine to finish -> ComboCooldown starts we cannot attack during this
+
     [Header("Attack Detection Variables")]
     public LayerMask enemyLayer;
     public Transform attackPoint; // Center of the hit point box we draw to check collisions
@@ -241,7 +248,7 @@ public class PlayerCombat : MonoBehaviour
 
             // Input for melee 
             // Melee type checked in Idle and transitions if heavyHold is true or false
-            else if (!throwAimHold)
+            else if (!throwAimHold && !getComboOnCooldown())
             {
                 meleeInputReceived = true;
             }
@@ -487,6 +494,76 @@ public class PlayerCombat : MonoBehaviour
         //tranToIdle = StartCoroutine(TranToIdle(3));
     }
     // ----------- PLACEHOLDER ANIMATIONS -------------------
+
+    // --- COMBO ---
+    
+    // Called from Transition animation scripts they know their attack animation and how long current transition would be
+    public void UpdateCombo(int attackIndex, float transitionTime)
+    {
+        currentComboIndex = attackIndex;
+
+        // Start timer if this runs out we go cooldown no spamming
+        comboTimerCoroutine = StartCoroutine(ComboTimer(transitionTime));
+    }
+
+    // Stops timer (kills coroutine) for until started again
+    public void StopComboTimer()
+    {
+        StopCoroutine(comboTimerCoroutine);
+    }
+
+    // Calculates time between attacks (attack transition time) if it runs out we set combo on cooldown if we melee before Player.cs calls StopComboTimer() and 
+    // timer starts again when LTran# animation starts
+    private IEnumerator ComboTimer(float transitionTime)
+    {
+        yield return new WaitForSeconds(transitionTime);
+        // If we go here we didn't melee before attack transition (if we started running transitionTime) ended
+        setComboOnCooldown(true);
+    }
+
+    private IEnumerator ComboCooldown()
+    {
+        // We are on cooldown and we don not have combo active
+        setComboActive(false);
+        yield return new WaitForSeconds(comboCooldownTime);
+        // Set this to false so we do not attack instatly when we com out of cooldown
+        meleeInputReceived = false;
+        // We did our time
+        setComboOnCooldown(false);
+        // We start from combo index 0 aka first hit of combo
+        currentComboIndex = 0;
+    }
+
+    public bool getComboOnCooldown()
+    {
+        return comboOnCooldown;
+    }
+    public void setComboOnCooldown(bool b)
+    {
+        // If we set (true) combo on cooldown start coroutine to calculate passed time
+        if (b)
+            StartCoroutine(ComboCooldown());
+
+        comboOnCooldown = b;
+    }
+
+    // Called from Player.cs
+    public bool getComboActive()
+    {
+        return comboActive;
+    }
+    public void setComboActive(bool b)
+    {
+        comboActive = b;
+    }
+
+    // Used in Player.cs HandleAnimations() to play correct attack animation
+    public int getCurrentComboIndex()
+    {
+        return currentComboIndex;
+    }
+
+    // --- DASH ---
 
     // Put these functions in PlayerMovement????
     public void AttackDash()

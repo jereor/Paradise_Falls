@@ -8,6 +8,8 @@ public class LTran3Script : StateMachineBehaviour
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         Player.Instance.SetCurrentState(Player.State.AttackTransition);
+
+        PlayerCombat.Instance.UpdateCombo(3, animator.GetCurrentAnimatorStateInfo(0).length);
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks

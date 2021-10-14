@@ -62,6 +62,8 @@ public class Player : MonoBehaviour
         TextStyleEnergy.fontSize = 30;
         TextStyleHealth.fontSize = 30;
         TextStyleEnergy.normal.textColor = Color.red;
+
+        //combatScript.comboTime = GetTransitionAnimTime();
     }
 
     private void FixedUpdate()
@@ -76,14 +78,34 @@ public class Player : MonoBehaviour
     // Most of the animations are started from this function some are in JumpScript, Jump animation blendtree
     private void HandleAnimations()
     {
-
         // When currentState is Idle
         if(currentState == State.Idle)
         {
-            // Player melees light attack and we arent currently climbing
-            if (PlayerCombat.Instance.meleeInputReceived && !PlayerCombat.Instance.heavyHold && !animator.GetBool("isClimbing"))
+            // Player melees light attack and we arent currently climbing and combo is not on cooldown
+            if (combatScript.meleeInputReceived && !combatScript.heavyHold && !animator.GetBool("isClimbing") && !combatScript.getComboOnCooldown())
             {
-                animator.Play("LAttack1");
+                // Combo is not active we set it to active since we attack
+                if (!combatScript.getComboActive())
+                    combatScript.setComboActive(true);
+
+                switch (combatScript.getCurrentComboIndex())
+                {
+                    case 0:
+                        animator.Play("LAttack1");       
+                        break;
+                    case 1:
+                        animator.Play("LAttack2");
+                        // Stop this for the duration of LAttack2 clip LTran2 will start timer again when clip starts
+                        combatScript.StopComboTimer();
+                        break;
+                    case 2:
+                        animator.Play("LAttack3");
+                        // Stop this so cooldown starts after LTran3 clip has "played" or should have played if we started running during the clip
+                        combatScript.StopComboTimer();
+                        break;
+                    default:
+                        break;
+                }
             }
             // Player starts moving
             if (PlayerMovement.Instance.horizontal != 0f)
@@ -106,10 +128,100 @@ public class Player : MonoBehaviour
                 animator.SetBool("isRunning", false);
             }
             // From running to Light attack
-            if (PlayerCombat.Instance.meleeInputReceived && !PlayerCombat.Instance.heavyHold && !animator.GetBool("isClimbing"))
+            if (combatScript.meleeInputReceived && !combatScript.heavyHold && !animator.GetBool("isClimbing") && !combatScript.getComboOnCooldown())
             {
-                animator.Play("LAttack1");
+                if (!combatScript.getComboActive())
+                    combatScript.setComboActive(true);
+
+                switch (combatScript.getCurrentComboIndex())
+                {
+                    case 0:
+                        animator.Play("LAttack1");
+                        break;
+                    case 1:
+                        animator.Play("LAttack2");
+                        combatScript.StopComboTimer();
+                        break;
+                    case 2:
+                        animator.Play("LAttack3");
+                        combatScript.StopComboTimer();
+                        break;
+                    default:
+                        break;
+                }
             }
+            // Throw
+            if (PlayerCombat.Instance.throwInputReceived)
+            {
+                animator.Play("Throw");
+            }
+        }
+
+        // When current state is attack transition
+        if(currentState == State.AttackTransition)
+        {
+            // Player starts moving
+            if (PlayerMovement.Instance.horizontal != 0f)
+            {
+                animator.SetBool("isRunning", true);
+            }
+            // From transition to Light attack
+            if (combatScript.meleeInputReceived && !combatScript.heavyHold && !animator.GetBool("isClimbing") && !combatScript.getComboOnCooldown())
+            {
+                if (!combatScript.getComboActive())
+                    combatScript.setComboActive(true);
+
+                switch (combatScript.getCurrentComboIndex())
+                {
+                    case 0:
+                        animator.Play("LAttack1");
+                        break;
+                    case 1:
+                        animator.Play("LAttack2");
+                        combatScript.StopComboTimer();
+                        break;
+                    case 2:
+                        animator.Play("LAttack3");
+                        combatScript.StopComboTimer();
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        // When the current state is Ascending or Falling
+        if (currentState == State.Ascending || currentState == State.Falling)
+        {
+            // From ascending or falling to Light attack
+            if (combatScript.meleeInputReceived && !combatScript.heavyHold && !animator.GetBool("isClimbing") && !combatScript.getComboOnCooldown())
+            {
+                if (!combatScript.getComboActive())
+                    combatScript.setComboActive(true);
+
+                switch (combatScript.getCurrentComboIndex())
+                {
+                    case 0:
+                        animator.Play("LAttack1");
+                        break;
+                    case 1:
+                        animator.Play("LAttack2");
+                        combatScript.StopComboTimer();
+                        break;
+                    case 2:
+                        animator.Play("LAttack3");
+                        combatScript.StopComboTimer();
+                        break;
+                    default:
+                        break;
+                }
+
+                //if (currentState == State.Ascending)
+                //    animator.Play("LAttack2");
+                //else if (currentState == State.Falling)
+                //    animator.Play("LAttack3");
+            }
+
             // Throw
             if (PlayerCombat.Instance.throwInputReceived)
             {
@@ -188,8 +300,22 @@ public class Player : MonoBehaviour
                 movementScript.EnableInputMove();
                 break;
             case State.Ascending:
+                // Combat
+                combatScript.EnableInputMelee();
+                combatScript.EnableInputThrowAim();
+
+                // Movement
+                movementScript.EnableInputJump();
+                movementScript.EnableInputMove();
                 break;
             case State.Falling:
+                // Combat
+                combatScript.EnableInputMelee();
+                combatScript.EnableInputThrowAim();
+
+                // Movement
+                movementScript.EnableInputJump();
+                movementScript.EnableInputMove();
                 break;
             case State.Landing:
                 // Combat
@@ -323,6 +449,17 @@ public class Player : MonoBehaviour
     public bool GetLaunching()
     {
         return animator.GetBool("isLaunching");
+    }
+
+    public float GetTransitionAnimTime()
+    {
+        AnimationClip[] clips = animator.runtimeAnimatorController.animationClips;
+        foreach (AnimationClip clip in clips)
+        {
+            if (clip.name == "LTran1")
+                return clip.length;
+        }
+        return 0f;
     }
 
     public bool IsFacingRight()
