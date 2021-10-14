@@ -251,7 +251,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weaponThrowDamage: 1
-  powerBoostedDamage: 10
+  powerBoostedDamage: 3
   weaponPullDamage: 1
   rotSpeed: 360
   ricochetImpulseForce: 5

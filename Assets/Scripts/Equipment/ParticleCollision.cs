@@ -45,39 +45,6 @@ public class ParticleCollision : MonoBehaviour
         }
     }
 
-    
-    //private void OnParticleTrigger()
-    //{
-        /* LATEST ATTEMPT. FOR SOME REASON THIS ALWAYS RETURNS THE MELEEWEAPON SCRIPT
-        ParticleSystem ps = GetComponent<ParticleSystem>();
-        Component component = ps.trigger.GetCollider(0);
-
-        if (component.transform.parent.TryGetComponent(out MeleeWeapon weapon))
-        {
-            Debug.Log("Weapon hit!");
-            weapon.ActivatePowerBoost();
-        }
-        */
-
-        /* USING TRIGGER PARTICLES WAS TOO HARD SO ABANDONED THEM FOR NOW
-        int numEnter = ps.GetTriggerParticles(ParticleSystemTriggerEventType.Enter, enterList); // DOES NOT WORK
-
-        // Iterate
-        for (int i = 0; i < numEnter; i++)
-        {
-            // THE ITERATION NEVER EVEN COMES HERE BECAUSE WHEN GETTING TRIGGER PARTICLES THE LIST NEVER GETS ANY TRIGGERS
-            ParticleSystem.Particle particle = enterList[i];
-            // Instantiate a game object to get what object this particle triggered
-            Instantiate(collisionDetector, particle.position, Quaternion.identity);
-            enterList[i] = particle;
-        }
-
-        // Tell trigger enters to particle system too
-        ps.SetTriggerParticles(ParticleSystemTriggerEventType.Enter, enterList);
-        */
-    //}
-
-
     // Small knockback to the target. Knockback knocks slightly upwards so the friction doesn't stop the target right away.
     private void Knockback(GameObject target, GameObject from, float knockbackForce)
     {
