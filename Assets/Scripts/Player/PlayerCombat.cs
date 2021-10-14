@@ -516,7 +516,7 @@ public class PlayerCombat : MonoBehaviour
     // timer starts again when LTran# animation starts
     private IEnumerator ComboTimer(float transitionTime)
     {
-        yield return new WaitForSecondsRealtime(transitionTime);
+        yield return new WaitForSeconds(transitionTime);
         // If we go here we didn't melee before attack transition (if we started running transitionTime) ended
         setComboOnCooldown(true);
     }
@@ -525,7 +525,7 @@ public class PlayerCombat : MonoBehaviour
     {
         // We are on cooldown and we don not have combo active
         setComboActive(false);
-        yield return new WaitForSecondsRealtime(comboCooldownTime);
+        yield return new WaitForSeconds(comboCooldownTime);
         // Set this to false so we do not attack instatly when we com out of cooldown
         meleeInputReceived = false;
         // We did our time
