@@ -212,12 +212,12 @@ public class MeleeWeapon : MonoBehaviour
         if (landed)
         {
             // Ignore layers that should't collide
-            SetEnemyIngoresOnPull();
+            SetEnemyIgnoresOnPull();
 
             myRB.velocity = Vector2.zero; // Stop moving at the start of pulling physics bugs
 
-            //Layer back to MeleeWeapon from Ground.
-            gameObject.layer = 13;
+            //Layer to PulledWeapon.
+            gameObject.layer = 14;
 
 
             pullingObject = objectThatPulls;
@@ -225,7 +225,7 @@ public class MeleeWeapon : MonoBehaviour
         }
     }
 
-    private void SetEnemyIngoresOnPull()
+    private void SetEnemyIgnoresOnPull()
     {
         if (!Physics2D.GetIgnoreLayerCollision(LayerMask.NameToLayer("Enemy"), LayerMask.NameToLayer("MeleeWeapon")))
             Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Enemy"), LayerMask.NameToLayer("MeleeWeapon"), true);
@@ -293,39 +293,6 @@ public class MeleeWeapon : MonoBehaviour
     public void ActivatePowerBoost()
     {
         // Power boost functionality here
-    }
-
-    // NOT IN USE NOW BUT SAVING FOR LATER. THIS DESTROYS SHOCKWAVES WHEN THEY HIT THE WEAPON.
-    private void DestroyShockwave(GameObject particle)
-    {
-        List<ParticleCollisionEvent> events; // List of particle collision events currently happening
-        events = new List<ParticleCollisionEvent>(); // Initialize it
-
-        ParticleSystem ps = particle.GetComponent<ParticleSystem>();
-        ParticleSystem.Particle[] particleList; // List of all the particles of the Particle System
-        particleList = new ParticleSystem.Particle[ps.main.maxParticles]; // Initialize it
-
-        // Collect and go through all the collision events currently happening
-        ParticlePhysicsExtensions.GetCollisionEvents(particle.GetComponent<ParticleSystem>(), gameObject, events);
-        foreach (ParticleCollisionEvent coll in events)
-        {
-            if (coll.intersection != Vector3.zero) // Continue only when collision point is away from origin
-            {
-                int numParticlesAlive = ps.GetParticles(particleList); // Get a list of currently alive particles
-
-                // Check only the particles that are alive
-                for (int i = 0; i < numParticlesAlive; i++)
-                {
-                    // If the collision was close enough to the particle position, destroy it
-                    if (Vector3.Magnitude(particleList[i].position - coll.intersection) < 0.05f)
-                    {
-                        particleList[i].remainingLifetime = -1; // Kills the particle
-                        ps.SetParticles(particleList); // Update particle system
-                        break;
-                    }
-                }
-            }
-        }
     }
 
     public bool getBeingPulled()
