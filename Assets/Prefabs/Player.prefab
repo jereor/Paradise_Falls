@@ -10143,7 +10143,6 @@ MonoBehaviour:
   isFacingRight: 1
   canReceiveInputMove: 0
   canReceiveInputJump: 0
-  jumpInputReceived: 0
 --- !u!114 &2646993275326716546
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10506,6 +10505,7 @@ MonoBehaviour:
   playerPullForce: 750
   kbOnLight: 1
   kbOnLightLast: 1
+  comboCooldownTime: 0.5
   enemyLayer:
     serializedVersion: 2
     m_Bits: 128

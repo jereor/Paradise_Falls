@@ -7,9 +7,6 @@ public class LAttack1Script : StateMachineBehaviour
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        // Set this to false so when we enter LTran1 we can start LAttack2 if we press melee button
-        // If not set here melee continues until this is set false
-        PlayerCombat.Instance.meleeInputReceived = false;
         // Set state to Player.cs
         Player.Instance.SetCurrentState(Player.State.Attacking);
         // Set bool for controller we are currently attacking includes LAttack1 and LTran1
@@ -27,6 +24,10 @@ public class LAttack1Script : StateMachineBehaviour
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+        // Set this to false so when we enter LTran1 we can start LAttack2 if we press melee button
+        // If not set here melee continues until this is set false
+        PlayerCombat.Instance.meleeInputReceived = false;
+
         // Deal damage when we hit enemy
         PlayerCombat.Instance.DealDamage(1, false);
 

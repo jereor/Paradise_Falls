@@ -34,19 +34,6 @@ public class JumpScript : StateMachineBehaviour
                 Player.Instance.SetCurrentState(Player.State.Ascending);
             }
         }
-
-
-        // From jumping or falling to Light attack
-        if (PlayerCombat.Instance.meleeInputReceived && !PlayerCombat.Instance.heavyHold)
-        {
-            Player.Instance.animator.Play("LAttack1");
-        }
-
-        // Throw
-        if (PlayerCombat.Instance.throwInputReceived)
-        {
-            animator.Play("Throw");
-        }
     }
 
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
