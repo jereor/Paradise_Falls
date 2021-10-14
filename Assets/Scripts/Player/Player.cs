@@ -117,6 +117,16 @@ public class Player : MonoBehaviour
             }
         }
 
+        // When current state is attack transition
+        if(currentState == State.AttackTransition)
+        {
+            // Player starts moving
+            if (PlayerMovement.Instance.horizontal != 0f)
+            {
+                animator.SetBool("isRunning", true);
+            }
+        }
+
         // LedgeClimb animation
         // LedgeChecks return true
         if (movementScript.getClimbing() && !animator.GetBool("isAttacking") && !animator.GetBool("isAiming"))
