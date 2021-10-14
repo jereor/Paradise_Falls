@@ -10,18 +10,22 @@ public class LaunchScript : StateMachineBehaviour
         Player.Instance.SetCurrentState(Player.State.Launching);
         animator.SetBool("isLaunching", true);
         PlayerMovement.Instance.jumpInputReceived = false;
-        Debug.Log("Launch");
+        Debug.Log("anim start " + Time.time);
+
+        PlayerMovement.Instance.counter = 0f;
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
-    //override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
-    //{
-    //    
-    //}
+    override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+    {
+        Player.Instance.rb.velocity = Vector2.zero;
+    }
 
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+        PlayerMovement.Instance.animLaunched = true;
+
         Debug.Log("anim end " + Time.time);
         animator.SetBool("isLaunching", false);
     }
