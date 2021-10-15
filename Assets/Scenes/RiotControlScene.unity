@@ -1328,10 +1328,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 368704289}
     m_Modifications:
-    - target: {fileID: 127911568793665776, guid: 4154d57994558ff489a9180c3151e624, type: 3}
-      propertyPath: maxHealth
-      value: 100
-      objectReference: {fileID: 0}
     - target: {fileID: 2646993275326716544, guid: 4154d57994558ff489a9180c3151e624, type: 3}
       propertyPath: m_RootOrder
       value: 2
@@ -1379,46 +1375,6 @@ PrefabInstance:
     - target: {fileID: 2646993275326716545, guid: 4154d57994558ff489a9180c3151e624, type: 3}
       propertyPath: m_Name
       value: Player
-      objectReference: {fileID: 0}
-    - target: {fileID: 2646993275326716545, guid: 4154d57994558ff489a9180c3151e624, type: 3}
-      propertyPath: m_TagString
-      value: Player
-      objectReference: {fileID: 0}
-    - target: {fileID: 2646993275326716547, guid: 4154d57994558ff489a9180c3151e624, type: 3}
-      propertyPath: m_FlipX
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2646993275326716547, guid: 4154d57994558ff489a9180c3151e624, type: 3}
-      propertyPath: m_Color.b
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2646993275326716547, guid: 4154d57994558ff489a9180c3151e624, type: 3}
-      propertyPath: m_Color.g
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2646993275326716547, guid: 4154d57994558ff489a9180c3151e624, type: 3}
-      propertyPath: m_Color.r
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2646993275326716549, guid: 4154d57994558ff489a9180c3151e624, type: 3}
-      propertyPath: jumpForce
-      value: 16.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 2646993275326716549, guid: 4154d57994558ff489a9180c3151e624, type: 3}
-      propertyPath: allowWallJump
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2646993275326716549, guid: 4154d57994558ff489a9180c3151e624, type: 3}
-      propertyPath: movementVelocity
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 2646993275326716549, guid: 4154d57994558ff489a9180c3151e624, type: 3}
-      propertyPath: allowShockwaveJump
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7463911945564789779, guid: 4154d57994558ff489a9180c3151e624, type: 3}
-      propertyPath: isWeaponWielded
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4154d57994558ff489a9180c3151e624, type: 3}
