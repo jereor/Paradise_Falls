@@ -52,14 +52,11 @@ public class ShockwaveTool : MonoBehaviour
     {
         if (context.started && Time.time >= nextShockwave)
         {
-            if (energyScript.CheckForEnergy(attackCost))
+            if (energyScript.CheckForEnergy(attackCost)) // Check if player has enough energy for the attack
             {
                 nextShockwave = Time.time + attackCooldown; // Sets a time when attack can be used again
-                shockwaveAttackEffect.Play();
-                energyScript.UseEnergy(attackCost);
-
-                // Shockwave attack functionality here
-
+                shockwaveAttackEffect.Play(); // Activate particle system and let it handle collisions
+                energyScript.UseEnergy(attackCost); // Use the required energy
                 StartCoroutine(ActivateAttackCooldown(attackCooldown));
             }
             else
