@@ -19,14 +19,20 @@ public class Shield : MonoBehaviour
     private float nextParry = -1; // Initialize as -1. First time it will always be less than the current time and will allow to parry. 
     private float parryCooldown = 0.6f;
 
+    private bool canReceiveInputBlock;
     private void Start()
     {
         ProtectionAmount = protectionValue;
+
+        EnableInputBlock();
     }
 
     // Shield action: Called when the Shield Action button is pressed
     public void Block(InputAction.CallbackContext context)
     {
+        if (!canReceiveInputBlock)
+            return;
+
         // Blocking
         if (context.started && (Time.time >= nextParry || hitParried))
         {
@@ -64,5 +70,19 @@ public class Shield : MonoBehaviour
         }
 
         Parrying = false;
+    }
+
+    public float getParryTimeWindow()
+    {
+        return parryTimeWindow;
+    }
+
+    public void EnableInputBlock()
+    {
+        canReceiveInputBlock = true;
+    }
+    public void DisableInputBlock()
+    {
+        canReceiveInputBlock = false;
     }
 }
