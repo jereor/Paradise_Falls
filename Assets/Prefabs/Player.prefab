@@ -10102,6 +10102,7 @@ MonoBehaviour:
   shockwaveTool: {fileID: 1940316768}
   healthScript: {fileID: 127911568793665776}
   energyScript: {fileID: 8760275387346948364}
+  shieldScript: {fileID: 1812080132}
   animator: {fileID: 3265684260011797273}
   rb: {fileID: 0}
 --- !u!114 &2646993275326716549
