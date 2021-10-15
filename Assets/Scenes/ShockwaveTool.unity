@@ -2034,6 +2034,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   knockbackForce: 400
   player: {fileID: 729320505}
+  hitEffect: {fileID: 7336139170090732409, guid: 01dfe1317cba60e45997e688e3e78684, type: 3}
 --- !u!1 &882921844
 GameObject:
   m_ObjectHideFlags: 0
@@ -3125,11 +3126,11 @@ PrefabInstance:
       objectReference: {fileID: 729320505}
     - target: {fileID: 284613507, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: m_TrackedObjectOffset.x
-      value: -0.9923148
+      value: -0.9980847
       objectReference: {fileID: 0}
     - target: {fileID: 284613507, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: m_TrackedObjectOffset.y
-      value: -0.0150261
+      value: -0.003984823
       objectReference: {fileID: 0}
     - target: {fileID: 505850491, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: m_Follow
@@ -3137,11 +3138,11 @@ PrefabInstance:
       objectReference: {fileID: 729320505}
     - target: {fileID: 1012424850, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: m_TrackedObjectOffset.x
-      value: -0.9096924
+      value: -0.9994145
       objectReference: {fileID: 0}
     - target: {fileID: 1012424850, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: m_TrackedObjectOffset.y
-      value: -0.1807618
+      value: -0.4921016
       objectReference: {fileID: 0}
     - target: {fileID: 1348274982, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: currentCamera

@@ -297,6 +297,7 @@ public class MeleeWeapon : MonoBehaviour
         powerBoosted = true; // Now power boosted
         gameObject.layer = 13; // Layer back to MeleeWeapon.
         GetComponent<SpriteRenderer>().color = Color.blue; // Visualize power boost
+        GetComponent<TrailRenderer>().enabled = true;
 
         myRB.constraints = RigidbodyConstraints2D.FreezePositionY;
         myRB.velocity = direction.normalized * powerBoostForce;
@@ -307,6 +308,7 @@ public class MeleeWeapon : MonoBehaviour
         powerBoosted = false;
         myRB.constraints = RigidbodyConstraints2D.None;
         GetComponent<SpriteRenderer>().color = Color.red;
+        GetComponent<TrailRenderer>().enabled = false;
     }
 
     public bool isPowerBoosted()

@@ -8,15 +8,21 @@ public class ParticleCollision : MonoBehaviour
 {
     [SerializeField] private float knockbackForce;
     [SerializeField] private Transform player;
-    // [SerializeField] private GameObject collisionDetector;
+    [SerializeField] private GameObject hitEffect;
 
     // State bools
     private bool weaponCollisionEnabled = true; // Bool for checking if collision has already been calculated for the weapon
     private bool enemyCollisionEnabled = true; // Bool for checking if collision has already been calculated for the enemy
-    // private bool triggerEnabled = true; // Bool for checking if trigger has already happened
 
-    // References
-    // List<ParticleSystem.Particle> enterList = new List<ParticleSystem.Particle>();
+    // Collisions
+    private ParticleSystem ps;
+    private List<ParticleCollisionEvent> collisionEvents;
+
+    private void Start()
+    {
+        ps = GetComponent<ParticleSystem>();
+        collisionEvents = new List<ParticleCollisionEvent>();   
+    }
 
     private void OnParticleCollision(GameObject other)
     {
@@ -39,6 +45,11 @@ public class ParticleCollision : MonoBehaviour
                 {
                     var direction = -1 * meleeScript.getDirection();
                     meleeScript.ActivatePowerBoost(direction);
+
+                    // Hit Effect
+                    ps.GetCollisionEvents(other, collisionEvents);
+                    var dir = meleeScript.getDirection().x > 0 ? Vector3.forward : -Vector3.forward; // Calculate direction based on weapon direction
+                    Instantiate(hitEffect, collisionEvents[0].intersection, Quaternion.LookRotation(dir*180)); // Instantiate the particles
                 }
                 StartCoroutine(WeaponCollisionCooldown(1));
             }
@@ -53,6 +64,7 @@ public class ParticleCollision : MonoBehaviour
         target.GetComponent<Rigidbody2D>().AddForce(knockbackDirection * knockbackForce);
     }
 
+    // This cooldown makes it so enemy is never affected twice by the same shockwave
     private IEnumerator EnemyCollisionCooldown(float cooldownTime)
     {
         enemyCollisionEnabled = false;
@@ -67,7 +79,7 @@ public class ParticleCollision : MonoBehaviour
         enemyCollisionEnabled = true;
     }
 
-    // This cooldown makes it so objects are never affected twice by the same shockwave
+    // This cooldown makes it so weapon is never affected twice by the same shockwave
     private IEnumerator WeaponCollisionCooldown(float cooldownTime)
     {
         weaponCollisionEnabled = false;
@@ -80,11 +92,5 @@ public class ParticleCollision : MonoBehaviour
         }
 
         weaponCollisionEnabled = true;
-    }
-
-    // MeleeWeapon needs to know if collision has been done so it doesn't trigger twice
-    public bool WeaponCollisionEnabled()
-    {
-        return weaponCollisionEnabled;
     }
 }
