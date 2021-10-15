@@ -1384,6 +1384,22 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 2646993275326716547, guid: 4154d57994558ff489a9180c3151e624, type: 3}
+      propertyPath: m_FlipX
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2646993275326716547, guid: 4154d57994558ff489a9180c3151e624, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2646993275326716547, guid: 4154d57994558ff489a9180c3151e624, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2646993275326716547, guid: 4154d57994558ff489a9180c3151e624, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2646993275326716549, guid: 4154d57994558ff489a9180c3151e624, type: 3}
       propertyPath: jumpForce
       value: 16.5
@@ -1521,6 +1537,26 @@ PrefabInstance:
     - target: {fileID: 8410908677858590963, guid: 9494e6e2cb797ba4791843427e240b28, type: 3}
       propertyPath: m_Name
       value: RiotControlDrone
+      objectReference: {fileID: 0}
+    - target: {fileID: 8410908677858590965, guid: 9494e6e2cb797ba4791843427e240b28, type: 3}
+      propertyPath: walkingSpeed
+      value: 900000
+      objectReference: {fileID: 0}
+    - target: {fileID: 8410908677858590965, guid: 9494e6e2cb797ba4791843427e240b28, type: 3}
+      propertyPath: areaToCharge.x
+      value: 10.96
+      objectReference: {fileID: 0}
+    - target: {fileID: 8410908677858590965, guid: 9494e6e2cb797ba4791843427e240b28, type: 3}
+      propertyPath: chargeOffset.x
+      value: 7.54
+      objectReference: {fileID: 0}
+    - target: {fileID: 8410908677858590965, guid: 9494e6e2cb797ba4791843427e240b28, type: 3}
+      propertyPath: walkStepInterval
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8410908677858590967, guid: 9494e6e2cb797ba4791843427e240b28, type: 3}
+      propertyPath: destroyWhenDead
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8410908677858590967, guid: 9494e6e2cb797ba4791843427e240b28, type: 3}
       propertyPath: onDie.m_PersistentCalls.m_Calls.Array.data[0].m_Target

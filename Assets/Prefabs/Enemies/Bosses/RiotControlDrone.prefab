@@ -158,28 +158,31 @@ MonoBehaviour:
   playerLayer:
     serializedVersion: 2
     m_Bits: 8
-  walkingSpeed: 600000
+  walkingSpeed: 700000
   runningSpeed: 500000
   chargeSpeed: 300000
   isEnraged: 0
-  walkStepInterval: 1
+  walkStepInterval: 0.9
   runStepInterval: 0.6
   chargeStepInterval: 0
-  stunTime: 4
+  stunTime: 3
   chargeReadyTime: 1
+  timesToBackstep: 3
   areaToCharge: {x: 4.53, y: 2.63}
   chargeOffset: {x: 8.48, y: 0}
   areaToAttack: {x: 1.72, y: 2.34}
   hitOffset: {x: 1, y: -0.15}
   velocity: {x: 0, y: 0}
   velocityPlayer: {x: 0, y: 0}
-  lightAttackCoolDown: 0.51
+  lightAttackCoolDown: 0.5
   lightAttackDamage: 2
   heavyAttackChargeTime: 0
   heavyAttackCoolDown: 2
   heavyAttackDamage: 4
+  shieldSquishDamage: 10
   knockbackForce: 100
   isFacingRight: 0
+  lastChargeCounter: 0
 --- !u!114 &8410908677858590967
 MonoBehaviour:
   m_ObjectHideFlags: 0

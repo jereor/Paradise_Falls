@@ -23,6 +23,7 @@ public class RiotControlDrone : MonoBehaviour
     [SerializeField] private float chargeStepInterval;
     [SerializeField] private float stunTime;
     [SerializeField] private float chargeReadyTime;
+    [SerializeField] private float timesToBackstep;
     [SerializeField] private Vector2 areaToCharge;
     [SerializeField] private Vector2 chargeOffset;
     [SerializeField] private Vector2 areaToAttack;
@@ -36,6 +37,7 @@ public class RiotControlDrone : MonoBehaviour
     [SerializeField] private float heavyAttackChargeTime;
     [SerializeField] private float heavyAttackCoolDown;
     [SerializeField] private float heavyAttackDamage;
+    [SerializeField] private float shieldSquishDamage;
     [SerializeField] private float knockbackForce;
 
     private Transform target;
@@ -56,11 +58,13 @@ public class RiotControlDrone : MonoBehaviour
     private bool chargedToWall = false;
     private bool stunned = false;
     private bool knockbackOnCooldown = false;
-    private bool isEnemyLayer = false;
+    private bool isBossLayer = false;
 
     private bool chargeDirectionCalculated;
 
-    private float lastChargeCounter;
+    [SerializeField] private float lastChargeCounter;
+    private float chargeDirection;
+    private int backstepCounter;
     
     
 
@@ -82,13 +86,23 @@ public class RiotControlDrone : MonoBehaviour
     {
         // Used to determine the direction where boss is going.
         vectorToTarget = (target.position - transform.position).normalized;
+        velocity = rb.velocity;
 
-        // Flip the localscale of the boss.
-        if(state != RiotState.ShieldCharge)
+        // Flip the localscale of the boss to the moving direction.
+        if(state != RiotState.ShieldCharge && state != RiotState.Backstepping)
         {
             if (!isFacingRight && rb.velocity.x > 5f)
                 Flip();
             else if (isFacingRight && rb.velocity.x < -5f)
+                Flip();
+        }
+
+        // Flip the localscale towards the player when backstepping.
+        if (state == RiotState.Backstepping)
+        {
+            if (isFacingRight && rb.velocity.x > 5f)
+                Flip();
+            else if (!isFacingRight && rb.velocity.x < -5f)
                 Flip();
         }
 
@@ -124,6 +138,10 @@ public class RiotControlDrone : MonoBehaviour
             case RiotState.SeedShoot:
                 HandleSeedShootState();
                 break;
+
+            case RiotState.Backstepping:
+                HandleBackstepping();
+                break;
         }
 
         // If bosses health goes down more that 50%, change phase. The way of handling the state variation changes most likely in the future.
@@ -148,12 +166,10 @@ public class RiotControlDrone : MonoBehaviour
         {
             Debug.Log("Attack");
             state = RiotState.Attack;
-            return;
         }
         if (IsTargetInChargeRange() && canChargeToTarget)
         {
             state = RiotState.ShieldCharge;
-            return;
         }
 
         // Moves the drone in desired direction, in this case towards the player on X-axis.
@@ -169,7 +185,7 @@ public class RiotControlDrone : MonoBehaviour
             //velocity = new Vector2(vectorToTarget.x * runningSpeed, 0);
             //rb.MovePosition(rb.position + velocity * Time.deltaTime);
             rb.AddForce(new Vector2((vectorToTarget.x > 0 ? 1 : -1) * runningSpeed * Time.fixedDeltaTime, 0));
-            StartCoroutine(WalkCoolDown());
+            StartCoroutine(RunCoolDown());
         }   
     }
 
@@ -179,7 +195,7 @@ public class RiotControlDrone : MonoBehaviour
         if(!chargeDirectionCalculated)
         {
             chargeDirectionCalculated = true;
-            velocity = new Vector2((vectorToTarget.x > 0 ? 1 : -1), 0);
+            chargeDirection = (vectorToTarget.x > 0 ? 1 : -1);
         }
         // Can the drone charge to target / charge timer is not on cooldown.
         if(canChargeToTarget)
@@ -225,11 +241,11 @@ public class RiotControlDrone : MonoBehaviour
         {
             Debug.Log("RiotStunned");
             StartCoroutine(Stunned());
-            //if(!isEnemyLayer)
-            //{
-            //    ChangeToEnemyLayer();
-            //    isEnemyLayer = true;
-            //}
+            if (!isBossLayer)
+            {
+                ChangeToBossLayer();
+                isBossLayer = true;
+            }
 
 
             //Debug.Log("Stun ended");
@@ -246,27 +262,43 @@ public class RiotControlDrone : MonoBehaviour
 
     }
 
-    //private void ChangeToEnemyLayer()
-    //{
-    //    foreach (Transform bossCollider in colliders)
-    //    {
-    //        bossCollider.gameObject.layer = LayerMask.NameToLayer("Enemy");
-    //    }
-    //}
+    // Backsteps when needed for the amount of time specified. Used after shield charge has squished player between the wall and the riot shield.
+    private void HandleBackstepping()
+    {
+        if (!isEnraged && canMove && backstepCounter < timesToBackstep)
+        {
+            rb.AddForce(new Vector2((vectorToTarget.x < 0 ? 1 : -1) * walkingSpeed * Time.fixedDeltaTime, 0));
+            StartCoroutine(WalkCoolDown());
+        }
+        else if(backstepCounter >= timesToBackstep)
+        {
+            backstepCounter = 0;
+            state = RiotState.Moving;
+        }
+    }
 
-    //private void ChangeToDefaultLayer()
-    //{
-    //    foreach (Transform bossCollider in colliders)
-    //    {
-    //        bossCollider.gameObject.layer = LayerMask.NameToLayer("Default");
-    //    }
-    //}
+    private void ChangeToBossLayer()
+    {
+        foreach (Transform bossCollider in colliders)
+        {
+            bossCollider.gameObject.layer = LayerMask.NameToLayer("Boss");
+        }
+    }
+
+    private void ChangeToDefaultLayer()
+    {
+        foreach (Transform bossCollider in colliders)
+        {
+            bossCollider.gameObject.layer = LayerMask.NameToLayer("Default");
+        }
+    }
 
     // Cooldowns for walking, running etc.
     private IEnumerator WalkCoolDown()
     {
         canMove = false;
         yield return new WaitForSeconds(walkStepInterval);
+        backstepCounter++;
         canMove = true;
     }
 
@@ -284,7 +316,20 @@ public class RiotControlDrone : MonoBehaviour
         yield return new WaitForSeconds(chargeStepInterval);
 
         //rb.MovePosition(rb.position + velocity * Time.deltaTime);
-        rb.AddForce(new Vector2(velocity.x * chargeSpeed * Time.fixedDeltaTime, 0));
+        rb.AddForce(new Vector2(chargeDirection * chargeSpeed * Time.fixedDeltaTime, 0));
+        if(velocity.x < 2 && velocity.x > -2 && IsTargetInHitRange())
+        {
+            // Player is between the wall and the riot drone. Deal huge damage and make space for the player to get out.
+            Debug.Log("Squished");
+            targetHealth.TakeDamage(shieldSquishDamage);
+            StartCoroutine(PlayerHit());
+            rb.velocity = new Vector2(0,0);
+            backstepCounter = 0;
+            gameObject.GetComponentsInChildren<SpriteRenderer>()[1].color = Color.black;
+            chargeOnCooldown = true;
+            chargeDirectionCalculated = false;
+            state = RiotState.Backstepping;
+        }
         canMove = true;
     }
 
@@ -300,8 +345,7 @@ public class RiotControlDrone : MonoBehaviour
     private IEnumerator PlayerHit()
     {
         GameObject.Find("Player").GetComponent<SpriteRenderer>().color = Color.red;
-        Debug.Log("Ouch");
-        yield return new WaitForSeconds(0.6f);
+        yield return new WaitForSeconds(0.1f);
         GameObject.Find("Player").GetComponent<SpriteRenderer>().color = Color.white;
     }
 
@@ -317,8 +361,8 @@ public class RiotControlDrone : MonoBehaviour
         chargeDirectionCalculated = false;
         chargeOnCooldown = true;
         state = RiotState.Moving;
-        //ChangeToDefaultLayer();
-        isEnemyLayer = false;
+        ChangeToDefaultLayer();
+        isBossLayer = false;
     }
 
     // Cooldown for the player knockback.
@@ -340,7 +384,7 @@ public class RiotControlDrone : MonoBehaviour
         if(IsTargetInHitRange())
         {
             targetHealth.TakeDamage(lightAttackDamage);
-            PlayerHit();
+            StartCoroutine(PlayerHit());
             yield return new WaitForSeconds(lightAttackCoolDown);
             if (!knockbackOnCooldown)
             {
@@ -366,7 +410,7 @@ public class RiotControlDrone : MonoBehaviour
         if (IsTargetInHitRange())
         {
             targetHealth.TakeDamage(heavyAttackDamage);
-            PlayerHit();
+            StartCoroutine(PlayerHit());
             yield return new WaitForSeconds(heavyAttackCoolDown);
             if(!knockbackOnCooldown)
             {
@@ -472,7 +516,8 @@ public class RiotControlDrone : MonoBehaviour
         Attack,
         TaserShoot,
         Stunned,
-        SeedShoot
+        SeedShoot,
+        Backstepping
 
     }
 
