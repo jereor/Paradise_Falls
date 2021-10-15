@@ -23,6 +23,7 @@ public class Player : MonoBehaviour
     [SerializeField] private ShockwaveTool shockwaveTool;
     [SerializeField] private Health healthScript;
     [SerializeField] private Energy energyScript;
+    [SerializeField] private Shield shieldScript;
 
     // Component references
     public Animator animator;
@@ -31,6 +32,9 @@ public class Player : MonoBehaviour
     // If state is changed this will be true so we know in FixedUpdate to HandleStateInput() only when we change state
     // If this is not used HandleStateUpdate() will be called every FixedUpdate() call aka Disables and Enables are done each FixedUpdate() -> potatocomputers cannot run our game
     private bool statesChanged = false;
+
+    // Used to play parry animation only once set to true when we start playing and to false from parry animation end
+    private bool playedParry = false;
 
     public enum State
     {
@@ -45,7 +49,9 @@ public class Player : MonoBehaviour
         Attacking,
         AttackTransition,
         Aiming,
-        Throwing
+        Throwing,
+        Blocking,
+        Parrying
     }
     State currentState;
     State previousState;
@@ -273,6 +279,30 @@ public class Player : MonoBehaviour
         {
             animator.SetBool("isAiming", false);
         }
+
+        // Parry
+        if (shieldScript.Parrying && !playedParry)
+        {
+            float multiplier = GetClipAnimTime("Parry") / shieldScript.getParryTimeWindow();
+            // parrySpeedMultiplier is used to scale Parry animation lenght with our set parry time window
+            // Multiplier < 1 = animation slows down length increases and Multiplier > 1 animation speeds up length decreses
+            // Calculation: x = y * multi -> multi = x / y   || x current clip time , y desired clip time
+            animator.SetFloat("parrySpeedMultiplier", multiplier);
+
+            animator.Play("Parry");
+            // Used to play parry animation only once set to false after Parry animation is complete
+            SetPlayedParry(true);
+        }
+        // Blocking 
+        if (shieldScript.Blocking)
+        {
+            animator.SetBool("isBlocking", true);
+        }
+        else if (!shieldScript.Blocking)
+        {
+            animator.SetBool("isBlocking", false);
+        }
+
     }
 
     // Enables and Disables inputs
@@ -367,6 +397,18 @@ public class Player : MonoBehaviour
                 break;
             case State.Throwing:
                 break;
+            case State.Blocking:
+                // Combat
+                combatScript.DisableInputMelee();
+                combatScript.DisableInputThrowAim();
+
+                break;
+            case State.Parrying:
+                // Combat
+                combatScript.DisableInputMelee();
+                combatScript.DisableInputThrowAim();
+
+                break;
             default:
                 break;
         }
@@ -451,15 +493,21 @@ public class Player : MonoBehaviour
         return animator.GetBool("isLaunching");
     }
 
-    public float GetTransitionAnimTime()
+    // Returs the lenght of given clip if found
+    public float GetClipAnimTime(string name)
     {
         AnimationClip[] clips = animator.runtimeAnimatorController.animationClips;
         foreach (AnimationClip clip in clips)
         {
-            if (clip.name == "LTran1")
+            if (clip.name == name)
                 return clip.length;
         }
         return 0f;
+    }
+
+    public void SetPlayedParry(bool b)
+    {
+        playedParry = b;
     }
 
     public bool IsFacingRight()
