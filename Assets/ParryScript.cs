@@ -10,6 +10,7 @@ public class ParryScript : StateMachineBehaviour
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         Player.Instance.SetCurrentState(Player.State.Parrying);
+        animator.SetBool("isParrying", true);
         time = Time.time;
     }
 
@@ -22,8 +23,8 @@ public class ParryScript : StateMachineBehaviour
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        Debug.Log(Time.time - time);
-        Player.Instance.SetPlayedParry(false);
+        Debug.Log("Clip " + (Time.time - time));
+        //animator.SetBool("isParrying", false);
     }
 
     // OnStateMove is called right after Animator.OnAnimatorMove()

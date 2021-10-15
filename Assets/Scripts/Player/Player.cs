@@ -33,9 +33,6 @@ public class Player : MonoBehaviour
     // If this is not used HandleStateUpdate() will be called every FixedUpdate() call aka Disables and Enables are done each FixedUpdate() -> potatocomputers cannot run our game
     private bool statesChanged = false;
 
-    // Used to play parry animation only once set to true when we start playing and to false from parry animation end
-    private bool playedParry = false;
-
     public enum State
     {
         Idle,
@@ -43,7 +40,6 @@ public class Player : MonoBehaviour
         Ascending,
         Falling,
         Landing,
-        Diving,
         WallSliding,
         Climbing,
         Attacking,
@@ -235,9 +231,19 @@ public class Player : MonoBehaviour
             }
         }
 
+        // When the current state is Ascending or Falling
+        if (currentState == State.Blocking || currentState == State.Parrying)
+        {
+            // Player starts moving
+            if (PlayerMovement.Instance.horizontal != 0f)
+            {
+                animator.SetBool("isRunning", true);
+            }
+        }
+
         // LedgeClimb animation
         // LedgeChecks return true
-        if (movementScript.getClimbing() && !animator.GetBool("isAttacking") && !animator.GetBool("isAiming"))
+        if (movementScript.getClimbing() && !animator.GetBool("isAttacking") && !animator.GetBool("isAiming") && !animator.GetBool("isBlocking") && !animator.GetBool("isParrying"))
         {
             animator.SetBool("isClimbing", true);
         }
@@ -281,7 +287,7 @@ public class Player : MonoBehaviour
         }
 
         // Parry
-        if (shieldScript.Parrying && !playedParry)
+        if (shieldScript.Parrying && !animator.GetBool("isParrying") && !animator.GetBool("jump") && !animator.GetBool("isAttacking"))
         {
             float multiplier = GetClipAnimTime("Parry") / shieldScript.getParryTimeWindow();
             // parrySpeedMultiplier is used to scale Parry animation lenght with our set parry time window
@@ -290,11 +296,11 @@ public class Player : MonoBehaviour
             animator.SetFloat("parrySpeedMultiplier", multiplier);
 
             animator.Play("Parry");
-            // Used to play parry animation only once set to false after Parry animation is complete
-            SetPlayedParry(true);
+            // If we start running during parry we need to keep track of time when we arent parrying anymore since time is set from Shield.cs
+            StartCoroutine(ParryCounter(GetClipAnimTime("Parry") * (1 / multiplier)));
         }
         // Blocking 
-        if (shieldScript.Blocking)
+        if (shieldScript.Blocking && !animator.GetBool("isAttacking"))
         {
             animator.SetBool("isBlocking", true);
         }
@@ -316,6 +322,8 @@ public class Player : MonoBehaviour
                 combatScript.EnableInputMelee();
                 combatScript.EnableInputThrowAim();
 
+                shieldScript.EnableInputBlock();
+
                 // Movement
                 movementScript.EnableInputJump();
                 movementScript.EnableInputMove();
@@ -324,6 +332,8 @@ public class Player : MonoBehaviour
                 // Combat
                 combatScript.EnableInputMelee();
                 combatScript.EnableInputThrowAim();
+
+                shieldScript.EnableInputBlock();
 
                 // Movement
                 movementScript.EnableInputJump();
@@ -334,6 +344,8 @@ public class Player : MonoBehaviour
                 combatScript.EnableInputMelee();
                 combatScript.EnableInputThrowAim();
 
+                shieldScript.EnableInputBlock();
+
                 // Movement
                 movementScript.EnableInputJump();
                 movementScript.EnableInputMove();
@@ -342,6 +354,8 @@ public class Player : MonoBehaviour
                 // Combat
                 combatScript.EnableInputMelee();
                 combatScript.EnableInputThrowAim();
+
+                shieldScript.EnableInputBlock();
 
                 // Movement
                 movementScript.EnableInputJump();
@@ -352,11 +366,11 @@ public class Player : MonoBehaviour
                 combatScript.DisableInputMelee();
                 combatScript.DisableInputThrowAim();
 
+                shieldScript.DisableInputBlock();
+
                 // Movement
                 movementScript.DisableInputJump();
                 movementScript.DisableInputMove();
-                break;
-            case State.Diving:
                 break;
             case State.WallSliding:
                 // Combat
@@ -371,6 +385,8 @@ public class Player : MonoBehaviour
                 // Combat
                 combatScript.DisableInputMelee();
                 combatScript.DisableInputThrowAim();
+
+                shieldScript.DisableInputBlock();
 
                 // Movement
                 movementScript.DisableInputJump();
@@ -402,6 +418,7 @@ public class Player : MonoBehaviour
                 combatScript.DisableInputMelee();
                 combatScript.DisableInputThrowAim();
 
+                movementScript.DisableInputJump();
                 break;
             case State.Parrying:
                 // Combat
@@ -493,6 +510,16 @@ public class Player : MonoBehaviour
         return animator.GetBool("isLaunching");
     }
 
+    public bool GetIsBlocking()
+    {
+        return animator.GetBool("isBlocking");
+    }
+
+    public bool GetIsParrying()
+    {
+        return animator.GetBool("isParrying");
+    }
+
     // Returs the lenght of given clip if found
     public float GetClipAnimTime(string name)
     {
@@ -505,9 +532,10 @@ public class Player : MonoBehaviour
         return 0f;
     }
 
-    public void SetPlayedParry(bool b)
+    private IEnumerator ParryCounter(float parryTime)
     {
-        playedParry = b;
+        yield return new WaitForSeconds(parryTime);
+        animator.SetBool("isParrying", false);
     }
 
     public bool IsFacingRight()
