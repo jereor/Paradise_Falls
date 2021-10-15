@@ -10117,8 +10117,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a4032a91d94c2344b9bc31b27f842ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movementVelocity: 5
-  jumpForce: 22
+  movementVelocity: 6
+  jumpForce: 16.5
   coyoteTime: 0.2
   climbTimeBuffer: 0.5
   wallSlideGravityScale: 1
@@ -10129,9 +10129,9 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   allowLedgeClimb: 1
-  allowWallJump: 0
+  allowWallJump: 1
   allowCoyoteWallJump: 1
-  allowShockwaveJump: 1
+  allowShockwaveJump: 0
   ledgeCheck: {fileID: 2838063052809471023}
   wallCheckBody: {fileID: 6576764605224401354}
   wallCheckFeet: {fileID: 1156667530783647825}
@@ -10352,7 +10352,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e85f99a78ea71c14bb56436ea514cc78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 10
+  maxHealth: 100
   debugHealth: 0
   destroyWhenDead: 1
   onDie:
@@ -10525,7 +10525,7 @@ MonoBehaviour:
   pointsShown: 7
   pointScaleRatio: 1.2
   meleeWeaponPrefab: {fileID: 3980506574090905470, guid: 3780bd19eaa15054a9ebdb884fa668ba, type: 3}
-  isWeaponWielded: 0
+  isWeaponWielded: 1
   pullCollisionCounter: 0
   magnetTether: {fileID: 5454362082765361711}
   timeBeforeRelease: 0.5
