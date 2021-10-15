@@ -829,8 +829,14 @@ public class PlayerCombat : MonoBehaviour
         // We have no weapon wielded and we have thrown weapon we know the instance
         if (!isWeaponWielded && weaponInstance != null)
         {
-            // If distance between player and weapon is greater than maxDistance
-            if ((weaponInstance.transform.position - gameObject.transform.position).magnitude >= maxDistanceBetween)
+            // If weapon is power boosted, stop boost after certain distance
+            if (weaponInstance.GetComponent<MeleeWeapon>().isPowerBoosted()
+                && (weaponInstance.transform.position - gameObject.transform.position).magnitude >= maxDistanceBetween)
+            {
+                weaponInstance.GetComponent<MeleeWeapon>().StopPowerBoost();
+            }
+            // Else if distance between player and weapon is greater than maxDistance
+            else if ((weaponInstance.transform.position - gameObject.transform.position).magnitude >= maxDistanceBetween)
             {
                 weaponInstance.GetComponent<MeleeWeapon>().PullWeapon(gameObject);
             }

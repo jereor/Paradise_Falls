@@ -517,7 +517,6 @@ public class GroundEnemyAI : MonoBehaviour
 
     IEnumerator Stunned(float stunTime)
     {
-        Debug.Log("Stunned...");
         stunned = true;
         gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.blue;
 
@@ -528,7 +527,6 @@ public class GroundEnemyAI : MonoBehaviour
             yield return new WaitForEndOfFrame();
         }
 
-        Debug.Log("Stun ended");
         stunned = false;
         gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.black;
     }
