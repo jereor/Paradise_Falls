@@ -25,6 +25,7 @@ TagManager:
   - GrapplePoint
   - MeleeWeapon
   - Boss
+  - PulledWeapon
   - 
   - 
   - ShockwaveAttack
