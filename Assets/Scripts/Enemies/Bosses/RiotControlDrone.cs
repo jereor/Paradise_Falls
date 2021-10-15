@@ -6,6 +6,7 @@ using UnityEngine;
 public class RiotControlDrone : MonoBehaviour
 {
     [SerializeField] private GameObject shield;
+    [SerializeField] private GameObject taserBeam;
     [SerializeField] private Rigidbody2D playerRB;
 
     [Header("Current State")]
@@ -59,12 +60,17 @@ public class RiotControlDrone : MonoBehaviour
     private bool stunned = false;
     private bool knockbackOnCooldown = false;
     private bool isBossLayer = false;
+    private bool taserOnCooldown = false;
 
     private bool chargeDirectionCalculated;
 
-    [SerializeField] private float lastChargeCounter;
+    [SerializeField] private float lastChargeCounter; // Counter which check if the charge is out of cooldown.
     private float chargeDirection;
     private int backstepCounter;
+    private int chargeCooldownRandomizer = 3;
+    [SerializeField] private int taserChanceRandomizer = 1;
+    [SerializeField] private int taserChance; // Number between 1-100.
+    [SerializeField] private float taserCooldown;
     
     
 
@@ -166,15 +172,24 @@ public class RiotControlDrone : MonoBehaviour
         {
             Debug.Log("Attack");
             state = RiotState.Attack;
+            return;
         }
         if (IsTargetInChargeRange() && canChargeToTarget)
         {
             state = RiotState.ShieldCharge;
+            return;
+        }
+        if(IsTargetInChargeRange() && !canChargeToTarget && taserChanceRandomizer <= taserChance && !taserOnCooldown)
+        {
+            state = RiotState.TaserShoot;
+            
+            return;
         }
 
         // Moves the drone in desired direction, in this case towards the player on X-axis.
         if (!isEnraged && !IsTargetInHitRange() && canMove)
         {
+            
             //velocity = new Vector2(vectorToTarget.x * walkingSpeed, 0);
             //rb.MovePosition(rb.position + velocity * Time.deltaTime);
             rb.AddForce(new Vector2((vectorToTarget.x > 0 ? 1 : -1) * walkingSpeed * Time.fixedDeltaTime, 0));
@@ -231,7 +246,11 @@ public class RiotControlDrone : MonoBehaviour
 
     private void HandleTaserShootState()
     {
-        
+        if(!taserOnCooldown)
+        {
+            StartCoroutine(TaserShoot());
+        }
+
     }
 
     // Riot drone is stunned for a certain amount of time when collided with a wall. State change is in RiotShield script.
@@ -296,8 +315,9 @@ public class RiotControlDrone : MonoBehaviour
     // Cooldowns for walking, running etc.
     private IEnumerator WalkCoolDown()
     {
-        canMove = false;
+        canMove = false;      
         yield return new WaitForSeconds(walkStepInterval);
+        taserChanceRandomizer = UnityEngine.Random.Range(1, 101);
         backstepCounter++;
         canMove = true;
     }
@@ -327,6 +347,7 @@ public class RiotControlDrone : MonoBehaviour
             backstepCounter = 0;
             gameObject.GetComponentsInChildren<SpriteRenderer>()[1].color = Color.black;
             chargeOnCooldown = true;
+            chargeCooldownRandomizer = UnityEngine.Random.Range(1, 11);
             chargeDirectionCalculated = false;
             state = RiotState.Backstepping;
         }
@@ -360,6 +381,7 @@ public class RiotControlDrone : MonoBehaviour
         Debug.Log("Stun ended");
         chargeDirectionCalculated = false;
         chargeOnCooldown = true;
+        chargeCooldownRandomizer = UnityEngine.Random.Range(1, 11);
         state = RiotState.Moving;
         ChangeToDefaultLayer();
         isBossLayer = false;
@@ -429,6 +451,19 @@ public class RiotControlDrone : MonoBehaviour
         canAttack = true;
     }
 
+    private IEnumerator TaserShoot()
+    {
+        taserOnCooldown = true;
+        gameObject.GetComponentsInChildren<SpriteRenderer>()[1].color = Color.yellow;
+        yield return new WaitForSeconds(taserCooldown);
+        Instantiate(taserBeam, new Vector2(transform.position.x + (transform.localScale.x * 2), transform.position.y), Quaternion.identity);
+        yield return new WaitForSeconds(taserCooldown);
+        taserChanceRandomizer = UnityEngine.Random.Range(1, 101);
+        gameObject.GetComponentsInChildren<SpriteRenderer>()[1].color = Color.black;
+        state = RiotState.Moving;
+        taserOnCooldown = false;
+    }
+
     // Overlaps for various checks.
     private bool IsTargetInHitRange()
     {
@@ -465,7 +500,7 @@ public class RiotControlDrone : MonoBehaviour
         {
             lastChargeCounter += Time.deltaTime;
         }
-        if (lastChargeCounter >= 10)
+        if (lastChargeCounter >= chargeCooldownRandomizer)
         {
             chargeOnCooldown = false;
             canChargeToTarget = true;

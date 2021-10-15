@@ -153,23 +153,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shield: {fileID: 8410908679192793482}
+  taserBeam: {fileID: 7094682758646093242, guid: 1956fd86456be4d41ae726c17406e383, type: 3}
   playerRB: {fileID: 0}
   state: 1
   playerLayer:
     serializedVersion: 2
     m_Bits: 8
-  walkingSpeed: 700000
+  walkingSpeed: 900000
   runningSpeed: 500000
   chargeSpeed: 300000
   isEnraged: 0
-  walkStepInterval: 0.9
+  walkStepInterval: 0.8
   runStepInterval: 0.6
   chargeStepInterval: 0
   stunTime: 3
   chargeReadyTime: 1
   timesToBackstep: 3
-  areaToCharge: {x: 4.53, y: 2.63}
-  chargeOffset: {x: 8.48, y: 0}
+  areaToCharge: {x: 16.5, y: 2.53}
+  chargeOffset: {x: 10.45, y: 0}
   areaToAttack: {x: 1.72, y: 2.34}
   hitOffset: {x: 1, y: -0.15}
   velocity: {x: 0, y: 0}
@@ -183,6 +184,9 @@ MonoBehaviour:
   knockbackForce: 100
   isFacingRight: 0
   lastChargeCounter: 0
+  taserChanceRandomizer: 1
+  taserChance: 35
+  taserCooldown: 1
 --- !u!114 &8410908677858590967
 MonoBehaviour:
   m_ObjectHideFlags: 0
