@@ -2032,7 +2032,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6fe86d6b33a7744da6d934e9a8bdca4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockbackForce: 400
+  knockbackForce: 800
   player: {fileID: 729320505}
   hitEffect: {fileID: 7336139170090732409, guid: 01dfe1317cba60e45997e688e3e78684, type: 3}
 --- !u!1 &882921844
@@ -3126,11 +3126,11 @@ PrefabInstance:
       objectReference: {fileID: 729320505}
     - target: {fileID: 284613507, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: m_TrackedObjectOffset.x
-      value: -0.9980847
+      value: 0.9999994
       objectReference: {fileID: 0}
     - target: {fileID: 284613507, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: m_TrackedObjectOffset.y
-      value: -0.003984823
+      value: -2.982968e-15
       objectReference: {fileID: 0}
     - target: {fileID: 505850491, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: m_Follow
@@ -3295,7 +3295,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1691313839, guid: 4154d57994558ff489a9180c3151e624, type: 3}
       propertyPath: CollisionModule.collidesWith.m_Bits
-      value: 16512
+      value: 32896
       objectReference: {fileID: 0}
     - target: {fileID: 1691313839, guid: 4154d57994558ff489a9180c3151e624, type: 3}
       propertyPath: CollisionModule.collidesWithDynamic
