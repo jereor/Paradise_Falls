@@ -748,6 +748,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2646993275326716544, guid: 4154d57994558ff489a9180c3151e624, type: 3}
   m_PrefabInstance: {fileID: 2646993275714197177}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &761326263 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8760275387346948364, guid: 4154d57994558ff489a9180c3151e624, type: 3}
+  m_PrefabInstance: {fileID: 2646993275714197177}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb5d3b4f4e25e4a4bab9bbe76ca99bb0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &890868420
 GameObject:
   m_ObjectHideFlags: 0
@@ -1328,6 +1339,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 368704289}
     m_Modifications:
+    - target: {fileID: 1940316768, guid: 4154d57994558ff489a9180c3151e624, type: 3}
+      propertyPath: energyScript
+      value: 
+      objectReference: {fileID: 761326263}
     - target: {fileID: 2646993275326716544, guid: 4154d57994558ff489a9180c3151e624, type: 3}
       propertyPath: m_RootOrder
       value: 3
