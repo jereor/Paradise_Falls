@@ -222,7 +222,7 @@ public class MeleeWeapon : MonoBehaviour
             myRB.velocity = Vector2.zero; // Stop moving at the start of pulling physics bugs
 
             //Layer to PulledWeapon.
-            gameObject.layer = 14;
+            gameObject.layer = 15;
 
 
             pullingObject = objectThatPulls;

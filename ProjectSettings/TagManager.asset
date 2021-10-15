@@ -24,11 +24,8 @@ TagManager:
   - Resource Item
   - GrapplePoint
   - MeleeWeapon
-<<<<<<< HEAD
-  - PulledWeapon
-=======
   - Boss
->>>>>>> master
+  - PulledWeapon
   - 
   - 
   - ShockwaveAttack
