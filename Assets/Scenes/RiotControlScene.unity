@@ -259,10 +259,10 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 526558495}
   - {fileID: 1341951083}
-  - {fileID: 729320505}
+  - {fileID: 526558495}
   - {fileID: 1649168265}
+  - {fileID: 729320505}
   - {fileID: 469019602}
   m_Father: {fileID: 0}
   m_RootOrder: 1
@@ -423,7 +423,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7603079316190488558, guid: 1589c510344020d4eaef6bdf64f5e1f0, type: 3}
       propertyPath: m_RootOrder
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7603079316190488558, guid: 1589c510344020d4eaef6bdf64f5e1f0, type: 3}
       propertyPath: m_LocalScale.x
@@ -809,7 +809,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 368704289}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1341951084
 MonoBehaviour:
@@ -872,10 +872,10 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 498508737}
   - {fileID: 1766905158}
+  - {fileID: 498508737}
   m_Father: {fileID: 368704289}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1766905157
 GameObject:
@@ -906,7 +906,7 @@ Transform:
   m_Children:
   - {fileID: 1986565611}
   m_Father: {fileID: 1649168265}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1769743767 stripped
 MonoBehaviour:
@@ -1330,7 +1330,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2646993275326716544, guid: 4154d57994558ff489a9180c3151e624, type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 2646993275326716544, guid: 4154d57994558ff489a9180c3151e624, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1391,7 +1391,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7707995509388065025, guid: df75306e14736564696819960c37ebf1, type: 3}
       propertyPath: m_RootOrder
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7707995509388065025, guid: df75306e14736564696819960c37ebf1, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1452,7 +1452,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8410908677858590962, guid: 9494e6e2cb797ba4791843427e240b28, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 45.399
+      value: 51.66
       objectReference: {fileID: 0}
     - target: {fileID: 8410908677858590962, guid: 9494e6e2cb797ba4791843427e240b28, type: 3}
       propertyPath: m_LocalPosition.y
@@ -1493,26 +1493,6 @@ PrefabInstance:
     - target: {fileID: 8410908677858590963, guid: 9494e6e2cb797ba4791843427e240b28, type: 3}
       propertyPath: m_Name
       value: RiotControlDrone
-      objectReference: {fileID: 0}
-    - target: {fileID: 8410908677858590965, guid: 9494e6e2cb797ba4791843427e240b28, type: 3}
-      propertyPath: walkingSpeed
-      value: 900000
-      objectReference: {fileID: 0}
-    - target: {fileID: 8410908677858590965, guid: 9494e6e2cb797ba4791843427e240b28, type: 3}
-      propertyPath: areaToCharge.x
-      value: 10.96
-      objectReference: {fileID: 0}
-    - target: {fileID: 8410908677858590965, guid: 9494e6e2cb797ba4791843427e240b28, type: 3}
-      propertyPath: chargeOffset.x
-      value: 7.54
-      objectReference: {fileID: 0}
-    - target: {fileID: 8410908677858590965, guid: 9494e6e2cb797ba4791843427e240b28, type: 3}
-      propertyPath: walkStepInterval
-      value: 0.8
-      objectReference: {fileID: 0}
-    - target: {fileID: 8410908677858590967, guid: 9494e6e2cb797ba4791843427e240b28, type: 3}
-      propertyPath: destroyWhenDead
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8410908677858590967, guid: 9494e6e2cb797ba4791843427e240b28, type: 3}
       propertyPath: onDie.m_PersistentCalls.m_Calls.Array.data[0].m_Target
