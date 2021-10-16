@@ -486,7 +486,7 @@ public class PlayerMovement : MonoBehaviour
         {
             // Dived, so activate higher jump
             StartCoroutine(Launch());
-            rb.velocity = launchDir * jumpForce * 1.2f;
+            rb.velocity = launchDir * jumpForce * 2;
 
             // Stop air dive
             shockwaveTool.CancelShockwaveDive();
@@ -494,7 +494,7 @@ public class PlayerMovement : MonoBehaviour
             lastDiveTime = null;
         }
         else
-            rb.velocity = launchDir * jumpForce * .6f;
+            rb.velocity = launchDir * jumpForce;
 
         /* DISABLED FOR NOW. USE THESE FOR LAUNCH DIRECTION
         posBeforeLaunch = transform.position;
