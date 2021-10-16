@@ -227,8 +227,7 @@ public class PlayerMovement : MonoBehaviour
         // Air dive while in the air
         else if (context.started && !IsGrounded()
             && playerScript.InputVertical == -1 // Pressing downwards
-            && (Time.time - lastLaunchTime > 0.2f || lastLaunchTime == null) // Not just launched
-            && !(Time.time - lastGroundedTime <= coyoteTime)) // No coyote jump
+            && (Time.time - lastLaunchTime > 0.2f || lastLaunchTime == null)) // Not just launched
         {
             shockwaveTool.DoShockwaveDive(); // Activate VFX
             rb.gravityScale = shockwaveDiveGravityScale;
@@ -268,7 +267,8 @@ public class PlayerMovement : MonoBehaviour
 
         // If button was pressed
         if (context.performed && (Time.time - lastGroundedTime <= coyoteTime) // Check if coyote time is online
-            && (Time.time - jumpButtonPressedTime <= coyoteTime) && !climbing) // Check if jump has been buffered
+            && (Time.time - jumpButtonPressedTime <= coyoteTime) && !climbing // Check if jump has been buffered
+            && playerScript.InputVertical != -1) // Not pressing downwards / diving
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce); // Jump!
         }
