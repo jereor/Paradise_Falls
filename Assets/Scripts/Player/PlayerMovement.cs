@@ -226,18 +226,17 @@ public class PlayerMovement : MonoBehaviour
 
         // Air dive while in the air
         else if (context.started && !IsGrounded()
-            && playerScript.InputVertical == -1)
+            && playerScript.InputVertical == -1 // Pressing downwards
+            && (Time.time - lastLaunchTime > 0.2f || lastLaunchTime == null) // Not just launched
+            && !(Time.time - lastGroundedTime <= coyoteTime)) // No coyote jump
         {
-            if (!(playerScript.GetCurrentState() == Player.State.Falling)) // First frame of diving
-                rb.velocity = new Vector2(0, -jumpForce); // Set velocity downwards
-
+            shockwaveTool.DoShockwaveDive(); // Activate VFX
+            rb.gravityScale = shockwaveDiveGravityScale;
             diving = true;
             lastDiveTime = Time.time;
 
-            // Air Dive functionality here
-            shockwaveTool.DoShockwaveDive(); // Activate VFX
-            rb.gravityScale = shockwaveDiveGravityScale;
-
+            if (!(playerScript.GetCurrentState() == Player.State.Falling)) // First frame of diving
+                rb.velocity = new Vector2(0, -jumpForce); // Set velocity downwards
         }
 
         // -DOUBLE JUMP-
@@ -271,7 +270,7 @@ public class PlayerMovement : MonoBehaviour
         if (context.performed && (Time.time - lastGroundedTime <= coyoteTime) // Check if coyote time is online
             && (Time.time - jumpButtonPressedTime <= coyoteTime) && !climbing) // Check if jump has been buffered
         {
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce); // Keep player in upwards motion
+            rb.velocity = new Vector2(rb.velocity.x, jumpForce); // Jump!
         }
 
         // If button was released
@@ -280,7 +279,7 @@ public class PlayerMovement : MonoBehaviour
             // Check that player is currently not being launched
             if (Time.time - lastLaunchTime > 1 || lastLaunchTime == null)
             {
-                rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f); // Slow down player
+                rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f); // Slow down player to start falling
                 jumpButtonPressedTime = null;
                 lastGroundedTime = null;
             }
@@ -493,7 +492,9 @@ public class PlayerMovement : MonoBehaviour
     public void ActivateLaunch(float launchDist, Vector2 launchDir)
     {
         rb.gravityScale = defaultGravityScale; // Reset gravity
-        if (Time.time - lastDiveTime <= 1)
+        lastLaunchTime = Time.time;
+
+        if (shockwaveTool.ShockwaveDiveUsed)
         {
             // Dived, so activate higher jump
             StartCoroutine(Launch());

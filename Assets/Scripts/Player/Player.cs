@@ -556,8 +556,8 @@ public class Player : MonoBehaviour
         GUI.Label(new Rect(700, 10, 300, 100), "Currently: " + currentState, TextStyleHealth);
         GUI.Label(new Rect(1000, 10, 300, 100), "Previously: " + previousState, TextStyleEnergy);
 
-        //GUI.Label(new Rect(1500, 10, 300, 100), "Gravity: " + rb.gravityScale, TextStyleEnergy);
-        GUI.Label(new Rect(1500, 10, 300, 100), "Horizontal: " + movementScript.horizontal, TextStyleEnergy);
+        GUI.Label(new Rect(1500, 10, 300, 100), "Gravity: " + rb.gravityScale, TextStyleEnergy);
+        //GUI.Label(new Rect(1500, 10, 300, 100), "Horizontal: " + movementScript.horizontal, TextStyleEnergy);
     }
 
     // Move action: Called when the Move Action Button is pressed
