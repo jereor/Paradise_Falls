@@ -129,12 +129,7 @@ public class PlayerMovement : MonoBehaviour
 
         // Ground check to set state variables
         if (IsGrounded())
-        {
-            shockwaveTool.CancelShockwaveDive(); // Checks if shockwave dive graphics are on and disables them
-            diving = false;
             lastGroundedTime = Time.time;
-            rb.gravityScale = defaultGravityScale;
-        }
         else
             CheckIfStuck();
 
@@ -165,6 +160,7 @@ public class PlayerMovement : MonoBehaviour
         CheckLedgeClimb();
         CheckWallJump();
         CheckShockwaveJump();
+        CheckShockwaveDive();
     }
 
     // ---- INPUTS -----
@@ -230,17 +226,16 @@ public class PlayerMovement : MonoBehaviour
 
         // Air dive while in the air
         else if (context.started && !IsGrounded()
-            && playerScript.InputVertical == -1)
+            && playerScript.InputVertical == -1 // Pressing downwards
+            && (Time.time - lastLaunchTime > 0.2f || lastLaunchTime == null)) // Not just launched
         {
-            if (!(playerScript.GetCurrentState() == Player.State.Falling)) // First frame of diving
-                rb.velocity = new Vector2(0, -jumpForce); // Set velocity downwards
-
+            shockwaveTool.DoShockwaveDive(); // Activate VFX
+            rb.gravityScale = shockwaveDiveGravityScale;
             diving = true;
             lastDiveTime = Time.time;
 
-            // Air Dive functionality here
-            shockwaveTool.DoShockwaveDive(); // Activate VFX
-            rb.gravityScale = shockwaveDiveGravityScale;
+            if (!(playerScript.GetCurrentState() == Player.State.Falling)) // First frame of diving
+                rb.velocity = new Vector2(0, -jumpForce); // Set velocity downwards
         }
 
         // -DOUBLE JUMP-
@@ -272,9 +267,10 @@ public class PlayerMovement : MonoBehaviour
 
         // If button was pressed
         if (context.performed && (Time.time - lastGroundedTime <= coyoteTime) // Check if coyote time is online
-            && (Time.time - jumpButtonPressedTime <= coyoteTime) && !climbing) // Check if jump has been buffered
+            && (Time.time - jumpButtonPressedTime <= coyoteTime) && !climbing // Check if jump has been buffered
+            && playerScript.InputVertical != -1) // Not pressing downwards / diving
         {
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce); // Keep player in upwards motion
+            rb.velocity = new Vector2(rb.velocity.x, jumpForce); // Jump!
         }
 
         // If button was released
@@ -283,7 +279,7 @@ public class PlayerMovement : MonoBehaviour
             // Check that player is currently not being launched
             if (Time.time - lastLaunchTime > 1 || lastLaunchTime == null)
             {
-                rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f); // Slow down player
+                rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f); // Slow down player to start falling
                 jumpButtonPressedTime = null;
                 lastGroundedTime = null;
             }
@@ -299,6 +295,19 @@ public class PlayerMovement : MonoBehaviour
         {
             lastGroundedTime = Time.time;
             canShockwaveJump = true;
+        }
+    }
+
+    // Diving needs to be number one priority, so gravity scale stays the same throughout the whole dive until touching ground again
+    private void CheckShockwaveDive()
+    {
+        // Check if dive is in use and no longer going downwards
+        if (rb.velocity.y >= 0 && shockwaveTool.ShockwaveDiveUsed)
+        {
+            // Cancel dive
+            shockwaveTool.CancelShockwaveDive();
+            diving = false;
+            rb.gravityScale = defaultGravityScale;
         }
     }
 
@@ -400,7 +409,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    // ---- SHOCKWAWE ----
+    // ---- SHOCKWAVE ----
 
     private void CheckShockwaveJump()
     {
@@ -482,7 +491,10 @@ public class PlayerMovement : MonoBehaviour
     // Launch when player jumps on Boost Plant. Called by BoostPlant-script
     public void ActivateLaunch(float launchDist, Vector2 launchDir)
     {
-        if (Time.time - lastDiveTime <= 3)
+        rb.gravityScale = defaultGravityScale; // Reset gravity
+        lastLaunchTime = Time.time;
+
+        if (shockwaveTool.ShockwaveDiveUsed)
         {
             // Dived, so activate higher jump
             StartCoroutine(Launch());
