@@ -129,12 +129,7 @@ public class PlayerMovement : MonoBehaviour
 
         // Ground check to set state variables
         if (IsGrounded())
-        {
-            shockwaveTool.CancelShockwaveDive(); // Checks if shockwave dive graphics are on and disables them
-            diving = false;
             lastGroundedTime = Time.time;
-            rb.gravityScale = defaultGravityScale;
-        }
         else
             CheckIfStuck();
 
@@ -165,6 +160,7 @@ public class PlayerMovement : MonoBehaviour
         CheckLedgeClimb();
         CheckWallJump();
         CheckShockwaveJump();
+        CheckShockwaveDive();
     }
 
     // ---- INPUTS -----
@@ -241,6 +237,7 @@ public class PlayerMovement : MonoBehaviour
             // Air Dive functionality here
             shockwaveTool.DoShockwaveDive(); // Activate VFX
             rb.gravityScale = shockwaveDiveGravityScale;
+
         }
 
         // -DOUBLE JUMP-
@@ -299,6 +296,19 @@ public class PlayerMovement : MonoBehaviour
         {
             lastGroundedTime = Time.time;
             canShockwaveJump = true;
+        }
+    }
+
+    // Diving needs to be number one priority, so gravity scale stays the same throughout the whole dive until touching ground again
+    private void CheckShockwaveDive()
+    {
+        // Check if dive is in use and no longer going downwards
+        if (rb.velocity.y >= 0 && shockwaveTool.ShockwaveDiveUsed)
+        {
+            // Cancel dive
+            shockwaveTool.CancelShockwaveDive();
+            diving = false;
+            rb.gravityScale = defaultGravityScale;
         }
     }
 
@@ -400,7 +410,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    // ---- SHOCKWAWE ----
+    // ---- SHOCKWAVE ----
 
     private void CheckShockwaveJump()
     {
@@ -482,7 +492,8 @@ public class PlayerMovement : MonoBehaviour
     // Launch when player jumps on Boost Plant. Called by BoostPlant-script
     public void ActivateLaunch(float launchDist, Vector2 launchDir)
     {
-        if (Time.time - lastDiveTime <= 3)
+        rb.gravityScale = defaultGravityScale; // Reset gravity
+        if (Time.time - lastDiveTime <= 1)
         {
             // Dived, so activate higher jump
             StartCoroutine(Launch());
