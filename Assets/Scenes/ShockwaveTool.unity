@@ -3007,11 +3007,11 @@ PrefabInstance:
       objectReference: {fileID: 729320505}
     - target: {fileID: 284613507, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: m_TrackedObjectOffset.x
-      value: -0.9999992
+      value: 0.8258016
       objectReference: {fileID: 0}
     - target: {fileID: 284613507, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: m_TrackedObjectOffset.y
-      value: -0.00000009211864
+      value: -6.43415e-12
       objectReference: {fileID: 0}
     - target: {fileID: 505850491, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: m_Follow
@@ -3019,11 +3019,11 @@ PrefabInstance:
       objectReference: {fileID: 729320505}
     - target: {fileID: 1012424850, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: m_TrackedObjectOffset.x
-      value: -0.9994145
+      value: 0.9999989
       objectReference: {fileID: 0}
     - target: {fileID: 1012424850, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: m_TrackedObjectOffset.y
-      value: -0.4921016
+      value: -0.000000001525878
       objectReference: {fileID: 0}
     - target: {fileID: 1348274982, guid: 3db3967e4c6dd1e4b8e81b71ffd4ac49, type: 3}
       propertyPath: currentCamera
@@ -3108,7 +3108,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1691313836, guid: 4154d57994558ff489a9180c3151e624, type: 3}
       propertyPath: m_Layer
-      value: 17
+      value: 18
       objectReference: {fileID: 0}
     - target: {fileID: 1691313837, guid: 4154d57994558ff489a9180c3151e624, type: 3}
       propertyPath: m_LocalPosition.x
