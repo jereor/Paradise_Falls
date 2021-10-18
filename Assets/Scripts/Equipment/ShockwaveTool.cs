@@ -40,8 +40,10 @@ public class ShockwaveTool : MonoBehaviour
         shockwaveDiveGraphics.SetActive(true);
     }
 
+    // Cancel Shockwave Dive: Triggered from PlayerMovement when deactivating dive
     public void CancelShockwaveDive()
     {
+        // Set dive used to false and disable dive graphics
         ShockwaveDiveUsed = false;
         if (shockwaveDiveGraphics.activeInHierarchy)
             shockwaveDiveGraphics.SetActive(false);
