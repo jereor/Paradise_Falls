@@ -10138,7 +10138,7 @@ MonoBehaviour:
   coyoteTime: 0.2
   climbTimeBuffer: 0.5
   wallSlideGravityScale: 1
-  shockwaveDiveGravityScale: 7
+  shockwaveDiveGravityScale: 20
   groundCheck: {fileID: 2646993277219195828}
   checkRadius: 0.35
   groundLayer:
