@@ -33,6 +33,9 @@ public class Player : MonoBehaviour
     // If this is not used HandleStateUpdate() will be called every FixedUpdate() call aka Disables and Enables are done each FixedUpdate() -> potatocomputers cannot run our game
     private bool statesChanged = false;
 
+    // SerField for debugs 
+    [SerializeField] private bool inputsActive = true; // Boolean to be triggered when Handle
+
     public enum State
     {
         Idle,
@@ -64,14 +67,12 @@ public class Player : MonoBehaviour
         TextStyleEnergy.fontSize = 30;
         TextStyleHealth.fontSize = 30;
         TextStyleEnergy.normal.textColor = Color.red;
-
-        //combatScript.comboTime = GetTransitionAnimTime();
     }
 
     private void FixedUpdate()
     {
         // If game is not paused and state has changed handle state inputs
-        if(!PauseMenuController.GameIsPaused && statesChanged)
+        if(inputsActive && statesChanged)
             HandleStateInputs();
 
         HandleAnimations();
@@ -434,14 +435,18 @@ public class Player : MonoBehaviour
     }
 
     // Called from PauseMenuController on Pause() and Resume()
-    // Add enables and disables as they are made in scripts ---- CURRENT: melee, aim, jump, move
+    // Add enables and disables as they are made in scripts ---- CURRENT: melee, aim, block, jump, move
     public void HandleAllPlayerControlInputs(bool activate)
     {
+        // IF false deactivate and bool to false...
+        inputsActive = activate;
         if (!activate)
         {
             // Combat
             combatScript.DisableInputMelee();
             combatScript.DisableInputThrowAim();
+
+            shieldScript.DisableInputBlock();
 
             // Movement
             movementScript.DisableInputJump();
@@ -452,6 +457,8 @@ public class Player : MonoBehaviour
             // Combat
             combatScript.EnableInputMelee();
             combatScript.EnableInputThrowAim();
+
+            shieldScript.EnableInputBlock();
 
             // Movement
             movementScript.EnableInputJump();

@@ -41,6 +41,12 @@ public class PlayerCamera : MonoBehaviour
         brain.m_DefaultBlend.m_Time = value;
     }
 
+    // Smooth camera follow: Activated when climbing to dampen camera follow speed
+    public void SmoothFollow(float smoothTime)
+    {
+        StartCoroutine(Smooth(smoothTime)); // Set smoothing for the required time
+    }
+
     private IEnumerator Offset(float timer, float start, float end, bool falling)
     {
         var yStart = transposer.m_TrackedObjectOffset.y; // Get camera's starting y-position
@@ -58,5 +64,12 @@ public class PlayerCamera : MonoBehaviour
             transposer.m_TrackedObjectOffset = new Vector3(newX, newY, 0); // Update offset on each tick
             yield return new WaitForEndOfFrame();
         }
+    }
+
+    private IEnumerator Smooth(float smoothTime)
+    {
+        transposer.m_UnlimitedSoftZone = true;
+        yield return new WaitForSeconds(smoothTime);
+        transposer.m_UnlimitedSoftZone = false;
     }
 }
