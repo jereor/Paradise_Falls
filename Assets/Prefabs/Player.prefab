@@ -10141,6 +10141,8 @@ MonoBehaviour:
   shieldScript: {fileID: 1812080132}
   animator: {fileID: 3265684260011797273}
   rb: {fileID: 0}
+  inputsActive: 1
+  blockAnimTimeMultiplier: 1.2
 --- !u!114 &2646993275326716549
 MonoBehaviour:
   m_ObjectHideFlags: 0
