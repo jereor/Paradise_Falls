@@ -525,6 +525,27 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &560160746 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4346172592286270044, guid: 9494e6e2cb797ba4791843427e240b28, type: 3}
+  m_PrefabInstance: {fileID: 8410908678570087705}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &560160748
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 560160746}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e86f73fe67ea7534e8cd88d810071be8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  velocityPlayer: {x: 0, y: 0}
+  playerRB: {fileID: 0}
+  knockbackForce: 100
+  chargeReadyTime: 1
 --- !u!1 &633896534
 GameObject:
   m_ObjectHideFlags: 0
@@ -1391,6 +1412,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 2646993275326716549, guid: 4154d57994558ff489a9180c3151e624, type: 3}
+      propertyPath: allowWallJump
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4154d57994558ff489a9180c3151e624, type: 3}
 --- !u!1001 &7707995508995988510
@@ -1461,6 +1486,22 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1766905158}
     m_Modifications:
+    - target: {fileID: 3142315634059483558, guid: 9494e6e2cb797ba4791843427e240b28, type: 3}
+      propertyPath: m_Size.x
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3142315634059483558, guid: 9494e6e2cb797ba4791843427e240b28, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4346172592286270044, guid: 9494e6e2cb797ba4791843427e240b28, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6622000218174222055, guid: 9494e6e2cb797ba4791843427e240b28, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.001
+      objectReference: {fileID: 0}
     - target: {fileID: 8410908677858590962, guid: 9494e6e2cb797ba4791843427e240b28, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -1509,9 +1550,17 @@ PrefabInstance:
       propertyPath: m_Name
       value: RiotControlDrone
       objectReference: {fileID: 0}
+    - target: {fileID: 8410908677858590965, guid: 9494e6e2cb797ba4791843427e240b28, type: 3}
+      propertyPath: state
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 8410908677858590967, guid: 9494e6e2cb797ba4791843427e240b28, type: 3}
       propertyPath: onDie.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1769743767}
+    - target: {fileID: 8410908679192793482, guid: 9494e6e2cb797ba4791843427e240b28, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9494e6e2cb797ba4791843427e240b28, type: 3}

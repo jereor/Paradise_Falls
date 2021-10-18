@@ -1,5 +1,79 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4346172592286270044
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6622000218174222055}
+  - component: {fileID: 3142315634059483558}
+  - component: {fileID: 560160748}
+  m_Layer: 0
+  m_Name: PhaseTwoKnockbackBox
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6622000218174222055
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4346172592286270044}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.001, y: 1.08, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 8410908677858590962}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &3142315634059483558
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4346172592286270044}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 1.2, y: 0.55}
+  m_EdgeRadius: 0
+--- !u!114 &560160748
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4346172592286270044}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e86f73fe67ea7534e8cd88d810071be8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  velocityPlayer: {x: 0, y: 0}
+  playerRB: {fileID: 0}
+  knockbackForce: 100
+  chargeReadyTime: 1
 --- !u!1 &8410908677499540913
 GameObject:
   m_ObjectHideFlags: 0
@@ -29,7 +103,7 @@ Transform:
   m_LocalScale: {x: -0.23620483, y: 0.23783195, z: 1}
   m_Children: []
   m_Father: {fileID: 8410908677858590962}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &8410908677499540915
 SpriteRenderer:
@@ -96,7 +170,7 @@ GameObject:
   - component: {fileID: 8410908677858590967}
   m_Layer: 0
   m_Name: RiotControlDrone
-  m_TagString: Untagged
+  m_TagString: Boss
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -113,9 +187,10 @@ Transform:
   m_LocalScale: {x: -1, y: 1, z: 1}
   m_Children:
   - {fileID: 8410908678957537516}
+  - {fileID: 8410908678676369676}
   - {fileID: 8410908677499540912}
   - {fileID: 8410908679192793485}
-  - {fileID: 8410908678676369676}
+  - {fileID: 6622000218174222055}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -154,17 +229,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shield: {fileID: 8410908679192793482}
   taserBeam: {fileID: 7094682758646093242, guid: 1956fd86456be4d41ae726c17406e383, type: 3}
+  seed: {fileID: 2045461362968113728, guid: a719129ab0245494d8c274b7144ea610, type: 3}
   playerRB: {fileID: 0}
-  state: 1
+  state: 8
   playerLayer:
     serializedVersion: 2
     m_Bits: 8
   walkingSpeed: 900000
-  runningSpeed: 500000
+  runningSpeed: 1000000
   chargeSpeed: 300000
   isEnraged: 0
   walkStepInterval: 0.8
-  runStepInterval: 0.6
+  runStepInterval: 0.4
   chargeStepInterval: 0
   stunTime: 3
   chargeReadyTime: 1
@@ -177,16 +253,19 @@ MonoBehaviour:
   velocityPlayer: {x: 0, y: 0}
   lightAttackCoolDown: 0.5
   lightAttackDamage: 2
-  heavyAttackChargeTime: 0
+  heavyAttackChargeTime: 3
   heavyAttackCoolDown: 2
   heavyAttackDamage: 4
   shieldSquishDamage: 10
   knockbackForce: 100
-  isFacingRight: 0
-  lastChargeCounter: 0
-  taserChanceRandomizer: 1
-  taserChance: 35
   taserCooldown: 1
+  seedShootCooldown: 1
+  taserChance: 35
+  seedShootChance: 50
+  isFacingRight: 0
+  phaseTwoEnemiesDestroyed: 1
+  taserChanceRandomizer: 1
+  seedShootChanceRandomizer: 1
 --- !u!114 &8410908677858590967
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -247,7 +326,7 @@ Transform:
   m_LocalScale: {x: 0.6322352, y: 0.62273806, z: 1}
   m_Children: []
   m_Father: {fileID: 8410908677858590962}
-  m_RootOrder: 3
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &8410908678676369679
 SpriteRenderer:
@@ -466,7 +545,7 @@ Transform:
   m_LocalScale: {x: -0.37483948, y: 2.6859567, z: 1}
   m_Children: []
   m_Father: {fileID: 8410908677858590962}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &8410908679192793484
 SpriteRenderer:
