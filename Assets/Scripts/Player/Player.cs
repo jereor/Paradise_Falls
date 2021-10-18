@@ -36,6 +36,9 @@ public class Player : MonoBehaviour
     // SerField for debugs 
     [SerializeField] private bool inputsActive = true; // Boolean to be triggered when Handle
 
+    private Coroutine blockCoroutine;
+    [SerializeField] private float blockAnimTimeMultiplier; // this times block anim time = when to activate shield object, good values 1.1 - 1.5
+
     public enum State
     {
         Idle,
@@ -304,10 +307,15 @@ public class Player : MonoBehaviour
         if (shieldScript.Blocking && !animator.GetBool("isAttacking"))
         {
             animator.SetBool("isBlocking", true);
+            // Shield is not active and coroutine is not started yet
+            if(!shieldScript.shield.activeInHierarchy && blockCoroutine == null)
+                blockCoroutine = StartCoroutine(ShowBlockObject(GetClipAnimTime("Block") * blockAnimTimeMultiplier));
         }
         else if (!shieldScript.Blocking)
         {
             animator.SetBool("isBlocking", false);
+            blockCoroutine = null;
+            shieldScript.shield.SetActive(false);
         }
 
     }
@@ -537,6 +545,12 @@ public class Player : MonoBehaviour
                 return clip.length;
         }
         return 0f;
+    }
+
+    private IEnumerator ShowBlockObject(float blockAnimTime)
+    {
+        yield return new WaitForSeconds(blockAnimTime);
+        shieldScript.shield.SetActive(true);
     }
 
     private IEnumerator ParryCounter(float parryTime)
