@@ -4,10 +4,16 @@ using UnityEngine;
 
 public class LedgeClimbScript : StateMachineBehaviour
 {
+    private float yOffset;
+    public float yOffsetFixValue; // This is value will smooth the positions of hands
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         Player.Instance.SetCurrentState(Player.State.Climbing);
+        yOffset = PlayerMovement.Instance.getLedgeHitOffsetRay().distance;
+
+        // Move gameobject slighly lower so animations hands will be positioned on the ledge
+        animator.gameObject.transform.position = animator.gameObject.transform.position + new Vector3(0f, -(yOffset - yOffsetFixValue), 0f);
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks

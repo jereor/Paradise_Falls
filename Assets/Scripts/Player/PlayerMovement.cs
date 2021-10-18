@@ -104,7 +104,7 @@ public class PlayerMovement : MonoBehaviour
             horizontal = 0f; // Stop moving because we update rb.velocity every frame with horizontal (if this logic is changed other scripts might need tweaking -> RB. force, velocity etc.)
         }
         // We were stopped by our attack and our horizontalBuffer was not reseted during attack (we want to continue moving to the direction we were pressing before attack)
-        else if(canReceiveInputMove && horizontalBuffer != horizontal)
+        else if (canReceiveInputMove && horizontalBuffer != horizontal)
         {
             // Replace with our desired movement if we were pressing move during !canReceiveInputMove or before action that stops movement
             horizontal = horizontalBuffer;
@@ -326,7 +326,7 @@ public class PlayerMovement : MonoBehaviour
                 && !Player.Instance.GetIsAttacking()                        // If we are attacking we cannot climb at the same time
                 && !Player.Instance.GetIsAiming()
                 && !Player.Instance.GetIsBlocking()
-                && !Player.Instance.GetIsParrying())                      
+                && !Player.Instance.GetIsParrying())
 
             {
                 canClimb = true;
@@ -597,5 +597,10 @@ public class PlayerMovement : MonoBehaviour
     public void setFacingRight(bool b)
     {
         isFacingRight = b;
+    }
+
+    public RaycastHit2D getLedgeHitOffsetRay()
+    {
+        return ledgeHitOffsetRay;
     }
 }
