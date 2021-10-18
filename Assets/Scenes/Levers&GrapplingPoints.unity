@@ -3102,7 +3102,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1428873736
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 3
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -3114,7 +3114,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
 --- !u!1 &1428873740
 GameObject:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 3
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -3133,7 +3133,7 @@ GameObject:
   m_IsActive: 1
 --- !u!4 &1428873741
 Transform:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 3
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -3147,7 +3147,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1428873742
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 3
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -3164,7 +3164,7 @@ MonoBehaviour:
   mNoiseOffsets: {x: 32.250275, y: -421.52676, z: 416.81122}
 --- !u!114 &1428873743
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 3
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -3178,8 +3178,8 @@ MonoBehaviour:
   m_LookaheadTime: 0
   m_LookaheadSmoothing: 0
   m_LookaheadIgnoreY: 1
-  m_XDamping: 0
-  m_YDamping: 0
+  m_XDamping: 1
+  m_YDamping: 1
   m_ZDamping: 0
   m_TargetMovementOnly: 1
   m_ScreenX: 0.5
@@ -3189,8 +3189,8 @@ MonoBehaviour:
   m_DeadZoneHeight: 0
   m_DeadZoneDepth: 0
   m_UnlimitedSoftZone: 0
-  m_SoftZoneWidth: 0
-  m_SoftZoneHeight: 0
+  m_SoftZoneWidth: 0.25
+  m_SoftZoneHeight: 0.1
   m_BiasX: 0
   m_BiasY: 0
   m_CenterOnActivate: 1
@@ -4650,7 +4650,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2038716675
 GameObject:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 3
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -4669,7 +4669,7 @@ GameObject:
   m_IsActive: 1
 --- !u!4 &2038716700
 Transform:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 3
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -4683,7 +4683,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2038716701
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 3
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -4700,7 +4700,7 @@ MonoBehaviour:
   mNoiseOffsets: {x: 32.250275, y: -421.52676, z: 416.81122}
 --- !u!114 &2038716702
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 3
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -4714,8 +4714,8 @@ MonoBehaviour:
   m_LookaheadTime: 0
   m_LookaheadSmoothing: 0
   m_LookaheadIgnoreY: 1
-  m_XDamping: 0
-  m_YDamping: 0
+  m_XDamping: 1
+  m_YDamping: 1
   m_ZDamping: 0
   m_TargetMovementOnly: 1
   m_ScreenX: 0.5
@@ -4725,8 +4725,8 @@ MonoBehaviour:
   m_DeadZoneHeight: 0
   m_DeadZoneDepth: 0
   m_UnlimitedSoftZone: 0
-  m_SoftZoneWidth: 0
-  m_SoftZoneHeight: 0
+  m_SoftZoneWidth: 0.25
+  m_SoftZoneHeight: 0.1
   m_BiasX: 0
   m_BiasY: 0
   m_CenterOnActivate: 1
@@ -4743,7 +4743,7 @@ MonoBehaviour:
   m_MaximumOrthoSize: 5000
 --- !u!114 &2038716703
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 3
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -5547,7 +5547,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2049820521217143065
 GameObject:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 3
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -5566,7 +5566,7 @@ GameObject:
   m_IsActive: 1
 --- !u!4 &2049820521217143066
 Transform:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 3
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -5580,7 +5580,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2049820521217143067
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 3
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -5594,8 +5594,8 @@ MonoBehaviour:
   m_LookaheadTime: 0
   m_LookaheadSmoothing: 0
   m_LookaheadIgnoreY: 1
-  m_XDamping: 0
-  m_YDamping: 0
+  m_XDamping: 1
+  m_YDamping: 1
   m_ZDamping: 0
   m_TargetMovementOnly: 1
   m_ScreenX: 0.5
@@ -5605,8 +5605,8 @@ MonoBehaviour:
   m_DeadZoneHeight: 0
   m_DeadZoneDepth: 0
   m_UnlimitedSoftZone: 0
-  m_SoftZoneWidth: 0
-  m_SoftZoneHeight: 0
+  m_SoftZoneWidth: 0.25
+  m_SoftZoneHeight: 0.1
   m_BiasX: 0
   m_BiasY: 0
   m_CenterOnActivate: 1
@@ -5623,7 +5623,7 @@ MonoBehaviour:
   m_MaximumOrthoSize: 5000
 --- !u!114 &2049820521217143140
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 3
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -5635,7 +5635,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
 --- !u!114 &2049820521217143141
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 3
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
