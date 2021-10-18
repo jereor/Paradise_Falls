@@ -14,6 +14,9 @@ public class LedgeClimbScript : StateMachineBehaviour
 
         // Move gameobject slighly lower so animations hands will be positioned on the ledge
         animator.gameObject.transform.position = animator.gameObject.transform.position + new Vector3(0f, -(yOffset - yOffsetFixValue), 0f);
+
+        // Activate camera smoothing
+        PlayerCamera.Instance.SmoothFollow(.7f);
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
