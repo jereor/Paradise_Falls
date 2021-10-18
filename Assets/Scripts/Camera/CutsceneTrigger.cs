@@ -11,7 +11,8 @@ public class CutsceneTrigger : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.CompareTag(collideWith) && !transform.CompareTag("Pickable"))
+        Debug.Log("Cinematic Trigger!");
+        if (other.gameObject.CompareTag(collideWith))
             @event.Invoke();
     }
 }
