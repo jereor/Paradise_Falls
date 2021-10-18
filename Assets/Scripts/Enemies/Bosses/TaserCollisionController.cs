@@ -48,7 +48,7 @@ public class TaserCollisionController : MonoBehaviour
         {
             float collisionAngle = Vector2.SignedAngle(Vector2.right, direction);
             Quaternion q = Quaternion.AngleAxis(collisionAngle, Vector3.forward);
-            Instantiate(taserTrail, transform.position, q);
+            Instantiate(taserTrail, transform.position, Quaternion.identity);
             Destroy(gameObject);
         }
 

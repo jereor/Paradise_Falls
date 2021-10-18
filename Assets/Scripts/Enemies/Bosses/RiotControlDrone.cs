@@ -2,17 +2,20 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class RiotControlDrone : MonoBehaviour
 {
     [SerializeField] private GameObject shield;
     [SerializeField] private GameObject taserBeam;
+    [SerializeField] private GameObject seed;
     [SerializeField] private Rigidbody2D playerRB;
 
     [Header("Current State")]
     public RiotState state = RiotState.Idle;
 
     [SerializeField] LayerMask playerLayer;
+    [SerializeField] LayerMask groundLayer;
 
     [Header("Movement and Detection Areas")]
     [SerializeField] private float walkingSpeed;
@@ -29,6 +32,8 @@ public class RiotControlDrone : MonoBehaviour
     [SerializeField] private Vector2 chargeOffset;
     [SerializeField] private Vector2 areaToAttack;
     [SerializeField] private Vector2 hitOffset;
+    [SerializeField] private Vector2 areaToDash;
+    [SerializeField] private Vector2 dashOffset;
     [SerializeField] private Vector2 velocity;
     [SerializeField] private Vector2 velocityPlayer;
 
@@ -40,6 +45,18 @@ public class RiotControlDrone : MonoBehaviour
     [SerializeField] private float heavyAttackDamage;
     [SerializeField] private float shieldSquishDamage;
     [SerializeField] private float knockbackForce;
+    [SerializeField] private float dashForceCount; // Amount of times boss uses force in DashAttack. NOT FORCE VALUE!
+    [SerializeField] private float taserCooldown;
+    [SerializeField] private float seedShootCooldown;
+    [SerializeField] private float dashAttackCooldown;
+
+    [Header("Values between 1-100")]
+    [SerializeField] private int taserChance; // Value between 1-100.
+    [SerializeField] private int seedShootChance; // Value between 1-100.
+
+    [Header("Randomizer values")]
+    [SerializeField] private int taserChanceRandomizer = 1;
+    [SerializeField] private int seedShootChanceRandomizer = 1;
 
     private Transform target;
     private Health targetHealth;
@@ -53,26 +70,34 @@ public class RiotControlDrone : MonoBehaviour
 
     private bool canMove = true;
     private bool canAttack = true;
+    private bool canDashAttack = true;
     private bool canChargeToTarget = true;
     private bool chargeOnCooldown = false;
+    private bool dashAttackOnCooldown = false;
     private bool readyToCharge = false;
     private bool chargedToWall = false;
     private bool stunned = false;
     private bool knockbackOnCooldown = false;
     private bool isBossLayer = false;
     private bool taserOnCooldown = false;
+    private bool seedShootOnCooldown = false;
+    [SerializeField] private bool phaseTwoEnemiesDestroyed = false;
 
     private bool chargeDirectionCalculated;
 
-    [SerializeField] private float lastChargeCounter; // Counter which check if the charge is out of cooldown.
+    private float lastChargeCounter; // Counter which check if the charge is out of cooldown.
+    private float lastDashAttackCounter; // Counter which check if the DashAttack is out of cooldown.
     private float chargeDirection;
     private int backstepCounter;
     private int chargeCooldownRandomizer = 3;
-    [SerializeField] private int taserChanceRandomizer = 1;
-    [SerializeField] private int taserChance; // Number between 1-100.
-    [SerializeField] private float taserCooldown;
-    
-    
+    private int dashAttackCooldownRandomizer = 3;
+
+
+    private int attackRandomizer = 1; // Value between 1-100.
+
+    private Quaternion batonRotation;
+
+
 
     // Start is called before the first frame update
     void Start()
@@ -81,10 +106,19 @@ public class RiotControlDrone : MonoBehaviour
         targetHealth = target.GetComponent<Health>();
         rb = GetComponent<Rigidbody2D>();
         health = GetComponent<Health>();
+
+        //health.TakeDamage(20);
+
         shield = GameObject.Find("RiotShield");
         colliders = GetComponentsInChildren<Transform>();
 
         playerRB = GameObject.Find("Player").GetComponent<Rigidbody2D>();
+
+        seedShootChanceRandomizer = UnityEngine.Random.Range(1, 101);
+        taserChanceRandomizer = UnityEngine.Random.Range(1, 101);
+        dashAttackCooldownRandomizer = UnityEngine.Random.Range(10, 21);
+
+        batonRotation = gameObject.transform.GetChild(4).rotation;
     }
 
     // Update is called once per frame
@@ -112,7 +146,13 @@ public class RiotControlDrone : MonoBehaviour
                 Flip();
         }
 
-        ChargeTimer();
+        // If bosses health goes down more that 50%, change phase. The way of handling the state variation changes most likely in the future.
+        if (health.CurrentHealth <= health.MaxHealth * 0.5f)
+        {
+            isEnraged = true;
+        }
+
+        Timers();
 
         // Riot Drone state machine.
         switch (state)
@@ -141,23 +181,42 @@ public class RiotControlDrone : MonoBehaviour
                 HandleStunnedState();
                 break;
 
+            case RiotState.Backstepping:
+                HandleBackstepping();
+                break;
+
+
+            // PHASE TWO
+            //-----------------------------------------------------
+
+            case RiotState.PhaseTwoStun:
+                HandlePhaseTwoStun();
+                break;
+
+            case RiotState.PhaseTwoMoving:
+                HandlePhaseTwoMoving();
+                break;
+
+            case RiotState.PhaseTwoAttack:
+                HandlePhaseTwoAttack();
+                break;
+
             case RiotState.SeedShoot:
                 HandleSeedShootState();
                 break;
 
-            case RiotState.Backstepping:
-                HandleBackstepping();
+            case RiotState.DashAttack:
+                HandleDashAttack();
                 break;
         }
 
-        // If bosses health goes down more that 50%, change phase. The way of handling the state variation changes most likely in the future.
-        if(health.CurrentHealth <= health.MaxHealth * 0.5f)
-        {
-            isEnraged = true;
-        }
+
     }
 
     // STATE HANDLING
+    //---------------------------------------------------------------------------------------------------------------------------------
+
+    // PHASE ONE
     //---------------------------------------------------------------------------------------------------------------------------------
 
     private void HandleIdleState()
@@ -187,21 +246,14 @@ public class RiotControlDrone : MonoBehaviour
         }
 
         // Moves the drone in desired direction, in this case towards the player on X-axis.
-        if (!isEnraged && !IsTargetInHitRange() && canMove)
+        if (!IsTargetInHitRange() && canMove)
         {
             
             //velocity = new Vector2(vectorToTarget.x * walkingSpeed, 0);
             //rb.MovePosition(rb.position + velocity * Time.deltaTime);
             rb.AddForce(new Vector2((vectorToTarget.x > 0 ? 1 : -1) * walkingSpeed * Time.fixedDeltaTime, 0));
             StartCoroutine(WalkCoolDown());
-        }
-        else if(isEnraged && !IsTargetInHitRange() && canMove)
-        {
-            //velocity = new Vector2(vectorToTarget.x * runningSpeed, 0);
-            //rb.MovePosition(rb.position + velocity * Time.deltaTime);
-            rb.AddForce(new Vector2((vectorToTarget.x > 0 ? 1 : -1) * runningSpeed * Time.fixedDeltaTime, 0));
-            StartCoroutine(RunCoolDown());
-        }   
+        } 
     }
 
     private void HandleShieldChargeState()
@@ -218,7 +270,7 @@ public class RiotControlDrone : MonoBehaviour
             Debug.Log("GettingReadyToCharge");
             StartCoroutine(ReadyToCharge());
             canChargeToTarget = false;
-            gameObject.GetComponentsInChildren<SpriteRenderer>()[1].color = Color.red;
+            gameObject.GetComponentsInChildren<SpriteRenderer>()[2].color = Color.red;
         }
         // Ready to charge.
         if (canMove && readyToCharge)
@@ -232,14 +284,9 @@ public class RiotControlDrone : MonoBehaviour
     // Simple attack state where boss swings the weapon. Checks if target was in the hit area before doing damage to it.
     private void HandleAttackState()
     {
-        if(canAttack && !isEnraged)
+        if(canAttack)
         {
             StartCoroutine(LightAttack());
-        }
-
-        if (canAttack && isEnraged)
-        {
-            StartCoroutine(HeavyAttack());
         }
     }
 
@@ -276,15 +323,12 @@ public class RiotControlDrone : MonoBehaviour
 
     }
 
-    private void HandleSeedShootState()
-    {
 
-    }
 
     // Backsteps when needed for the amount of time specified. Used after shield charge has squished player between the wall and the riot shield.
     private void HandleBackstepping()
     {
-        if (!isEnraged && canMove && backstepCounter < timesToBackstep)
+        if (canMove && backstepCounter < timesToBackstep)
         {
             rb.AddForce(new Vector2((vectorToTarget.x < 0 ? 1 : -1) * walkingSpeed * Time.fixedDeltaTime, 0));
             StartCoroutine(WalkCoolDown());
@@ -296,6 +340,108 @@ public class RiotControlDrone : MonoBehaviour
         }
     }
 
+
+
+    // PHASE TWO STATE HANDLERS
+    //---------------------------------------------------------------------------------------------------------------------------------------
+
+    // This state is run only one when player fights the small enemies.
+    private void HandlePhaseTwoStun()
+    {
+        gameObject.GetComponentsInChildren<SpriteRenderer>()[2].color = Color.cyan;
+        if (phaseTwoEnemiesDestroyed)
+        {
+            Destroy(GameObject.Find("RiotShield"));
+            ChangeToBossLayer(); // Set the boss layer so player can hit it whenever and doesn't get knocked back when hitting the body.
+            stunned = false;
+            isBossLayer = true;
+
+            gameObject.GetComponentsInChildren<SpriteRenderer>()[0].color = Color.red;
+            gameObject.GetComponentsInChildren<SpriteRenderer>()[1].color = Color.red;
+            gameObject.GetComponentsInChildren<SpriteRenderer>()[2].color = Color.black;
+            GameObject.Find("PhaseTwoKnockbackBox").SetActive(true);
+
+            state = RiotState.PhaseTwoMoving;
+            return;
+        }
+        // If boss isn't already stunned, stun it infinitely until all smaller enemies are destroyed.
+        if(!stunned)
+        {
+            Flip(); // Flip the boss to face the player.
+            StartCoroutine(PhaseTwoStunned());
+        }
+
+    }
+
+    private void HandlePhaseTwoMoving()
+    {
+        if (IsTargetInHitRange())
+        {
+            Debug.Log("Attack");
+            state = RiotState.PhaseTwoAttack;
+            return;
+        }
+        // Checks if boss can dash to player and doesn't hit the wall while doing so.
+        if(IsTargetInDashAttackRange() && !AmIGoingToHitAWallAgain() && canDashAttack)
+        {
+            state = RiotState.DashAttack;
+            return;
+        }
+        if (seedShootChanceRandomizer <= seedShootChance && !seedShootOnCooldown)
+        {
+            state = RiotState.SeedShoot;
+
+            return;
+        }
+        if(!IsTargetInHitRange() && canMove)
+        {
+            //velocity = new Vector2(vectorToTarget.x * runningSpeed, 0);
+            //rb.MovePosition(rb.position + velocity * Time.deltaTime);
+            rb.AddForce(new Vector2((vectorToTarget.x > 0 ? 1 : -1) * runningSpeed * Time.fixedDeltaTime, 0));
+            StartCoroutine(RunCoolDown());
+        }
+
+    }
+
+    // Varies between the light and heavy attack randomly.
+    private void HandlePhaseTwoAttack()
+    {
+        if (canAttack && attackRandomizer <= 50)
+        {
+            StartCoroutine(LightAttack());
+        }
+
+        if (canAttack && attackRandomizer > 50)
+        {
+            StartCoroutine(HeavyAttack());
+        }
+    }
+    private void HandleSeedShootState()
+    {
+        if (!seedShootOnCooldown)
+        {
+            StartCoroutine(SeedShoot());
+        }
+    }
+
+    private void HandleDashAttack()
+    {
+        if (!chargeDirectionCalculated)
+        {
+            chargeDirectionCalculated = true;
+            chargeDirection = (vectorToTarget.x > 0 ? 1 : -1);
+        }
+        if(!dashAttackOnCooldown)
+        {
+            StartCoroutine(DashAttack());
+        }
+
+    }
+
+    //-----------------------------------------------------------------------------------------------------------------------
+
+    // LAYER CHANGES
+    //------------------------------------------------------------------------------------------------------------------------
     private void ChangeToBossLayer()
     {
         foreach (Transform bossCollider in colliders)
@@ -312,7 +458,8 @@ public class RiotControlDrone : MonoBehaviour
         }
     }
 
-    // Cooldowns for walking, running etc.
+    // COOLDOWNS AND ACTION BEHAVIOURS
+    //------------------------------------------------------------------------------------------------------------------------
     private IEnumerator WalkCoolDown()
     {
         canMove = false;      
@@ -326,6 +473,7 @@ public class RiotControlDrone : MonoBehaviour
     {
         canMove = false;
         yield return new WaitForSeconds(runStepInterval);
+        seedShootChanceRandomizer = UnityEngine.Random.Range(1, 101);
         canMove = true;
     }
 
@@ -345,7 +493,7 @@ public class RiotControlDrone : MonoBehaviour
             StartCoroutine(PlayerHit());
             rb.velocity = new Vector2(0,0);
             backstepCounter = 0;
-            gameObject.GetComponentsInChildren<SpriteRenderer>()[1].color = Color.black;
+            gameObject.GetComponentsInChildren<SpriteRenderer>()[2].color = Color.black;
             chargeOnCooldown = true;
             chargeCooldownRandomizer = UnityEngine.Random.Range(1, 11);
             chargeDirectionCalculated = false;
@@ -374,10 +522,10 @@ public class RiotControlDrone : MonoBehaviour
     private IEnumerator Stunned()
     {
         stunned = true;
-        gameObject.GetComponentsInChildren<SpriteRenderer>()[1].color = Color.cyan;
+        gameObject.GetComponentsInChildren<SpriteRenderer>()[2].color = Color.cyan;
         yield return new WaitForSeconds(stunTime);
         stunned = false;
-        gameObject.GetComponentsInChildren<SpriteRenderer>()[1].color = Color.black;
+        gameObject.GetComponentsInChildren<SpriteRenderer>()[2].color = Color.black;
         Debug.Log("Stun ended");
         chargeDirectionCalculated = false;
         chargeOnCooldown = true;
@@ -385,6 +533,16 @@ public class RiotControlDrone : MonoBehaviour
         state = RiotState.Moving;
         ChangeToDefaultLayer();
         isBossLayer = false;
+    }
+
+    private IEnumerator PhaseTwoStunned()
+    {
+        stunned = true;
+        gameObject.GetComponentsInChildren<SpriteRenderer>()[2].color = Color.cyan;
+        yield return new WaitForSeconds(Mathf.Infinity);
+        stunned = false;
+        gameObject.GetComponentsInChildren<SpriteRenderer>()[2].color = Color.black;
+        Debug.Log("Stun ended");
     }
 
     // Cooldown for the player knockback.
@@ -400,68 +558,151 @@ public class RiotControlDrone : MonoBehaviour
     private IEnumerator LightAttack()
     {
         canAttack = false;
-        gameObject.GetComponentsInChildren<SpriteRenderer>()[1].color = Color.blue;
+        gameObject.GetComponentsInChildren<SpriteRenderer>()[2].color = Color.blue;
+
+        float collisionAngle = Vector2.SignedAngle(Vector2.right, Vector2.up);
+        Quaternion q = Quaternion.AngleAxis(collisionAngle, Vector3.forward);
+        gameObject.transform.GetChild(4).DORotate(new Vector3(0, 0, -90), lightAttackCoolDown); // Simple visual effect for baton so player knows when to hit and not.
+
         yield return new WaitForSeconds(lightAttackCoolDown);
         // Deal damage to player if still in range.
         if(IsTargetInHitRange())
         {
             targetHealth.TakeDamage(lightAttackDamage);
+            Debug.Log("RiotHitLight!");
+            PlayerPushback();
+            gameObject.transform.GetChild(4).rotation = batonRotation;
             StartCoroutine(PlayerHit());
             yield return new WaitForSeconds(lightAttackCoolDown);
-            if (!knockbackOnCooldown)
-            {
-                PlayerPushback();
-            }
-            Debug.Log("RiotHit!");
+            
         }
         else
         {
             Debug.Log("Missed.");
             yield return new WaitForSeconds(lightAttackCoolDown);
-            state = RiotState.Moving;
+            gameObject.transform.GetChild(4).rotation = batonRotation;
+            if (!isEnraged)
+            {
+                state = RiotState.Moving;
+            }
+            else 
+                state = RiotState.PhaseTwoMoving;
+
         }
-        gameObject.GetComponentsInChildren<SpriteRenderer>()[1].color = Color.black;
+        
+
+        gameObject.GetComponentsInChildren<SpriteRenderer>()[2].color = Color.black;
+        attackRandomizer = UnityEngine.Random.Range(1, 101);
         canAttack = true;
     }
 
     private IEnumerator HeavyAttack()
     {
         canAttack = false;
+        gameObject.GetComponentsInChildren<SpriteRenderer>()[2].color = Color.magenta;
+
+        float collisionAngle = Vector2.SignedAngle(Vector2.right, Vector2.up);
+        Quaternion q = Quaternion.AngleAxis(collisionAngle, Vector3.forward);
+        gameObject.transform.GetChild(4).DORotate(new Vector3(0, 0, -90), heavyAttackChargeTime); // Simple visual effect for baton so player knows when to hit and not.
+
         yield return new WaitForSeconds(heavyAttackChargeTime);
         // Deal damage to player if still in range.
         if (IsTargetInHitRange())
         {
             targetHealth.TakeDamage(heavyAttackDamage);
+            Debug.Log("RiotHitHeavy!");
+            PlayerPushback();
+            gameObject.transform.GetChild(4).rotation = batonRotation;
             StartCoroutine(PlayerHit());
             yield return new WaitForSeconds(heavyAttackCoolDown);
-            if(!knockbackOnCooldown)
-            {
-                PlayerPushback();
-            }
 
-            Debug.Log("RiotHitHeavy!");
+            
         }
         else
         {
             Debug.Log("MissedHeavy.");
+            gameObject.transform.GetChild(4).rotation = batonRotation;
             yield return new WaitForSeconds(heavyAttackCoolDown);
-            state = RiotState.Moving;
+            if (!isEnraged)
+            {
+                state = RiotState.Moving;
+            }
+            else 
+                state = RiotState.PhaseTwoMoving;
         }
+        gameObject.transform.GetChild(4).rotation = batonRotation;
 
+        gameObject.GetComponentsInChildren<SpriteRenderer>()[2].color = Color.black;
+        attackRandomizer = UnityEngine.Random.Range(1, 101);
         canAttack = true;
     }
 
     private IEnumerator TaserShoot()
     {
         taserOnCooldown = true;
-        gameObject.GetComponentsInChildren<SpriteRenderer>()[1].color = Color.yellow;
+        gameObject.GetComponentsInChildren<SpriteRenderer>()[2].color = Color.yellow;
         yield return new WaitForSeconds(taserCooldown);
         Instantiate(taserBeam, new Vector2(transform.position.x + (transform.localScale.x * 2), transform.position.y), Quaternion.identity);
         yield return new WaitForSeconds(taserCooldown);
         taserChanceRandomizer = UnityEngine.Random.Range(1, 101);
-        gameObject.GetComponentsInChildren<SpriteRenderer>()[1].color = Color.black;
+        gameObject.GetComponentsInChildren<SpriteRenderer>()[2].color = Color.black;
         state = RiotState.Moving;
         taserOnCooldown = false;
+    }
+
+    private IEnumerator SeedShoot()
+    {
+        seedShootOnCooldown = true;
+        Debug.Log("shoot");
+        int seedCount = 0;
+        seedCount = UnityEngine.Random.Range(1, 4); // Amount of seeds to shoot.
+        gameObject.GetComponentsInChildren<SpriteRenderer>()[2].color = Color.yellow;
+        yield return new WaitForSeconds(seedShootCooldown);
+        for (int i = 0; i <= seedCount; i++)
+        {
+            yield return new WaitForSeconds(0.5f);
+            Instantiate(seed, gameObject.transform.GetChild(2).position, Quaternion.identity); // Instantiates all seeds and shoots them towards the player.
+        }
+        yield return new WaitForSeconds(seedShootCooldown);
+        seedShootChanceRandomizer = UnityEngine.Random.Range(1, 101);
+        gameObject.GetComponentsInChildren<SpriteRenderer>()[2].color = Color.black;
+        state = RiotState.PhaseTwoMoving;
+        seedShootOnCooldown = false;
+    }
+
+    private IEnumerator DashAttack()
+    {
+        bool takenDamage = false; // Bool so player doesn't take damage more than once during the dash.
+        dashAttackOnCooldown = true;
+        gameObject.GetComponentsInChildren<SpriteRenderer>()[0].color = Color.black;
+        gameObject.GetComponentsInChildren<SpriteRenderer>()[1].color = Color.black;
+        gameObject.GetComponentsInChildren<SpriteRenderer>()[2].color = Color.red;
+
+        yield return new WaitForSeconds(dashAttackCooldown);
+        for(int i = 0; i <= dashForceCount; i++)
+        {
+            
+            rb.AddForce(new Vector2(chargeDirection * walkingSpeed * Time.fixedDeltaTime, 0));
+            
+            if (IsTargetInHitRange() && !takenDamage)
+            {
+                targetHealth.TakeDamage(heavyAttackDamage);
+                StartCoroutine(PlayerHit());
+                PlayerPushback();
+                takenDamage = true;
+            }
+            yield return new WaitForSeconds(0.05f);
+            i++;
+        }
+        yield return new WaitForSeconds(0.5f);
+        chargeDirectionCalculated = false;
+        gameObject.GetComponentsInChildren<SpriteRenderer>()[0].color = Color.red;
+        gameObject.GetComponentsInChildren<SpriteRenderer>()[1].color = Color.red;
+        gameObject.GetComponentsInChildren<SpriteRenderer>()[2].color = Color.black;
+        dashAttackCooldownRandomizer = UnityEngine.Random.Range(10, 21);
+        state = RiotState.PhaseTwoMoving;
+        canDashAttack = false;
+        dashAttackOnCooldown = false;
     }
 
     // Overlaps for various checks.
@@ -475,12 +716,24 @@ public class RiotControlDrone : MonoBehaviour
         return Physics2D.OverlapBox(new Vector2(transform.position.x + (transform.localScale.x * chargeOffset.x), transform.position.y + chargeOffset.y), areaToCharge, 0, playerLayer);
     }
 
+    private bool IsTargetInDashAttackRange()
+    {
+        return Physics2D.OverlapBox(new Vector2(transform.position.x + (transform.localScale.x * dashOffset.x), transform.position.y + dashOffset.y), areaToDash, 0, playerLayer);
+    }
+
+    private bool AmIGoingToHitAWallAgain()
+    {
+        return Physics2D.OverlapBox(new Vector2(transform.position.x + (transform.localScale.x * dashOffset.x), transform.position.y + dashOffset.y), areaToDash, 0, groundLayer);
+    }
+
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireCube(new Vector2(transform.position.x + (transform.localScale.x * chargeOffset.x), transform.position.y + chargeOffset.y), areaToCharge);
         Gizmos.color = Color.red;
         Gizmos.DrawWireCube(new Vector2(transform.position.x + (transform.localScale.x * hitOffset.x), transform.position.y + hitOffset.y), areaToAttack);
+        Gizmos.color = Color.blue;
+        Gizmos.DrawWireCube(new Vector2(transform.position.x + (transform.localScale.x * dashOffset.x), transform.position.y + dashOffset.y), areaToDash);
 
     }
 
@@ -493,8 +746,8 @@ public class RiotControlDrone : MonoBehaviour
         transform.localScale = localScale;
     }
 
-    // Checks if last charge was over 10 seconds ago.
-    private void ChargeTimer()
+    // Timers to randomize action timings.
+    private void Timers()
     {
         if (chargeOnCooldown)
         {
@@ -506,6 +759,17 @@ public class RiotControlDrone : MonoBehaviour
             canChargeToTarget = true;
             lastChargeCounter = 0;
         }
+
+        if(!canDashAttack)
+        {
+            lastDashAttackCounter += Time.deltaTime;
+        }
+        if(lastDashAttackCounter >= dashAttackCooldownRandomizer)
+        {
+            canDashAttack = true;
+            lastDashAttackCounter = 0;
+        }
+
     }
 
     // Pushbacks the player when hit with riot drone collider. Uses velocity for the knockback instead of force.
@@ -526,7 +790,7 @@ public class RiotControlDrone : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         // Pushes player back when collider is hit and knockback is not on cooldown.
-        if (collision.collider.tag == "Player" && !knockbackOnCooldown && !stunned)
+        if (collision.collider.tag == "Player" && !knockbackOnCooldown && !stunned && !isEnraged)
         {
             PlayerPushback();
         }
@@ -536,7 +800,7 @@ public class RiotControlDrone : MonoBehaviour
     private void OnCollisionStay2D(Collision2D collision)
     {
         // If player stays in contact with the boss, knockback.
-        if (collision.collider.tag == "Player" && !knockbackOnCooldown && !stunned)
+        if (collision.collider.tag == "Player" && !knockbackOnCooldown && !stunned && !isEnraged)
         {
             PlayerPushback();
         }
@@ -552,8 +816,27 @@ public class RiotControlDrone : MonoBehaviour
         TaserShoot,
         Stunned,
         SeedShoot,
-        Backstepping
+        Backstepping,
+        PhaseTwoStun,
+        PhaseTwoMoving,
+        PhaseTwoAttack,
+        DashAttack
 
+    }
+
+    public bool getPhaseTwoEnemiesDestroyed()
+    {
+        return phaseTwoEnemiesDestroyed;
+    }
+
+    public void setPhaseTwoEnemiesDestroyed(bool b)
+    {
+        phaseTwoEnemiesDestroyed = b;
+    }
+
+    public bool getIsEnraged()
+    {
+        return isEnraged;
     }
 
 }

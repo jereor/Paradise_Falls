@@ -17,7 +17,7 @@ public class TaserTrailController : MonoBehaviour
     void FixedUpdate()
     {
         lifeTimer += Time.deltaTime;
-        if (lifeTimer >= 3)
+        if (lifeTimer >= lifeTime)
         {
             Destroy(gameObject);
         }
