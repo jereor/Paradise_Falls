@@ -14,6 +14,7 @@ public class RiotControlDrone : MonoBehaviour
     public RiotState state = RiotState.Idle;
 
     [SerializeField] LayerMask playerLayer;
+    [SerializeField] LayerMask groundLayer;
 
     [Header("Movement and Detection Areas")]
     [SerializeField] private float walkingSpeed;
@@ -30,6 +31,8 @@ public class RiotControlDrone : MonoBehaviour
     [SerializeField] private Vector2 chargeOffset;
     [SerializeField] private Vector2 areaToAttack;
     [SerializeField] private Vector2 hitOffset;
+    [SerializeField] private Vector2 areaToDash;
+    [SerializeField] private Vector2 dashOffset;
     [SerializeField] private Vector2 velocity;
     [SerializeField] private Vector2 velocityPlayer;
 
@@ -41,8 +44,10 @@ public class RiotControlDrone : MonoBehaviour
     [SerializeField] private float heavyAttackDamage;
     [SerializeField] private float shieldSquishDamage;
     [SerializeField] private float knockbackForce;
+    [SerializeField] private float dashForceCount;
     [SerializeField] private float taserCooldown;
     [SerializeField] private float seedShootCooldown;
+    [SerializeField] private float dashAttackCooldown;
 
     [Header("Values between 1-100")]
     [SerializeField] private int taserChance; // Value between 1-100.
@@ -60,8 +65,10 @@ public class RiotControlDrone : MonoBehaviour
 
     private bool canMove = true;
     private bool canAttack = true;
+    private bool canDashAttack = true;
     private bool canChargeToTarget = true;
     private bool chargeOnCooldown = false;
+    private bool dashAttackOnCooldown = false;
     private bool readyToCharge = false;
     private bool chargedToWall = false;
     private bool stunned = false;
@@ -74,9 +81,11 @@ public class RiotControlDrone : MonoBehaviour
     private bool chargeDirectionCalculated;
 
     private float lastChargeCounter; // Counter which check if the charge is out of cooldown.
+    private float lastDashAttackCounter; // Counter which check if the DashAttack is out of cooldown.
     private float chargeDirection;
     private int backstepCounter;
     private int chargeCooldownRandomizer = 3;
+    private int dashAttackCooldownRandomizer = 3;
     [SerializeField] private int taserChanceRandomizer = 1;
     [SerializeField] private int seedShootChanceRandomizer = 1;
 
@@ -103,6 +112,7 @@ public class RiotControlDrone : MonoBehaviour
 
         seedShootChanceRandomizer = UnityEngine.Random.Range(1, 101);
         taserChanceRandomizer = UnityEngine.Random.Range(1, 101);
+        dashAttackCooldownRandomizer = UnityEngine.Random.Range(10, 21);
     }
 
     // Update is called once per frame
@@ -136,7 +146,7 @@ public class RiotControlDrone : MonoBehaviour
             isEnraged = true;
         }
 
-        ChargeTimer();
+        Timers();
 
         // Riot Drone state machine.
         switch (state)
@@ -187,6 +197,10 @@ public class RiotControlDrone : MonoBehaviour
 
             case RiotState.SeedShoot:
                 HandleSeedShootState();
+                break;
+
+            case RiotState.DashAttack:
+                HandleDashAttack();
                 break;
         }
 
@@ -322,7 +336,7 @@ public class RiotControlDrone : MonoBehaviour
 
 
 
-    // PHASE TWO
+    // PHASE TWO STATE HANDLERS
     //---------------------------------------------------------------------------------------------------------------------------------------
 
     // This state is run only one when player fights the small enemies.
@@ -358,6 +372,11 @@ public class RiotControlDrone : MonoBehaviour
         {
             Debug.Log("Attack");
             state = RiotState.PhaseTwoAttack;
+            return;
+        }
+        if(IsTargetInDashAttackRange() && !AmIGoingToHitAWallAgain() && canDashAttack)
+        {
+            state = RiotState.DashAttack;
             return;
         }
         if (seedShootChanceRandomizer <= seedShootChance && !seedShootOnCooldown)
@@ -396,8 +415,24 @@ public class RiotControlDrone : MonoBehaviour
         }
     }
 
+    private void HandleDashAttack()
+    {
+        if (!chargeDirectionCalculated)
+        {
+            chargeDirectionCalculated = true;
+            chargeDirection = (vectorToTarget.x > 0 ? 1 : -1);
+        }
+        if(!dashAttackOnCooldown)
+        {
+            StartCoroutine(DashAttack());
+        }
 
+    }
 
+    //-----------------------------------------------------------------------------------------------------------------------
+
+    // LAYER CHANGES
+    //------------------------------------------------------------------------------------------------------------------------
     private void ChangeToBossLayer()
     {
         foreach (Transform bossCollider in colliders)
@@ -414,7 +449,8 @@ public class RiotControlDrone : MonoBehaviour
         }
     }
 
-    // Cooldowns for walking, running etc.
+    // COOLDOWNS AND ACTION BEHAVIOURS
+    //------------------------------------------------------------------------------------------------------------------------
     private IEnumerator WalkCoolDown()
     {
         canMove = false;      
@@ -611,6 +647,41 @@ public class RiotControlDrone : MonoBehaviour
         seedShootOnCooldown = false;
     }
 
+    private IEnumerator DashAttack()
+    {
+        bool takenDamage = false;
+        dashAttackOnCooldown = true;
+        gameObject.GetComponentsInChildren<SpriteRenderer>()[0].color = Color.black;
+        gameObject.GetComponentsInChildren<SpriteRenderer>()[1].color = Color.black;
+        gameObject.GetComponentsInChildren<SpriteRenderer>()[2].color = Color.red;
+
+        yield return new WaitForSeconds(dashAttackCooldown);
+        for(int i = 0; i <= dashForceCount; i++)
+        {
+            
+            rb.AddForce(new Vector2(chargeDirection * walkingSpeed * Time.fixedDeltaTime, 0));
+            
+            if (IsTargetInHitRange() && !takenDamage)
+            {
+                targetHealth.TakeDamage(5);
+                PlayerHit();
+                PlayerPushback();
+                takenDamage = true;
+            }
+            yield return new WaitForSeconds(0.1f);
+            i++;
+        }
+        yield return new WaitForSeconds(1f);
+        chargeDirectionCalculated = false;
+        gameObject.GetComponentsInChildren<SpriteRenderer>()[0].color = Color.red;
+        gameObject.GetComponentsInChildren<SpriteRenderer>()[1].color = Color.red;
+        gameObject.GetComponentsInChildren<SpriteRenderer>()[2].color = Color.black;
+        dashAttackCooldownRandomizer = UnityEngine.Random.Range(10, 21);
+        state = RiotState.PhaseTwoMoving;
+        canDashAttack = false;
+        dashAttackOnCooldown = false;
+    }
+
     // Overlaps for various checks.
     private bool IsTargetInHitRange()
     {
@@ -622,12 +693,24 @@ public class RiotControlDrone : MonoBehaviour
         return Physics2D.OverlapBox(new Vector2(transform.position.x + (transform.localScale.x * chargeOffset.x), transform.position.y + chargeOffset.y), areaToCharge, 0, playerLayer);
     }
 
+    private bool IsTargetInDashAttackRange()
+    {
+        return Physics2D.OverlapBox(new Vector2(transform.position.x + (transform.localScale.x * dashOffset.x), transform.position.y + dashOffset.y), areaToDash, 0, playerLayer);
+    }
+
+    private bool AmIGoingToHitAWallAgain()
+    {
+        return Physics2D.OverlapBox(new Vector2(transform.position.x + (transform.localScale.x * dashOffset.x), transform.position.y + dashOffset.y), areaToDash, 0, groundLayer);
+    }
+
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireCube(new Vector2(transform.position.x + (transform.localScale.x * chargeOffset.x), transform.position.y + chargeOffset.y), areaToCharge);
         Gizmos.color = Color.red;
         Gizmos.DrawWireCube(new Vector2(transform.position.x + (transform.localScale.x * hitOffset.x), transform.position.y + hitOffset.y), areaToAttack);
+        Gizmos.color = Color.blue;
+        Gizmos.DrawWireCube(new Vector2(transform.position.x + (transform.localScale.x * dashOffset.x), transform.position.y + dashOffset.y), areaToDash);
 
     }
 
@@ -641,7 +724,7 @@ public class RiotControlDrone : MonoBehaviour
     }
 
     // Checks if last charge was over 10 seconds ago.
-    private void ChargeTimer()
+    private void Timers()
     {
         if (chargeOnCooldown)
         {
@@ -653,6 +736,17 @@ public class RiotControlDrone : MonoBehaviour
             canChargeToTarget = true;
             lastChargeCounter = 0;
         }
+
+        if(!canDashAttack)
+        {
+            lastDashAttackCounter += Time.deltaTime;
+        }
+        if(lastDashAttackCounter >= dashAttackCooldownRandomizer)
+        {
+            canDashAttack = true;
+            lastDashAttackCounter = 0;
+        }
+
     }
 
     // Pushbacks the player when hit with riot drone collider. Uses velocity for the knockback instead of force.
@@ -702,7 +796,8 @@ public class RiotControlDrone : MonoBehaviour
         Backstepping,
         PhaseTwoStun,
         PhaseTwoMoving,
-        PhaseTwoAttack
+        PhaseTwoAttack,
+        DashAttack
 
     }
 

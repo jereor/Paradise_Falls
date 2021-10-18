@@ -113,7 +113,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 433357478e655ca46bc632e8608d61f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shooter: {fileID: 8410908677858590963, guid: 9494e6e2cb797ba4791843427e240b28, type: 3}
+  shooter: {fileID: 0}
   projectileSpeed: 10
   projectileDamage: 1
 --- !u!50 &5232524593223758870

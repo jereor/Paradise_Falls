@@ -16,6 +16,7 @@ public class RiotSeedController : MonoBehaviour
     void Start()
     {
         target = GameObject.Find("Player");
+        shooter = GameObject.Find("RiotControlDrone");
         rb = GetComponent<Rigidbody2D>();
         direction = (target.transform.position - transform.position).normalized;
         Vector2 force = direction * projectileSpeed;
@@ -41,6 +42,7 @@ public class RiotSeedController : MonoBehaviour
         rb.velocity = Vector2.zero;
         
         direction = (target.transform.position - transform.position).normalized;
+        Debug.Log(direction);
 
         Vector2 force = direction * projectileSpeed;
         rb.AddForce(force, ForceMode2D.Impulse);
