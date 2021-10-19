@@ -495,7 +495,14 @@ public class PlayerCombat : MonoBehaviour
         {
             posBeforeDash = transform.position;
             dash = true;
+            StartCoroutine(DashCounter(dashDistance / dashSpeed));
         }
+    }
+    // Stops applying force if max distance is not reached due collider in the way
+    IEnumerator DashCounter(float time)
+    {
+        yield return new WaitForSeconds(time);
+        dash = false;
     }
     private void CheckAttackDashDistance()
     {
@@ -508,7 +515,7 @@ public class PlayerCombat : MonoBehaviour
         // Dash needs continuous input since inactive
         else if (dash)
         {
-            rb.velocity = new Vector2(transform.localScale.x, 0f) * dashSpeed;
+            rb.velocity = new Vector2(transform.localScale.x * dashSpeed, rb.velocity.y);
         }
     }
 
