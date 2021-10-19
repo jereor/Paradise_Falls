@@ -10,6 +10,7 @@ public class MeleeWeapon : MonoBehaviour
     [SerializeField] private float weaponThrowDamage; // Damage dealt if hits enemy
     [SerializeField] private float powerBoostedDamage; // Damage dealt if hits enemy power boosted
     [SerializeField] private float weaponPullDamage;
+    [SerializeField] private float weakPointMultiplier;
     [SerializeField] private float rotSpeed; // Rotation angle to spin when thowing
     [SerializeField] private float ricochetImpulseForce; // Force of hit ricochet on enemies and gorund elements
     [SerializeField] private float ricochetYImpulse; // Float parameter if we want to ricochet weapon slightly upward feels better and tell player that we hit and dealt damage to something
@@ -102,7 +103,8 @@ public class MeleeWeapon : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         // Ground
-        if (collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
+        Debug.Log(collision.collider.gameObject.name);
+        if (collision.collider.gameObject.layer == LayerMask.NameToLayer("Ground"))
         {
             if (!landed)
             {
@@ -116,7 +118,7 @@ public class MeleeWeapon : MonoBehaviour
             }
         }
         // Enemy
-        else if (collision.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+        else if (collision.collider.gameObject.layer == LayerMask.NameToLayer("Enemy"))
         {
             Debug.Log("Enemy hit");
             // Hits enemy when can deal damage
@@ -130,18 +132,64 @@ public class MeleeWeapon : MonoBehaviour
                 if(myRB.gravityScale != defaultGravityScale)
                     myRB.gravityScale = defaultGravityScale;
 
-                // Deal damage last if we kill enemy we lose collision parameter
-                DealDamage(collision.collider);
                 // Knockback
                 Knockback(gameObject, collision.gameObject, knockbackForce);
+                // Deal damage last if we kill enemy we lose collision parameter
+                DealDamage(collision.collider);
                 // Cant deal damage twice
                 landed = true;
                 // Ignore enemy collisions
                 SetEnemyIgnoresOnLand();
             }      
         }
+        // Boss
+        else if (collision.collider.gameObject.layer == LayerMask.NameToLayer("Boss"))
+        {
+            Debug.Log("Boss");
+            // Hits enemy when can deal damage
+            if (!landed)
+            {
+                // Ricochet quickmaths
+                Vector2 tmp = new Vector2(collision.contacts[0].point.x - collision.transform.position.x, collision.contacts[0].point.y - collision.transform.position.y);
+                myRB.velocity = tmp.normalized + new Vector2(0, ricochetYImpulse) * ricochetImpulseForce;
+
+                // If this is somehow not default set it here to be sure
+                if (myRB.gravityScale != defaultGravityScale)
+                    myRB.gravityScale = defaultGravityScale;
+
+                // Deal damage last if we kill enemy we lose collision parameter
+                DealDamage(collision.collider);
+                // Cant deal damage twice
+                landed = true;
+                // Ignore enemy collisions
+                SetEnemyIgnoresOnLand();
+            }
+        }
+        //// WeakPoint
+        else if (collision.collider.gameObject.layer == LayerMask.NameToLayer("BossWeakPoint"))
+        {
+            Debug.Log("WeakPoint");
+            // Hits enemy when can deal damage
+            if (!landed)
+            {
+                // Ricochet quickmaths
+                Vector2 tmp = new Vector2(collision.contacts[0].point.x - collision.transform.position.x, collision.contacts[0].point.y - collision.transform.position.y);
+                myRB.velocity = tmp.normalized + new Vector2(0, ricochetYImpulse) * ricochetImpulseForce;
+
+                // If this is somehow not default set it here to be sure
+                if (myRB.gravityScale != defaultGravityScale)
+                    myRB.gravityScale = defaultGravityScale;
+
+                // Deal damage last if we kill enemy we lose collision parameter
+                DealDamage(collision.collider);
+                // Cant deal damage twice
+                landed = true;
+                // Ignore enemy collisions
+                SetEnemyIgnoresOnLand();
+            }
+        }
         // Collision with GrapplePoint
-        else if(collision.gameObject.layer == LayerMask.NameToLayer("GrapplePoint"))
+        else if(collision.collider.gameObject.layer == LayerMask.NameToLayer("GrapplePoint"))
         {
             // Makes the player and melee weapon to collide until it is pulled again. Weapon can be used as a platform during grapple.
             Physics2D.IgnoreLayerCollision(3, 13, false);
@@ -240,6 +288,12 @@ public class MeleeWeapon : MonoBehaviour
 
         if (!Physics2D.GetIgnoreLayerCollision(LayerMask.NameToLayer("GrapplePoint"), LayerMask.NameToLayer("MeleeWeapon")))
             Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("GrapplePoint"), LayerMask.NameToLayer("MeleeWeapon"), true);
+
+        if (!Physics2D.GetIgnoreLayerCollision(LayerMask.NameToLayer("Boss"), LayerMask.NameToLayer("MeleeWeapon")))
+            Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Boss"), LayerMask.NameToLayer("MeleeWeapon"), true);
+
+        if (!Physics2D.GetIgnoreLayerCollision(LayerMask.NameToLayer("BossWeakPoint"), LayerMask.NameToLayer("MeleeWeapon")))
+            Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("BossWeakPoint"), LayerMask.NameToLayer("MeleeWeapon"), true);
     }
 
     // Ignore enemylayer colliders when we land
@@ -247,17 +301,35 @@ public class MeleeWeapon : MonoBehaviour
     {
         if (!Physics2D.GetIgnoreLayerCollision(LayerMask.NameToLayer("Enemy"), LayerMask.NameToLayer("MeleeWeapon")))
             Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Enemy"), LayerMask.NameToLayer("MeleeWeapon"), true);
+
+        if (!Physics2D.GetIgnoreLayerCollision(LayerMask.NameToLayer("Boss"), LayerMask.NameToLayer("MeleeWeapon")))
+            Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Boss"), LayerMask.NameToLayer("MeleeWeapon"), true);
+
+        if (!Physics2D.GetIgnoreLayerCollision(LayerMask.NameToLayer("BossWeakPoint"), LayerMask.NameToLayer("MeleeWeapon")))
+            Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("BossWeakPoint"), LayerMask.NameToLayer("MeleeWeapon"), true);
     }
 
     // Deal damage to given Collider2D
     public void DealDamage(Collider2D col)
     {
-        if (powerBoosted)
-            col.gameObject.GetComponent<Health>().TakeDamage(powerBoostedDamage);
-        else if (beingPulled)
-            col.gameObject.GetComponent<Health>().TakeDamage(weaponPullDamage);
+        if (col.gameObject.layer == LayerMask.NameToLayer("BossWeakPoint"))
+        {
+            if (powerBoosted)
+                col.gameObject.GetComponentInParent<Health>().TakeDamage(powerBoostedDamage * weakPointMultiplier);
+            else if (beingPulled)
+                col.gameObject.GetComponentInParent<Health>().TakeDamage(weaponPullDamage * weakPointMultiplier);
+            else
+                col.gameObject.GetComponentInParent<Health>().TakeDamage(weaponThrowDamage * weakPointMultiplier);
+        }
         else
-            col.gameObject.GetComponent<Health>().TakeDamage(weaponThrowDamage);
+        {
+            if (powerBoosted)
+                col.gameObject.GetComponentInParent<Health>().TakeDamage(powerBoostedDamage);
+            else if (beingPulled)
+                col.gameObject.GetComponentInParent<Health>().TakeDamage(weaponPullDamage);
+            else
+                col.gameObject.GetComponentInParent<Health>().TakeDamage(weaponThrowDamage);
+        }
     }
 
     public void Knockback(GameObject target, GameObject from, float knockbackForce)
@@ -275,9 +347,10 @@ public class MeleeWeapon : MonoBehaviour
         Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Ground"), LayerMask.NameToLayer("MeleeWeapon"), false);
         Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Enemy"), LayerMask.NameToLayer("MeleeWeapon"), false);
         Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("GrapplePoint"), LayerMask.NameToLayer("MeleeWeapon"), false);
-
+        Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Boss"), LayerMask.NameToLayer("MeleeWeapon"), false);
+        Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("BossWeakPoint"), LayerMask.NameToLayer("MeleeWeapon"), false);
         // If we are not attached to the grapple point, make the weapon pickable.
-        if(!attachedToGrapplePoint || (attachedToGrapplePoint && objectWhoPicksUp.GetComponent<PlayerCombat>().getIsPlayerBeingPulled()))
+        if (!attachedToGrapplePoint || (attachedToGrapplePoint && objectWhoPicksUp.GetComponent<PlayerCombat>().getIsPlayerBeingPulled()))
         {
             // Inform Player to pickup
             objectWhoPicksUp.GetComponent<PlayerCombat>().PickUpWeapon();

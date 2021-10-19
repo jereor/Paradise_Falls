@@ -10,7 +10,8 @@ public class PlayerCombat : MonoBehaviour
     [Header("Melee Variables")]
     [SerializeField] private float lightDamage; // Light hits 1, 2 and 3 = lightDamage + lightDamage/2 (pyoristettyna ylospain) 
     [SerializeField] private float heavyDamage; // Same as above but with different float
-    //[SerializeField] private float meleeComboLastDamage; // Last hit currentComboHit 3
+    [SerializeField] private float lastHitMultiplier;
+    [SerializeField] private float weakPointMultiplier;
     [SerializeField] private float knockbackForceLight;
     [SerializeField] private float knockbackForceHeavy;
     [SerializeField] private float dashSpeed; // Velocity for dash if 0 no dash 
@@ -28,6 +29,8 @@ public class PlayerCombat : MonoBehaviour
 
     [Header("Attack Detection Variables")]
     public LayerMask enemyLayer;
+    public LayerMask bossLayer;
+    public LayerMask bossWeakPointLayer;
     public Transform attackPoint; // Center of the hit point box we draw to check collisions
     public float attackRangeX; // Width of the check box
     public float attackRangeY; // Height
@@ -357,86 +360,6 @@ public class PlayerCombat : MonoBehaviour
     // --- MELEE ---
 
     // ----------- PLACEHOLDER ANIMATIONS -------------------
-    //IEnumerator TranToIdle(int tranI)
-    //{
-    //    //Debug.Log("Transition enter");
-    //    yield return new WaitForSecondsRealtime(1f);
-    //    //Debug.Log("Transition exit");
-    //    if (tranI == 1)
-    //        onTran1 = false;
-    //    else if (tranI == 2)
-    //        onTran2 = false;
-    //    else if (tranI == 3)
-    //        onTran3 = false;
-
-    //    // Allow movement
-    //    //movementScript.canMove = true;
-
-
-    //    onIdle = true;
-
-    //    if (!canReceiveInput)
-    //    {
-    //        InputManager();
-    //    }
-    //    meleeInputReceived = false;
-    //}
-    
-    //IEnumerator PlaceHolderAttack1()
-    //{
-    //    //Debug.Log("Started melee animation");
-    //    AttackDash();
-
-    //    yield return new WaitForSecondsRealtime(1f);
-
-    //    Debug.Log("Ended light melee animation 1");
-
-
-    //    // Light attack animation 1
-    //    DealDamage(1, false);
-
-    //    InputManager();
-    //    onTran1 = true;
-
-    //    tranToIdle = StartCoroutine(TranToIdle(1));
-    //}
-
-    //IEnumerator PlaceHolderAttack2()
-    //{
-    //    //Debug.Log("Started melee animation");
-    //    AttackDash();
-
-    //    yield return new WaitForSecondsRealtime(1f);
-
-    //    Debug.Log("Ended light melee animation 2");
-
-
-    //    // Light attack animation 2
-    //    DealDamage(2, false);
-
-    //    InputManager();
-    //    onTran2 = true;
-
-    //    tranToIdle = StartCoroutine(TranToIdle(2));
-    //}
-
-    //IEnumerator PlaceHolderAttack3()
-    //{
-    //    //Debug.Log("Started melee animation");
-    //    AttackDash();
-
-    //    yield return new WaitForSecondsRealtime(1f);
-
-    //    Debug.Log("Ended light melee animation 3");
-
-
-    //    // Light attack animation 3
-    //    DealDamage(3, false);
-
-    //    onTran3 = true;
-
-    //    tranToIdle = StartCoroutine(TranToIdle(3));
-    //}
 
     IEnumerator PlaceHolderAttackH1()
     {
@@ -610,57 +533,98 @@ public class PlayerCombat : MonoBehaviour
         canReceiveInputThrow = false;
     }
 
+    // Made to own function less copy pasta 
+    // colliders to what collider array we are going to be deal dmg
+    // kb bool from kbOnLight or kbOnLightLast aka if we wish to knockback
+    // layer to identify to what kind of enemy we are dealing dmg
+    private void DealDamageTo(Collider2D[] colliders, float dmg, bool kb, float kbForce, LayerMask layer)
+    {
+        foreach (Collider2D collider in colliders)
+        {
+            //Debug.Log("wfea");
+            if (layer == bossWeakPointLayer || layer == bossLayer)
+            {
+                // Error check if there isn't Health script attached don't do damage
+                if (collider.TryGetComponent<Health>(out var healthScript))
+                {
+                    // Deal damage
+                    healthScript.TakeDamage(dmg);
+                    // No knockback on bosses
+                }
+                // If object doesn't have health script find health script from one of its parent ( there will be only one health script in each boss / part ) 
+                else
+                {
+                    collider.gameObject.GetComponentInParent<Health>().TakeDamage(dmg);
+                }
+            }
+            else if(layer == enemyLayer)
+            {
+                // Error check if there isn't Health script attached don't do damage
+                if (collider.TryGetComponent<Health>(out var healthScript))
+                {
+                    // Deal damage
+                    healthScript.TakeDamage(dmg);
+
+                    // Knockback enemy if true
+                    if (kb)
+                        Knockback(collider.gameObject, gameObject, kbForce);
+                }
+            }
+        }
+    }
+
     // Call this function on melee animation end when melee visually hits something
     public void DealDamage(int comboIndex, bool heavyHit)
     {
         // Draws a box in scene if objects from enemyLayer overlap with this box store them in hitEnemies array
         Collider2D[] hitEnemies = Physics2D.OverlapBoxAll(attackPoint.position, new Vector2(attackRangeX, attackRangeY), 0f, enemyLayer);
 
+        Collider2D[] hitBosses = Physics2D.OverlapBoxAll(attackPoint.position, new Vector2(attackRangeX, attackRangeY), 0f, bossLayer);
+
+        Collider2D[] hitBossesWeakPoint = Physics2D.OverlapBoxAll(attackPoint.position, new Vector2(attackRangeX, attackRangeY), 0f, bossWeakPointLayer);
+
         Debug.Log("DEALING DMG!! combo hit: " + comboIndex + " Heavy?: " + heavyHit);
         // Normal combo hits 1 and 2
         if (comboIndex < 3 && !heavyHit)
         {
-            // If there is elements on hitEnemies array go through it
-            foreach (Collider2D enemy in hitEnemies)
+            // Dealing damage to enemies
+            if (hitEnemies.Length != 0)
+                DealDamageTo(hitEnemies, lightDamage, kbOnLight, knockbackForceLight, enemyLayer);
+
+            // Dealing damage to bosses 
+            // If we hit weakpoint we deal only the amount from weakpoint hit and "skip" checkin hitBosses colliders (prevent from dealing weakpoint + normal damage on one hit)
+            if (hitBossesWeakPoint.Length != 0)
             {
-                // Error check if there isn't Health script attached don't do damage
-                if (enemy.TryGetComponent<Health>(out var healthScript))
-                {
-                    // Deal damage
-                    healthScript.TakeDamage(lightDamage);
-                    
-                    // STUN OR KNOCKBACK + DASH?
-                    // Knockback enemy
-                    if(kbOnLight)
-                        Knockback(enemy.gameObject, gameObject, knockbackForceLight);
-                }
+                // Deal damage
+                // Ceil since example: weakPointMultiplier = 1.5 lightDamage = 1 without rounding dmg = 1.5 with Floor dmg 1 with Ceil dmg = 2
+                // most likely not needed since weakPointMult 2x is standard in games 
+                DealDamageTo(hitBossesWeakPoint, Mathf.Ceil(lightDamage * weakPointMultiplier), kbOnLight, knockbackForceLight, bossWeakPointLayer);
+            }
+            else if (hitBosses.Length != 0)
+            {
+                DealDamageTo(hitBosses, lightDamage, kbOnLight, knockbackForceLight, bossLayer);
             }
         }
         // Normal combo hit 3 aka last hit of combo
         else if (comboIndex == 3 && !heavyHit)
         {
-            // If there is elements on hitEnemies array go through it
-            foreach (Collider2D enemy in hitEnemies)
+            if (hitEnemies.Length != 0)
             {
-                // Error check if there isn't Health script attached don't do damage
-                if (enemy.TryGetComponent<Health>(out var healthScript))
-                {
-                    // Deal damage
-                    // Example if lightDamage = 3 --> 3 / 2 = 1.5 --> Floor(1.5) = 1 total damage 4 OR Ceil(1.5) = 2 total damage 5 
-                    if (lightDamage % 2 == 1)
-                    {
-                        healthScript.TakeDamage(lightDamage + Mathf.Floor(lightDamage / 2));
-                    }
-                    else
-                    {
-                        healthScript.TakeDamage(lightDamage + Mathf.Ceil(lightDamage / 2));
-                    }
-                    // Knockback enemy
-                    if(kbOnLightLast)
-                        Knockback(enemy.gameObject, gameObject, knockbackForceLight);
-                }
+                DealDamageTo(hitEnemies, Mathf.Ceil(lightDamage * lastHitMultiplier), kbOnLightLast, knockbackForceLight, enemyLayer);
+            }
+
+            if (hitBossesWeakPoint.Length != 0)
+            {
+                // Deal damage
+                DealDamageTo(hitBossesWeakPoint, Mathf.Ceil(lightDamage * weakPointMultiplier * lastHitMultiplier), kbOnLightLast, knockbackForceLight, bossWeakPointLayer);
+            }
+            else if (hitBosses.Length != 0)
+            {
+                 DealDamageTo(hitBosses, Mathf.Ceil(lightDamage * lastHitMultiplier), kbOnLightLast, knockbackForceLight, bossLayer);
             }
         }
+
+
         // Heavy combo hits 1 and 2
         if (comboIndex < 3 && heavyHit)
         {

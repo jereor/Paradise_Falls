@@ -27,8 +27,8 @@ TagManager:
   - MeleeWeapon
   - Boss
   - PulledWeapon
-  - 
-  - 
+  - BossWeakPoint
+  - MovementBounds
   - ShockwaveAttack
   - 
   - 
