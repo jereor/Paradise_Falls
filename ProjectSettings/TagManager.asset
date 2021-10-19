@@ -9,6 +9,7 @@ TagManager:
   - Door
   - MeleeWeapon
   - BoostPlant
+  - Boss
   layers:
   - Default
   - TransparentFX
@@ -29,7 +30,6 @@ TagManager:
   - 
   - 
   - ShockwaveAttack
-  - 
   - 
   - 
   - 

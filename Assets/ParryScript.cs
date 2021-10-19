@@ -9,7 +9,6 @@ public class ParryScript : StateMachineBehaviour
     {
         Player.Instance.SetCurrentState(Player.State.Parrying);
         animator.SetBool("isParrying", true);
-        Debug.Log(Time.time);
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
@@ -21,7 +20,7 @@ public class ParryScript : StateMachineBehaviour
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        Debug.Log(Time.time);
+
     }
 
     // OnStateMove is called right after Animator.OnAnimatorMove()

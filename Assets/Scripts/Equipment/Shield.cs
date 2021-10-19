@@ -9,7 +9,7 @@ public class Shield : MonoBehaviour
     public bool Parrying { get; private set; }
     public float ProtectionAmount { get; private set; }
 
-    [SerializeField] private GameObject shield;
+    [SerializeField] public GameObject shield;
 
     [Header("Shield variables")]
     [SerializeField] private float protectionValue;
@@ -38,14 +38,15 @@ public class Shield : MonoBehaviour
         {
             nextParry = Time.time + parryCooldown; // Sets a time when parry can be used again
             hitParried = false; // Reset hitParried state
-            shield.SetActive(true); // Activate shield graphics
+
+            //shield.SetActive(true); // Activate shield graphics EDIT: JereT replaced to be activated from Player.cs
             Blocking = true;
         }
         // Blocking cancelled
         if (context.canceled)
         {
             StartCoroutine(ActivateParryWindow()); // Parry window activated
-            shield.SetActive(false); // Disable shield graphics
+            //shield.SetActive(false); // Disable shield graphics
             Blocking = false;
         }
     }

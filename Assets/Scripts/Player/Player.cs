@@ -33,6 +33,12 @@ public class Player : MonoBehaviour
     // If this is not used HandleStateUpdate() will be called every FixedUpdate() call aka Disables and Enables are done each FixedUpdate() -> potatocomputers cannot run our game
     private bool statesChanged = false;
 
+    // SerField for debugs 
+    [SerializeField] private bool inputsActive = true; // Boolean to be triggered when Handle
+
+    private Coroutine blockCoroutine;
+    [SerializeField] private float blockAnimTimeMultiplier; // this times block anim time = when to activate shield object, good values 1.1 - 1.5
+
     public enum State
     {
         Idle,
@@ -64,14 +70,12 @@ public class Player : MonoBehaviour
         TextStyleEnergy.fontSize = 30;
         TextStyleHealth.fontSize = 30;
         TextStyleEnergy.normal.textColor = Color.red;
-
-        //combatScript.comboTime = GetTransitionAnimTime();
     }
 
     private void FixedUpdate()
     {
         // If game is not paused and state has changed handle state inputs
-        if(!PauseMenuController.GameIsPaused && statesChanged)
+        if(inputsActive && statesChanged)
             HandleStateInputs();
 
         HandleAnimations();
@@ -303,10 +307,15 @@ public class Player : MonoBehaviour
         if (shieldScript.Blocking && !animator.GetBool("isAttacking"))
         {
             animator.SetBool("isBlocking", true);
+            // Shield is not active and coroutine is not started yet
+            if(!shieldScript.shield.activeInHierarchy && blockCoroutine == null)
+                blockCoroutine = StartCoroutine(ShowBlockObject(GetClipAnimTime("Block") * blockAnimTimeMultiplier));
         }
         else if (!shieldScript.Blocking)
         {
             animator.SetBool("isBlocking", false);
+            blockCoroutine = null;
+            shieldScript.shield.SetActive(false);
         }
 
     }
@@ -434,14 +443,18 @@ public class Player : MonoBehaviour
     }
 
     // Called from PauseMenuController on Pause() and Resume()
-    // Add enables and disables as they are made in scripts ---- CURRENT: melee, aim, jump, move
+    // Add enables and disables as they are made in scripts ---- CURRENT: melee, aim, block, jump, move
     public void HandleAllPlayerControlInputs(bool activate)
     {
+        // IF false deactivate and bool to false...
+        inputsActive = activate;
         if (!activate)
         {
             // Combat
             combatScript.DisableInputMelee();
             combatScript.DisableInputThrowAim();
+
+            shieldScript.DisableInputBlock();
 
             // Movement
             movementScript.DisableInputJump();
@@ -452,6 +465,8 @@ public class Player : MonoBehaviour
             // Combat
             combatScript.EnableInputMelee();
             combatScript.EnableInputThrowAim();
+
+            shieldScript.EnableInputBlock();
 
             // Movement
             movementScript.EnableInputJump();
@@ -530,6 +545,12 @@ public class Player : MonoBehaviour
                 return clip.length;
         }
         return 0f;
+    }
+
+    private IEnumerator ShowBlockObject(float blockAnimTime)
+    {
+        yield return new WaitForSeconds(blockAnimTime);
+        shieldScript.shield.SetActive(true);
     }
 
     private IEnumerator ParryCounter(float parryTime)
