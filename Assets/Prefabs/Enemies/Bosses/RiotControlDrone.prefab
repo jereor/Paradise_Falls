@@ -363,7 +363,11 @@ MonoBehaviour:
   seed: {fileID: 2045461362968113728, guid: a719129ab0245494d8c274b7144ea610, type: 3}
   bodyCollider: {fileID: 8410908678957537518}
   headCollider: {fileID: 8410908678676369678}
+  phaseTwoKnockbackBox: {fileID: 0}
+  colliders: []
   playerRB: {fileID: 0}
+  doorOne: {fileID: 0}
+  phaseTwoRunDestination: {fileID: 0}
   state: 1
   playerLayer:
     serializedVersion: 2

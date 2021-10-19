@@ -13,10 +13,12 @@ public class RiotShield : MonoBehaviour
             GameObject.Find("RiotControlDrone").GetComponent<RiotControlDrone>().state = RiotControlDrone.RiotState.Stunned;
             Debug.Log("RiotChargedWall");
         }
-        else if(collision.gameObject.layer == LayerMask.NameToLayer("Ground") && GameObject.Find("RiotControlDrone").GetComponent<RiotControlDrone>().getIsEnraged())
+        else if (collision.gameObject.layer == LayerMask.NameToLayer("Ground") && GameObject.Find("RiotControlDrone").GetComponent<RiotControlDrone>().getIsEnraged())
         {
-            GameObject.Find("RiotControlDrone").GetComponent<RiotControlDrone>().state = RiotControlDrone.RiotState.PhaseTwoStun;
-            Debug.Log("PhaseTwoStun");
+            GameObject.Find("RiotControlDrone").GetComponent<RiotControlDrone>().Flip();
+            GameObject.Find("RiotControlDrone").GetComponent<RiotControlDrone>().state = RiotControlDrone.RiotState.PhaseThreeStun;
+            //GameObject.Find("RiotControlDrone").GetComponent<RiotControlDrone>().state = RiotControlDrone.RiotState.PhaseTwoRun;
+            //Debug.Log("PhaseTwoRun");
         }
     }
 }
