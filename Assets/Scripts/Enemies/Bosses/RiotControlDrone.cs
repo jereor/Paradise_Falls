@@ -9,6 +9,8 @@ public class RiotControlDrone : MonoBehaviour
     [SerializeField] private GameObject shield;
     [SerializeField] private GameObject taserBeam;
     [SerializeField] private GameObject seed;
+    [SerializeField] private BoxCollider2D bodyCollider;
+    [SerializeField] private BoxCollider2D headCollider;
     [SerializeField] private Rigidbody2D playerRB;
 
     [Header("Current State")]
@@ -63,7 +65,6 @@ public class RiotControlDrone : MonoBehaviour
 
     private Rigidbody2D rb;
     private Health health;
-    private Transform[] colliders;
     
     [SerializeField] private bool isFacingRight = false;
     private Vector2 vectorToTarget;
@@ -110,7 +111,6 @@ public class RiotControlDrone : MonoBehaviour
         //health.TakeDamage(20);
 
         shield = GameObject.Find("RiotShield");
-        colliders = GetComponentsInChildren<Transform>();
 
         playerRB = GameObject.Find("Player").GetComponent<Rigidbody2D>();
 
@@ -444,18 +444,16 @@ public class RiotControlDrone : MonoBehaviour
     //------------------------------------------------------------------------------------------------------------------------
     private void ChangeToBossLayer()
     {
-        foreach (Transform bossCollider in colliders)
-        {
-            bossCollider.gameObject.layer = LayerMask.NameToLayer("Boss");
-        }
+        bodyCollider.gameObject.layer = LayerMask.NameToLayer("Boss");
+
+        headCollider.gameObject.layer = LayerMask.NameToLayer("BossWeakPoint");
     }
 
     private void ChangeToDefaultLayer()
     {
-        foreach (Transform bossCollider in colliders)
-        {
-            bossCollider.gameObject.layer = LayerMask.NameToLayer("Default");
-        }
+        bodyCollider.gameObject.layer = LayerMask.NameToLayer("Default");
+
+        headCollider.gameObject.layer = LayerMask.NameToLayer("Default");
     }
 
     // COOLDOWNS AND ACTION BEHAVIOURS
