@@ -246,7 +246,6 @@ public class RiotControlDrone : MonoBehaviour
     {
         if (IsTargetInHitRange())
         {
-            Debug.Log("Attack");
             state = RiotState.Attack;
             return;
         }
@@ -322,7 +321,6 @@ public class RiotControlDrone : MonoBehaviour
     {
         if(!stunned)
         {
-            Debug.Log("RiotStunned");
             StartCoroutine(Stunned());
             if (!isBossLayer)
             {
@@ -337,9 +335,7 @@ public class RiotControlDrone : MonoBehaviour
             //state = RiotState.Moving;
 
         }
-
     }
-
 
 
     // Backsteps when needed for the amount of time specified. Used after shield charge has squished player between the wall and the riot shield.
@@ -424,7 +420,6 @@ public class RiotControlDrone : MonoBehaviour
     {
         if (IsTargetInHitRange())
         {
-            Debug.Log("Attack");
             state = RiotState.PhaseThreeAttack;
             return;
         }
@@ -509,6 +504,7 @@ public class RiotControlDrone : MonoBehaviour
         {
             collider.gameObject.layer = LayerMask.NameToLayer("Player Projectile");
         }
+        gameObject.layer = LayerMask.NameToLayer("Boss");
     }
 
     // COOLDOWNS AND ACTION BEHAVIOURS
@@ -541,7 +537,6 @@ public class RiotControlDrone : MonoBehaviour
         if(velocity.x < 2 && velocity.x > -2 && IsTargetInHitRange())
         {
             // Player is between the wall and the riot drone. Deal huge damage and make space for the player to get out.
-            Debug.Log("Squished");
             targetHealth.TakeDamage(shieldSquishDamage);
             StartCoroutine(PlayerHit());
             rb.velocity = new Vector2(0,0);
@@ -586,7 +581,6 @@ public class RiotControlDrone : MonoBehaviour
         yield return new WaitForSeconds(stunTime);
         stunned = false;
         gameObject.GetComponentsInChildren<SpriteRenderer>()[2].color = Color.black;
-        Debug.Log("Stun ended");
         chargeDirectionCalculated = false;
         chargeOnCooldown = true;
         chargeCooldownRandomizer = UnityEngine.Random.Range(1, 11);
@@ -602,7 +596,6 @@ public class RiotControlDrone : MonoBehaviour
         yield return new WaitForSeconds(Mathf.Infinity);
         stunned = false;
         gameObject.GetComponentsInChildren<SpriteRenderer>()[2].color = Color.black;
-        Debug.Log("Stun ended");
     }
 
     // Cooldown for the player knockback.
@@ -714,7 +707,6 @@ public class RiotControlDrone : MonoBehaviour
     private IEnumerator SeedShoot()
     {
         seedShootOnCooldown = true;
-        Debug.Log("shoot");
         int seedCount = 0;
         seedCount = UnityEngine.Random.Range(1, 4); // Amount of seeds to shoot.
         gameObject.GetComponentsInChildren<SpriteRenderer>()[2].color = Color.yellow;

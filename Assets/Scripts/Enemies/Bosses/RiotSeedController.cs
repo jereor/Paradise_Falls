@@ -72,9 +72,9 @@ public class RiotSeedController : MonoBehaviour
                 Destroy(gameObject);
             }
         }
-        else if (reflected && collision.collider.CompareTag("Boss"))
+        else if (reflected && collision.collider.gameObject.layer == LayerMask.NameToLayer("Boss"))
         {
-            collision.collider.GetComponent<Health>().TakeDamage(projectileDamage); // Enemy takes damage
+            collision.collider.GetComponentInParent<Health>().TakeDamage(projectileDamage); // Enemy takes damage
             Destroy(gameObject);
         }
         else

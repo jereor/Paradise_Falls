@@ -2224,11 +2224,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   newCamera: {fileID: 601216290}
---- !u!61 &1717925751 stripped
-BoxCollider2D:
-  m_CorrespondingSourceObject: {fileID: 3142315634059483558, guid: 9494e6e2cb797ba4791843427e240b28, type: 3}
-  m_PrefabInstance: {fileID: 8410908678570087705}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1766905157
 GameObject:
   m_ObjectHideFlags: 0
@@ -3292,29 +3287,13 @@ PrefabInstance:
       propertyPath: doorOne
       value: 
       objectReference: {fileID: 1791283967}
-    - target: {fileID: 8410908677858590965, guid: 9494e6e2cb797ba4791843427e240b28, type: 3}
-      propertyPath: phaseTwoKnockbackBox
-      value: 
-      objectReference: {fileID: 1717925751}
-    - target: {fileID: 8410908677858590965, guid: 9494e6e2cb797ba4791843427e240b28, type: 3}
-      propertyPath: phaseTwoEnemiesDestroyed
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8410908677858590967, guid: 9494e6e2cb797ba4791843427e240b28, type: 3}
-      propertyPath: maxHealth
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 8410908677858590967, guid: 9494e6e2cb797ba4791843427e240b28, type: 3}
-      propertyPath: destroyWhenDead
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 8410908677858590967, guid: 9494e6e2cb797ba4791843427e240b28, type: 3}
       propertyPath: onDie.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 253122427}
-    - target: {fileID: 8410908677858590967, guid: 9494e6e2cb797ba4791843427e240b28, type: 3}
-      propertyPath: onDie.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: Work
+    - target: {fileID: 8410908678957537517, guid: 9494e6e2cb797ba4791843427e240b28, type: 3}
+      propertyPath: m_TagString
+      value: Untagged
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9494e6e2cb797ba4791843427e240b28, type: 3}
