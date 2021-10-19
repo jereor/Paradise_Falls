@@ -358,16 +358,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 517377c16d932914da0d4e83fac53951, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shield: {fileID: 8410908679192793482}
   taserBeam: {fileID: 7094682758646093242, guid: 1956fd86456be4d41ae726c17406e383, type: 3}
   seed: {fileID: 2045461362968113728, guid: a719129ab0245494d8c274b7144ea610, type: 3}
   bodyCollider: {fileID: 8410908678957537518}
   headCollider: {fileID: 8410908678676369678}
-  phaseTwoKnockbackBox: {fileID: 0}
+  phaseTwoKnockbackBox: {fileID: 3142315634059483558}
   colliders: []
   playerRB: {fileID: 0}
   doorOne: {fileID: 0}
-  phaseTwoRunDestination: {fileID: 0}
   state: 1
   playerLayer:
     serializedVersion: 2
@@ -409,7 +407,7 @@ MonoBehaviour:
   taserChanceRandomizer: 1
   seedShootChanceRandomizer: 1
   isFacingRight: 0
-  phaseTwoEnemiesDestroyed: 1
+  phaseTwoEnemiesDestroyed: 0
 --- !u!114 &8410908677858590967
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -422,9 +420,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e85f99a78ea71c14bb56436ea514cc78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 25
+  maxHealth: 10
   debugHealth: 0
-  destroyWhenDead: 0
+  destroyWhenDead: 1
   onDie:
     m_PersistentCalls:
       m_Calls:
