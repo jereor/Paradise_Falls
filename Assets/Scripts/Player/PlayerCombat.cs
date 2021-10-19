@@ -30,6 +30,7 @@ public class PlayerCombat : MonoBehaviour
     [Header("Attack Detection Variables")]
     public LayerMask enemyLayer;
     public LayerMask bossLayer;
+    public LayerMask bossWeakPointLayer;
     public Transform attackPoint; // Center of the hit point box we draw to check collisions
     public float attackRangeX; // Width of the check box
     public float attackRangeY; // Height
@@ -103,9 +104,6 @@ public class PlayerCombat : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-
-        Debug.Log(Mathf.Floor(3f * 1.5f));
-        Debug.Log(Mathf.Ceil(3f * 1.5f));
     }
 
     // Start is called before the first frame update
@@ -543,9 +541,9 @@ public class PlayerCombat : MonoBehaviour
     {
         foreach (Collider2D collider in colliders)
         {
-            if (layer == bossLayer)
+            //Debug.Log("wfea");
+            if (layer == bossWeakPointLayer || layer == bossLayer)
             {
-                Debug.Log("boss");
                 // Error check if there isn't Health script attached don't do damage
                 if (collider.TryGetComponent<Health>(out var healthScript))
                 {
@@ -561,7 +559,6 @@ public class PlayerCombat : MonoBehaviour
             }
             else if(layer == enemyLayer)
             {
-                Debug.Log("enemy");
                 // Error check if there isn't Health script attached don't do damage
                 if (collider.TryGetComponent<Health>(out var healthScript))
                 {
@@ -584,7 +581,7 @@ public class PlayerCombat : MonoBehaviour
 
         Collider2D[] hitBosses = Physics2D.OverlapBoxAll(attackPoint.position, new Vector2(attackRangeX, attackRangeY), 0f, bossLayer);
 
-        //Collider2D[] hitBossesWeakPoint = Physics2D.OverlapBoxAll(attackPoint.position, new Vector2(attackRangeX, attackRangeY), 0f, bossWeakPointLayer);
+        Collider2D[] hitBossesWeakPoint = Physics2D.OverlapBoxAll(attackPoint.position, new Vector2(attackRangeX, attackRangeY), 0f, bossWeakPointLayer);
 
         Debug.Log("DEALING DMG!! combo hit: " + comboIndex + " Heavy?: " + heavyHit);
         // Normal combo hits 1 and 2
@@ -596,35 +593,34 @@ public class PlayerCombat : MonoBehaviour
 
             // Dealing damage to bosses 
             // If we hit weakpoint we deal only the amount from weakpoint hit and "skip" checkin hitBosses colliders (prevent from dealing weakpoint + normal damage on one hit)
-            /*if(hitBossesWeakPoint.Length != 0)
+            if (hitBossesWeakPoint.Length != 0)
             {
                 // Deal damage
                 // Ceil since example: weakPointMultiplier = 1.5 lightDamage = 1 without rounding dmg = 1.5 with Floor dmg 1 with Ceil dmg = 2
                 // most likely not needed since weakPointMult 2x is standard in games 
-                DealDamageTo(hitEnemies, Mathf.Ceil(lightDamage * weakPointMultiplier), kbOnLightLast, knockbackForceLight, enemyLayer);
+                DealDamageTo(hitBossesWeakPoint, Mathf.Ceil(lightDamage * weakPointMultiplier), kbOnLight, knockbackForceLight, bossWeakPointLayer);
             }
-            else */
-            if (hitBosses.Length != 0)
-                DealDamageTo(hitEnemies, lightDamage, kbOnLight, knockbackForceLight, bossLayer);
+            else if (hitBosses.Length != 0)
+            {
+                DealDamageTo(hitBosses, lightDamage, kbOnLight, knockbackForceLight, bossLayer);
+            }
         }
         // Normal combo hit 3 aka last hit of combo
         else if (comboIndex == 3 && !heavyHit)
         {
             if (hitEnemies.Length != 0)
             {
-                // Ceil 1 + 1 = 2 || Floor 1 + 0 = 1 no damage boost from last combo attack
                 DealDamageTo(hitEnemies, Mathf.Ceil(lightDamage * lastHitMultiplier), kbOnLightLast, knockbackForceLight, enemyLayer);
             }
-            /*
+
             if (hitBossesWeakPoint.Length != 0)
             {
                 // Deal damage
-                DealDamageTo(hitEnemies, Mathf.Ceil(lightDamage * weakPointMultiplier * lastHitMultiplier), kbOnLightLast, knockbackForceLight, enemyLayer);           
+                DealDamageTo(hitBossesWeakPoint, Mathf.Ceil(lightDamage * weakPointMultiplier * lastHitMultiplier), kbOnLightLast, knockbackForceLight, bossWeakPointLayer);
             }
-            else*/
-            if (hitBosses.Length != 0)
+            else if (hitBosses.Length != 0)
             {
-                 DealDamageTo(hitEnemies, Mathf.Ceil(lightDamage * lastHitMultiplier), kbOnLightLast, knockbackForceLight, enemyLayer);
+                 DealDamageTo(hitBosses, Mathf.Ceil(lightDamage * lastHitMultiplier), kbOnLightLast, knockbackForceLight, bossLayer);
             }
         }
 

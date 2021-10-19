@@ -15,8 +15,8 @@ public class WeaponInteraction : MonoBehaviour
             weaponScript.Interact(collision.gameObject);
         }
         else if((collision.gameObject.layer == LayerMask.NameToLayer("Enemy") 
-            || collision.gameObject.layer == LayerMask.NameToLayer("Boss") )
-            //|| collision.gameObject.layer == LayerMask.NameToLayer(weakpoint) )
+            || collision.gameObject.layer == LayerMask.NameToLayer("Boss") 
+            || collision.gameObject.layer == LayerMask.NameToLayer("BossWeakPoint"))
             && (weaponScript.getBeingPulled() || weaponScript.isPowerBoosted()))
         {
             weaponScript.DealDamage(collision);

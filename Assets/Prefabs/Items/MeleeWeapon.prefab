@@ -254,6 +254,7 @@ MonoBehaviour:
   weaponThrowDamage: 1
   powerBoostedDamage: 3
   weaponPullDamage: 1
+  weakPointMultiplier: 2
   rotSpeed: 360
   ricochetImpulseForce: 5
   ricochetYImpulse: 3
