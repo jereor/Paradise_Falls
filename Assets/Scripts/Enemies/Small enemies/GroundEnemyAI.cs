@@ -11,6 +11,8 @@ public class GroundEnemyAI : MonoBehaviour
     private Health _targetHealth;
     private Energy _targetEnergy;
 
+    public bool bossMode;
+
     private Health health;
 
     [Header("Transforms")]
@@ -95,6 +97,13 @@ public class GroundEnemyAI : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        // Set speed and state to charge that if bossMode is true enemy starts at charge state with charge speed
+        if (bossMode)
+        {
+            state = "charge";
+            speed = chargeSpeed;
+        }
+
         seeker = GetComponent<Seeker>();
         rb = GetComponent<Rigidbody2D>();
         _targetHealth = target.GetComponent<Health>();
@@ -218,7 +227,11 @@ public class GroundEnemyAI : MonoBehaviour
             // Checks only for ground ahead, jumpable obstacles and walls.
             ObstacleCheck();
 
-            EnemyStateChange(forceX, obstacleBetweenTarget);
+            // bossMode true do bossMode states (charge, punch) ELSE do all other states (roam, charge etc.)
+            if (bossMode)
+                EnemyBossStateChange(forceX);
+            else
+                EnemyStateChange(forceX, obstacleBetweenTarget);
         }
     }
 
@@ -506,6 +519,107 @@ public class GroundEnemyAI : MonoBehaviour
                 break;
         }
     }
+
+    // ENEMY BEHAVIOUR STATES on bossMode charge, punch
+    // ---------------------------------------------------------------------------------------------------------------
+    private void EnemyBossStateChange(Vector2 forceX)
+    {
+        // switch-case system between different enemy states.
+        switch (state)
+        {
+            // CHARGE STATE
+            //------------------------------------------------------------------------------------------------------------------
+            //Here enemy charges the target. Checks if target is inside enemy unit's roaming range.
+            case "charge":
+                if (stunned) break;
+                gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.red;
+                // Inside the range, runs towards the target or jump randomly towards the target
+                if ((canMove && !IsPlayerInPunchingRange()) || (!IsPlayerInAggroRange() && canMove && !IsPlayerInPunchingRange()))
+                {
+                    int rand = UnityEngine.Random.Range(1, 101);
+                    FlipLocalScaleWithForce(forceX);
+                    if (rand <= jumpProbability && IsGrounded())
+                    {
+                        Vector2 force = new Vector2(transform.localScale.x * jumpHeight * 1.5f, jumpHeight).normalized;
+                        FlipLocalScaleWithForce(force);
+                        rb.AddForce(force * jumpChargeSpeed * Time.deltaTime, ForceMode2D.Impulse);
+                        StartCoroutine(JumpChargeCoolDown());
+                    }
+                    else
+                    {
+                        FlipLocalScaleWithForce(forceX);
+                        rb.AddForce(forceX);
+                        StartCoroutine(RunCoolDown());
+                    }
+                    break;
+                }
+                //If target is close enough the enemy unit, it changes the state to "punch"
+                if (IsPlayerInPunchingRange())
+                {
+                    state = "punch";
+                }
+                break;
+
+            // PUNCH STATE
+            //------------------------------------------------------------------------------------------------------------------
+            //Does damage to target if close enough. Otherwise goes to roam or charge state.
+            case "punch":
+                if (stunned) break;
+                if (canPunch && IsPlayerInPunchingRange())
+                {
+                    //Do damage to player here
+                    Debug.Log("Player hit");
+
+                    // Turns the enemy unit torwards the target when punching.
+                    if (target.transform.position.x - transform.position.x >= 0)
+                    {
+                        isFacingRight = true;
+                        transform.localScale = new Vector3(1f, 1f, 1f);
+                    }
+                    else
+                    {
+                        isFacingRight = false;
+                        transform.localScale = new Vector3(-1f, 1f, 1f);
+                    }
+
+                    if (target.TryGetComponent(out Shield shield))
+                    {
+                        if (shield.Parrying)
+                        {
+                            target.GetComponent<Shield>().HitWhileParried(); // Tell player parry was successful
+                            StartCoroutine(Stunned(1.5f)); // Get stunned
+                        }
+                        else
+                        {
+                            Debug.Log(attackPower);
+                            _targetHealth.TakeDamage(attackPower);
+
+                            //PlayerPushback();
+                            StartCoroutine(PlayerHit());
+                            StartCoroutine(PunchCoolDown());
+                        }
+                    }
+                    else
+                    {
+                        Debug.Log(attackPower);
+                        _targetHealth.TakeDamage(attackPower);
+
+                        //PlayerPushback();
+                        StartCoroutine(PlayerHit());
+                        StartCoroutine(PunchCoolDown());
+                    }
+                }
+                else if (!IsPlayerInPunchingRange())
+                {
+                    speed = chargeSpeed;
+                    state = "charge";
+                    //Debug.Log("Charge again!");
+                    break;
+                }
+                break;
+        }
+    }
+
 
     // Small knockback to the target when too close to the enemy unit. Knockback knocks slightly upwards so the friction doesn't stop the target right away.
     void PlayerPushback()
