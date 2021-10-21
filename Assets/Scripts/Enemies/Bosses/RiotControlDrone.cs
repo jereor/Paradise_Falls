@@ -14,6 +14,7 @@ public class RiotControlDrone : MonoBehaviour
     [SerializeField] private Transform[] colliders;
     [SerializeField] private Rigidbody2D playerRB;
     [SerializeField] private GameObject doorOne;
+    [SerializeField] private GameObject[] bossEnemies;
 
     [Header("Current State")]
     public RiotState state = RiotState.Idle;
@@ -89,6 +90,9 @@ public class RiotControlDrone : MonoBehaviour
     private bool changePhase = true;
     private bool openDoor = true;
     private bool isWaiting = false;
+    public bool spawnEnemies = false;
+    private bool isWaveOneEnemiesDestroyed = false;
+    private bool isWaveTwoEnemiesDestroyed = false;
     [SerializeField] private bool phaseTwoEnemiesDestroyed = false;
 
     private bool chargeDirectionCalculated;
@@ -100,6 +104,7 @@ public class RiotControlDrone : MonoBehaviour
     private int chargeCooldownRandomizer = 3;
     private int dashAttackCooldownRandomizer = 3;
 
+    private float waitTime = 3f;
 
     private int attackRandomizer = 1; // Value between 1-100.
 
@@ -208,6 +213,11 @@ public class RiotControlDrone : MonoBehaviour
 
             case RiotState.PhaseThreeStun:
                 HandlePhaseThreeStun();
+                if(spawnEnemies)
+                {
+                    HandleWaveOne();
+                    HandleWaveTwo();
+                }
                 break;
 
             case RiotState.PhaseThreeMoving:
@@ -364,7 +374,7 @@ public class RiotControlDrone : MonoBehaviour
             stunned = false;
             chargeDirectionCalculated = false;
             ChangeToDefaultLayer();
-            StartCoroutine(Wait());
+            StartCoroutine(Wait(3));
         }
         
         if (!flashingRed)
@@ -414,6 +424,56 @@ public class RiotControlDrone : MonoBehaviour
         //    StartCoroutine(PhaseTwoStunned());
         //}
 
+    }
+
+    private void HandleWaveOne()
+    {
+        if(phaseTwoEnemiesDestroyed || isWaveOneEnemiesDestroyed) { return; }
+
+        //if(!isWaiting)
+        //{
+        //    StartCoroutine(Wait(3));
+        //}
+
+        if(!isWaiting && !isWaveOneEnemiesDestroyed)
+        {
+            if(bossEnemies[0] != null && bossEnemies[1] != null)
+            {
+                bossEnemies[0].SetActive(true);
+                bossEnemies[1].SetActive(true);
+            }
+
+            if(bossEnemies[0] == null && bossEnemies[1] == null)
+            {
+                isWaveOneEnemiesDestroyed = true;
+            }
+            
+        }
+    }
+
+    private void HandleWaveTwo()
+    {
+        if (!isWaveOneEnemiesDestroyed || phaseTwoEnemiesDestroyed || isWaveTwoEnemiesDestroyed) { return; }
+
+        //if (!isWaiting)
+        //{
+        //    StartCoroutine(Wait(3));
+        //}
+
+        if (!isWaiting && !isWaveTwoEnemiesDestroyed)
+        {
+            if (bossEnemies[2] != null && bossEnemies[3] != null)
+            {
+                bossEnemies[2].SetActive(true);
+                bossEnemies[3].SetActive(true);
+            }
+            if (bossEnemies[2] == null && bossEnemies[3] == null)
+            {
+                isWaveTwoEnemiesDestroyed = true;
+                phaseTwoEnemiesDestroyed = true;
+            }
+
+        }
     }
 
     private void HandlePhaseThreeMoving()
@@ -558,10 +618,10 @@ public class RiotControlDrone : MonoBehaviour
         readyToCharge = true;
     }
 
-    private IEnumerator Wait()
+    private IEnumerator Wait( int waitT)
     {
         isWaiting = true;
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(waitT);
         isWaiting = false;
     }
 
@@ -903,6 +963,11 @@ public class RiotControlDrone : MonoBehaviour
     public bool getIsEnraged()
     {
         return isEnraged;
+    }
+
+    public void setSpawnEnemies(bool b)
+    {
+        spawnEnemies = b;
     }
 
 }

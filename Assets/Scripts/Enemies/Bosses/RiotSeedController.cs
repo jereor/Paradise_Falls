@@ -42,7 +42,6 @@ public class RiotSeedController : MonoBehaviour
         rb.velocity = Vector2.zero;
         
         direction = (target.transform.position - transform.position).normalized;
-        Debug.Log(direction);
 
         Vector2 force = direction * projectileSpeed;
         rb.AddForce(force, ForceMode2D.Impulse);

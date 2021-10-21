@@ -426,7 +426,7 @@ public class GroundEnemyAI : MonoBehaviour
                     break;
                 }
                 // Inside the range, runs towards the target or jump randomly towards the target
-                if ((IsPlayerInAggroRange() && canMove && !IsPlayerInPunchingRange()) || (!IsPlayerInAggroRange() && canMove && isForcedToAggro && !IsPlayerInPunchingRange()))
+                if (IsGrounded() && ((IsPlayerInAggroRange() && canMove && !IsPlayerInPunchingRange()) || (!IsPlayerInAggroRange() && canMove && isForcedToAggro && !IsPlayerInPunchingRange())))
                 {
                     int rand = UnityEngine.Random.Range(1, 101);
                     FlipLocalScaleWithForce(forceX);
@@ -534,7 +534,7 @@ public class GroundEnemyAI : MonoBehaviour
                 if (stunned) break;
                 gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.red;
                 // Inside the range, runs towards the target or jump randomly towards the target
-                if ((canMove && !IsPlayerInPunchingRange()) || (!IsPlayerInAggroRange() && canMove && !IsPlayerInPunchingRange()))
+                if (IsGrounded() && ((canMove && !IsPlayerInPunchingRange()) || (!IsPlayerInAggroRange() && canMove && !IsPlayerInPunchingRange())))
                 {
                     int rand = UnityEngine.Random.Range(1, 101);
                     FlipLocalScaleWithForce(forceX);
