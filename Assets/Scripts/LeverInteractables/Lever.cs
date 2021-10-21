@@ -52,8 +52,25 @@ public class Lever : Interactable
     {
         // Lever functionality. Call for the attached objects' functionality here.
         // If player doesn't have the tool for using lever spots, return.
-        if (isLeverUsed || !canUseMultitoolForLevers){ return; }
-        else
+        if (!canUseMultitoolForLevers){ return; }
+        if(isLeverUsed)
+        {
+            Debug.Log("PULLED LEVER");
+            int i = 0;
+            foreach (GameObject movingObject in objectsToInteractWith)
+            {
+                if (movingObject.tag == "Drawbridge")
+                {
+                    movingObject.GetComponent<DrawBridgeController>().Work();
+                }
+                if (movingObject.tag == "Door")
+                {
+                    movingObject.GetComponent<DoorController>().Work();
+                }
+                i++;
+            }
+        }
+        else if(!isLeverUsed)
         {
             // Currently used only for testing. Replace this move with objects' own functions.
             Debug.Log("PULLED LEVER");

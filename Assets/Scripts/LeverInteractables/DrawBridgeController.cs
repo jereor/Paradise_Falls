@@ -11,21 +11,46 @@ public class DrawBridgeController : MonoBehaviour
     public leftOrRight direction = new leftOrRight();
 
     [Header("Amount of rotation")]
-    public float rotateAmount; 
+    public float rotateAmount;
 
+    private bool isDrawBridgeLowered = false;
+    private Quaternion startRotation;
 
+    void Start()
+    {
+        startRotation = transform.rotation;
+    }
     public void Work()
     {
-        switch(direction)
+        if(!isDrawBridgeLowered)
         {
-            case leftOrRight.Left:
-                transform.DORotate(new Vector3(0, 0, gameObject.transform.rotation.z - rotateAmount), duration);
-                break;
+            switch (direction)
+            {
+                case leftOrRight.Left:
+                    transform.DORotate(new Vector3(0, 0, startRotation.z - rotateAmount), duration);
+                    break;
 
-            case leftOrRight.Right:
-                transform.DORotate(new Vector3(0, 0, transform.rotation.z + rotateAmount), duration);
-                break;
+                case leftOrRight.Right:
+                    transform.DORotate(new Vector3(0, 0, startRotation.z + rotateAmount), duration);
+                    break;
+            }
+            isDrawBridgeLowered = true;
         }
+        else if(isDrawBridgeLowered)
+        {
+            switch (direction)
+            {
+                case leftOrRight.Left:
+                    transform.DORotate(new Vector3(0, 0, startRotation.z), duration);
+                    break;
+
+                case leftOrRight.Right:
+                    transform.DORotate(new Vector3(0, 0, startRotation.z), duration);
+                    break;
+            }
+            isDrawBridgeLowered = false;
+        }
+
     }
 
     public enum leftOrRight
