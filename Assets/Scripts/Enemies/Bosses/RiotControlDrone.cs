@@ -73,6 +73,7 @@ public class RiotControlDrone : MonoBehaviour
     [SerializeField] private bool isFacingRight = false;
     private Vector2 vectorToTarget;
 
+    private bool canStart = false;
     private bool canMove = true;
     private bool canAttack = true;
     private bool canDashAttack = true;
@@ -248,7 +249,19 @@ public class RiotControlDrone : MonoBehaviour
 
     private void HandleIdleState()
     {
+        if(!canStart)
+        {
+            if(!isWaiting)
+                StartCoroutine(Wait(3));
+            if(!flashingRed)
+                StartCoroutine(FlashRed());
+            canStart = true;
+        }
 
+        if(!isWaiting && canStart)
+        {
+            state = RiotState.Moving;
+        }
     }
 
     // Moves the boss in the direction of player only on X-axis. If target is in hit range, change state.
@@ -337,13 +350,6 @@ public class RiotControlDrone : MonoBehaviour
                 ChangeToBossLayer();
                 isBossLayer = true;
             }
-
-
-            //Debug.Log("Stun ended");
-            //chargeDirectionCalculated = false;
-            //canChargeToTarget = false;
-            //state = RiotState.Moving;
-
         }
     }
 
@@ -418,12 +424,6 @@ public class RiotControlDrone : MonoBehaviour
             state = RiotState.PhaseThreeMoving;
             return;
         }
-        // If boss isn't already stunned, stun it infinitely until all smaller enemies are destroyed.
-        //if(!stunned)
-        //{
-        //    StartCoroutine(PhaseTwoStunned());
-        //}
-
     }
 
     private void HandleWaveOne()
@@ -968,6 +968,11 @@ public class RiotControlDrone : MonoBehaviour
     public void setSpawnEnemies(bool b)
     {
         spawnEnemies = b;
+    }
+
+    public void StartBattle()
+    {
+        state = RiotState.Idle;
     }
 
 }
