@@ -8,6 +8,8 @@ public class DoorController : MonoBehaviour
     private Vector2 startPosition;
     public Vector2 endPosition;
     public float moveTime;
+    private bool moving = false;
+    private bool isDoorOpen = false;
 
     void Start()
     {
@@ -24,11 +26,28 @@ public class DoorController : MonoBehaviour
     // Moves the game object to the designated location.
     public void Work()
     {
-        transform.DOMove(new Vector2(transform.position.x + endPosition.x, transform.position.y + endPosition.y), moveTime);
+        if(!isDoorOpen)
+        {
+            //StartCoroutine(DoorMoving());
+            transform.DOMove(new Vector2(transform.position.x + endPosition.x, transform.position.y + endPosition.y), moveTime);
+            isDoorOpen = true;
+        }
+        else if(isDoorOpen)
+        {
+            //StartCoroutine(DoorMoving());
+            transform.DOMove(new Vector2(startPosition.x, startPosition.y), moveTime);
+            isDoorOpen = false;
+        }
     }
+    //private IEnumerator DoorMoving()
+    //{
+    //    moving = true;
+    //    yield return new WaitForSeconds(moveTime);
+    //    moving = false;
+    //}
 
-    public void WorkReverse()
-    {
-        transform.DOMove(new Vector2(startPosition.x, startPosition.y), moveTime);
-    }
+    //public bool getMoving()
+    //{
+    //    return moving;
+    //}
 }
