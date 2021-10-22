@@ -247,14 +247,13 @@ public class RiotControlDrone : MonoBehaviour
     // PHASE ONE
     //---------------------------------------------------------------------------------------------------------------------------------
 
+    // Boss is here only in the beginning of the fight.
     private void HandleIdleState()
     {
         if(!canStart)
         {
             if(!isWaiting)
                 StartCoroutine(Wait(3));
-            if(!flashingRed)
-                StartCoroutine(FlashRed());
             canStart = true;
         }
 
@@ -676,7 +675,9 @@ public class RiotControlDrone : MonoBehaviour
         float collisionAngle = Vector2.SignedAngle(Vector2.right, Vector2.up);
         Quaternion q = Quaternion.AngleAxis(collisionAngle, Vector3.forward);
         if(!isFacingRight)
-        gameObject.transform.GetChild(4).DORotate(new Vector3(0, 0, -90), lightAttackCoolDown); // Simple visual effect for baton so player knows when to hit and not.
+            gameObject.transform.GetChild(4).DORotate(new Vector3(0, 0, -90), lightAttackCoolDown); // Simple visual effect for baton so player knows when to hit and not.
+        else
+            gameObject.transform.GetChild(4).DORotate(new Vector3(0, 0, 90), lightAttackCoolDown);
 
         yield return new WaitForSeconds(lightAttackCoolDown);
         // Deal damage to player if still in range.
@@ -717,7 +718,10 @@ public class RiotControlDrone : MonoBehaviour
 
         float collisionAngle = Vector2.SignedAngle(Vector2.right, Vector2.up);
         Quaternion q = Quaternion.AngleAxis(collisionAngle, Vector3.forward);
-        gameObject.transform.GetChild(4).DORotate(new Vector3(0, 0, -90), heavyAttackChargeTime); // Simple visual effect for baton so player knows when to hit and not.
+        if (!isFacingRight)
+            gameObject.transform.GetChild(4).DORotate(new Vector3(0, 0, -90), heavyAttackCoolDown); // Simple visual effect for baton so player knows when to hit and not.
+        else
+            gameObject.transform.GetChild(4).DORotate(new Vector3(0, 0, 90), heavyAttackCoolDown);
 
         yield return new WaitForSeconds(heavyAttackChargeTime);
         // Deal damage to player if still in range.
@@ -751,6 +755,7 @@ public class RiotControlDrone : MonoBehaviour
         canAttack = true;
     }
 
+    // Instantiates taserbeam gameobject
     private IEnumerator TaserShoot()
     {
         taserOnCooldown = true;
@@ -764,6 +769,7 @@ public class RiotControlDrone : MonoBehaviour
         taserOnCooldown = false;
     }
 
+    // Shoots a random amount of seeds between 1-3 towards the player.
     private IEnumerator SeedShoot()
     {
         seedShootOnCooldown = true;
@@ -783,6 +789,7 @@ public class RiotControlDrone : MonoBehaviour
         seedShootOnCooldown = false;
     }
 
+    // A quick dash towards the player during third phase.
     private IEnumerator DashAttack()
     {
         bool takenDamage = false; // Bool so player doesn't take damage more than once during the dash.
@@ -847,6 +854,7 @@ public class RiotControlDrone : MonoBehaviour
         return Physics2D.OverlapBox(new Vector2(transform.position.x + (transform.localScale.x * dashOffset.x), transform.position.y + dashOffset.y), areaToDash, 0, playerLayer);
     }
 
+    // Check during third phase to see if the dash is going to hit the wall or not. If is, don't dash.
     private bool AmIGoingToHitAWallAgain()
     {
         return Physics2D.OverlapBox(new Vector2(transform.position.x + (transform.localScale.x * dashOffset.x), transform.position.y + dashOffset.y), areaToDash, 0, groundLayer);
@@ -874,6 +882,7 @@ public class RiotControlDrone : MonoBehaviour
     // Timers to randomize action timings.
     private void Timers()
     {
+        // Shield charge counter
         if (chargeOnCooldown)
         {
             lastChargeCounter += Time.deltaTime;
@@ -885,6 +894,7 @@ public class RiotControlDrone : MonoBehaviour
             lastChargeCounter = 0;
         }
 
+        // Dashattack counter.
         if(!canDashAttack)
         {
             lastDashAttackCounter += Time.deltaTime;
@@ -969,10 +979,4 @@ public class RiotControlDrone : MonoBehaviour
     {
         spawnEnemies = b;
     }
-
-    public void StartBattle()
-    {
-        state = RiotState.Idle;
-    }
-
 }
