@@ -17,6 +17,7 @@ public class Lever : Interactable
     private bool isLeverUsed = false;
     private bool isTurnedToLeft = false;
     private bool turning = false;
+    private bool objectIsMoving = false;
 
     // Player is in the range of lever
     private void OnTriggerEnter2D(Collider2D collision)
@@ -67,29 +68,43 @@ public class Lever : Interactable
         if (!GameObject.Find("Player").GetComponent<PlayerCombat>().getWeaponWielded()){ return; }
         if(!turning && !isLeverUsed)
         {
-            StartCoroutine(LeverTurnTime());
-
-
-            // Currently used only for testing. Replace this move with objects' own functions.
-            Debug.Log("PULLED LEVER");
-            int i = 0;
             foreach (GameObject movingObject in objectsToInteractWith)
             {
                 if (movingObject.tag == "Drawbridge")
                 {
-                    movingObject.GetComponent<DrawBridgeController>().Work();
+                    if (movingObject.GetComponent<DrawBridgeController>().getMoving()) { objectIsMoving = true; }
                 }
                 if (movingObject.tag == "Door")
                 {
-                    movingObject.GetComponent<DoorController>().Work();
+                    if (movingObject.GetComponent<DoorController>().getMoving()) { objectIsMoving = true; }
                 }
-                i++;
             }
 
-            if (!isMultiUseLever)
+            if (!objectIsMoving)
             {
-                isLeverUsed = true;
+                StartCoroutine(LeverTurnTime());
+                // Currently used only for testing. Replace this move with objects' own functions.
+                Debug.Log("PULLED LEVER");
+                int i = 0;
+                foreach (GameObject movingObject in objectsToInteractWith)
+                {
+                    if (movingObject.tag == "Drawbridge")
+                    {
+                        movingObject.GetComponent<DrawBridgeController>().Work();
+                    }
+                    if (movingObject.tag == "Door")
+                    {
+                        movingObject.GetComponent<DoorController>().Work();
+                    }
+                    i++;
+                }
+
+                if (!isMultiUseLever)
+                {
+                    isLeverUsed = true;
+                }
             }
+            objectIsMoving = false;
         }
     }
 

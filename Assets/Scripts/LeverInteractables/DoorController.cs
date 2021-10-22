@@ -28,26 +28,25 @@ public class DoorController : MonoBehaviour
     {
         if(!isDoorOpen)
         {
-            //StartCoroutine(DoorMoving());
+            StartCoroutine(DoorMoving());
             transform.DOMove(new Vector2(transform.position.x + endPosition.x, transform.position.y + endPosition.y), moveTime);
-            isDoorOpen = true;
         }
         else if(isDoorOpen)
         {
-            //StartCoroutine(DoorMoving());
+            StartCoroutine(DoorMoving());
             transform.DOMove(new Vector2(startPosition.x, startPosition.y), moveTime);
-            isDoorOpen = false;
         }
     }
-    //private IEnumerator DoorMoving()
-    //{
-    //    moving = true;
-    //    yield return new WaitForSeconds(moveTime);
-    //    moving = false;
-    //}
+    private IEnumerator DoorMoving()
+    {
+        moving = true;
+        yield return new WaitForSeconds(moveTime);
+        isDoorOpen = !isDoorOpen;
+        moving = false;
+    }
 
-    //public bool getMoving()
-    //{
-    //    return moving;
-    //}
+    public bool getMoving()
+    {
+        return moving;
+    }
 }
