@@ -6,8 +6,8 @@ using DG.Tweening;
 public class DoorController : MonoBehaviour
 {
     private Vector2 startPosition;
-    public Vector2 endPosition;
-    public float moveTime;
+    [SerializeField] private Vector2 endPosition;
+    [SerializeField] private float moveTime;
     private bool moving = false;
     private bool isDoorOpen = false;
 
