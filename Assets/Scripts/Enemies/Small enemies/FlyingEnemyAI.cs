@@ -607,7 +607,6 @@ public class FlyingEnemyAI : MonoBehaviour
                 // Check if player is still holding their shield up.
                 if (!targetShield.Blocking)
                 {
-                    StartCoroutine(ShootCoolDown());
                     state = "shoot";
                     Physics2D.IgnoreLayerCollision(3, 7);
                     break;

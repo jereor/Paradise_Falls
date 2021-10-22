@@ -413,7 +413,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8573934192724097595, guid: 8bac6f9709cdb534896f74f5ba66fabb, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 39.075
+      value: 35.38
       objectReference: {fileID: 0}
     - target: {fileID: 8573934192724097595, guid: 8bac6f9709cdb534896f74f5ba66fabb, type: 3}
       propertyPath: m_LocalPosition.y
@@ -1363,8 +1363,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 633896534}
   m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: -18.221802, y: -1.9763, z: 0}
-  m_LocalScale: {x: 29.186026, y: 15.4398, z: 1}
+  m_LocalPosition: {x: -17.3109, y: -1.9763, z: 0}
+  m_LocalScale: {x: 29.186026, y: 17.261698, z: 1}
   m_Children: []
   m_Father: {fileID: 547708081}
   m_RootOrder: 2
@@ -1590,8 +1590,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 728342468}
   m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: 5.0729, y: 15.9288, z: 0}
-  m_LocalScale: {x: 19.462753, y: 24.68935, z: 1}
+  m_LocalPosition: {x: 6.2571, y: 15.9288, z: 0}
+  m_LocalScale: {x: 19.462753, y: 22.321642, z: 1}
   m_Children: []
   m_Father: {fileID: 547708081}
   m_RootOrder: 4
@@ -2370,8 +2370,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1033439529}
   m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: 42.2394, y: 5.83, z: 0}
-  m_LocalScale: {x: 17.28233, y: 7.4657826, z: 1}
+  m_LocalPosition: {x: 40.3915, y: 5.83, z: 0}
+  m_LocalScale: {x: 17.28233, y: 11.1613455, z: 1}
   m_Children: []
   m_Father: {fileID: 547708081}
   m_RootOrder: 6
@@ -2465,7 +2465,7 @@ GameObject:
   - component: {fileID: 1202563585}
   - component: {fileID: 1202563583}
   m_Layer: 0
-  m_Name: RiotBossPhaseTwo (1)
+  m_Name: RiotBossPhaseTwoTransition
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4247,7 +4247,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 1
-  m_Offset: {x: 0.4, y: 3.5258937}
+  m_Offset: {x: 1.2, y: 3.5258937}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -4258,7 +4258,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 23, y: 20.235825}
+  m_Size: {x: 21.29, y: 20.235825}
   m_EdgeRadius: 0
 --- !u!66 &2049820520845234698
 CompositeCollider2D:
@@ -4280,20 +4280,20 @@ CompositeCollider2D:
   m_ColliderPaths:
   - m_Collider: {fileID: 2049820520845234697}
     m_ColliderPaths:
-    - - X: 118999707
+    - - X: 118449707
         Y: -65920188
-      - X: 118999707
+      - X: 118449707
         Y: 136438064
-      - X: -111000000
+      - X: -94450008
         Y: 136437771
-      - X: -110999707
+      - X: -94449715
         Y: -65920188
   m_CompositePaths:
     m_Paths:
-    - - {x: 11.899941, y: -6.592019}
-      - {x: 11.899941, y: 13.643806}
-      - {x: -11.1, y: 13.643747}
-      - {x: -11.099941, y: -6.592019}
+    - - {x: 11.844942, y: -6.592019}
+      - {x: 11.844942, y: 13.643806}
+      - {x: -9.445001, y: 13.643747}
+      - {x: -9.444942, y: -6.592019}
   m_VertexDistance: 0.0005
   m_OffsetDistance: 0.00005
 --- !u!50 &2049820520845234699
