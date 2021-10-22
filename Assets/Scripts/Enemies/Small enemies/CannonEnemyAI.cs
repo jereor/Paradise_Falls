@@ -24,7 +24,7 @@ public class CannonEnemyAI : MonoBehaviour
     [SerializeField] LayerMask playerLayer;
 
     [Header("State and Parameters")]
-    [SerializeField] private string state = "wait";
+    [SerializeField] public CannonStates currentState = CannonStates.Idle;
     [SerializeField] private float aggroDistance = 5f;
     [SerializeField] private float shootingDistance = 10f;
     [SerializeField] private float wallCheckDistance = 2f; // How far of a wall the enemy truns around.
@@ -58,7 +58,7 @@ public class CannonEnemyAI : MonoBehaviour
         // Set speed and state to charge that if bossMode is true enemy starts at charge state with charge speed
         if (bossMode)
         {
-            state = "shoot";
+            currentState = CannonStates.Aim;
         }
 
         seeker = GetComponent<Seeker>();
@@ -117,34 +117,11 @@ public class CannonEnemyAI : MonoBehaviour
 
         if (isTargetInBehaviourRange)
         {
-
-            //Calculates the next path point and the amount of force applied
-            Vector2 direction = ((Vector2)path.vectorPath[currentWaypoint] - rb.position).normalized;
-            Vector2 force = direction * Time.deltaTime;
-
-            //Distance between the enemy and next waypoint
-            float distance = Vector2.Distance(rb.position, path.vectorPath[currentWaypoint]);
-
-            //Keeps the count of the waypoints
-            if (distance < nextWaypointDistance) { currentWaypoint++; }
-
             if (bossMode)
-                EnemyBossStateChange(force);
+                EnemyBossStateChange();
             else
-                EnemyStateChange(force);
+                EnemyStateChange();
         }
-    }
-
-    //Does not serve any purpose at the moment.
-    private IEnumerator UpdatePath(float waitTime)
-    {
-        if (seeker.IsDone())
-        {
-            seeker.StartPath(rb.position, target.position, OnPathComplete);
-            Debug.Log("Path updated.");
-        }
-
-        yield return new WaitForSeconds(waitTime);
     }
 
     private IEnumerator ShootCoolDown()
@@ -153,7 +130,6 @@ public class CannonEnemyAI : MonoBehaviour
         yield return new WaitForSeconds(shootCooldown);
         canShoot = true;
     }
-
 
 
     private bool IsPlayerInAggroRange()
@@ -174,123 +150,33 @@ public class CannonEnemyAI : MonoBehaviour
     // ENEMY BEHAVIOUR STATES
     // --------------------------------------------------------------------------------------------------------------------------
 
-    private void EnemyStateChange(Vector2 force)
+    private void EnemyStateChange()
     {
-        //switch-case system between different enemy states.
-        switch (state)
+        switch (currentState)
         {
-            // WAIT STATE
-            //-------------------------------------------------------------------------------------------------------
-            case "wait":
-                //If target is close enough the enemy unit, charges it towards the player.              
-                if (IsPlayerInAggroRange())
-                {
-                    CancelInvoke();
-                    InvokeRepeating("UpdatePathToPlayer", 0f, pathUpdateInterval);
-                    state = "shoot";
-                    gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.red;
-                    break;
-                }
-
+            case CannonStates.Idle:
+                HandleIdleState();
                 break;
-
-            // SHOOT STATE
-            //-------------------------------------------------------------------------------------------------------------------
-            //Does damage to target if close enough. Otherwise goes to roam or charge state.
-            case "shoot":
-                // Bullets do the damage, this only checks if the bullet can hit the target from current angle.
-                Debug.DrawRay(transform.position, target.transform.position - transform.position, Color.blue);
-
-                if (canShoot)
-                {
-                    // Draws two rays in the direction of the target. First checks if there's ground in between the enemy unit and the target, second checks if it hit the target.
-                    RaycastHit2D hitGround;
-                    RaycastHit2D hitPlayer;
-                    hitGround = Physics2D.Raycast(transform.position, (target.transform.position - transform.position), (target.transform.position - transform.position).magnitude, groundLayer);
-                    hitPlayer = Physics2D.Raycast(transform.position, (target.transform.position - transform.position), (target.transform.position - transform.position).magnitude, playerLayer);
-                    if (hitPlayer && !hitGround)
-                    {
-                        // Instantiate a bullet prefab from enemy unit location.
-                        GameObject bulletObject = Instantiate(bullet, shootTransform.position, Quaternion.identity);
-                        bulletObject.GetComponent<BulletBehaviour>().shooter = this.gameObject;
-                        StartCoroutine(ShootCoolDown());
-                    }
-                    // If the target is in shooting range but there's a ground in between, enemy unit tries to find a path past it.
-                    else if (hitPlayer && hitGround)
-                    {
-                        //Debug.Log("Moving closer.");
-                        rb.AddForce(force);
-                    }
-
-                    // Turns the enemy unit torwards the target when shooting.
-                    if (target.transform.position.x - transform.position.x >= 0)
-                    {
-                        transform.localScale = new Vector3(1f, 1f, 1f);
-                    }
-                    else
-                    {
-                        transform.localScale = new Vector3(-1f, 1f, 1f);
-                    }
-                }
-                // If target goes out of enemy's bounds, return to "roam" state, otherwise start chasing again.
-                if (!IsPlayerInAggroRange())
-                {
-                    CancelInvoke();
-                    InvokeRepeating("UpdatePathReturn", 0f, pathUpdateInterval);
-                    state = "wait";
-                    gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.green;
-                    break;
-                }
+            case CannonStates.Aim:
+                HandleAimState();
+                break;
+            case CannonStates.Shoot:
+                HandleShootState();
                 break;
         }
     }
 
     // ENEMY BEHAVIOUR STATES
     // --------------------------------------------------------------------------------------------------------------------------
-    private void EnemyBossStateChange(Vector2 force)
+    private void EnemyBossStateChange()
     {
-        //switch-case system between different enemy states.
-        switch (state)
+        switch (currentState)
         {
-
-            // SHOOT STATE
-            //-------------------------------------------------------------------------------------------------------------------
-            //Does damage to target if close enough. Otherwise goes to roam or charge state.
-            case "shoot":
-                // Bullets do the damage, this only checks if the bullet can hit the target from current angle.
-                gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.green;
-                Debug.DrawRay(transform.position, target.transform.position - transform.position, Color.blue);
-                if (canShoot)
-                {
-                    // Draws two rays in the direction of the target. First checks if there's ground in between the enemy unit and the target, second checks if it hit the target.
-                    RaycastHit2D hitGround;
-                    RaycastHit2D hitPlayer;
-                    hitGround = Physics2D.Raycast(transform.position, (target.transform.position - transform.position), (target.transform.position - transform.position).magnitude, groundLayer);
-                    hitPlayer = Physics2D.Raycast(transform.position, (target.transform.position - transform.position), (target.transform.position - transform.position).magnitude, playerLayer);
-                    if (hitPlayer && !hitGround)
-                    {
-                        // Instantiate a bullet prefab from enemy unit location.
-                        GameObject bulletObject = Instantiate(bullet, shootTransform.position, Quaternion.identity);
-                        bulletObject.GetComponent<BulletBehaviour>().shooter = this.gameObject;
-                        StartCoroutine(ShootCoolDown());
-                    }
-                    // If the target is in shooting range but there's a ground in between, enemy unit tries to find a path past it.
-                    else if (hitPlayer && hitGround)
-                    {
-                        //Debug.Log("Moving closer.");
-                        rb.AddForce(force);
-                    }
-
-                    // Turns the enemy unit torwards the target when shooting.
-                    if (target.transform.position.x - transform.position.x >= 0)
-                    {
-                        transform.localScale = new Vector3(1f, 1f, 1f);
-                    }
-                    else
-                    {
-                        transform.localScale = new Vector3(-1f, 1f, 1f);
-                    }
-                }
+            case CannonStates.Aim:
+                HandleAimState();
+                break;
+            case CannonStates.Shoot:
+                HandleShootState();
                 break;
         }
     }
@@ -311,18 +197,104 @@ public class CannonEnemyAI : MonoBehaviour
 
     }
 
-    // Flips the localscale of the enemy unit by given force.
-    private void FlipLocalScaleWithForce(Vector2 force)
+    private void HandleIdleState()
     {
-        if (force.x >= 0.1f)
+        //If target is close enough the enemy unit, charges it towards the player.              
+        if (IsPlayerInAggroRange())
+        {
+            CancelInvoke();
+            InvokeRepeating("UpdatePathToPlayer", 0f, pathUpdateInterval);
+            currentState = CannonStates.Aim;
+            gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.grey;
+        }
+    }
+
+    private void HandleAimState()
+    {
+        Vector2 vectorToPlayer = target.transform.position - gameObject.transform.position;
+        // Turns the enemy unit torwards the target when shooting.
+        if(Vector2.Dot((Vector2)gameObject.transform.right.normalized, vectorToPlayer.normalized) == 1)
+        {
+            currentState = CannonStates.Shoot;
+            gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.red;
+        }
+        if (target.transform.position.x - transform.position.x >= 0)
         {
             transform.localScale = new Vector3(1f, 1f, 1f);
-            isFacingRight = true;
+            //Vector2 vectorToPlayer = target.transform.position - gameObject.transform.position;
+            gameObject.transform.right = vectorToPlayer;
+
+            //Debug.Log(target.transform.position);
+            //float angle = Mathf.Atan2(target.transform.position.y, target.transform.position.x) * Mathf.Rad2Deg;
+            //Debug.Log(angle);
+            //transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
         }
-        else if (force.x <= -0.1f)
+        else
         {
             transform.localScale = new Vector3(-1f, 1f, 1f);
-            isFacingRight = false;
+            //Vector2 vectorToPlayer = target.transform.position - gameObject.transform.position;
+            gameObject.transform.right = -vectorToPlayer;
         }
+    }
+
+    private void HandleShootState()
+    {
+        Debug.DrawRay(transform.position, target.transform.position - transform.position, Color.blue);
+
+        Vector2 vectorToPlayer = target.transform.position - gameObject.transform.position;
+        // Turns the enemy unit torwards the target when shooting.
+        if (Vector2.Dot((Vector2)gameObject.transform.right.normalized, vectorToPlayer.normalized) != 1)
+        {
+            currentState = CannonStates.Aim;
+            gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.grey;
+            return;
+        }
+
+        if (canShoot)
+        {
+            // Draws two rays in the direction of the target. First checks if there's ground in between the enemy unit and the target, second checks if it hit the target.
+            RaycastHit2D hitGround;
+            RaycastHit2D hitPlayer;
+            hitGround = Physics2D.Raycast(transform.position, (target.transform.position - transform.position), (target.transform.position - transform.position).magnitude, groundLayer);
+            hitPlayer = Physics2D.Raycast(transform.position, (target.transform.position - transform.position), (target.transform.position - transform.position).magnitude, playerLayer);
+            if (hitPlayer && !hitGround)
+            {
+                // Instantiate a bullet prefab from enemy unit location.
+                GameObject bulletObject = Instantiate(bullet, shootTransform.position, Quaternion.identity);
+                bulletObject.GetComponent<BulletBehaviour>().shooter = this.gameObject;
+                StartCoroutine(ShootCoolDown());
+            }
+
+            // Turns the enemy unit torwards the target when shooting.
+            if (target.transform.position.x - transform.position.x >= 0)
+            {
+                transform.localScale = new Vector3(1f, 1f, 1f);
+                Debug.Log(target.transform.position);
+                float angle = Mathf.Atan2(target.transform.position.y, target.transform.position.x) * Mathf.Rad2Deg;
+                Debug.Log(angle);
+                transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+            }
+            else
+            {
+                transform.localScale = new Vector3(-1f, 1f, 1f);
+                float angle = Mathf.Atan2(target.transform.position.y, target.transform.position.x) * Mathf.Rad2Deg;
+                transform.rotation = Quaternion.AngleAxis(-angle, Vector3.forward);
+            }
+        }
+        // If target goes out of enemy's bounds, return to "roam" state, otherwise start chasing again.
+        if (!IsPlayerInAggroRange())
+        {
+            CancelInvoke();
+            InvokeRepeating("UpdatePathReturn", 0f, pathUpdateInterval);
+            currentState = CannonStates.Idle;
+            gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.green;
+        }
+    }
+
+    public enum CannonStates
+    {
+        Idle,
+        Aim,
+        Shoot
     }
 }
