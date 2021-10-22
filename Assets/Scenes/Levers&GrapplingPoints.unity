@@ -719,6 +719,10 @@ PrefabInstance:
       value: Door
       objectReference: {fileID: 0}
     - target: {fileID: 8573934192724097594, guid: 8bac6f9709cdb534896f74f5ba66fabb, type: 3}
+      propertyPath: moveTime
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8573934192724097594, guid: 8bac6f9709cdb534896f74f5ba66fabb, type: 3}
       propertyPath: endPosition.y
       value: 5
       objectReference: {fileID: 0}
@@ -1541,9 +1545,21 @@ PrefabInstance:
     m_TransformParent: {fileID: 894179382}
     m_Modifications:
     - target: {fileID: -1953640047348114972, guid: cfa3f7786e227964e8bfc964ccecca00, type: 3}
+      propertyPath: isMultiUseLever
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -1953640047348114972, guid: cfa3f7786e227964e8bfc964ccecca00, type: 3}
+      propertyPath: objectsToInteractWith.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -1953640047348114972, guid: cfa3f7786e227964e8bfc964ccecca00, type: 3}
       propertyPath: objectsToInteractWith.Array.data[0]
       value: 
       objectReference: {fileID: 629869108}
+    - target: {fileID: -1953640047348114972, guid: cfa3f7786e227964e8bfc964ccecca00, type: 3}
+      propertyPath: objectsToInteractWith.Array.data[1]
+      value: 
+      objectReference: {fileID: 497328332}
     - target: {fileID: 3607895715631322098, guid: cfa3f7786e227964e8bfc964ccecca00, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -5339,6 +5355,10 @@ PrefabInstance:
     - target: {fileID: 1065831333101579529, guid: d483269e8e6b99946b2e6668c82e837d, type: 3}
       propertyPath: m_Name
       value: DrawBridge
+      objectReference: {fileID: 0}
+    - target: {fileID: 1065831333101579531, guid: d483269e8e6b99946b2e6668c82e837d, type: 3}
+      propertyPath: direction
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d483269e8e6b99946b2e6668c82e837d, type: 3}
