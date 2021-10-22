@@ -15,7 +15,7 @@ public class JumpScript : StateMachineBehaviour
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         if (Player.Instance.GetIsAiming())
-            animator.gameObject.transform.localScale = new Vector3(Player.Instance.rb.velocity.normalized.x > 0 ? 1 : -1, 1, 1); // Flip player to face towards the shooting direction
+            animator.gameObject.transform.localScale = new Vector3(Player.Instance.IsFacingRight() == true ? 1 : -1, 1, 1); // Flip player to face towards the shooting direction
 
         // State updated according to the velocity y we are currently traveling yVelocity get value from Player.cs HandleStateInputs()
         if (animator.GetFloat("yVelocity") < 0f)
