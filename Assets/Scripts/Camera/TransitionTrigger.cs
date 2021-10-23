@@ -4,48 +4,49 @@ using UnityEngine;
 
 public class TransitionTrigger : MonoBehaviour
 {
-    [Header("References")]
-    [SerializeField] private GameObject newCamera; // new camera attached in this object's inspector
+    [Header("State")]
+    [SerializeField] private bool triggered;
 
-    [Header("Cooldown")]
-    [SerializeField] private float transitionCooldown;
+    [Header("References")]
+    [SerializeField] private GameObject zoneCamera; // new camera attached in this object's inspector
 
     // References
     private GameObject currentCamera;
-
-    // State variables
-    private bool inTransition;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         // If collision with player, switch camera to the new camera
         if (collision.CompareTag("Player"))
         {
-            currentCamera = CameraTransitions.Instance.GetCurrentCamera();
-            if (currentCamera != newCamera) // New camera is different than the current camera
-            {
-                CameraTransitions.Instance.SwitchCameras(newCamera);
-                StartCoroutine(ActivateTransitionCD());
-            }
-            //if (currentCamera != newCamera && !inTransition) // New camera is different and camera is currently not in transition
-            //{
-            //    CameraTransitions.Instance.SwitchCameras(newCamera);
-            //    StartCoroutine(ActivateTransitionCD());
-            //}
+            triggered = true;
+
+            CameraTransitions ctInstance = CameraTransitions.Instance;
+            currentCamera = ctInstance.GetCurrentCamera();
+
+            // Make sure not in transition and that new camera is different than the current camera
+            if (!InTransition() && currentCamera != zoneCamera)
+                ctInstance.SwitchCameras(zoneCamera);
         }
     }
 
-    private IEnumerator ActivateTransitionCD()
+    private bool InTransition()
     {
-        inTransition = true;
-
-        float transitionTimer = 0;
-        while (transitionTimer <= transitionCooldown)
+        List<TransitionTrigger> triggerList = CameraTransitions.Instance.GetTriggers();
+        foreach (TransitionTrigger trigger in triggerList)
         {
-            transitionTimer += Time.deltaTime;
-            yield return new WaitForEndOfFrame();
+            if (trigger.triggered && trigger != this)
+                return true;
         }
+        return false; // Return false if none of the triggers are triggered
+    }
 
-        inTransition = false;
+    public void ClearTrigger()
+    {
+        triggered = false;   
+    }
+
+    public GameObject GetZoneCamera()
+    {
+        return zoneCamera;
     }
 }
