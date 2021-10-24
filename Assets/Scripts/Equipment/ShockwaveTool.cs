@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 
 public class ShockwaveTool : MonoBehaviour
 {
+    public bool shockwaveToolUnlocked = false; // Fully public for testing purposes. Use private set in final game.
     public bool ShockwaveJumpUsed { get; private set; }
     public bool ShockwaveAttackUsed { get; private set; }
     public bool ShockwaveDiveUsed { get; private set; }
@@ -52,6 +53,8 @@ public class ShockwaveTool : MonoBehaviour
     // ShockwaveAttack action: Called when the ShockwaveAttack Action Button is pressed
     public void ShockwaveAttack(InputAction.CallbackContext context) // Context tells the function when the action is triggered
     {
+        if (!shockwaveToolUnlocked) return;
+
         if (context.started && Time.time >= nextShockwave)
         {
             if (energyScript.CheckForEnergy(attackCost)) // Check if player has enough energy for the attack
@@ -78,5 +81,10 @@ public class ShockwaveTool : MonoBehaviour
         }
 
         ShockwaveAttackUsed = false;
+    }
+
+    public void ShockwaveToolUnlock()
+    {
+        shockwaveToolUnlocked = true;
     }
 }

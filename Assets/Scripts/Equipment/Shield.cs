@@ -10,6 +10,7 @@ public class Shield : MonoBehaviour
     public float ProtectionAmount { get; private set; }
 
     [SerializeField] public GameObject shield;
+    [SerializeField] private bool shieldUnlocked = false;
 
     [Header("Shield variables")]
     [SerializeField] private float protectionValue;
@@ -19,7 +20,6 @@ public class Shield : MonoBehaviour
     private float nextParry = -1; // Initialize as -1. First time it will always be less than the current time and will allow to parry. 
     private float parryCooldown = 0.6f;
 
-    private bool allowBlocking = false;
     private bool canReceiveInputBlock;
     
     private void Start()
@@ -32,7 +32,7 @@ public class Shield : MonoBehaviour
     // Shield action: Called when the Shield Action button is pressed
     public void Block(InputAction.CallbackContext context)
     {
-        if (!canReceiveInputBlock || !allowBlocking)
+        if (!canReceiveInputBlock || !shieldUnlocked)
             return;
 
         // Blocking
@@ -92,6 +92,6 @@ public class Shield : MonoBehaviour
     // Unlock shield through ShieldPickUp-script when Shield picked up in game
     public void ShieldUnlock()
     {
-        allowBlocking = true;
+        shieldUnlocked = true;
     }
 }
