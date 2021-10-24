@@ -24,7 +24,6 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private bool allowLedgeClimb;
     [SerializeField] private bool allowWallJump;
     [SerializeField] private bool allowCoyoteWallJump; // Allows coyoteTime = coyoteTime / 2 to jump from wall (you can move horizontaly or turn around a small distance off the wall and still jump)
-    [SerializeField] private bool allowShockwaveJump;
     [SerializeField] private Transform ledgeCheck; // Point where Ledge Check Occupation Raycast is cast should be close to top of head
     [SerializeField] private Transform wallCheckBody; // Point where Body Check Raycast is cast
     [SerializeField] private Transform wallCheckFeet; // Point where Feet Check Raycast is cast
@@ -225,7 +224,7 @@ public class PlayerMovement : MonoBehaviour
         // -AIR DIVE-
 
         // Air dive while in the air
-        else if (context.started && !IsGrounded()
+        else if (context.started && !IsGrounded() && playerScript.ShockwaveToolUnlocked() // Grounded and shockwave tool is unlocked
             && playerScript.InputVertical == -1 // Pressing downwards
             && (Time.time - lastLaunchTime > 0.2f || lastLaunchTime == null)) // Not just launched
         {
@@ -241,7 +240,7 @@ public class PlayerMovement : MonoBehaviour
         // -DOUBLE JUMP-
 
         // Double jump while in the air
-        else if (allowShockwaveJump && canShockwaveJump) // Make sure player has acquired Shockwave Jump and that they can currently double jump
+        else if (playerScript.ShockwaveToolUnlocked() && canShockwaveJump) // Make sure player has acquired Shockwave Jump and that they can currently double jump
         {
             // If button is pressed and player has not yet double jumped
             if (context.started && !shockwaveJumping
@@ -268,7 +267,7 @@ public class PlayerMovement : MonoBehaviour
         // If button was pressed
         if (context.performed && (Time.time - lastGroundedTime <= coyoteTime) // Check if coyote time is online
             && (Time.time - jumpButtonPressedTime <= coyoteTime) && !climbing // Check if jump has been buffered
-            && playerScript.InputVertical != -1) // Not pressing downwards / diving
+            && (playerScript.InputVertical != -1 || !playerScript.ShockwaveToolUnlocked())) // Not diving or not able to dive
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce); // Jump!
         }

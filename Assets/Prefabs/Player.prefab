@@ -10139,6 +10139,10 @@ MonoBehaviour:
   healthScript: {fileID: 127911568793665776}
   energyScript: {fileID: 8760275387346948364}
   shieldScript: {fileID: 1812080132}
+  shieldUnlocked: 0
+  multitoolUnlocked: 0
+  walljumpUnlocked: 0
+  shockwaveToolUnlocked: 0
   animator: {fileID: 3265684260011797273}
   rb: {fileID: 0}
   inputsActive: 1
@@ -10169,7 +10173,6 @@ MonoBehaviour:
   allowLedgeClimb: 1
   allowWallJump: 0
   allowCoyoteWallJump: 1
-  allowShockwaveJump: 0
   ledgeCheck: {fileID: 2838063052809471023}
   wallCheckBody: {fileID: 6576764605224401354}
   wallCheckFeet: {fileID: 1156667530783647825}

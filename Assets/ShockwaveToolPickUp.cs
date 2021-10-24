@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class ShieldPickUp : Interactable
+public class ShockwaveToolPickUp : Interactable
 {
     [Header("Variables from This script")]
     [SerializeField] private bool playerIsClose;
@@ -50,8 +50,8 @@ public class ShieldPickUp : Interactable
     {
         if (playerObject != null)
         {
-            // Unlock Shield for the Player
-            playerObject.GetComponent<Player>().UnlockShield();
+            // Unlock Multitool for the Player
+            playerObject.GetComponent<Player>().UnlockShockwaveTool();
             // Destroy this item from scene
             Destroy(gameObject);
         }
