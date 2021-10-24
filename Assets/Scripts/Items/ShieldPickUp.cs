@@ -51,7 +51,7 @@ public class ShieldPickUp : Interactable
         if (playerObject != null)
         {
             // Unlock Shield for the Player
-            playerObject.GetComponent<Shield>().ShieldUnlock();
+            playerObject.GetComponent<Player>().UnlockShield();
             // Destroy this item from scene
             Destroy(gameObject);
         }

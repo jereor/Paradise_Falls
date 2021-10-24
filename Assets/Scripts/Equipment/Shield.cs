@@ -10,7 +10,6 @@ public class Shield : MonoBehaviour
     public float ProtectionAmount { get; private set; }
 
     [SerializeField] public GameObject shield;
-    [SerializeField] private bool shieldUnlocked = false;
 
     [Header("Shield variables")]
     [SerializeField] private float protectionValue;
@@ -21,9 +20,13 @@ public class Shield : MonoBehaviour
     private float parryCooldown = 0.6f;
 
     private bool canReceiveInputBlock;
+
+    // References
+    private Player playerScript;
     
     private void Start()
     {
+        playerScript = gameObject.GetComponent<Player>();
         ProtectionAmount = protectionValue;
 
         EnableInputBlock();
@@ -32,8 +35,7 @@ public class Shield : MonoBehaviour
     // Shield action: Called when the Shield Action button is pressed
     public void Block(InputAction.CallbackContext context)
     {
-        if (!canReceiveInputBlock || !shieldUnlocked)
-            return;
+        if (!canReceiveInputBlock || !playerScript.ShieldUnlocked()) return;
 
         // Blocking
         if (context.started && (Time.time >= nextParry || hitParried))
@@ -87,11 +89,5 @@ public class Shield : MonoBehaviour
     public void DisableInputBlock()
     {
         canReceiveInputBlock = false;
-    }
-
-    // Unlock shield through ShieldPickUp-script when Shield picked up in game
-    public void ShieldUnlock()
-    {
-        shieldUnlocked = true;
     }
 }

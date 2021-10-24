@@ -5,7 +5,6 @@ using UnityEngine.InputSystem;
 
 public class ShockwaveTool : MonoBehaviour
 {
-    public bool shockwaveToolUnlocked = false; // Fully public for testing purposes. Use private set in final game.
     public bool ShockwaveJumpUsed { get; private set; }
     public bool ShockwaveAttackUsed { get; private set; }
     public bool ShockwaveDiveUsed { get; private set; }
@@ -20,7 +19,15 @@ public class ShockwaveTool : MonoBehaviour
     [SerializeField] private GameObject shockwaveDiveGraphics;
     [SerializeField] private Energy energyScript;
 
+    // Other references
+    private Player playerScript;
+
     private float nextShockwave = -1; // Initialize as -1. First time it will always be less than the current time so use it can be used. 
+
+    private void Start()
+    {
+        playerScript = gameObject.transform.parent.GetComponent<Player>();
+    }
 
     // Shockwave Jump: Triggered from PlayerMovement when double jumping
     public void ShockwaveJump()
@@ -53,7 +60,7 @@ public class ShockwaveTool : MonoBehaviour
     // ShockwaveAttack action: Called when the ShockwaveAttack Action Button is pressed
     public void ShockwaveAttack(InputAction.CallbackContext context) // Context tells the function when the action is triggered
     {
-        if (!shockwaveToolUnlocked) return;
+        if (!playerScript.ShockwaveToolUnlocked()) return;
 
         if (context.started && Time.time >= nextShockwave)
         {
@@ -81,10 +88,5 @@ public class ShockwaveTool : MonoBehaviour
         }
 
         ShockwaveAttackUsed = false;
-    }
-
-    public void ShockwaveToolUnlock()
-    {
-        shockwaveToolUnlocked = true;
     }
 }
