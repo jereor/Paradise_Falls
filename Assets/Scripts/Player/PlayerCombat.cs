@@ -141,7 +141,7 @@ public class PlayerCombat : MonoBehaviour
         //    //movementScript.canMove = false;
 
         //    rb.velocity = Vector2.zero; // Stop player from sliding
-           
+
         //    //Debug.Log("Attack1");
         //    StartCoroutine(PlaceHolderAttack1());
         //    //InputManager();
@@ -239,6 +239,8 @@ public class PlayerCombat : MonoBehaviour
     // Input from mouse left
     public void Melee(InputAction.CallbackContext context)
     {
+        if (!Player.Instance.MultitoolUnlocked()) return;
+
         // Throw and melee
         if (context.performed && isWeaponWielded && canReceiveInputMelee)
         {
@@ -308,6 +310,8 @@ public class PlayerCombat : MonoBehaviour
     // Input from left shift
     public void HeavyMelee(InputAction.CallbackContext context)
     {
+        if (!Player.Instance.MultitoolUnlocked()) return;
+
         if (context.performed)
         {
             heavyHold = true;
@@ -322,6 +326,8 @@ public class PlayerCombat : MonoBehaviour
     // Input from mouse right
     public void MeleeAimThrowing(InputAction.CallbackContext context)
     {
+        if (!Player.Instance.MultitoolUnlocked()) return;
+
         if (context.performed && canReceiveInputThrow)
         {
             throwAimHold = true;
