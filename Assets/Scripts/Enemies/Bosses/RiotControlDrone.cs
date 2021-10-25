@@ -21,6 +21,7 @@ public class RiotControlDrone : MonoBehaviour
 
     [SerializeField] LayerMask playerLayer;
     [SerializeField] LayerMask groundLayer;
+    [SerializeField] LayerMask breakableLayer;
 
     [Header("Movement and Detection Areas")]
     [SerializeField] private float walkingSpeed;
@@ -102,7 +103,7 @@ public class RiotControlDrone : MonoBehaviour
     private float lastDashAttackCounter; // Counter which check if the DashAttack is out of cooldown.
     private float chargeDirection;
     private int backstepCounter;
-    private int chargeCooldownRandomizer = 3;
+    [SerializeField] private int chargeCooldownRandomizer = 3;
     private int dashAttackCooldownRandomizer = 3;
 
     private float waitTime = 3f;
@@ -169,7 +170,7 @@ public class RiotControlDrone : MonoBehaviour
         }
 
         Timers();
-        Debug.Log(state);
+        //Debug.Log(state);
         // Riot Drone state machine.
         switch (state)
         {
@@ -266,7 +267,7 @@ public class RiotControlDrone : MonoBehaviour
     // Moves the boss in the direction of player only on X-axis. If target is in hit range, change state.
     private void HandleMovingState()
     {
-        if (IsTargetInHitRange())
+        if (IsTargetInHitRange() || IsBoxInHitRange())
         {
             state = RiotState.Attack;
             return;
@@ -305,7 +306,6 @@ public class RiotControlDrone : MonoBehaviour
         // Can the drone charge to target / charge timer is not on cooldown.
         if(canChargeToTarget)
         {
-            Debug.Log("GettingReadyToCharge");
             StartCoroutine(ReadyToCharge());
             canChargeToTarget = false;
             gameObject.GetComponentsInChildren<SpriteRenderer>()[2].color = Color.red;
@@ -313,7 +313,6 @@ public class RiotControlDrone : MonoBehaviour
         // Ready to charge.
         if (canMove && readyToCharge)
         {
-            Debug.Log("Chaaarge!");
             StartCoroutine(ShieldChargeCoolDown());
         }
 
@@ -410,7 +409,10 @@ public class RiotControlDrone : MonoBehaviour
         gameObject.GetComponentsInChildren<SpriteRenderer>()[2].color = Color.cyan;
         if (phaseTwoEnemiesDestroyed)
         {
-            Destroy(GameObject.Find("RiotShield"));
+            if(GameObject.Find("RiotShield").GetComponent<Health>().CurrentHealth == 0)
+            {
+                Destroy(GameObject.Find("RiotShield"));
+            }
             ChangeToBossLayer(); // Set the boss layer so player can hit it whenever and doesn't get knocked back when hitting the body.
             stunned = false;
             isBossLayer = true;
@@ -674,9 +676,14 @@ public class RiotControlDrone : MonoBehaviour
 
         float collisionAngle = Vector2.SignedAngle(Vector2.right, Vector2.up);
         Quaternion q = Quaternion.AngleAxis(collisionAngle, Vector3.forward);
-        if(!isFacingRight)
+        if (!isFacingRight && !isEnraged)
+            gameObject.transform.GetChild(5).DORotate(new Vector3(0, 0, -90), lightAttackCoolDown); // Simple visual effect for baton so player knows when to hit and not.
+        else if (isFacingRight && !isEnraged)
+            gameObject.transform.GetChild(5).DORotate(new Vector3(0, 0, 90), lightAttackCoolDown);
+
+        if (!isFacingRight && isEnraged)
             gameObject.transform.GetChild(4).DORotate(new Vector3(0, 0, -90), lightAttackCoolDown); // Simple visual effect for baton so player knows when to hit and not.
-        else
+        else if (isFacingRight && isEnraged)
             gameObject.transform.GetChild(4).DORotate(new Vector3(0, 0, 90), lightAttackCoolDown);
 
         yield return new WaitForSeconds(lightAttackCoolDown);
@@ -684,18 +691,37 @@ public class RiotControlDrone : MonoBehaviour
         if(IsTargetInHitRange())
         {
             targetHealth.TakeDamage(lightAttackDamage);
-            Debug.Log("RiotHitLight!");
             PlayerPushback();
-            gameObject.transform.GetChild(4).rotation = batonRotation;
+            if(!isEnraged)
+                gameObject.transform.GetChild(5).rotation = batonRotation;
+
+            if(isEnraged)
+                gameObject.transform.GetChild(4).rotation = batonRotation;
             StartCoroutine(PlayerHit());
             yield return new WaitForSeconds(lightAttackCoolDown);
             
         }
+        else if(IsBoxInHitRange())
+        {
+            Destroy(GameObject.FindGameObjectWithTag("Box"));
+            if (!isEnraged)
+                gameObject.transform.GetChild(5).rotation = batonRotation;
+
+            if (isEnraged)
+                gameObject.transform.GetChild(4).rotation = batonRotation;
+
+            yield return new WaitForSeconds(lightAttackCoolDown);
+        }
         else
         {
-            Debug.Log("Missed.");
+            
+            if (!isEnraged)
+                gameObject.transform.GetChild(5).rotation = batonRotation;
+
+            if (isEnraged)
+                gameObject.transform.GetChild(4).rotation = batonRotation;
+
             yield return new WaitForSeconds(lightAttackCoolDown);
-            gameObject.transform.GetChild(4).rotation = batonRotation;
             if (!isEnraged)
             {
                 state = RiotState.Moving;
@@ -704,7 +730,7 @@ public class RiotControlDrone : MonoBehaviour
                 state = RiotState.PhaseThreeMoving;
 
         }
-        
+
 
         gameObject.GetComponentsInChildren<SpriteRenderer>()[2].color = Color.black;
         attackRandomizer = UnityEngine.Random.Range(1, 101);
@@ -718,9 +744,14 @@ public class RiotControlDrone : MonoBehaviour
 
         float collisionAngle = Vector2.SignedAngle(Vector2.right, Vector2.up);
         Quaternion q = Quaternion.AngleAxis(collisionAngle, Vector3.forward);
-        if (!isFacingRight)
+        if (!isFacingRight && !isEnraged)
+            gameObject.transform.GetChild(5).DORotate(new Vector3(0, 0, -90), heavyAttackCoolDown); // Simple visual effect for baton so player knows when to hit and not.
+        else if(isFacingRight && !isEnraged)
+            gameObject.transform.GetChild(5).DORotate(new Vector3(0, 0, 90), heavyAttackCoolDown);
+
+        if (!isFacingRight && isEnraged)
             gameObject.transform.GetChild(4).DORotate(new Vector3(0, 0, -90), heavyAttackCoolDown); // Simple visual effect for baton so player knows when to hit and not.
-        else
+        else if (isFacingRight && isEnraged)
             gameObject.transform.GetChild(4).DORotate(new Vector3(0, 0, 90), heavyAttackCoolDown);
 
         yield return new WaitForSeconds(heavyAttackChargeTime);
@@ -728,9 +759,12 @@ public class RiotControlDrone : MonoBehaviour
         if (IsTargetInHitRange())
         {
             targetHealth.TakeDamage(heavyAttackDamage);
-            Debug.Log("RiotHitHeavy!");
             PlayerPushback();
-            gameObject.transform.GetChild(4).rotation = batonRotation;
+            if (!isEnraged)
+                gameObject.transform.GetChild(5).rotation = batonRotation;
+
+            if (isEnraged)
+                gameObject.transform.GetChild(4).rotation = batonRotation;
             StartCoroutine(PlayerHit());
             yield return new WaitForSeconds(heavyAttackCoolDown);
 
@@ -738,8 +772,11 @@ public class RiotControlDrone : MonoBehaviour
         }
         else
         {
-            Debug.Log("MissedHeavy.");
-            gameObject.transform.GetChild(4).rotation = batonRotation;
+            if (!isEnraged)
+                gameObject.transform.GetChild(5).rotation = batonRotation;
+
+            if (isEnraged)
+                gameObject.transform.GetChild(4).rotation = batonRotation;
             yield return new WaitForSeconds(heavyAttackCoolDown);
             if (!isEnraged)
             {
@@ -748,7 +785,6 @@ public class RiotControlDrone : MonoBehaviour
             else 
                 state = RiotState.PhaseThreeMoving;
         }
-        gameObject.transform.GetChild(4).rotation = batonRotation;
 
         gameObject.GetComponentsInChildren<SpriteRenderer>()[2].color = Color.black;
         attackRandomizer = UnityEngine.Random.Range(1, 101);
@@ -844,6 +880,11 @@ public class RiotControlDrone : MonoBehaviour
         return Physics2D.OverlapBox(new Vector2(transform.position.x + (transform.localScale.x * hitOffset.x), transform.position.y + hitOffset.y), areaToAttack, 0, playerLayer);
     }
 
+    private bool IsBoxInHitRange()
+    {
+        return Physics2D.OverlapBox(new Vector2(transform.position.x + (transform.localScale.x * hitOffset.x), transform.position.y + hitOffset.y), areaToAttack, 0, breakableLayer);
+    }
+
     private bool IsTargetInChargeRange()
     {
         return Physics2D.OverlapBox(new Vector2(transform.position.x + (transform.localScale.x * chargeOffset.x), transform.position.y + chargeOffset.y), areaToCharge, 0, playerLayer);
@@ -928,6 +969,13 @@ public class RiotControlDrone : MonoBehaviour
         if (collision.collider.tag == "Player" && !knockbackOnCooldown && !stunned && !isEnraged)
         {
             PlayerPushback();
+        }
+
+        if(collision.gameObject.tag == "Box")
+        {
+            //StopAllCoroutines();
+            //state = RiotState.Stunned;
+            health.TakeDamage(5);
         }
     }
 

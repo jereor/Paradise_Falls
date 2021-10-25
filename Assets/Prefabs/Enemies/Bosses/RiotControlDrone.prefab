@@ -353,7 +353,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8410908677858590963}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 517377c16d932914da0d4e83fac53951, type: 3}
   m_Name: 
@@ -366,13 +366,21 @@ MonoBehaviour:
   colliders: []
   playerRB: {fileID: 0}
   doorOne: {fileID: 0}
-  state: 1
+  bossEnemies:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  state: 0
   playerLayer:
     serializedVersion: 2
     m_Bits: 8
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
+  breakableLayer:
+    serializedVersion: 2
+    m_Bits: 524288
   walkingSpeed: 900000
   runningSpeed: 1000000
   chargeSpeed: 300000
@@ -407,7 +415,9 @@ MonoBehaviour:
   taserChanceRandomizer: 1
   seedShootChanceRandomizer: 1
   isFacingRight: 0
+  spawnEnemies: 0
   phaseTwoEnemiesDestroyed: 0
+  chargeCooldownRandomizer: 3
 --- !u!114 &8410908677858590967
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -420,7 +430,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e85f99a78ea71c14bb56436ea514cc78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 10
+  maxHealth: 100
   debugHealth: 0
   destroyWhenDead: 1
   onDie:
@@ -429,6 +439,18 @@ MonoBehaviour:
       - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: DoorController, Assembly-CSharp
         m_MethodName: Work
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: DoorController, Assembly-CSharp
+        m_MethodName: WorkReverse
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -668,6 +690,7 @@ GameObject:
   - component: {fileID: 8410908679192793484}
   - component: {fileID: 8410908679192793487}
   - component: {fileID: 442696107}
+  - component: {fileID: 285523128}
   m_Layer: 0
   m_Name: RiotShield
   m_TagString: Untagged
@@ -778,3 +801,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 341f3494049e67b448df3bf212115e9c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &285523128
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8410908679192793482}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e85f99a78ea71c14bb56436ea514cc78, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 2
+  debugHealth: 0
+  destroyWhenDead: 0
+  onDie:
+    m_PersistentCalls:
+      m_Calls: []
