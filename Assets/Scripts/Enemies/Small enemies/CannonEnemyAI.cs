@@ -261,7 +261,7 @@ public class CannonEnemyAI : MonoBehaviour
         {
             // Instantiate a bullet prefab from enemy unit location.
             GameObject bulletObject = Instantiate(bullet, shootTransform.position, Quaternion.identity);
-            bulletObject.GetComponent<BulletBehaviour>().shooter = this.gameObject;
+            bulletObject.GetComponent<BulletBehaviour>().shooter = shootTransform.gameObject;
             bulletObject.GetComponent<BulletBehaviour>().staticShot = true;
             StartCoroutine(ShootCoolDown());
         }

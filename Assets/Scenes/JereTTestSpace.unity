@@ -7950,6 +7950,26 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4941224138654063640, guid: a6db953d52cc83b4abf394f18a7533e0, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.8985644
+      objectReference: {fileID: 0}
+    - target: {fileID: 4941224138654063640, guid: a6db953d52cc83b4abf394f18a7533e0, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4941224138654063640, guid: a6db953d52cc83b4abf394f18a7533e0, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4941224138654063640, guid: a6db953d52cc83b4abf394f18a7533e0, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.43884173
+      objectReference: {fileID: 0}
+    - target: {fileID: 4941224138654063640, guid: a6db953d52cc83b4abf394f18a7533e0, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 52.06
+      objectReference: {fileID: 0}
     - target: {fileID: 7678043367400694314, guid: a6db953d52cc83b4abf394f18a7533e0, type: 3}
       propertyPath: m_Name
       value: CannonEnemy (1)
