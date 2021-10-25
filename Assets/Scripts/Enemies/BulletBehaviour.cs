@@ -72,12 +72,19 @@ public class BulletBehaviour : MonoBehaviour
     {
         target.GetComponent<Shield>().HitWhileParried(); // Tell player parry was successful
 
-        reflected = true;
-        target = shooter;
-        rb.velocity = Vector2.zero;
-        Vector2 force = (target.transform.position - transform.position).normalized * bulletSpeed;
-        rb.AddForce(force, ForceMode2D.Impulse);
+        if (shooter == null)
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            reflected = true;
+            target = shooter;
+            rb.velocity = Vector2.zero;
+            Vector2 force = (target.transform.position - transform.position).normalized * bulletSpeed;
+            rb.AddForce(force, ForceMode2D.Impulse);
 
-        gameObject.layer = 10;
+            gameObject.layer = 10;
+        }
     }
 }

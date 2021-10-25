@@ -233,6 +233,13 @@ public class CannonEnemyAI : MonoBehaviour
         }
         // Turns the enemy unit torwards the target when aiming.
         cannonTransform.rotation = Quaternion.RotateTowards(cannonTransform.rotation, q, rotSpeed * Time.fixedDeltaTime);
+
+        // If target goes out of enemy's bounds, return to "idle" state
+        if (!IsPlayerInAggroRange() && !staticMode)
+        {
+            currentState = CannonStates.Idle;
+            gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.green;
+        }
     }
 
     private void HandleShootState()
