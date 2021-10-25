@@ -10,15 +10,23 @@ public class BulletBehaviour : MonoBehaviour
     public float bulletSpeed = 5;
     public float bulletDamage = 1f;
     private bool reflected = false;
+    public bool staticShot = false;
 
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         target = GameObject.Find("Player");
-
-        Vector2 force = (target.transform.position - transform.position).normalized * bulletSpeed;
-        rb.AddForce(force, ForceMode2D.Impulse);
+        if (staticShot)
+        {
+            Vector2 force = shooter.transform.right.normalized * bulletSpeed;
+            rb.AddForce(force, ForceMode2D.Impulse);
+        }
+        else
+        {
+            Vector2 force = (target.transform.position - transform.position).normalized * bulletSpeed;
+            rb.AddForce(force, ForceMode2D.Impulse);
+        }
     }
 
     // Update is called once per frame
@@ -64,12 +72,19 @@ public class BulletBehaviour : MonoBehaviour
     {
         target.GetComponent<Shield>().HitWhileParried(); // Tell player parry was successful
 
-        reflected = true;
-        target = shooter;
-        rb.velocity = Vector2.zero;
-        Vector2 force = (target.transform.position - transform.position).normalized * bulletSpeed;
-        rb.AddForce(force, ForceMode2D.Impulse);
+        if (shooter == null)
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            reflected = true;
+            target = shooter;
+            rb.velocity = Vector2.zero;
+            Vector2 force = (target.transform.position - transform.position).normalized * bulletSpeed;
+            rb.AddForce(force, ForceMode2D.Impulse);
 
-        gameObject.layer = 10;
+            gameObject.layer = 10;
+        }
     }
 }
