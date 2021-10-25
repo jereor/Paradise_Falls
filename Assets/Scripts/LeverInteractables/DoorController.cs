@@ -6,8 +6,10 @@ using DG.Tweening;
 public class DoorController : MonoBehaviour
 {
     private Vector2 startPosition;
-    public Vector2 endPosition;
-    public float moveTime;
+    [SerializeField] private Vector2 endPosition;
+    [SerializeField] private float moveTime;
+    private bool moving = false;
+    private bool isDoorOpen = false;
 
     void Start()
     {
@@ -24,11 +26,27 @@ public class DoorController : MonoBehaviour
     // Moves the game object to the designated location.
     public void Work()
     {
-        transform.DOMove(new Vector2(transform.position.x + endPosition.x, transform.position.y + endPosition.y), moveTime);
+        if(!isDoorOpen)
+        {
+            StartCoroutine(DoorMoving());
+            transform.DOMove(new Vector2(transform.position.x + endPosition.x, transform.position.y + endPosition.y), moveTime);
+        }
+        else if(isDoorOpen)
+        {
+            StartCoroutine(DoorMoving());
+            transform.DOMove(new Vector2(startPosition.x, startPosition.y), moveTime);
+        }
+    }
+    private IEnumerator DoorMoving()
+    {
+        moving = true;
+        yield return new WaitForSeconds(moveTime);
+        isDoorOpen = !isDoorOpen;
+        moving = false;
     }
 
-    public void WorkReverse()
+    public bool getMoving()
     {
-        transform.DOMove(new Vector2(startPosition.x, startPosition.y), moveTime);
+        return moving;
     }
 }

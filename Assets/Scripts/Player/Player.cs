@@ -8,8 +8,9 @@ using UnityEngine.InputSystem;
 public class Player : MonoBehaviour
 {
     public static Player Instance;
-
-    public float InputHorizontal { get; private set; }
+    
+    // These inputs can be checked from anywhere. Mainly to be used in PlayerMovement.
+    public float InputHorizontal { get; private set; } 
     public float InputVertical { get; private set; }
 
     private GUIStyle TextStyleEnergy = new GUIStyle();
@@ -24,6 +25,13 @@ public class Player : MonoBehaviour
     [SerializeField] private Health healthScript;
     [SerializeField] private Energy energyScript;
     [SerializeField] private Shield shieldScript;
+
+    // Unlocked abilities, false by default and unlocked by progressing in the game
+    [Header("Player abilities")]
+    [SerializeField] private bool shieldUnlocked = false;
+    [SerializeField] private bool multitoolUnlocked = false;
+    [SerializeField] private bool walljumpUnlocked = false;
+    [SerializeField] private bool shockwaveToolUnlocked = false;
 
     // Component references
     public Animator animator;
@@ -474,6 +482,8 @@ public class Player : MonoBehaviour
         }
     }
 
+    // --- GET / SET STATES ---
+
     public State GetCurrentState()
     {
         return currentState;
@@ -493,6 +503,16 @@ public class Player : MonoBehaviour
         // Set this to true so we know in FixedUpdate() that we have to call HandleStateInputs()
         statesChanged = true;
         currentState = newState;
+    }
+
+    public bool IsFacingRight()
+    {
+        return movementScript.isFacingRight;
+    }
+
+    public bool IsShockwaveJumping()
+    {
+        return movementScript.shockwaveJumping;
     }
 
     public void SetWillLand(bool b)
@@ -559,16 +579,6 @@ public class Player : MonoBehaviour
         animator.SetBool("isParrying", false);
     }
 
-    public bool IsFacingRight()
-    {
-        return movementScript.isFacingRight;
-    }
-
-    public bool IsShockwaveJumping()
-    {
-        return movementScript.shockwaveJumping;
-    }
-
     private void OnGUI()
     {
         GUI.Label(new Rect(10, 10, 300, 100), "Health: " + healthScript.GetHealth(), TextStyleHealth);
@@ -586,5 +596,42 @@ public class Player : MonoBehaviour
     {
         InputHorizontal = Mathf.Round(context.ReadValue<Vector2>().x); // Updates the horizontal input direction
         InputVertical = Mathf.Round(context.ReadValue<Vector2>().y);// Updates the vertical input direction
+    }
+
+    // --- GET / SET ABILITY UNLOCKS ---
+    public bool ShieldUnlocked()
+    {
+        return shieldUnlocked;
+    }
+    public void UnlockShield()
+    {
+        shieldUnlocked = true;
+    }
+
+    public bool MultitoolUnlocked()
+    {
+        return multitoolUnlocked;
+    }
+    public void UnlockMultitool()
+    {
+        multitoolUnlocked = true;
+    }
+
+    public bool WalljumpUnlocked()
+    {
+        return walljumpUnlocked;
+    }
+    public void UnlockWalljump()
+    {
+        walljumpUnlocked = true;
+    }
+
+    public bool ShockwaveToolUnlocked()
+    {
+        return shockwaveToolUnlocked;
+    }
+    public void UnlockShockwaveTool()
+    {
+        shockwaveToolUnlocked = true;
     }
 }

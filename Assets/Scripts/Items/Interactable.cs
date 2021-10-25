@@ -19,7 +19,7 @@ public class Interactable : MonoBehaviour
 
     // These should be edited in inspector of desired item
     [Tooltip("# is placeholder char for actual interact input binding key")]
-    [SerializeField] private string textToShow = "Press # to interact";     // Default string to be shown if showFloatingText is true
+    [SerializeField] private string textToShow = "Press # to interact";     // Default string to be shown if showFloatingText is true  
     [SerializeField] private string interactedText = "Interacted";      // Default string to be replaced and shown if updateTextOnInteract is true
 
     private void Start()

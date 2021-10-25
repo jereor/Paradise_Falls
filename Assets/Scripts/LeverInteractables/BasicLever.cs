@@ -4,11 +4,10 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using DG.Tweening;
 
-public class Lever : Interactable
+public class BasicLever : Interactable
 {
     [Header("Objects to interact with")]
     public GameObject[] objectsToInteractWith; // Objects the lever interacts with.
-    [SerializeField] private string ifRequiresMultitoolText = "Equip Multitool to interact.";
     [SerializeField] private float leverTurnTime;
 
     [Header("Bools for interaction")]
@@ -22,7 +21,7 @@ public class Lever : Interactable
     // Player is in the range of lever
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.name.Contains("Player") && !isLeverUsed)
+        if (collision.name.Contains("Player") && !isLeverUsed)
         {
             collision.GetComponent<PlayerInteractions>().AllowInteract(true);
             collision.GetComponent<PlayerInteractions>().GiveGameObject(gameObject);
@@ -51,23 +50,14 @@ public class Lever : Interactable
         }
     }
 
-    public override void ShowFloatingText()
-    {
-        if (GameObject.Find("Player").GetComponent<PlayerCombat>().getWeaponWielded())
-            base.ShowFloatingText();
-        else
-            floatingText.text = ifRequiresMultitoolText;
-
-    }
-
     // Basic interaction function for levers. Action happens in the object lever is pointing at.
     public override void Interact()
     {
         // Lever functionality. Call for the attached objects' functionality here.
         // If player doesn't have the tool for using lever spots, return.
-        if (!GameObject.Find("Player").GetComponent<PlayerCombat>().getWeaponWielded()){ return; }
-        if(!turning && !isLeverUsed)
+        if (!turning && !isLeverUsed)
         {
+
             foreach (GameObject movingObject in objectsToInteractWith)
             {
                 if (movingObject.tag == "Drawbridge")
@@ -79,8 +69,7 @@ public class Lever : Interactable
                     if (movingObject.GetComponent<DoorController>().getMoving()) { objectIsMoving = true; }
                 }
             }
-
-            if (!objectIsMoving)
+            if(!objectIsMoving)
             {
                 StartCoroutine(LeverTurnTime());
                 // Currently used only for testing. Replace this move with objects' own functions.
@@ -105,6 +94,7 @@ public class Lever : Interactable
                 }
             }
             objectIsMoving = false;
+
         }
     }
 
@@ -112,8 +102,7 @@ public class Lever : Interactable
     {
         turning = true;
         Transform child = gameObject.transform.GetChild(2);
-        child.gameObject.SetActive(true);
-        if(!isTurnedToLeft)
+        if (!isTurnedToLeft)
         {
             child.DORotate(new Vector3(0, 0, 35), leverTurnTime);
             isTurnedToLeft = true;
@@ -123,12 +112,7 @@ public class Lever : Interactable
             child.DORotate(new Vector3(0, 0, -35), leverTurnTime);
             isTurnedToLeft = false;
         }
-
-        GameObject.Find("Player").GetComponent<PlayerCombat>().setWeaponWielded(false);
         yield return new WaitForSeconds(leverTurnTime);
-        GameObject.Find("Player").GetComponent<PlayerCombat>().setWeaponWielded(true);
-
-        child.gameObject.SetActive(false);
         turning = false;
     }
 }

@@ -13,6 +13,7 @@ public class CameraTransitions : MonoBehaviour
     public static CameraTransitions Instance { get; private set; }
 
     [SerializeField] private GameObject currentCamera;
+    [SerializeField] private List<TransitionTrigger> triggerList;
 
     private void Awake()
     {
@@ -20,16 +21,22 @@ public class CameraTransitions : MonoBehaviour
         currentCamera.SetActive(true);
     }
 
-    public GameObject GetCurrentCamera()
-    {
-        return currentCamera;
-    }
-
     // Switches current camera to the new one
     public void SwitchCameras(GameObject newCamera)
     {
+        Debug.Log("Switching to " + newCamera);
         currentCamera.SetActive(false);
         newCamera.SetActive(true);
         currentCamera = newCamera;
+    }
+
+    public List<TransitionTrigger> GetTriggers()
+    {
+        return triggerList;
+    }
+
+    public GameObject GetCurrentCamera()
+    {
+        return currentCamera;
     }
 }
