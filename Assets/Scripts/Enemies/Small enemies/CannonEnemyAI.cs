@@ -10,10 +10,13 @@ public class CannonEnemyAI : MonoBehaviour
 
     public bool bossMode;
 
+    public bool staticMode;
+
     [Header("Transforms")]
     [SerializeField] private Transform target;
     [SerializeField] private Transform enemyGFX;
     [SerializeField] private Rigidbody2D playerRB;
+    [SerializeField] private Transform cannonTransform;
     [SerializeField] private Transform shootTransform;
     [SerializeField] private GameObject bullet;
     [SerializeField] private GameObject energyItem;
@@ -27,7 +30,7 @@ public class CannonEnemyAI : MonoBehaviour
     [SerializeField] public CannonStates currentState = CannonStates.Idle;
     [SerializeField] private float aggroDistance = 5f;
     [SerializeField] private float shootingDistance = 10f;
-    [SerializeField] private float wallCheckDistance = 2f; // How far of a wall the enemy truns around.
+    [SerializeField] private float detectionAreaOffsetY = 0.5f;
     [SerializeField] private float knockbackForce = 5f;
 
     [Header("Health and Energy Spawn values")]
@@ -36,18 +39,17 @@ public class CannonEnemyAI : MonoBehaviour
     [SerializeField] private float amountWhenHealthIsSpawnable; // MaxHealth value between 0-1. When your health sinks below a certain amount health becomes spawnable.
 
     [Header("Pathfinding info")]
-    [SerializeField] private float nextWaypointDistance = 1f;
     [SerializeField] private float pathUpdateInterval = 1f;
 
     private bool canShoot = true;
     private float shootCooldown = 1.5f;
+    private float rotSpeed = 100f;
     private bool isFacingRight = true;
     //private float vectorPathLength = 1;
     private bool isTargetInBehaviourRange = false;
 
     private Vector2 spawnPosition;
     private Path path;
-    private int currentWaypoint = 0;
 
     private Seeker seeker;
     private Rigidbody2D rb;
@@ -56,9 +58,13 @@ public class CannonEnemyAI : MonoBehaviour
     void Start()
     {
         // Set speed and state to charge that if bossMode is true enemy starts at charge state with charge speed
-        if (bossMode)
+        if (bossMode && !staticMode)
         {
             currentState = CannonStates.Aim;
+        }
+        else if (staticMode)
+        {
+            currentState = CannonStates.Shoot;
         }
 
         seeker = GetComponent<Seeker>();
@@ -83,15 +89,16 @@ public class CannonEnemyAI : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, aggroDistance);
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, shootingDistance);
+        Gizmos.color = Color.blue;
+        Gizmos.DrawRay(shootTransform.position + new Vector3(0, detectionAreaOffsetY ,0), shootTransform.right * shootingDistance);
+        Gizmos.DrawRay(shootTransform.position + new Vector3(0, -detectionAreaOffsetY, 0), shootTransform.right * shootingDistance);
     }
 
     void OnPathComplete(Path p)
     {
         if (!p.error)
         {
-
             path = p;
-            currentWaypoint = 0;
         }
         else
             Debug.Log("Error");
@@ -131,7 +138,6 @@ public class CannonEnemyAI : MonoBehaviour
         canShoot = true;
     }
 
-
     private bool IsPlayerInAggroRange()
     {
         return Physics2D.OverlapCircle(transform.position, aggroDistance, playerLayer);
@@ -139,7 +145,13 @@ public class CannonEnemyAI : MonoBehaviour
 
     private bool IsPlayerInShootingRange()
     {
-        return Physics2D.OverlapCircle(transform.position, shootingDistance, playerLayer);
+        RaycastHit2D hitUpper = Physics2D.Raycast(shootTransform.position + new Vector3(0, detectionAreaOffsetY, 0), shootTransform.right, shootingDistance, playerLayer);
+        RaycastHit2D hitLower = Physics2D.Raycast(shootTransform.position + new Vector3(0, -detectionAreaOffsetY, 0), shootTransform.right, shootingDistance, playerLayer);
+        // If either of these hit player return true
+        if (hitUpper || hitLower)
+            return true;
+
+        return false;
     }
 
     private bool IsHittingGround()
@@ -149,7 +161,6 @@ public class CannonEnemyAI : MonoBehaviour
 
     // ENEMY BEHAVIOUR STATES
     // --------------------------------------------------------------------------------------------------------------------------
-
     private void EnemyStateChange()
     {
         switch (currentState)
@@ -186,15 +197,12 @@ public class CannonEnemyAI : MonoBehaviour
         int rand = UnityEngine.Random.Range(1, 101);
         if (_targetHealth.GetHealth() <= _targetHealth.MaxHealth * amountWhenHealthIsSpawnable && rand <= healthProbability)
         {
-            // Debug.Log(rand);
             Instantiate(healthItem, transform.position, Quaternion.identity);
         }
         else if (rand <= energyProbability)
         {
-            // Debug.Log(rand);
             Instantiate(energyItem, transform.position, Quaternion.identity);
         }
-
     }
 
     private void HandleIdleState()
@@ -211,46 +219,41 @@ public class CannonEnemyAI : MonoBehaviour
 
     private void HandleAimState()
     {
-        Vector2 vectorToPlayer = target.transform.position - gameObject.transform.position;
-        // Turns the enemy unit torwards the target when shooting.
-        if(Vector2.Dot((Vector2)gameObject.transform.right.normalized, vectorToPlayer.normalized) == 1)
+        Vector2 vectorToPlayer = target.transform.position - cannonTransform.position;
+
+        // Angle to player
+        float angle = Mathf.Atan2(vectorToPlayer.y, vectorToPlayer.x) * Mathf.Rad2Deg;
+        Quaternion q = Quaternion.Euler(new Vector3(0, 0, angle));
+
+        // One of the check rays hit player go to shoot state
+        if (IsPlayerInShootingRange())
         {
             currentState = CannonStates.Shoot;
             gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.red;
         }
-        if (target.transform.position.x - transform.position.x >= 0)
-        {
-            transform.localScale = new Vector3(1f, 1f, 1f);
-            //Vector2 vectorToPlayer = target.transform.position - gameObject.transform.position;
-            gameObject.transform.right = vectorToPlayer;
-
-            //Debug.Log(target.transform.position);
-            //float angle = Mathf.Atan2(target.transform.position.y, target.transform.position.x) * Mathf.Rad2Deg;
-            //Debug.Log(angle);
-            //transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
-        }
-        else
-        {
-            transform.localScale = new Vector3(-1f, 1f, 1f);
-            //Vector2 vectorToPlayer = target.transform.position - gameObject.transform.position;
-            gameObject.transform.right = -vectorToPlayer;
-        }
+        // Turns the enemy unit torwards the target when aiming.
+        cannonTransform.rotation = Quaternion.RotateTowards(cannonTransform.rotation, q, rotSpeed * Time.fixedDeltaTime);
     }
 
     private void HandleShootState()
     {
-        Debug.DrawRay(transform.position, target.transform.position - transform.position, Color.blue);
-
-        Vector2 vectorToPlayer = target.transform.position - gameObject.transform.position;
         // Turns the enemy unit torwards the target when shooting.
-        if (Vector2.Dot((Vector2)gameObject.transform.right.normalized, vectorToPlayer.normalized) != 1)
+        if (!IsPlayerInShootingRange() && !staticMode)
         {
             currentState = CannonStates.Aim;
             gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.grey;
             return;
         }
 
-        if (canShoot)
+        if(canShoot && staticMode) 
+        {
+            // Instantiate a bullet prefab from enemy unit location.
+            GameObject bulletObject = Instantiate(bullet, shootTransform.position, Quaternion.identity);
+            bulletObject.GetComponent<BulletBehaviour>().shooter = this.gameObject;
+            bulletObject.GetComponent<BulletBehaviour>().staticShot = true;
+            StartCoroutine(ShootCoolDown());
+        }
+        else if (canShoot && !staticMode)
         {
             // Draws two rays in the direction of the target. First checks if there's ground in between the enemy unit and the target, second checks if it hit the target.
             RaycastHit2D hitGround;
@@ -264,28 +267,10 @@ public class CannonEnemyAI : MonoBehaviour
                 bulletObject.GetComponent<BulletBehaviour>().shooter = this.gameObject;
                 StartCoroutine(ShootCoolDown());
             }
-
-            // Turns the enemy unit torwards the target when shooting.
-            if (target.transform.position.x - transform.position.x >= 0)
-            {
-                transform.localScale = new Vector3(1f, 1f, 1f);
-                Debug.Log(target.transform.position);
-                float angle = Mathf.Atan2(target.transform.position.y, target.transform.position.x) * Mathf.Rad2Deg;
-                Debug.Log(angle);
-                transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
-            }
-            else
-            {
-                transform.localScale = new Vector3(-1f, 1f, 1f);
-                float angle = Mathf.Atan2(target.transform.position.y, target.transform.position.x) * Mathf.Rad2Deg;
-                transform.rotation = Quaternion.AngleAxis(-angle, Vector3.forward);
-            }
         }
-        // If target goes out of enemy's bounds, return to "roam" state, otherwise start chasing again.
-        if (!IsPlayerInAggroRange())
+        // If target goes out of enemy's bounds, return to "idle" state
+        if (!IsPlayerInAggroRange() && !staticMode)
         {
-            CancelInvoke();
-            InvokeRepeating("UpdatePathReturn", 0f, pathUpdateInterval);
             currentState = CannonStates.Idle;
             gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.green;
         }
