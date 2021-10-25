@@ -9383,6 +9383,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 604229747}
     - target: {fileID: 7678043367400694315, guid: a6db953d52cc83b4abf394f18a7533e0, type: 3}
+      propertyPath: bossMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7678043367400694315, guid: a6db953d52cc83b4abf394f18a7533e0, type: 3}
       propertyPath: playerRB
       value: 
       objectReference: {fileID: 604229746}

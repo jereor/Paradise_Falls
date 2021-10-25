@@ -30,6 +30,7 @@ public class CannonEnemyAI : MonoBehaviour
     [SerializeField] public CannonStates currentState = CannonStates.Idle;
     [SerializeField] private float aggroDistance = 5f;
     [SerializeField] private float shootingDistance = 10f;
+    [SerializeField] private float bossModeDistance = 20f;
     [SerializeField] private float detectionAreaOffsetY = 0.5f;
     [SerializeField] private float knockbackForce = 5f;
 
@@ -43,7 +44,7 @@ public class CannonEnemyAI : MonoBehaviour
 
     private bool canShoot = true;
     private float shootCooldown = 1.5f;
-    private float rotSpeed = 100f;
+    [SerializeField] private float rotSpeed = 100f;
     private bool isFacingRight = true;
     //private float vectorPathLength = 1;
     private bool isTargetInBehaviourRange = false;
@@ -61,6 +62,7 @@ public class CannonEnemyAI : MonoBehaviour
         if (bossMode && !staticMode)
         {
             currentState = CannonStates.Aim;
+            shootingDistance = bossModeDistance;
         }
         else if (staticMode)
         {
@@ -140,6 +142,9 @@ public class CannonEnemyAI : MonoBehaviour
 
     private bool IsPlayerInAggroRange()
     {
+        if (bossMode)
+            return true;
+
         return Physics2D.OverlapCircle(transform.position, aggroDistance, playerLayer);
     }
 
@@ -235,7 +240,7 @@ public class CannonEnemyAI : MonoBehaviour
         cannonTransform.rotation = Quaternion.RotateTowards(cannonTransform.rotation, q, rotSpeed * Time.fixedDeltaTime);
 
         // If target goes out of enemy's bounds, return to "idle" state
-        if (!IsPlayerInAggroRange() && !staticMode)
+        if (!IsPlayerInAggroRange() && !staticMode && !bossMode)
         {
             currentState = CannonStates.Idle;
             gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.green;
@@ -276,7 +281,7 @@ public class CannonEnemyAI : MonoBehaviour
             }
         }
         // If target goes out of enemy's bounds, return to "idle" state
-        if (!IsPlayerInAggroRange() && !staticMode)
+        if (!IsPlayerInAggroRange() && !staticMode && !bossMode)
         {
             currentState = CannonStates.Idle;
             gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.green;

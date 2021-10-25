@@ -380,6 +380,7 @@ MonoBehaviour:
   energyProbability: 0
   amountWhenHealthIsSpawnable: 0.7
   pathUpdateInterval: 1
+  rotSpeed: 50
 --- !u!61 &7678043367400694317
 BoxCollider2D:
   m_ObjectHideFlags: 0
