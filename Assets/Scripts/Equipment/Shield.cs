@@ -20,8 +20,13 @@ public class Shield : MonoBehaviour
     private float parryCooldown = 0.6f;
 
     private bool canReceiveInputBlock;
+
+    // References
+    private Player playerScript;
+    
     private void Start()
     {
+        playerScript = gameObject.GetComponent<Player>();
         ProtectionAmount = protectionValue;
 
         EnableInputBlock();
@@ -30,8 +35,7 @@ public class Shield : MonoBehaviour
     // Shield action: Called when the Shield Action button is pressed
     public void Block(InputAction.CallbackContext context)
     {
-        if (!canReceiveInputBlock)
-            return;
+        if (!canReceiveInputBlock || !playerScript.ShieldUnlocked()) return;
 
         // Blocking
         if (context.started && (Time.time >= nextParry || hitParried))
