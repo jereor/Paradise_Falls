@@ -11,7 +11,7 @@ public class MapController : MonoBehaviour
     public bool mapOpen = false;
 
     public GameObject mapPanel;
-
+    public Camera mapCamera;
     public RawImage mapImage;
 
     public float currentScale;
@@ -32,7 +32,7 @@ public class MapController : MonoBehaviour
 
     }
 
-    // Bases on https://forum.unity.com/threads/zoom-in-out-on-scrollrect-content-image.284655/ rainbowegg
+    // Bases on https://forum.unity.com/threads/zoom-in-out-on-scrollrect-content-image.284655/ -rainbowegg
     // Modified to work on new input system
     public void Zoom(InputAction.CallbackContext context)
     {
@@ -55,8 +55,16 @@ public class MapController : MonoBehaviour
         {
             currentScale = minScale;
         }
+        // We can use x value since both x and y values scale with same increment value to preserve image resolution
+        float oldLocalScaleX = mapImage.rectTransform.localScale.x;
+
         // Scale image
         mapImage.rectTransform.localScale = new Vector2(currentScale, currentScale);
+
+        // Move image slightly to zoom in the middle of view 
+        // If not done image "moves" towards origin point we lose the image we are currently viewing
+        mapImage.rectTransform.anchoredPosition *= mapImage.rectTransform.localScale.x / oldLocalScaleX;
+
     }
 
     public void OpenMap()
