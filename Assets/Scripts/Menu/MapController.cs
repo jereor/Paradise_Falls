@@ -7,23 +7,27 @@ using UnityEngine.EventSystems;
 
 public class MapController : MonoBehaviour
 {
-
     public bool mapOpen = false;
-
+    [Header("Objects")]
     public GameObject mapPanel;
     public Camera mapCamera;
     public RawImage mapImage;
+    public PauseMenuController pauseController;
+    public GameObject[] areaBlocks;
 
-    public float currentScale;
-    public float maxScale;
-    public float minScale;
-    public float increment;
+
+    [Header("Variables scale/zoom")]
+    [SerializeField] private float currentScale; 
+    [SerializeField] private float maxScale;
+    [SerializeField] private float minScale;
+    [Tooltip("How much scale is multiplied per scroll")]
+    [SerializeField] private float increment;
 
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        currentScale = mapImage.rectTransform.localScale.x;
     }
 
     // Update is called once per frame
@@ -45,12 +49,12 @@ public class MapController : MonoBehaviour
             else if (Mathf.Sign(context.ReadValue<Vector2>().normalized.y) == 1)
                 currentScale += increment;
         }
-        // Max scaling
+        // Max scaling (cannot go over maxScale value)
         if (currentScale >= maxScale)
         {
             currentScale = maxScale;
         }
-        // Min scaling
+        // Min scaling (cannot go over minScale value)
         else if (currentScale <= minScale)
         {
             currentScale = minScale;
@@ -67,6 +71,7 @@ public class MapController : MonoBehaviour
 
     }
 
+    // Called from input map button (or pause map button)
     public void OpenMap()
     {
         if (!mapOpen)

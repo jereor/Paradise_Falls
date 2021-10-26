@@ -32,8 +32,8 @@ public class PauseMenuController : MonoBehaviour
     }
 
     // Input event Pause is triggered
-    public void Pause(InputAction.CallbackContext context)
-    {     
+    public void PauseInput()
+    {
         if (GameIsPaused)
         {
             Debug.Log("Closing Pause Menu");
