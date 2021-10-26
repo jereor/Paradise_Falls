@@ -377,6 +377,14 @@ public class @InputActions : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""Zoom"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""c383cbc1-98d7-4580-9ed4-5af80bd342ba"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -478,6 +486,17 @@ public class @InputActions : IInputActionCollection, IDisposable
                     ""action"": ""Navigation"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""88ee59d0-459f-4ab5-b722-d32cdd73c3ba"",
+                    ""path"": ""<Mouse>/scroll"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Zoom"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -499,6 +518,7 @@ public class @InputActions : IInputActionCollection, IDisposable
         m_GameUI_Pause = m_GameUI.FindAction("Pause", throwIfNotFound: true);
         m_GameUI_Map = m_GameUI.FindAction("Map", throwIfNotFound: true);
         m_GameUI_Navigation = m_GameUI.FindAction("Navigation", throwIfNotFound: true);
+        m_GameUI_Zoom = m_GameUI.FindAction("Zoom", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -640,6 +660,7 @@ public class @InputActions : IInputActionCollection, IDisposable
     private readonly InputAction m_GameUI_Pause;
     private readonly InputAction m_GameUI_Map;
     private readonly InputAction m_GameUI_Navigation;
+    private readonly InputAction m_GameUI_Zoom;
     public struct GameUIActions
     {
         private @InputActions m_Wrapper;
@@ -647,6 +668,7 @@ public class @InputActions : IInputActionCollection, IDisposable
         public InputAction @Pause => m_Wrapper.m_GameUI_Pause;
         public InputAction @Map => m_Wrapper.m_GameUI_Map;
         public InputAction @Navigation => m_Wrapper.m_GameUI_Navigation;
+        public InputAction @Zoom => m_Wrapper.m_GameUI_Zoom;
         public InputActionMap Get() { return m_Wrapper.m_GameUI; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -665,6 +687,9 @@ public class @InputActions : IInputActionCollection, IDisposable
                 @Navigation.started -= m_Wrapper.m_GameUIActionsCallbackInterface.OnNavigation;
                 @Navigation.performed -= m_Wrapper.m_GameUIActionsCallbackInterface.OnNavigation;
                 @Navigation.canceled -= m_Wrapper.m_GameUIActionsCallbackInterface.OnNavigation;
+                @Zoom.started -= m_Wrapper.m_GameUIActionsCallbackInterface.OnZoom;
+                @Zoom.performed -= m_Wrapper.m_GameUIActionsCallbackInterface.OnZoom;
+                @Zoom.canceled -= m_Wrapper.m_GameUIActionsCallbackInterface.OnZoom;
             }
             m_Wrapper.m_GameUIActionsCallbackInterface = instance;
             if (instance != null)
@@ -678,6 +703,9 @@ public class @InputActions : IInputActionCollection, IDisposable
                 @Navigation.started += instance.OnNavigation;
                 @Navigation.performed += instance.OnNavigation;
                 @Navigation.canceled += instance.OnNavigation;
+                @Zoom.started += instance.OnZoom;
+                @Zoom.performed += instance.OnZoom;
+                @Zoom.canceled += instance.OnZoom;
             }
         }
     }
@@ -698,5 +726,6 @@ public class @InputActions : IInputActionCollection, IDisposable
         void OnPause(InputAction.CallbackContext context);
         void OnMap(InputAction.CallbackContext context);
         void OnNavigation(InputAction.CallbackContext context);
+        void OnZoom(InputAction.CallbackContext context);
     }
 }
