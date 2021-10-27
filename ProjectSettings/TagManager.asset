@@ -11,6 +11,7 @@ TagManager:
   - BoostPlant
   - Boss
   - Box
+  - MovingPlatform
   layers:
   - Default
   - TransparentFX
