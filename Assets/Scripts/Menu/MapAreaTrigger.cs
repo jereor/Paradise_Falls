@@ -17,7 +17,6 @@ public class MapAreaTrigger : MonoBehaviour
             mapVisibilityBlocker.enabled = false;
             found = true;
         }
-        Debug.Log("Found it before");
     }
 
     // For saving
