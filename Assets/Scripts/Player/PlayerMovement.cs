@@ -129,8 +129,8 @@ public class PlayerMovement : MonoBehaviour
         // Ground check to set state variables
         if (IsGrounded())
             lastGroundedTime = Time.time;
-        else
-            CheckIfStuck();
+        //else
+        //    CheckIfStuck();
 
         // Update movement based state variables
         moving = rb.velocity.x != 0;
