@@ -759,6 +759,22 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: c383cbc1-98d7-4580-9ed4-5af80bd342ba
     m_ActionName: GameUI/Zoom[/Mouse/scroll]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1052055042152382324}
+        m_TargetAssemblyTypeName: MapController, Assembly-CSharp
+        m_MethodName: Navigate
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 00d15c47-64f9-4726-a50d-932cab1c05df
+    m_ActionName: GameUI/MapNavigation[/XInputControllerWindows/rightStick]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: GameUI
@@ -782,9 +798,10 @@ MonoBehaviour:
   pauseController: {fileID: 6490484963523106038}
   areaTriggers: []
   currentScale: 1
-  maxScale: 4
-  minScale: 0.5
-  increment: 0.1
+  maxScale: 5
+  minScale: 1
+  increment: 0.05
+  navigationSpeed: 5
 --- !u!1 &2062474362227114319
 GameObject:
   m_ObjectHideFlags: 0

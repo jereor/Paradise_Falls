@@ -385,6 +385,14 @@ public class @InputActions : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""MapNavigation"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""00d15c47-64f9-4726-a50d-932cab1c05df"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -414,6 +422,17 @@ public class @InputActions : IInputActionCollection, IDisposable
                     ""name"": """",
                     ""id"": ""9aaca787-e5d7-4506-819f-6b9d6125a963"",
                     ""path"": ""<Keyboard>/m"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Map"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8d64633b-d3a0-4d0c-b4e7-8377cb0fa677"",
+                    ""path"": ""<Gamepad>/select"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -497,6 +516,28 @@ public class @InputActions : IInputActionCollection, IDisposable
                     ""action"": ""Zoom"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8ebe86d6-22d5-4460-88cd-f5691c6b08c1"",
+                    ""path"": ""<Gamepad>/dpad"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Zoom"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""68d07df6-9b32-4647-9b06-159c40be422b"",
+                    ""path"": ""<Gamepad>/rightStick"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MapNavigation"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -519,6 +560,7 @@ public class @InputActions : IInputActionCollection, IDisposable
         m_GameUI_Map = m_GameUI.FindAction("Map", throwIfNotFound: true);
         m_GameUI_Navigation = m_GameUI.FindAction("Navigation", throwIfNotFound: true);
         m_GameUI_Zoom = m_GameUI.FindAction("Zoom", throwIfNotFound: true);
+        m_GameUI_MapNavigation = m_GameUI.FindAction("MapNavigation", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -661,6 +703,7 @@ public class @InputActions : IInputActionCollection, IDisposable
     private readonly InputAction m_GameUI_Map;
     private readonly InputAction m_GameUI_Navigation;
     private readonly InputAction m_GameUI_Zoom;
+    private readonly InputAction m_GameUI_MapNavigation;
     public struct GameUIActions
     {
         private @InputActions m_Wrapper;
@@ -669,6 +712,7 @@ public class @InputActions : IInputActionCollection, IDisposable
         public InputAction @Map => m_Wrapper.m_GameUI_Map;
         public InputAction @Navigation => m_Wrapper.m_GameUI_Navigation;
         public InputAction @Zoom => m_Wrapper.m_GameUI_Zoom;
+        public InputAction @MapNavigation => m_Wrapper.m_GameUI_MapNavigation;
         public InputActionMap Get() { return m_Wrapper.m_GameUI; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -690,6 +734,9 @@ public class @InputActions : IInputActionCollection, IDisposable
                 @Zoom.started -= m_Wrapper.m_GameUIActionsCallbackInterface.OnZoom;
                 @Zoom.performed -= m_Wrapper.m_GameUIActionsCallbackInterface.OnZoom;
                 @Zoom.canceled -= m_Wrapper.m_GameUIActionsCallbackInterface.OnZoom;
+                @MapNavigation.started -= m_Wrapper.m_GameUIActionsCallbackInterface.OnMapNavigation;
+                @MapNavigation.performed -= m_Wrapper.m_GameUIActionsCallbackInterface.OnMapNavigation;
+                @MapNavigation.canceled -= m_Wrapper.m_GameUIActionsCallbackInterface.OnMapNavigation;
             }
             m_Wrapper.m_GameUIActionsCallbackInterface = instance;
             if (instance != null)
@@ -706,6 +753,9 @@ public class @InputActions : IInputActionCollection, IDisposable
                 @Zoom.started += instance.OnZoom;
                 @Zoom.performed += instance.OnZoom;
                 @Zoom.canceled += instance.OnZoom;
+                @MapNavigation.started += instance.OnMapNavigation;
+                @MapNavigation.performed += instance.OnMapNavigation;
+                @MapNavigation.canceled += instance.OnMapNavigation;
             }
         }
     }
@@ -727,5 +777,6 @@ public class @InputActions : IInputActionCollection, IDisposable
         void OnMap(InputAction.CallbackContext context);
         void OnNavigation(InputAction.CallbackContext context);
         void OnZoom(InputAction.CallbackContext context);
+        void OnMapNavigation(InputAction.CallbackContext context);
     }
 }

@@ -21,12 +21,19 @@ public class MapController : MonoBehaviour
     [SerializeField] private float minScale;
     [Tooltip("How much scale is multiplied per scroll")]
     [SerializeField] private float increment;
+    [SerializeField] private float navigationSpeed;
 
-
+    private Vector2 navigationMovement;
     // Start is called before the first frame update
     void Start()
     {
         currentScale = mapImage.rectTransform.localScale.x;
+    }
+
+    private void Update()
+    {
+        // Negative since anchor is right upper corner
+        mapImage.rectTransform.anchoredPosition -= navigationMovement;
     }
 
     // Bases on https://forum.unity.com/threads/zoom-in-out-on-scrollrect-content-image.284655/ -rainbowegg
@@ -62,6 +69,25 @@ public class MapController : MonoBehaviour
         // If not done image "moves" towards origin point we lose the image we are currently viewing
         mapImage.rectTransform.anchoredPosition *= mapImage.rectTransform.localScale.x / oldLocalScaleX;
 
+    }
+    Vector2 navVector;
+    public void Navigate(InputAction.CallbackContext context)
+    {
+        // If value is something else than zero since scrolling calls this function with scroll (- or +)value and scroll stop 0
+        //if (context.ReadValue<Vector2>().normalized.y != 0)
+        //{
+
+        navigationMovement = new Vector2(Mathf.Round(context.ReadValue<Vector2>().x),Mathf.Round(context.ReadValue<Vector2>().y)) * navigationSpeed;
+            //    if (Mathf.Sign(context.ReadValue<Vector2>().y) == -1)
+            //        mapImage.rectTransform.anchoredPosition = new Vector2(0f, -navigationSpeed) * increment;
+            //    else if (Mathf.Sign(context.ReadValue<Vector2>().y) == 1)
+            //        mapImage.rectTransform.anchoredPosition = new Vector2(0f, navigationSpeed) * increment;
+
+            //    if (Mathf.Sign(context.ReadValue<Vector2>().x) == -1)
+            //        mapImage.rectTransform.anchoredPosition = new Vector2(-navigationSpeed, 0f) * increment;
+            //    else if (Mathf.Sign(context.ReadValue<Vector2>().x) == 1)
+            //        mapImage.rectTransform.anchoredPosition = new Vector2(navigationSpeed, 0f) * increment;
+        //}
     }
 
     // Called from input map button (or pause map button)
