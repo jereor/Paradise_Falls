@@ -13,7 +13,7 @@ public class MapController : MonoBehaviour
     public Camera mapCamera; // Camera that captures map
     public RawImage mapImage; // RawImage where camera view is projected
     public PauseMenuController pauseController;
-    public GameObject[] areaBlocks; // game objects of these triggers
+    public GameObject[] areaTriggers; // game objects of these triggers
 
     [Header("Variables scale/zoom")]
     [SerializeField] private float currentScale; 
@@ -69,6 +69,10 @@ public class MapController : MonoBehaviour
     {
         if (context.started)
         {
+            // Game is currently paused map button is pressed Resume() and open map
+            if (PauseMenuController.GameIsPaused)
+                pauseController.HandlePauseState();
+            
             HandleMapState();
         }
     }
@@ -79,21 +83,12 @@ public class MapController : MonoBehaviour
         // Map not open -> open it
         if (!MapOpen)
         {
-            // Game not paused -> pause it
-            if (!PauseMenuController.GameIsPaused)
-            {
-                pauseController.HandlePauseState();
-            }
             mapPanel.SetActive(true);
             MapOpen = true;
         }
         // Map open ...
         else if (MapOpen)
         {
-            if (PauseMenuController.GameIsPaused)
-            {
-                pauseController.HandlePauseState();
-            }
             mapPanel.SetActive(false);
             MapOpen = false;
         }
@@ -108,15 +103,15 @@ public class MapController : MonoBehaviour
 
 
     // For saving and loading
-    public GameObject[] GetAreaBlocks()
+    public GameObject[] GetAreaTriggers()
     {
-        return areaBlocks;
+        return areaTriggers;
     }
 
     public void SetAreaBlocks(int i, bool b)
     {
         // Get correct trigger with index saved and bool b
-        areaBlocks[i].TryGetComponent(out MapAreaTrigger script);
+        areaTriggers[i].TryGetComponent(out MapAreaTrigger script);
         script.SetFound(b);
     }
 }

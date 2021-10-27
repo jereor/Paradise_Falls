@@ -40,10 +40,9 @@ public class PauseMenuController : MonoBehaviour
         {
             // Map is currently open -> close map and pause panel comes visible
             if (MapController.MapOpen)
-                mapControllerScript.GoToPauseMenu();
-            // Normal pause
-            else
-                HandlePauseState();
+                mapControllerScript.HandleMapState();
+
+            HandlePauseState();
         }
     }
 
