@@ -7,14 +7,13 @@ using UnityEngine.EventSystems;
 
 public class MapController : MonoBehaviour
 {
-    public bool mapOpen = false;
+    public static bool MapOpen = false;
     [Header("Objects")]
     public GameObject mapPanel;
-    public Camera mapCamera;
-    public RawImage mapImage;
+    public Camera mapCamera; // Camera that captures map
+    public RawImage mapImage; // RawImage where camera view is projected
     public PauseMenuController pauseController;
-    public GameObject[] areaBlocks;
-
+    public GameObject[] areaBlocks; // game objects of these triggers
 
     [Header("Variables scale/zoom")]
     [SerializeField] private float currentScale; 
@@ -28,12 +27,6 @@ public class MapController : MonoBehaviour
     void Start()
     {
         currentScale = mapImage.rectTransform.localScale.x;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
     }
 
     // Bases on https://forum.unity.com/threads/zoom-in-out-on-scrollrect-content-image.284655/ -rainbowegg
@@ -72,17 +65,58 @@ public class MapController : MonoBehaviour
     }
 
     // Called from input map button (or pause map button)
-    public void OpenMap()
+    public void OpenMap(InputAction.CallbackContext context)
     {
-        if (!mapOpen)
+        if (context.started)
         {
+            HandleMapState();
+        }
+    }
+
+    // Called when map key is pressed
+    public void HandleMapState()
+    {
+        // Map not open -> open it
+        if (!MapOpen)
+        {
+            // Game not paused -> pause it
+            if (!PauseMenuController.GameIsPaused)
+            {
+                pauseController.HandlePauseState();
+            }
             mapPanel.SetActive(true);
-            mapOpen = true;
+            MapOpen = true;
         }
-        else if (mapOpen)
+        // Map open ...
+        else if (MapOpen)
         {
+            if (PauseMenuController.GameIsPaused)
+            {
+                pauseController.HandlePauseState();
+            }
             mapPanel.SetActive(false);
-            mapOpen = false;
+            MapOpen = false;
         }
+    }
+
+    // Called when pause (or back) button is pressed while map is open
+    public void GoToPauseMenu()
+    {
+        mapPanel.SetActive(false);
+        MapOpen = false;
+    }
+
+
+    // For saving and loading
+    public GameObject[] GetAreaBlocks()
+    {
+        return areaBlocks;
+    }
+
+    public void SetAreaBlocks(int i, bool b)
+    {
+        // Get correct trigger with index saved and bool b
+        areaBlocks[i].TryGetComponent(out MapAreaTrigger script);
+        script.SetFound(b);
     }
 }

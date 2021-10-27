@@ -10286,7 +10286,7 @@ MonoBehaviour:
       - m_Target: {fileID: 2248537422028437956}
         m_TargetAssemblyTypeName: PauseMenuController, Assembly-CSharp
         m_MethodName: PauseInput
-        m_Mode: 1
+        m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -10302,7 +10302,7 @@ MonoBehaviour:
       - m_Target: {fileID: 5458111013650223686}
         m_TargetAssemblyTypeName: MapController, Assembly-CSharp
         m_MethodName: OpenMap
-        m_Mode: 1
+        m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -10558,6 +10558,7 @@ MonoBehaviour:
   buttons: {fileID: 4511080843842052917}
   popUp: {fileID: 4916019233574276413}
   pauseMenuUI: {fileID: 8361965488996663067}
+  mapControllerScript: {fileID: 5458111013650223686}
   continueButton: {fileID: 1854420476146855467}
   warningNoButton: {fileID: 6371415754799113862}
   settingsMenu: {fileID: 2347348217617732640}
@@ -12219,7 +12220,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 593b4c419ee88d342a7eaa4d3ab7d054, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mapOpen: 0
   mapPanel: {fileID: 2059304801}
   mapCamera: {fileID: 547138811}
   mapImage: {fileID: 1547897078}
