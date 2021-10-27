@@ -255,7 +255,7 @@ public class BackAndForthMovingBox : MonoBehaviour
             //}
             StartCoroutine(Wait(stepTime));
             rb.DOMove((Vector2)transform.position + moves[stepCounter], stepTime); // Moves the object to next waypoint.
-
+            Debug.Log(stepCounter);
             stepCounter++;
         }
         if (changeState) // Checks if the step is done.

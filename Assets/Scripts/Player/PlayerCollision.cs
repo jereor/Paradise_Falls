@@ -22,8 +22,8 @@ public class PlayerCollision : MonoBehaviour
         if (collision.gameObject.tag == "MovingPlatform")
         {
             // Tries to move the player with moving platform, but does not work properly (not at all).
-            transform.SetParent(collision.gameObject.transform);
-            rb.velocity = collision.gameObject.GetComponent<Rigidbody2D>().velocity;
+            //transform.SetParent(collision.gameObject.transform);
+            //rb.velocity = collision.gameObject.GetComponent<Rigidbody2D>().velocity;
         }
     }
 
@@ -31,8 +31,8 @@ public class PlayerCollision : MonoBehaviour
     {
         if (collision.gameObject.tag == "MovingPlatform")
         {
-            transform.SetParent(collision.gameObject.transform);
-            rb.velocity = collision.gameObject.GetComponent<Rigidbody2D>().velocity;
+            //transform.SetParent(collision.gameObject.transform);
+            //rb.velocity = collision.gameObject.GetComponent<Rigidbody2D>().velocity;
         }
     }
 
