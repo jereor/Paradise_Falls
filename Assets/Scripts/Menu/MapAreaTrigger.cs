@@ -7,14 +7,14 @@ public class MapAreaTrigger : MonoBehaviour
 {
     private bool found = false;
 
-    public Image mapVisibilityBlocker;
+    public GameObject areaObject;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Player") && !found)
         {
             Debug.Log("New area");
-            mapVisibilityBlocker.enabled = false;
+            areaObject.SetActive(true);
             found = true;
         }
     }
@@ -27,8 +27,7 @@ public class MapAreaTrigger : MonoBehaviour
     // For loading
     public void SetFound(bool b)
     {
-        if (b)
-            mapVisibilityBlocker.enabled = false;
+        areaObject.SetActive(b);
         found = b;
     }
 }
