@@ -10,6 +10,8 @@ TagManager:
   - MeleeWeapon
   - BoostPlant
   - Boss
+  - MovingPlatform
+  - Box
   layers:
   - Default
   - TransparentFX
