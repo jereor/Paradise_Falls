@@ -24,7 +24,6 @@ public class CameraTransitions : MonoBehaviour
     // Switches current camera to the new one
     public void SwitchCameras(GameObject newCamera)
     {
-        Debug.Log("Switching to " + newCamera);
         currentCamera.SetActive(false);
         newCamera.SetActive(true);
         currentCamera = newCamera;

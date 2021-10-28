@@ -72,7 +72,7 @@ public class DemoLoader : MonoBehaviour
                 // WallJump
                 if (GameStatus.status.getLoadedData().wallJumpAcquired)
                 {
-                    playerObject.GetComponent<PlayerMovement>().AllowWallJump();
+                    Player.Instance.UnlockWalljump();
                     Destroy(wallJumpPickUp);
                 }
 
@@ -179,7 +179,7 @@ public class DemoLoader : MonoBehaviour
             GameStatus.status.UpdateWeapon(playerObject.GetComponent<PlayerCombat>().getWeaponWielded());
 
             // Wall jump ability
-            GameStatus.status.UpdateWallJump(playerObject.GetComponent<PlayerMovement>().getAllowWallJump());
+            GameStatus.status.UpdateWallJump(Player.Instance.WalljumpUnlocked());
 
             // Enemies
             for (int i = 0; i < enemies.Count; i++)

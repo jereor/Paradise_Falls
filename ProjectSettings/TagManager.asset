@@ -10,8 +10,6 @@ TagManager:
   - MeleeWeapon
   - BoostPlant
   - Boss
-  - Box
-  - MovingPlatform
   layers:
   - Default
   - TransparentFX
@@ -32,7 +30,7 @@ TagManager:
   - BossWeakPoint
   - MovementBounds
   - ShockwaveAttack
-  - Breakable
+  - Map
   - 
   - 
   - 

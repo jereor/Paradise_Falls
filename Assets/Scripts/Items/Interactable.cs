@@ -22,6 +22,8 @@ public class Interactable : MonoBehaviour
     [SerializeField] private string textToShow = "Press # to interact";     // Default string to be shown if showFloatingText is true  
     [SerializeField] private string interactedText = "Interacted";      // Default string to be replaced and shown if updateTextOnInteract is true
 
+    private bool floatingTextShown = false;
+
     private void Start()
     {
         UpdateTextBinding();
@@ -55,6 +57,7 @@ public class Interactable : MonoBehaviour
             if (!floatingText.text.Equals(textToShow))
             {
                 floatingText.text = textToShow;     // Press F to interact
+                floatingTextShown = true;
             }
         }
     }
@@ -64,6 +67,7 @@ public class Interactable : MonoBehaviour
         if (showFloatingText)
         {
             floatingText.text = "";
+            floatingTextShown = false;
         }
     }
 
@@ -83,6 +87,11 @@ public class Interactable : MonoBehaviour
                 HideFloatingText();
             }
         }
+    }
+
+    public virtual bool getFloatingTextBool()
+    {
+        return floatingTextShown;
     }
 
     // All items will have this functions as default override this in items own script to do something. Example save or heal when picked up

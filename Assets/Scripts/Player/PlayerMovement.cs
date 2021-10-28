@@ -22,7 +22,6 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Ledge and Wall Check")]
     [SerializeField] private bool allowLedgeClimb;
-    [SerializeField] private bool allowWallJump;
     [SerializeField] private bool allowCoyoteWallJump; // Allows coyoteTime = coyoteTime / 2 to jump from wall (you can move horizontaly or turn around a small distance off the wall and still jump)
     [SerializeField] private Transform ledgeCheck; // Point where Ledge Check Occupation Raycast is cast should be close to top of head
     [SerializeField] private Transform wallCheckBody; // Point where Body Check Raycast is cast
@@ -129,8 +128,8 @@ public class PlayerMovement : MonoBehaviour
         // Ground check to set state variables
         if (IsGrounded())
             lastGroundedTime = Time.time;
-        else
-            CheckIfStuck();
+        //else
+        //    CheckIfStuck();
 
         // Update movement based state variables
         moving = rb.velocity.x != 0;
@@ -368,7 +367,7 @@ public class PlayerMovement : MonoBehaviour
     private void CheckWallJump()
     {
         // We have wall jumps enabled
-        if (allowWallJump)
+        if (Player.Instance.WalljumpUnlocked())
         {
             // We are in air and not climbing
             if (!IsGrounded() && !climbing)
@@ -571,18 +570,6 @@ public class PlayerMovement : MonoBehaviour
 
 
     // ---- OTHERS ----
-
-    // Activated from pick up
-    public void AllowWallJump()
-    {
-        allowWallJump = true;
-    }
-
-    public bool getAllowWallJump()
-    {
-        return allowWallJump;
-    }
-
     public bool getClimbing()
     {
         return climbing;
