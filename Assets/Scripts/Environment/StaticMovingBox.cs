@@ -6,12 +6,15 @@ using DG.Tweening;
 public class StaticMovingBox : MonoBehaviour
 {
     private Rigidbody2D rb;
+    private Rigidbody2D playerRB;
     private BoxCollider2D boxCollider;
     [SerializeField] private float moveTime;
     [SerializeField] private Vector2[] moves;
     [SerializeField] private Vector2[] movesBack;
     private Vector2 startPosition;
     [SerializeField] private int stepCounter = 0;
+    [SerializeField] private Vector2 velocityPlayer;
+    [SerializeField] private float knockbackForce;
 
 
     private bool changeState = false;
@@ -37,6 +40,7 @@ public class StaticMovingBox : MonoBehaviour
 
         movesBack = new Vector2[moves.Length + 1]; // Assign the array with the length of moves-array. Needed to script work properly!!
         rb = GetComponent<Rigidbody2D>();
+        playerRB = GameObject.Find("Player").GetComponent<Rigidbody2D>();
         boxCollider = GetComponent<BoxCollider2D>();
         gizmoPositionChange = false;
         startPosition = transform.position;
@@ -109,6 +113,7 @@ public class StaticMovingBox : MonoBehaviour
             StopAllCoroutines();
             rb.isKinematic = false; // Change the rigidbody to dynamic and set the parameters.
             rb.velocity = new Vector2(0, 0);
+            rb.useAutoMass = true;
             rb.gravityScale = 3f;
             rb.drag = 0.05f;
             rb.constraints = RigidbodyConstraints2D.None;
@@ -151,13 +156,13 @@ public class StaticMovingBox : MonoBehaviour
 
     private void Move(Vector2[] move, float time)
     {
-        rb.DOPath(moves, time); // Takes an array of Vectors and follows it to the destination.
+        rb.DOLocalPath(moves, time); // Takes an array of Vectors and follows it to the destination.
         stepCounter++;
     }
 
     private void MoveBack(Vector2[] move, float time)
     {
-        rb.DOPath(movesBack, time);
+        rb.DOLocalPath(movesBack, time);
         stepCounter++;
     }
 
@@ -179,6 +184,13 @@ public class StaticMovingBox : MonoBehaviour
         return cuttableChain;
     }
 
+    void PlayerPushback()
+    {
+        velocityPlayer = new Vector2(playerRB.position.x - transform.position.x > 0 ? knockbackForce * 1 : knockbackForce * -1, 0);
+        playerRB.MovePosition(playerRB.position + velocityPlayer * Time.deltaTime);
+        //StartCoroutine(KnockbackCooldown());
+    }
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
         //Debug.Log(collision.collider.name);
@@ -187,19 +199,29 @@ public class StaticMovingBox : MonoBehaviour
             Destroy(gameObject);
         }
 
+        if (collision.gameObject.tag == "Player" && rb.isKinematic == false && rb.velocity.y < -1 && (transform.position.y - playerRB.transform.position.y) > 0)
+        {
+            PlayerPushback();
+        }
+
         //if (collision.gameObject.tag == "Player" && !isChainCut)
         //{
         //    collision.collider.transform.SetParent(transform);
         //}
     }
 
-    //private void OnCollisionStay2D(Collision2D collision)
-    //{
-    //    //if (collision.gameObject.tag == "Player" && !isChainCut)
-    //    //{
-    //    //    collision.collider.transform.SetParent(transform);
-    //    //}
-    //}
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "Player" && rb.isKinematic == false  && (transform.position.y - playerRB.transform.position.y) > 0)
+        {
+            PlayerPushback();
+        }
+
+        //if (collision.gameObject.tag == "Player" && !isChainCut)
+        //{
+        //    collision.collider.transform.SetParent(transform);
+        //}
+    }
 
     //private void OnCollisionExit2D(Collision2D collision)
     //{

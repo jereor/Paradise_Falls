@@ -16,14 +16,14 @@ public class RiotShield : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if(shieldHealth.CurrentHealth == 2)
-        {
-            gameObject.GetComponent<SpriteRenderer>().color = Color.black;
-        }
-        if (shieldHealth.CurrentHealth == 0)
-        {
-            gameObject.GetComponent<SpriteRenderer>().color = Color.grey;
-        }
+        //if(shieldHealth.CurrentHealth == 2)
+        //{
+        //    gameObject.GetComponent<SpriteRenderer>().color = Color.black;
+        //}
+        //if (shieldHealth.CurrentHealth == 0)
+        //{
+        //    gameObject.GetComponent<SpriteRenderer>().color = Color.grey;
+        //}
     }
     // Used to check if the shield hit the ground collider. This happens when riot drone is charging towards the player but they dodge the charge. Set state to "Stunned".
     private void OnCollisionEnter2D(Collision2D collision)

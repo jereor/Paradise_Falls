@@ -6,6 +6,7 @@ using DG.Tweening;
 public class BackAndForthMovingBox : MonoBehaviour
 {
     private Rigidbody2D rb;
+    private Rigidbody2D playerRB;
     private BoxCollider2D boxCollider;
     private Transform chain;
     [SerializeField] private float stepTime;
@@ -13,6 +14,8 @@ public class BackAndForthMovingBox : MonoBehaviour
     [SerializeField] private Vector2[] moves;
     private Vector2 startPosition;
     [SerializeField] private int stepCounter = 0;
+    [SerializeField] private Vector2 velocityPlayer;
+    [SerializeField] private float knockbackForce;
 
 
     private bool changeState = false;
@@ -40,6 +43,7 @@ public class BackAndForthMovingBox : MonoBehaviour
     {
 
         rb = GetComponent<Rigidbody2D>();
+        playerRB = GameObject.Find("Player").GetComponent<Rigidbody2D>();
         boxCollider = GetComponent<BoxCollider2D>();
         chain = GetComponentInChildren<Transform>();
         gizmoPositionChange = false;
@@ -71,20 +75,20 @@ public class BackAndForthMovingBox : MonoBehaviour
             {
                 Vector2 position;
                 Gizmos.DrawLine((Vector2)transform.position, (Vector2)transform.position + moves[0]);
-                Gizmos.DrawSphere((Vector2)transform.position + moves[0], 0.5f);
+                Gizmos.DrawSphere((Vector2)transform.position + moves[0], 0.2f);
                 position = (Vector2)transform.position + moves[0];
                 for (int i = 1; i < moves.Length; i++)
                 {
 
                     Gizmos.DrawLine(position, position + moves[i]);
-                    Gizmos.DrawSphere(position, 0.4f);
+                    Gizmos.DrawSphere(position, 0.2f);
                     position += moves[i];
                 }
                 if (loop)
                 {
                     Gizmos.DrawLine(position, transform.position);
-                    Gizmos.DrawSphere(position, 0.4f);
-                    Gizmos.DrawSphere(transform.position, 0.4f);
+                    Gizmos.DrawSphere(position, 0.2f);
+                    Gizmos.DrawSphere(transform.position, 0.2f);
                 }
                 else
                     Gizmos.DrawSphere(position, 0.2f);
@@ -118,6 +122,10 @@ public class BackAndForthMovingBox : MonoBehaviour
         }
 
     }
+    private void Update()
+    {
+
+    }
 
     // Update is called once per frame
     void FixedUpdate()
@@ -126,17 +134,20 @@ public class BackAndForthMovingBox : MonoBehaviour
         {
             Debug.Log("test");
             isChainCut = true;
-            DOTween.Kill(rb); // Stops all Tweenings so the object doesn't move after the chain is cut.
-            StopAllCoroutines();
+
             rb.isKinematic = false; // Change the rigidbody to dynamic and set the parameters.
             rb.velocity = new Vector2(0, 0);
+            rb.useAutoMass = true;
             rb.gravityScale = 3f;
             rb.drag = 0.05f;
             rb.constraints = RigidbodyConstraints2D.None;
             rb.constraints = RigidbodyConstraints2D.FreezePositionX;
             rb.freezeRotation = true;
+            DOTween.Kill(rb); // Stops all Tweenings so the object doesn't move after the chain is cut.
+            StopAllCoroutines();
         }
-        if (!shutScript || chain != null) // Prevents the script to progress if chain is cut.
+
+        if (!shutScript || chain != null || gameObject.transform.childCount != 0) // Prevents the script to progress if chain is cut.
         {
             if (canStep && !returning)
                 HandleStep();
@@ -156,12 +167,12 @@ public class BackAndForthMovingBox : MonoBehaviour
         changeState = true;
     }
 
-    //private void Move(Vector2 move, float time)
-    //{
-    //    rb.DOMove((Vector2)transform.position + move, time);
+    private void Move(Vector2 move, float time)
+    {
+        rb.DOMove((Vector2)transform.position + move, time);
 
 
-    //}
+    }
 
     // Enable or disable the collider.
     private void EnableDisableBoxCollider()
@@ -181,13 +192,32 @@ public class BackAndForthMovingBox : MonoBehaviour
         return cuttableChain;
     }
 
+    void PlayerPushback()
+    {
+        velocityPlayer = new Vector2(playerRB.position.x - transform.position.x > 0 ? knockbackForce * 1 : knockbackForce * -1, 0);
+        playerRB.MovePosition(playerRB.position + velocityPlayer * Time.deltaTime);
+        //StartCoroutine(KnockbackCooldown());
+    }
+
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
         //Debug.Log(collision.collider.name);
-        if (collision.gameObject.tag == "Boss")
+        if (collision.gameObject.tag == "Boss" && rb.isKinematic == false)
         {
             Destroy(gameObject);
+        }
+        if(collision.gameObject.tag == "Player" && rb.isKinematic == false && rb.velocity.y < -1 && (transform.position.y - playerRB.transform.position.y) > 0)
+        {
+            PlayerPushback();
+        }
+    }
+
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "Player" && rb.isKinematic == false && (transform.position.y - playerRB.transform.position.y) > 0)
+        {
+            PlayerPushback();
         }
     }
 
@@ -254,7 +284,7 @@ public class BackAndForthMovingBox : MonoBehaviour
             //    return;
             //}
             StartCoroutine(Wait(stepTime));
-            rb.DOMove((Vector2)transform.position + moves[stepCounter], stepTime); // Moves the object to next waypoint.
+            Move(moves[stepCounter], stepTime); // Moves the object to next waypoint.
             Debug.Log(stepCounter);
             stepCounter++;
         }
@@ -271,7 +301,7 @@ public class BackAndForthMovingBox : MonoBehaviour
     {
         if (!isWaiting && !changeState)
         {
-            rb.DOMove(startPosition, stepTime);
+            Move(startPosition, stepTime);
             StartCoroutine(Wait(stepTime));
         }
         if (changeState)

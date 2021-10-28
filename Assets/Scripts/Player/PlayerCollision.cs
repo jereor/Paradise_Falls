@@ -24,6 +24,7 @@ public class PlayerCollision : MonoBehaviour
             // Tries to move the player with moving platform, but does not work properly (not at all).
             //transform.SetParent(collision.gameObject.transform);
             //rb.velocity = collision.gameObject.GetComponent<Rigidbody2D>().velocity;
+            transform.Translate(collision.gameObject.GetComponent<Rigidbody2D>().velocity);
         }
     }
 
@@ -33,6 +34,7 @@ public class PlayerCollision : MonoBehaviour
         {
             //transform.SetParent(collision.gameObject.transform);
             //rb.velocity = collision.gameObject.GetComponent<Rigidbody2D>().velocity;
+            transform.Translate(collision.gameObject.GetComponent<Rigidbody2D>().velocity);
         }
     }
 

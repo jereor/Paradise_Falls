@@ -13,9 +13,9 @@ GameObject:
   - component: {fileID: 2454177713136915656}
   - component: {fileID: 2454177713136915659}
   - component: {fileID: 8577049388017886117}
-  m_Layer: 19
+  m_Layer: 6
   m_Name: BackAndForthMovingBox
-  m_TagString: Box
+  m_TagString: MovingPlatform
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -147,12 +147,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stepTime: 4
   waitTime: 2
-  moves: []
+  moves:
+  - {x: 6.77, y: 0}
+  - {x: 11.13, y: 0}
+  - {x: 6.6, y: 0}
   stepCounter: 0
-  colliderDisabledAtStart: 0
-  comesAndGoesFromBackground: 0
-  cuttableChain: 0
-  loop: 1
+  velocityPlayer: {x: 0, y: 0}
+  knockbackForce: 40
+  colliderDisabledAtStart: 1
+  comesAndGoesFromBackground: 1
+  cuttableChain: 1
+  loop: 0
   destroyAfterPathComplete: 1
 --- !u!1 &2454177713594349042
 GameObject:
@@ -181,8 +186,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2454177713594349042}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.01, y: 0.9696, z: 0}
-  m_LocalScale: {x: 0.09974545, y: 1.0571045, z: 1}
+  m_LocalPosition: {x: 0.01, y: 0.9694, z: 0}
+  m_LocalScale: {x: 0.09974545, y: 1.056921, z: 1}
   m_Children: []
   m_Father: {fileID: 2454177713136915654}
   m_RootOrder: 0
