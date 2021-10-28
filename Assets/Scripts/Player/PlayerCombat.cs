@@ -56,6 +56,7 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private GameObject meleeWeaponPrefab;
     private GameObject weaponInstance; // Players weapon in scene after throwing used in pull backs
     [SerializeField] private bool isWeaponWielded = false;
+    private bool multitoolUnlocked = false;
 
     [Header("Variables used with pulling player towards the weapon")]
     [SerializeField] private float pullCollisionCounter = 0; // If player hits a collider during the pull, release the pull after a certain time.
@@ -125,14 +126,25 @@ public class PlayerCombat : MonoBehaviour
         movementScript = GetComponent<PlayerMovement>();
 
         if (Player.Instance.MultitoolUnlocked())
+        {
+            multitoolUnlocked = true;
             isWeaponWielded = true;
+        }
         else
+        {
+            multitoolUnlocked = false;
             isWeaponWielded = false;
+        }
     }
 
     private void Update()
     {
-
+        // Check only when false save resources
+        if (!multitoolUnlocked && Player.Instance.MultitoolUnlocked() != multitoolUnlocked)
+        {
+            multitoolUnlocked = Player.Instance.MultitoolUnlocked();
+            isWeaponWielded = Player.Instance.MultitoolUnlocked();
+        }
     }
 
     private void FixedUpdate()
