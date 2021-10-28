@@ -14,6 +14,7 @@ public class PauseMenuController : MonoBehaviour
 
     public CanvasGroup fader, buttons, popUp;
     public GameObject pauseMenuUI;
+    public MapController mapControllerScript;
 
     public Button continueButton;
     public Button warningNoButton;
@@ -31,9 +32,23 @@ public class PauseMenuController : MonoBehaviour
         gameObject.GetComponent<Canvas>().worldCamera = Camera.main;
     }
 
-    // Input event Pause is triggered
-    public void Pause(InputAction.CallbackContext context)
-    {     
+    // Input event Pause is triggered 
+    public void PauseInput(InputAction.CallbackContext context)
+    {
+        // started since we only want to pause when button is pressed down
+        if (context.started)
+        {
+            // Map is currently open -> close map and pause panel comes visible
+            if (MapController.MapOpen)
+                mapControllerScript.HandleMapState();
+
+            HandlePauseState();
+        }
+    }
+
+    // In own function so MapController can call pause without context
+    public void HandlePauseState()
+    {
         if (GameIsPaused)
         {
             Debug.Log("Closing Pause Menu");
