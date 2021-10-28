@@ -51,9 +51,9 @@ public class WallJumpPickUp : Interactable
     {
         if(playerObject != null)
         {
-            // Set allowWallJump true
-            playerObject.GetComponent<PlayerMovement>().AllowWallJump();
-            // Destroy this item from skene
+            // Unlock walljump for the player
+            Player.Instance.UnlockWalljump();
+            // Destroy this item from scene
             Destroy(gameObject);
         }
     }
