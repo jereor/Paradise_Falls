@@ -139,7 +139,8 @@ public class PlayerCombat : MonoBehaviour
 
     private void Update()
     {
-        if (Player.Instance.MultitoolUnlocked() != multitoolUnlocked)
+        // Check only when false save resources
+        if (!multitoolUnlocked && Player.Instance.MultitoolUnlocked() != multitoolUnlocked)
         {
             multitoolUnlocked = Player.Instance.MultitoolUnlocked();
             isWeaponWielded = Player.Instance.MultitoolUnlocked();
