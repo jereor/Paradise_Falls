@@ -9,13 +9,7 @@ EditorBuildSettings:
     path: Assets/Scenes/MainMenu.unity
     guid: 2cda990e2423bbf4892e6590ba056729
   - enabled: 1
-    path: Assets/Scenes/GameScene01.unity
-    guid: e1e63e2e1ff0fbc4d8769627602edeca
-  - enabled: 1
-    path: Assets/Scenes/JereTestSpace.unity
-    guid: 5e9278d401f088746bb019a8b6fd4131
-  - enabled: 1
-    path: Assets/Scenes/Demo Scene.unity
-    guid: 08a9a117af9403a47a0edacb5353cfc8
+    path: Assets/Scenes/Paradise Falls.unity
+    guid: 038808b08cc41c245bf0d7cf8b606e80
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 8f60441de0f6e314cb382bdc2a273247, type: 2}
