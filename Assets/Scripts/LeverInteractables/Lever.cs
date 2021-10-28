@@ -110,6 +110,7 @@ public class Lever : Interactable
 
     private IEnumerator LeverTurnTime()
     {
+        HideFloatingText();
         turning = true;
         Transform child = gameObject.transform.GetChild(2);
         child.gameObject.SetActive(true);
@@ -130,5 +131,6 @@ public class Lever : Interactable
 
         child.gameObject.SetActive(false);
         turning = false;
+        ShowFloatingText();
     }
 }
