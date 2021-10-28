@@ -8,7 +8,7 @@ public class Lever : Interactable
 {
     [Header("Objects to interact with")]
     public GameObject[] objectsToInteractWith; // Objects the lever interacts with.
-    [SerializeField] private string ifRequiresMultitoolText = "Equip Multitool to interact.";
+    [SerializeField] private string ifRequiresMultitoolText = "Wield Multitool to interact.";
     [SerializeField] private float leverTurnTime;
 
     [Header("Bools for interaction")]
