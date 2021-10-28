@@ -55,7 +55,8 @@ public class PlayerCombat : MonoBehaviour
     [Header("Weapon")]
     [SerializeField] private GameObject meleeWeaponPrefab;
     private GameObject weaponInstance; // Players weapon in scene after throwing used in pull backs
-    [SerializeField] private bool isWeaponWielded;
+    [SerializeField] private bool isWeaponWielded = false;
+    private bool multitoolUnlocked = false;
 
     [Header("Variables used with pulling player towards the weapon")]
     [SerializeField] private float pullCollisionCounter = 0; // If player hits a collider during the pull, release the pull after a certain time.
@@ -123,90 +124,26 @@ public class PlayerCombat : MonoBehaviour
 
         rb = GetComponent<Rigidbody2D>();
         movementScript = GetComponent<PlayerMovement>();
+
+        if (Player.Instance.MultitoolUnlocked())
+        {
+            multitoolUnlocked = true;
+            isWeaponWielded = true;
+        }
+        else
+        {
+            multitoolUnlocked = false;
+            isWeaponWielded = false;
+        }
     }
 
-    // PLACEHOLDER ANIMATOR STATES
     private void Update()
     {
-        // Idle
-        //if (onIdle && meleeInputReceived && !heavyHold)
-        //{
-
-        //    // Attacks in air
-        //    //if (!movementScript.IsGrounded())
-        //    //{
-        //    //    Debug.Log("Attack in air");
-        //    //    movementScript.canMove = false;
-        //    //}
-        //    //movementScript.canMove = false;
-
-        //    rb.velocity = Vector2.zero; // Stop player from sliding
-
-        //    //Debug.Log("Attack1");
-        //    StartCoroutine(PlaceHolderAttack1());
-        //    //InputManager();
-        //    onIdle = false;
-        //    meleeInputReceived = false;
-        //}
-
-        //if (onTran1 && meleeInputReceived && !heavyHold)
-        //{
-        //    //Debug.Log("Attack2");
-        //    StopCoroutine(tranToIdle);
-        //    StartCoroutine(PlaceHolderAttack2());
-        //    //InputManager();
-        //    onTran1 = false;
-        //    meleeInputReceived = false;
-        //}
-
-        //if (onTran2 && meleeInputReceived && !heavyHold)
-        //{
-        //    //Debug.Log("Attack3");
-        //    StopCoroutine(tranToIdle);
-        //    StartCoroutine(PlaceHolderAttack3());
-        //    //InputManager();
-        //    onTran2 = false;
-        //    meleeInputReceived = false;
-        //}
-
-        // Heavy
-        if (onIdle && meleeInputReceived && heavyHold)
+        // Check only when false save resources
+        if (!multitoolUnlocked && Player.Instance.MultitoolUnlocked() != multitoolUnlocked)
         {
-          
-            // Attacks in air
-            //if (!movementScript.IsGrounded())
-            //{
-            //    Debug.Log("Attack in air");
-            //    movementScript.canMove = false;
-            //}
-            //movementScript.canMove = false;
-            rb.velocity = Vector2.zero; // Stop player from sliding
-            
-            //Debug.Log("Attack1");
-            StartCoroutine(PlaceHolderAttackH1());
-            //InputManager();
-            onIdle = false;
-            meleeInputReceived = false;
-        }
-
-        if (onTran1 && meleeInputReceived && heavyHold)
-        {
-            //Debug.Log("Attack2");
-            StopCoroutine(tranToIdle);
-            StartCoroutine(PlaceHolderAttackH2());
-            //InputManager();
-            onTran1 = false;
-            meleeInputReceived = false;
-        }
-
-        if (onTran2 && meleeInputReceived && heavyHold)
-        {
-            //Debug.Log("Attack3");
-            StopCoroutine(tranToIdle);
-            StartCoroutine(PlaceHolderAttackH3());
-            //InputManager();
-            onTran2 = false;
-            meleeInputReceived = false;
+            multitoolUnlocked = Player.Instance.MultitoolUnlocked();
+            isWeaponWielded = Player.Instance.MultitoolUnlocked();
         }
     }
 
@@ -346,8 +283,6 @@ public class PlayerCombat : MonoBehaviour
 
             // We release aim button hide points
             HideAllProjPoints();
-
-            //gameObject.transform.localScale = new Vector3(vectorToTarget.normalized.x > 0 ? 1 : -1, 1, 1); // Flip player to face towards the shooting direction
         }
     }
 
@@ -365,64 +300,6 @@ public class PlayerCombat : MonoBehaviour
 
     // --- MELEE ---
 
-    // ----------- PLACEHOLDER ANIMATIONS -------------------
-
-    IEnumerator PlaceHolderAttackH1()
-    {
-        //Debug.Log("Started melee animation");
-
-        yield return new WaitForSecondsRealtime(2f);
-
-        Debug.Log("Ended heavy melee animation 1");
-
-        AttackDash();
-
-        // Heavy attack animation 1
-        DealDamage(1, true);
-
-        //InputManager();
-        onTran1 = true;
-
-        //tranToIdle = StartCoroutine(TranToIdle(1));
-    }
-
-    IEnumerator PlaceHolderAttackH2()
-    {
-        //Debug.Log("Started melee animation");
-
-        yield return new WaitForSecondsRealtime(2f);
-
-        Debug.Log("Ended heavy melee animation 2");
-
-        AttackDash();
-
-        // Heavy attack animation 2
-        DealDamage(2, true);
-
-        //InputManager();
-        onTran2 = true;
-
-        //tranToIdle = StartCoroutine(TranToIdle(2));
-    }
-
-    IEnumerator PlaceHolderAttackH3()
-    {
-        //Debug.Log("Started melee animation");
-
-        yield return new WaitForSecondsRealtime(2f);
-
-        Debug.Log("Ended heavy melee animation 3");
-
-        AttackDash();
-
-        // Heavy attack animation 3
-        DealDamage(3, true);
-
-        onTran3 = true;
-
-        //tranToIdle = StartCoroutine(TranToIdle(3));
-    }
-    // ----------- PLACEHOLDER ANIMATIONS -------------------
 
     // --- COMBO ---
     

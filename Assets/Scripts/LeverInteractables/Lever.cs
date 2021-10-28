@@ -8,7 +8,7 @@ public class Lever : Interactable
 {
     [Header("Objects to interact with")]
     public GameObject[] objectsToInteractWith; // Objects the lever interacts with.
-    [SerializeField] private string ifRequiresMultitoolText = "Equip Multitool to interact.";
+    [SerializeField] private string ifRequiresMultitoolText = "Wield Multitool to interact.";
     [SerializeField] private float leverTurnTime;
 
     [Header("Bools for interaction")]
@@ -110,6 +110,7 @@ public class Lever : Interactable
 
     private IEnumerator LeverTurnTime()
     {
+        HideFloatingText();
         turning = true;
         Transform child = gameObject.transform.GetChild(2);
         child.gameObject.SetActive(true);
@@ -130,5 +131,6 @@ public class Lever : Interactable
 
         child.gameObject.SetActive(false);
         turning = false;
+        ShowFloatingText();
     }
 }
