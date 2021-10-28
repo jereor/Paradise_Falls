@@ -44,7 +44,9 @@ public class PlayerCamera : MonoBehaviour
     // Smooth camera follow: Activated when climbing to dampen camera follow speed
     public void SmoothFollow(float smoothTime)
     {
-        StartCoroutine(Smooth(smoothTime)); // Set smoothing for the required time
+        // Check if the camera is currently active so we don't try to access a deactivated camera
+        if (gameObject.activeInHierarchy)
+            StartCoroutine(Smooth(smoothTime)); // Set smoothing for the required time
     }
 
     private IEnumerator Offset(float timer, float start, float end, bool falling)
