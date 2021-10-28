@@ -66,10 +66,13 @@ public class Player : MonoBehaviour
     State currentState;
     State previousState;
 
-    private void Start()
+    private void Awake()
     {
         Instance = this;
+    }
 
+    private void Start()
+    {
         currentState = State.Idle;
         rb = gameObject.GetComponent<Rigidbody2D>();
         animator = gameObject.GetComponent<Animator>();
