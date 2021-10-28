@@ -801,6 +801,7 @@ MonoBehaviour:
   maxScale: 5
   minScale: 1
   increment: 0.05
+  controllerIncrementTimer: 0.05
   navigationSpeed: 5
 --- !u!1 &2062474362227114319
 GameObject:
