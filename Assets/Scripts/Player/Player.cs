@@ -246,7 +246,7 @@ public class Player : MonoBehaviour
             }
         }
 
-        // When the current state is Ascending or Falling
+        // When the current state is Blocking or Parrying
         if (currentState == State.Blocking || currentState == State.Parrying)
         {
             // Player starts moving
@@ -292,7 +292,7 @@ public class Player : MonoBehaviour
 
         // Aiming
         //UNCOMMENT WHEN getThrowAiming() created in PlayerCombat
-        if (combatScript.getThrowAiming() && combatScript.getWeaponWielded() && !animator.GetBool("isRunning") && !animator.GetBool("isClimbing"))
+        if (combatScript.getThrowAiming() && combatScript.getWeaponWielded() && !animator.GetBool("isRunning") && !animator.GetBool("isClimbing") && !animator.GetBool("isBlocking") && !animator.GetBool("isParrying"))
         {
             animator.SetBool("isAiming", true);
         }
@@ -302,7 +302,7 @@ public class Player : MonoBehaviour
         }
 
         // Parry
-        if (shieldScript.Parrying && !animator.GetBool("isParrying") && !animator.GetBool("jump") && !animator.GetBool("isAttacking"))
+        if (shieldScript.Parrying && !animator.GetBool("isParrying") && !animator.GetBool("jump") && !animator.GetBool("isAttacking") && !animator.GetBool("isAiming") && !animator.GetBool("isThrowing"))
         {
             float multiplier = GetClipAnimTime("Parry") / shieldScript.getParryTimeWindow();
             // parrySpeedMultiplier is used to scale Parry animation lenght with our set parry time window
@@ -315,8 +315,12 @@ public class Player : MonoBehaviour
             StartCoroutine(ParryCounter(GetClipAnimTime("Parry") * (1 / multiplier)));
         }
         // Blocking 
-        if (shieldScript.Blocking && !animator.GetBool("isAttacking"))
+        if (shieldScript.Blocking && !animator.GetBool("isAttacking") && !animator.GetBool("isAiming") && !animator.GetBool("isThrowing"))
         {
+            if (animator.GetBool("isRunning"))
+            {
+                animator.SetBool("isRunning", false);
+            }
             animator.SetBool("isBlocking", true);
             // Shield is not active and coroutine is not started yet
             if(!shieldScript.shield.activeInHierarchy && blockCoroutine == null)
@@ -439,12 +443,14 @@ public class Player : MonoBehaviour
                 combatScript.DisableInputThrowAim();
 
                 movementScript.DisableInputJump();
+                movementScript.DisableInputMove();
                 break;
             case State.Parrying:
                 // Combat
                 combatScript.DisableInputMelee();
                 combatScript.DisableInputThrowAim();
 
+                movementScript.EnableInputMove();
                 break;
             default:
                 break;

@@ -10146,7 +10146,7 @@ MonoBehaviour:
   animator: {fileID: 3265684260011797273}
   rb: {fileID: 0}
   inputsActive: 1
-  blockAnimTimeMultiplier: 1.2
+  blockAnimTimeMultiplier: 1.05
 --- !u!114 &2646993275326716549
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10171,7 +10171,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   allowLedgeClimb: 1
-  allowWallJump: 0
   allowCoyoteWallJump: 1
   ledgeCheck: {fileID: 2838063052809471023}
   wallCheckBody: {fileID: 6576764605224401354}
@@ -10388,6 +10387,14 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: b838cc22-8c8f-49c6-b10d-194504f72a64
     m_ActionName: Player/ShockwaveAttack[/Keyboard/q]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: c383cbc1-98d7-4580-9ed4-5af80bd342ba
+    m_ActionName: GameUI/Zoom[/Mouse/scroll]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 00d15c47-64f9-4726-a50d-932cab1c05df
+    m_ActionName: GameUI/MapNavigation
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
