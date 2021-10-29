@@ -10,6 +10,7 @@ public class PlayerMovement : MonoBehaviour
     [Header("Player Variables")]
     [SerializeField] private float movementVelocity; // Movement speed variable
     [SerializeField] private float jumpForce; // Jump height variable
+    [SerializeField] private float landingMinHeight;
     [SerializeField] private float coyoteTime; // Determines coyote time forgiveness
     [SerializeField] private float climbTimeBuffer; // Time when we can climb again
     [SerializeField] private float wallSlideGravityScale;
@@ -33,13 +34,15 @@ public class PlayerMovement : MonoBehaviour
     // State variables
     public float horizontal; // Tracks horizontal input direction
     public float horizontalBuffer; // Tracks horizontal input regardles of canReceiveInputMove bool
-
+    private Vector3 highestPointOfJump = Vector3.zero;
+   
     private bool moving = false;
     private bool falling = false;
     private bool jumping = false;
     private bool diving = false;
     private bool climbing = false;
     private bool currentlyWallSliding = false;
+    private bool willLand = false;
     public bool shockwaveJumping = false;
     public bool isFacingRight = true; // Tracks player sprite direction
 
@@ -135,6 +138,8 @@ public class PlayerMovement : MonoBehaviour
         moving = rb.velocity.x != 0;
         falling = rb.velocity.y < -0.5f;
         jumping = rb.velocity.y > 0.5;
+
+        CheckIfHardLanding();
 
         // Check for idle, falling, jumping, launched and running states                             EDIT JTallbacka: no need for these (states set in animations) if lines can be removed (left if needed for debugs)
         //if (rb.velocity == Vector2.zero && !climbing) playerScript.SetCurrentState(Player.State.Idle);
@@ -283,6 +288,45 @@ public class PlayerMovement : MonoBehaviour
             }
             lastLaunchTime = null;
         }
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawSphere(groundCheck.position, checkRadius);
+    }
+
+    // Check when to update willLand bool to Player.cs can play animation when needed
+    private void CheckIfHardLanding()
+    {
+        // We need new point highest point since: in air, and we are at highest point when velocity.y is between -0.2 and 0.2 we set new position of highestPoint
+        // Normal: when jump is at highest point
+        // DoubleJump: when we use doublejump and when we reach the highest point of our second upward motion
+        if(!IsGrounded() && !climbing && rb.velocity.y >= -0.2f && rb.velocity.y <= 0.2f )
+        {
+            highestPointOfJump = transform.position;
+        }
+        // Landed we put this float to 0f
+        else if (IsGrounded())
+        {
+            highestPointOfJump = Vector3.zero;
+        }
+
+        // We are diving -> we will land hard
+        if (diving)
+            willLand = true;
+
+
+        // We double jump to soften our landing -> no land animation
+        if (willLand && shockwaveJumping && !IsGrounded() && landingMinHeight > Mathf.Abs((transform.position - highestPointOfJump).y))
+        {
+            willLand = false;
+        }
+        // HardLanding from dropping from higher than landingMinHeight 3 or greater so we dont land with every jump
+        else if (!willLand && highestPointOfJump != Vector3.zero && landingMinHeight <= Mathf.Abs((transform.position - highestPointOfJump).y))
+        {
+            willLand = true;
+        }
+        
     }
 
     // Player can sometimes get stuck and not be able to jump because ground check fails
@@ -569,7 +613,20 @@ public class PlayerMovement : MonoBehaviour
     }
 
 
-    // ---- OTHERS ----
+    // ---- OTHERS ---
+
+    public bool getWillLand()
+    {
+        return willLand;
+    }
+
+    public void setWillLand(bool b)
+    {
+        if (b)
+            highestPointOfJump = Vector3.zero;
+        willLand = b;
+    }
+
     public bool getClimbing()
     {
         return climbing;

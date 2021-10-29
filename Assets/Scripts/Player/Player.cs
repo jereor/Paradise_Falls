@@ -172,6 +172,11 @@ public class Player : MonoBehaviour
             {
                 animator.Play("Throw");
             }
+            // Landing animation
+            if (movementScript.getWillLand())
+                animator.SetBool("willLand", true);
+            else if (!movementScript.getWillLand() && animator.GetBool("willLand"))
+                animator.SetBool("willLand", false);
         }
 
         // When current state is attack transition
@@ -205,6 +210,12 @@ public class Player : MonoBehaviour
                         break;
                 }
             }
+
+            // Landing animation
+            if (movementScript.getWillLand())
+                animator.SetBool("willLand", true);
+            else if (!movementScript.getWillLand() && animator.GetBool("willLand"))
+                animator.SetBool("willLand", false);
         }
 
         // When the current state is Ascending or Falling
@@ -244,6 +255,11 @@ public class Player : MonoBehaviour
             {
                 animator.Play("Throw");
             }
+            // Landing animation
+            if (movementScript.getWillLand())
+                animator.SetBool("willLand", true);
+            else if (!movementScript.getWillLand() && animator.GetBool("willLand"))
+                animator.SetBool("willLand", false);
         }
 
         // When the current state is Blocking or Parrying
@@ -260,6 +276,12 @@ public class Player : MonoBehaviour
         // LedgeChecks return true
         if (movementScript.getClimbing() && !animator.GetBool("isAttacking") && !animator.GetBool("isAiming") && !animator.GetBool("isBlocking") && !animator.GetBool("isParrying"))
         {
+            if (animator.GetBool("willLand"))
+            {
+                animator.SetBool("willLand", false);
+                movementScript.setWillLand(false);
+            }
+
             animator.SetBool("isClimbing", true);
         }
 
