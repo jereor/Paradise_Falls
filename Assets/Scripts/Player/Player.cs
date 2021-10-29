@@ -297,12 +297,12 @@ public class Player : MonoBehaviour
  
         // Jump / Fall animation
         // We are in air and we land with rb velocity downwards or zero 
-        if (animator.GetBool("jump") && movementScript.IsGrounded() && rb.velocity.y <= 0f)
+        if (animator.GetBool("jump") && movementScript.IsGrounded() && rb.velocity.y >= -0.2f && rb.velocity.y <= 0.2f)
         {
             animator.SetBool("jump", false);
         }
         // We are in air and we are currently moving upwards or downwards
-        else if (!movementScript.IsGrounded() && rb.velocity.y != 0f)
+        else if (!movementScript.IsGrounded() && (rb.velocity.y <= -0.2f || rb.velocity.y >= 0.2f))
         {
             // If this is false set it to true since we are either jumping or falling
             if(!animator.GetBool("jump"))
