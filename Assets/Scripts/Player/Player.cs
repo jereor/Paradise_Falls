@@ -272,6 +272,17 @@ public class Player : MonoBehaviour
             }
         }
 
+        // When the current state is WallSliding
+        if(currentState == State.WallSliding)
+        {
+            // If we are aiming allow melee to throw
+            if (combatScript.getThrowAiming())
+                combatScript.EnableInputMelee();
+            // If me are not aiming disable melee inputs so we will not melee wall
+            else
+                combatScript.DisableInputMelee();
+        }
+
         // LedgeClimb animation
         // LedgeChecks return true
         if (movementScript.getClimbing() && !animator.GetBool("isAttacking") && !animator.GetBool("isAiming") && !animator.GetBool("isBlocking") && !animator.GetBool("isParrying"))
@@ -313,7 +324,6 @@ public class Player : MonoBehaviour
         }
 
         // Aiming
-        //UNCOMMENT WHEN getThrowAiming() created in PlayerCombat
         if (combatScript.getThrowAiming() && combatScript.getWeaponWielded() && !animator.GetBool("isRunning") && !animator.GetBool("isClimbing") && !animator.GetBool("isBlocking") && !animator.GetBool("isParrying"))
         {
             animator.SetBool("isAiming", true);
@@ -336,6 +346,7 @@ public class Player : MonoBehaviour
             // If we start running during parry we need to keep track of time when we arent parrying anymore since time is set from Shield.cs
             StartCoroutine(ParryCounter(GetClipAnimTime("Parry") * (1 / multiplier)));
         }
+
         // Blocking 
         if (shieldScript.Blocking && !animator.GetBool("isAttacking") && !animator.GetBool("isAiming") && !animator.GetBool("isThrowing"))
         {
@@ -354,7 +365,6 @@ public class Player : MonoBehaviour
             blockCoroutine = null;
             shieldScript.shield.SetActive(false);
         }
-
     }
 
     // Enables and Disables inputs
@@ -363,6 +373,7 @@ public class Player : MonoBehaviour
         //Debug.Log("State update frequency");
         switch (currentState)
         {
+            // ---- IDLE ----
             case State.Idle:
                 // Combat
                 combatScript.EnableInputMelee();
@@ -374,6 +385,8 @@ public class Player : MonoBehaviour
                 movementScript.EnableInputJump();
                 movementScript.EnableInputMove();
                 break;
+
+            // ---- RUNNING ----
             case State.Running:
                 // Combat
                 combatScript.EnableInputMelee();
@@ -385,6 +398,8 @@ public class Player : MonoBehaviour
                 movementScript.EnableInputJump();
                 movementScript.EnableInputMove();
                 break;
+
+            // ---- ASCENDING ----
             case State.Ascending:
                 // Combat
                 combatScript.EnableInputMelee();
@@ -396,6 +411,8 @@ public class Player : MonoBehaviour
                 movementScript.EnableInputJump();
                 movementScript.EnableInputMove();
                 break;
+
+            // ---- FALLING ----
             case State.Falling:
                 // Combat
                 combatScript.EnableInputMelee();
@@ -407,6 +424,8 @@ public class Player : MonoBehaviour
                 movementScript.EnableInputJump();
                 movementScript.EnableInputMove();
                 break;
+
+            // ---- LANDING ----
             case State.Landing:
                 // Combat
                 combatScript.DisableInputMelee();
@@ -418,6 +437,8 @@ public class Player : MonoBehaviour
                 movementScript.DisableInputJump();
                 movementScript.DisableInputMove();
                 break;
+
+            // ---- WALLSLIDING ----
             case State.WallSliding:
                 // Combat
                 combatScript.DisableInputMelee();
@@ -427,6 +448,8 @@ public class Player : MonoBehaviour
                 movementScript.EnableInputJump();
                 movementScript.EnableInputMove();
                 break;
+
+            // ---- CLIMBING ----
             case State.Climbing:
                 // Combat
                 combatScript.DisableInputMelee();
@@ -438,6 +461,8 @@ public class Player : MonoBehaviour
                 movementScript.DisableInputJump();
                 movementScript.DisableInputMove();
                 break;
+
+            // ---- ATTACKING ----
             case State.Attacking:
                 // Combat
                 combatScript.DisableInputThrowAim();
@@ -446,6 +471,8 @@ public class Player : MonoBehaviour
                 movementScript.DisableInputJump();
                 movementScript.DisableInputMove();
                 break;
+
+            // ---- ATTACKTRANSITION ----
             case State.AttackTransition:
                 // Combat
                 combatScript.EnableInputMelee();
@@ -455,10 +482,16 @@ public class Player : MonoBehaviour
                 movementScript.EnableInputJump();
                 movementScript.EnableInputMove();
                 break;
+
+            // ---- AIMING ----
             case State.Aiming:
                 break;
+
+            // ---- THROWING ----
             case State.Throwing:
                 break;
+
+            // ---- BLOCKING ----
             case State.Blocking:
                 // Combat
                 combatScript.DisableInputMelee();
@@ -467,6 +500,8 @@ public class Player : MonoBehaviour
                 movementScript.DisableInputJump();
                 movementScript.DisableInputMove();
                 break;
+
+            // ---- PARRYING ----
             case State.Parrying:
                 // Combat
                 combatScript.DisableInputMelee();
