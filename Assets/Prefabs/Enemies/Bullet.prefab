@@ -135,5 +135,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shooter: {fileID: 0}
-  bulletSpeed: 5
+  bulletSpeed: 15
   bulletDamage: 1
+  staticShot: 0
