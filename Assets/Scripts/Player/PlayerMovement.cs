@@ -406,6 +406,9 @@ public class PlayerMovement : MonoBehaviour
                     // If we are sliding down a wall and we have gravityscale as default change gravityscale so it feel like there is kitka :) (JOrava EDIT: friction :D)
                     if (!climbing && rb.velocity.y < 0 && rb.gravityScale == defaultGravityScale)
                     {
+                        // Stop movement so it feels like we are gripping the wall to slow our vertical speed
+                        rb.velocity = Vector2.zero;
+                        // New scale to drag as slowly downwards, accelerates if wallsliding on same wall for long
                         rb.gravityScale = wallSlideGravityScale;
                     }
                     currentlyWallSliding = true;
