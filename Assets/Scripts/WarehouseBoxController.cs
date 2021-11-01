@@ -16,8 +16,11 @@ public class WarehouseBoxController : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        counter += Time.deltaTime;
-        if(boxInstance == null && counter > 5) // Instance a new box to replace the previous one, if it was destroyed and enough time has passed.
+        if(boxInstance == null)
+        {
+            counter += Time.deltaTime;
+        }
+        if(boxInstance == null && counter > 10) // Instance a new box to replace the previous one, if it was destroyed and enough time has passed.
         {
             boxInstance = Instantiate(box, transform.position, Quaternion.identity);
             counter = 0;

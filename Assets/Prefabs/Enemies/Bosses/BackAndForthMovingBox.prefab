@@ -157,8 +157,8 @@ MonoBehaviour:
   colliderDisabledAtStart: 1
   comesAndGoesFromBackground: 1
   cuttableChain: 1
-  loop: 0
-  destroyAfterPathComplete: 1
+  loop: 1
+  teleportToStartAfterPathComplete: 1
 --- !u!1 &2454177713594349042
 GameObject:
   m_ObjectHideFlags: 0
