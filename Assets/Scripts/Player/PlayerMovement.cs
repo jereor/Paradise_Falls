@@ -244,7 +244,7 @@ public class PlayerMovement : MonoBehaviour
         // -DOUBLE JUMP-
 
         // Double jump while in the air
-        else if (playerScript.ShockwaveToolUnlocked() && canShockwaveJump) // Make sure player has acquired Shockwave Jump and that they can currently double jump
+        else if (playerScript.ShockwaveToolUnlocked() && canShockwaveJump && !diving) // Make sure player has acquired Shockwave Jump and that they can currently double jump
         {
             // If button is pressed and player has not yet double jumped
             if (context.started && !shockwaveJumping
