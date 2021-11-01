@@ -141,15 +141,8 @@ public class PlayerMovement : MonoBehaviour
 
         CheckIfHardLanding();
 
-        // Check for idle, falling, jumping, launched and running states                             EDIT JTallbacka: no need for these (states set in animations) if lines can be removed (left if needed for debugs)
-        //if (rb.velocity == Vector2.zero && !climbing) playerScript.SetCurrentState(Player.State.Idle);
-        //if (falling && !diving) playerScript.SetCurrentState(Player.State.Falling);
-        //if (jumping && !launched) playerScript.SetCurrentState(Player.State.Jumping);
-        //if (launched) playerScript.SetCurrentState(Player.State.Launched);
-
         if (moving && !falling && !jumping && !launched)
         {
-            //playerScript.SetCurrentState(Player.State.Running);
             // Offset camera while moving to create a feeling of momentum
             PlayerCamera.Instance.ChangeCameraOffset(0.2f, falling, isFacingRight ? 0.8f : -0.8f); // Centers camera a little
         }
@@ -197,19 +190,6 @@ public class PlayerMovement : MonoBehaviour
         // If button is pressed and we are in allowed walljump position
         if (context.started && canWallJump)
         {
-            // Use this commented else if, if we want to give player boost to the left or right when walljumping
-            // Jumping from left wall
-            //if (Mathf.Sign(transform.localScale.x) == -1)
-            //{
-            //    rb.velocity = new Vector2(jumpForce, jumpForce); // add x parameter to jump left or right currently jumps straight up
-            //}
-            //// Jumping from right wall
-            //else if (Mathf.Sign(transform.localScale.x) == 1)
-            //{
-            //    rb.velocity = new Vector2(-jumpForce, jumpForce); // add x parameter to jump left or right currently jumps straight up
-            //}
-
-            // Comment this if above is used 
             rb.velocity = new Vector2(jumpForce, jumpForce);
             // Set tracking float here that we jumped from some wall
             wallJumpDir = Mathf.Sign(transform.localScale.x);
@@ -290,10 +270,11 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private void OnDrawGizmos()
-    {
-        Gizmos.DrawSphere(groundCheck.position, checkRadius);
-    }
+    // Ground check sphere
+    //private void OnDrawGizmos()
+    //{
+    //    Gizmos.DrawSphere(groundCheck.position, checkRadius);
+    //}
 
     // Check when to update willLand bool to Player.cs can play animation when needed
     private void CheckIfHardLanding()
@@ -315,14 +296,15 @@ public class PlayerMovement : MonoBehaviour
         if (diving)
             willLand = true;
 
+        
 
         // We double jump to soften our landing -> no land animation
-        if (willLand && shockwaveJumping && !IsGrounded() && landingMinHeight > Mathf.Abs((transform.position - highestPointOfJump).y))
+        if (willLand && shockwaveJumping && !IsGrounded() && landingMinHeight > Mathf.Abs((transform.position - highestPointOfJump).y) || currentlyWallSliding)
         {
             willLand = false;
         }
         // HardLanding from dropping from higher than landingMinHeight 3 or greater so we dont land with every jump
-        else if (!willLand && highestPointOfJump != Vector3.zero && landingMinHeight <= Mathf.Abs((transform.position - highestPointOfJump).y))
+        else if (!willLand && highestPointOfJump != Vector3.zero && !currentlyWallSliding && landingMinHeight <= Mathf.Abs((transform.position - highestPointOfJump).y))
         {
             willLand = true;
         }
@@ -431,6 +413,8 @@ public class PlayerMovement : MonoBehaviour
                     canWallJump = true;
                     // This is used in Wall Jump Coyote time check
                     lastWallTouchTime = Time.time;
+                    // We drop from wall we have momemntun either downwards or we jumped (downward this is our highest point AND jump we will get highest point when we reach it)
+                    highestPointOfJump = transform.position;
                 }
                 // If we are in air but Raycasts and wall side tests are not going through
                 else if (canWallJump)
