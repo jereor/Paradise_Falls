@@ -747,14 +747,14 @@ public class RiotControlDrone : MonoBehaviour
         float collisionAngle = Vector2.SignedAngle(Vector2.right, Vector2.up);
         Quaternion q = Quaternion.AngleAxis(collisionAngle, Vector3.forward);
         if (!isFacingRight && !isEnraged)
-            gameObject.transform.GetChild(5).DORotate(new Vector3(0, 0, -90), heavyAttackCoolDown); // Simple visual effect for baton so player knows when to hit and not.
+            gameObject.transform.GetChild(5).DORotate(new Vector3(0, 0, -90), heavyAttackChargeTime); // Simple visual effect for baton so player knows when to hit and not.
         else if(isFacingRight && !isEnraged)
-            gameObject.transform.GetChild(5).DORotate(new Vector3(0, 0, 90), heavyAttackCoolDown);
+            gameObject.transform.GetChild(5).DORotate(new Vector3(0, 0, 90), heavyAttackChargeTime);
 
         if (!isFacingRight && isEnraged)
-            gameObject.transform.GetChild(4).DORotate(new Vector3(0, 0, -90), heavyAttackCoolDown); // Simple visual effect for baton so player knows when to hit and not.
+            gameObject.transform.GetChild(4).DORotate(new Vector3(0, 0, -90), heavyAttackChargeTime); // Simple visual effect for baton so player knows when to hit and not.
         else if (isFacingRight && isEnraged)
-            gameObject.transform.GetChild(4).DORotate(new Vector3(0, 0, 90), heavyAttackCoolDown);
+            gameObject.transform.GetChild(4).DORotate(new Vector3(0, 0, 90), heavyAttackChargeTime);
 
         yield return new WaitForSeconds(heavyAttackChargeTime);
         // Deal damage to player if still in range.
@@ -797,13 +797,13 @@ public class RiotControlDrone : MonoBehaviour
     private IEnumerator TaserShoot()
     {
         taserOnCooldown = true;
-        gameObject.GetComponentsInChildren<SpriteRenderer>()[0].color = Color.yellow;
+        //gameObject.GetComponentsInChildren<SpriteRenderer>()[0].color = Color.yellow;
         gameObject.GetComponentsInChildren<SpriteRenderer>()[0].sprite = taserShoot;
         yield return new WaitForSeconds(taserCooldown);
         Instantiate(taserBeam, new Vector2(transform.position.x + (transform.localScale.x * 2), transform.position.y), Quaternion.identity);
         yield return new WaitForSeconds(taserCooldown);
         taserChanceRandomizer = UnityEngine.Random.Range(1, 101);
-        gameObject.GetComponentsInChildren<SpriteRenderer>()[0].color = Color.white;
+        //gameObject.GetComponentsInChildren<SpriteRenderer>()[0].color = Color.white;
         gameObject.GetComponentsInChildren<SpriteRenderer>()[0].sprite = idleSprite;
         state = RiotState.Moving;
         taserOnCooldown = false;
@@ -953,7 +953,7 @@ public class RiotControlDrone : MonoBehaviour
     }
 
     // Pushbacks the player when hit with riot drone collider. Uses velocity for the knockback instead of force.
-    void PlayerPushback()
+    public void PlayerPushback()
     {
         //float pushbackX = (target.position.x - transform.position.x > 0 ? 1 : -1);
 

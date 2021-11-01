@@ -31,7 +31,7 @@ public class BackAndForthMovingBox : MonoBehaviour
 
     [SerializeField] private bool cuttableChain = false;
     [SerializeField] private bool loop = true;
-    [SerializeField] private bool destroyAfterPathComplete = true;
+    [SerializeField] private bool teleportToStartAfterPathComplete = true;
 
     // Start is called before the first frame update
 
@@ -159,6 +159,11 @@ public class BackAndForthMovingBox : MonoBehaviour
         }
     }
 
+    //public void InstantiateBox()
+    //{
+    //    if()
+    //}
+
     private IEnumerator Wait(float waitTime)
     {
         isWaiting = true;
@@ -178,6 +183,21 @@ public class BackAndForthMovingBox : MonoBehaviour
     private void EnableDisableBoxCollider()
     {
         boxCollider.enabled = !boxCollider.enabled;
+        if(boxCollider.enabled && cuttableChain)
+        {
+            gameObject.GetComponent<SpriteRenderer>().color = Color.white;
+            transform.GetChild(0).GetComponent<SpriteRenderer>().color = Color.red;
+        }
+        else if(boxCollider.enabled && !cuttableChain)
+        {
+            gameObject.GetComponent<SpriteRenderer>().color = Color.white;
+            transform.GetChild(0).GetComponent<SpriteRenderer>().color = Color.black;
+        }
+        else
+        {
+            gameObject.GetComponent<SpriteRenderer>().color = Color.grey;
+            transform.GetChild(0).GetComponent<SpriteRenderer>().color = Color.grey;
+        }
     }
 
     // Used by BoxChainController script.
@@ -230,21 +250,21 @@ public class BackAndForthMovingBox : MonoBehaviour
             // Change the box and chain's color when enabled or disabled.
             if (comesAndGoesFromBackground)
             {
-                if (boxCollider.enabled)
-                {
-                    gameObject.GetComponent<SpriteRenderer>().color = Color.grey;
-                    transform.GetChild(0).GetComponent<SpriteRenderer>().color = Color.grey;
-                }
-                else if (!cuttableChain)
-                {
-                    gameObject.GetComponent<SpriteRenderer>().color = Color.white;
-                    transform.GetChild(0).GetComponent<SpriteRenderer>().color = Color.black;
-                }
-                else if(cuttableChain)
-                {
-                    gameObject.GetComponent<SpriteRenderer>().color = Color.white;
-                    transform.GetChild(0).GetComponent<SpriteRenderer>().color = Color.red;
-                }
+                //if (boxCollider.enabled)
+                //{
+                //    gameObject.GetComponent<SpriteRenderer>().color = Color.grey;
+                //    transform.GetChild(0).GetComponent<SpriteRenderer>().color = Color.grey;
+                //}
+                //else if (!cuttableChain)
+                //{
+                //    gameObject.GetComponent<SpriteRenderer>().color = Color.white;
+                //    transform.GetChild(0).GetComponent<SpriteRenderer>().color = Color.black;
+                //}
+                //else if(cuttableChain)
+                //{
+                //    gameObject.GetComponent<SpriteRenderer>().color = Color.white;
+                //    transform.GetChild(0).GetComponent<SpriteRenderer>().color = Color.red;
+                //}
 
                 EnableDisableBoxCollider();
             }
@@ -254,9 +274,24 @@ public class BackAndForthMovingBox : MonoBehaviour
 
         if (changeState && stepCounter == moves.Length && !returning)
         {
-            if (destroyAfterPathComplete) // If the object needs to be destroyed after the path is complete.
-                Destroy(gameObject);
-            else if (loop) // In other cases loops around the given parameters.
+            if (teleportToStartAfterPathComplete) // If the object needs to be destroyed after the path is complete.
+            {
+                transform.position = startPosition;
+                if(loop)
+                {
+                    changeState = false;
+                    canStep = true;
+                    stepCounter = 0;
+                    if(colliderDisabledAtStart && boxCollider.enabled)
+                    {
+                        EnableDisableBoxCollider();
+                        //gameObject.GetComponent<SpriteRenderer>().color = Color.grey;
+                        //transform.GetChild(0).GetComponent<SpriteRenderer>().color = Color.grey;
+                    }
+                }
+            }
+                
+            else if (loop && !teleportToStartAfterPathComplete) // In other cases loops around the given parameters.
             {
                 changeState = false;
                 returning = true;
@@ -301,7 +336,8 @@ public class BackAndForthMovingBox : MonoBehaviour
     {
         if (!isWaiting && !changeState)
         {
-            Move(startPosition, stepTime);
+            Debug.Log(startPosition);
+            rb.DOMove(startPosition, stepTime);
             StartCoroutine(Wait(stepTime));
         }
         if (changeState)
