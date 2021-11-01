@@ -172,6 +172,11 @@ public class Player : MonoBehaviour
             {
                 animator.Play("Throw");
             }
+            // Landing animation
+            if (movementScript.getWillLand())
+                animator.SetBool("willLand", true);
+            else if (!movementScript.getWillLand() && animator.GetBool("willLand"))
+                animator.SetBool("willLand", false);
         }
 
         // When current state is attack transition
@@ -205,6 +210,12 @@ public class Player : MonoBehaviour
                         break;
                 }
             }
+
+            // Landing animation
+            if (movementScript.getWillLand())
+                animator.SetBool("willLand", true);
+            else if (!movementScript.getWillLand() && animator.GetBool("willLand"))
+                animator.SetBool("willLand", false);
         }
 
         // When the current state is Ascending or Falling
@@ -244,9 +255,14 @@ public class Player : MonoBehaviour
             {
                 animator.Play("Throw");
             }
+            // Landing animation
+            if (movementScript.getWillLand())
+                animator.SetBool("willLand", true);
+            else if (!movementScript.getWillLand() && animator.GetBool("willLand"))
+                animator.SetBool("willLand", false);
         }
 
-        // When the current state is Ascending or Falling
+        // When the current state is Blocking or Parrying
         if (currentState == State.Blocking || currentState == State.Parrying)
         {
             // Player starts moving
@@ -256,10 +272,27 @@ public class Player : MonoBehaviour
             }
         }
 
+        // When the current state is WallSliding
+        if(currentState == State.WallSliding)
+        {
+            // If we are aiming allow melee to throw
+            if (combatScript.getThrowAiming())
+                combatScript.EnableInputMelee();
+            // If me are not aiming disable melee inputs so we will not melee wall
+            else
+                combatScript.DisableInputMelee();
+        }
+
         // LedgeClimb animation
         // LedgeChecks return true
         if (movementScript.getClimbing() && !animator.GetBool("isAttacking") && !animator.GetBool("isAiming") && !animator.GetBool("isBlocking") && !animator.GetBool("isParrying"))
         {
+            if (animator.GetBool("willLand"))
+            {
+                animator.SetBool("willLand", false);
+                movementScript.setWillLand(false);
+            }
+
             animator.SetBool("isClimbing", true);
         }
 
@@ -275,12 +308,12 @@ public class Player : MonoBehaviour
  
         // Jump / Fall animation
         // We are in air and we land with rb velocity downwards or zero 
-        if (animator.GetBool("jump") && movementScript.IsGrounded() && rb.velocity.y <= 0f)
+        if (animator.GetBool("jump") && movementScript.IsGrounded() && rb.velocity.y >= -0.2f && rb.velocity.y <= 0.2f)
         {
             animator.SetBool("jump", false);
         }
         // We are in air and we are currently moving upwards or downwards
-        else if (!movementScript.IsGrounded() && rb.velocity.y != 0f)
+        else if (!movementScript.IsGrounded() && (rb.velocity.y <= -0.2f || rb.velocity.y >= 0.2f))
         {
             // If this is false set it to true since we are either jumping or falling
             if(!animator.GetBool("jump"))
@@ -291,8 +324,7 @@ public class Player : MonoBehaviour
         }
 
         // Aiming
-        //UNCOMMENT WHEN getThrowAiming() created in PlayerCombat
-        if (combatScript.getThrowAiming() && combatScript.getWeaponWielded() && !animator.GetBool("isRunning") && !animator.GetBool("isClimbing"))
+        if (combatScript.getThrowAiming() && combatScript.getWeaponWielded() && !animator.GetBool("isRunning") && !animator.GetBool("isClimbing") && !animator.GetBool("isBlocking") && !animator.GetBool("isParrying"))
         {
             animator.SetBool("isAiming", true);
         }
@@ -302,7 +334,7 @@ public class Player : MonoBehaviour
         }
 
         // Parry
-        if (shieldScript.Parrying && !animator.GetBool("isParrying") && !animator.GetBool("jump") && !animator.GetBool("isAttacking"))
+        if (shieldScript.Parrying && !animator.GetBool("isParrying") && !animator.GetBool("jump") && !animator.GetBool("isAttacking") && !animator.GetBool("isAiming") && !animator.GetBool("isThrowing"))
         {
             float multiplier = GetClipAnimTime("Parry") / shieldScript.getParryTimeWindow();
             // parrySpeedMultiplier is used to scale Parry animation lenght with our set parry time window
@@ -314,9 +346,14 @@ public class Player : MonoBehaviour
             // If we start running during parry we need to keep track of time when we arent parrying anymore since time is set from Shield.cs
             StartCoroutine(ParryCounter(GetClipAnimTime("Parry") * (1 / multiplier)));
         }
+
         // Blocking 
-        if (shieldScript.Blocking && !animator.GetBool("isAttacking"))
+        if (shieldScript.Blocking && !animator.GetBool("isAttacking") && !animator.GetBool("isAiming") && !animator.GetBool("isThrowing"))
         {
+            if (animator.GetBool("isRunning"))
+            {
+                animator.SetBool("isRunning", false);
+            }
             animator.SetBool("isBlocking", true);
             // Shield is not active and coroutine is not started yet
             if(!shieldScript.shield.activeInHierarchy && blockCoroutine == null)
@@ -328,7 +365,6 @@ public class Player : MonoBehaviour
             blockCoroutine = null;
             shieldScript.shield.SetActive(false);
         }
-
     }
 
     // Enables and Disables inputs
@@ -337,6 +373,7 @@ public class Player : MonoBehaviour
         //Debug.Log("State update frequency");
         switch (currentState)
         {
+            // ---- IDLE ----
             case State.Idle:
                 // Combat
                 combatScript.EnableInputMelee();
@@ -348,6 +385,8 @@ public class Player : MonoBehaviour
                 movementScript.EnableInputJump();
                 movementScript.EnableInputMove();
                 break;
+
+            // ---- RUNNING ----
             case State.Running:
                 // Combat
                 combatScript.EnableInputMelee();
@@ -359,6 +398,8 @@ public class Player : MonoBehaviour
                 movementScript.EnableInputJump();
                 movementScript.EnableInputMove();
                 break;
+
+            // ---- ASCENDING ----
             case State.Ascending:
                 // Combat
                 combatScript.EnableInputMelee();
@@ -370,6 +411,8 @@ public class Player : MonoBehaviour
                 movementScript.EnableInputJump();
                 movementScript.EnableInputMove();
                 break;
+
+            // ---- FALLING ----
             case State.Falling:
                 // Combat
                 combatScript.EnableInputMelee();
@@ -381,6 +424,8 @@ public class Player : MonoBehaviour
                 movementScript.EnableInputJump();
                 movementScript.EnableInputMove();
                 break;
+
+            // ---- LANDING ----
             case State.Landing:
                 // Combat
                 combatScript.DisableInputMelee();
@@ -392,6 +437,8 @@ public class Player : MonoBehaviour
                 movementScript.DisableInputJump();
                 movementScript.DisableInputMove();
                 break;
+
+            // ---- WALLSLIDING ----
             case State.WallSliding:
                 // Combat
                 combatScript.DisableInputMelee();
@@ -401,6 +448,8 @@ public class Player : MonoBehaviour
                 movementScript.EnableInputJump();
                 movementScript.EnableInputMove();
                 break;
+
+            // ---- CLIMBING ----
             case State.Climbing:
                 // Combat
                 combatScript.DisableInputMelee();
@@ -412,6 +461,8 @@ public class Player : MonoBehaviour
                 movementScript.DisableInputJump();
                 movementScript.DisableInputMove();
                 break;
+
+            // ---- ATTACKING ----
             case State.Attacking:
                 // Combat
                 combatScript.DisableInputThrowAim();
@@ -420,6 +471,8 @@ public class Player : MonoBehaviour
                 movementScript.DisableInputJump();
                 movementScript.DisableInputMove();
                 break;
+
+            // ---- ATTACKTRANSITION ----
             case State.AttackTransition:
                 // Combat
                 combatScript.EnableInputMelee();
@@ -429,22 +482,32 @@ public class Player : MonoBehaviour
                 movementScript.EnableInputJump();
                 movementScript.EnableInputMove();
                 break;
+
+            // ---- AIMING ----
             case State.Aiming:
                 break;
+
+            // ---- THROWING ----
             case State.Throwing:
                 break;
+
+            // ---- BLOCKING ----
             case State.Blocking:
                 // Combat
                 combatScript.DisableInputMelee();
                 combatScript.DisableInputThrowAim();
 
                 movementScript.DisableInputJump();
+                movementScript.DisableInputMove();
                 break;
+
+            // ---- PARRYING ----
             case State.Parrying:
                 // Combat
                 combatScript.DisableInputMelee();
                 combatScript.DisableInputThrowAim();
 
+                movementScript.EnableInputMove();
                 break;
             default:
                 break;
@@ -582,17 +645,17 @@ public class Player : MonoBehaviour
         animator.SetBool("isParrying", false);
     }
 
-    private void OnGUI()
-    {
-        GUI.Label(new Rect(10, 10, 300, 100), "Health: " + healthScript.GetHealth(), TextStyleHealth);
-        GUI.Label(new Rect(200, 10, 300, 100), "Energy: " + energyScript.GetEnergy(), TextStyleEnergy);
+    //private void OnGUI()
+    //{
+    //    GUI.Label(new Rect(10, 10, 300, 100), "Health: " + healthScript.GetHealth(), TextStyleHealth);
+    //    GUI.Label(new Rect(200, 10, 300, 100), "Energy: " + energyScript.GetEnergy(), TextStyleEnergy);
 
-        GUI.Label(new Rect(700, 10, 300, 100), "Currently: " + currentState, TextStyleHealth);
-        GUI.Label(new Rect(1000, 10, 300, 100), "Previously: " + previousState, TextStyleEnergy);
+    //    GUI.Label(new Rect(700, 10, 300, 100), "Currently: " + currentState, TextStyleHealth);
+    //    GUI.Label(new Rect(1000, 10, 300, 100), "Previously: " + previousState, TextStyleEnergy);
 
-        GUI.Label(new Rect(1500, 10, 300, 100), "Gravity: " + rb.gravityScale, TextStyleEnergy);
-        //GUI.Label(new Rect(1500, 10, 300, 100), "Horizontal: " + movementScript.horizontal, TextStyleEnergy);
-    }
+    //    GUI.Label(new Rect(1500, 10, 300, 100), "Gravity: " + rb.gravityScale, TextStyleEnergy);
+    //    //GUI.Label(new Rect(1500, 10, 300, 100), "Horizontal: " + movementScript.horizontal, TextStyleEnergy);
+    //}
 
     // Move action: Called when the Move Action Button is pressed
     public void Move(InputAction.CallbackContext context) // Context tells the function when the action is triggered

@@ -10,6 +10,7 @@ public class PlayerMovement : MonoBehaviour
     [Header("Player Variables")]
     [SerializeField] private float movementVelocity; // Movement speed variable
     [SerializeField] private float jumpForce; // Jump height variable
+    [SerializeField] private float landingMinHeight;
     [SerializeField] private float coyoteTime; // Determines coyote time forgiveness
     [SerializeField] private float climbTimeBuffer; // Time when we can climb again
     [SerializeField] private float wallSlideGravityScale;
@@ -27,12 +28,16 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Transform wallCheckBody; // Point where Body Check Raycast is cast
     [SerializeField] private Transform wallCheckFeet; // Point where Feet Check Raycast is cast
     [SerializeField] private float checkDistance; // Distance of raycast and ledge ClimbLedge() offset positions
+    [Tooltip("Start update values from boxcollider size")]
     [SerializeField] private float climbXOffset;
     [SerializeField] private float climbYOffset;
+    [Tooltip("Assurance value to addt to Y offset to prevent climbing inside a wall")]
+    [SerializeField] private float climbYInsuranceValue;
 
     // State variables
     public float horizontal; // Tracks horizontal input direction
     public float horizontalBuffer; // Tracks horizontal input regardles of canReceiveInputMove bool
+    private Vector3 highestPointOfJump = Vector3.zero;
 
     private bool moving = false;
     private bool falling = false;
@@ -40,6 +45,7 @@ public class PlayerMovement : MonoBehaviour
     private bool diving = false;
     private bool climbing = false;
     private bool currentlyWallSliding = false;
+    private bool willLand = false;
     public bool shockwaveJumping = false;
     public bool isFacingRight = true; // Tracks player sprite direction
 
@@ -89,7 +95,7 @@ public class PlayerMovement : MonoBehaviour
         EnableInputJump();
 
         // Setting these to these values give smoother experience on climbing
-        climbYOffset = GetComponent<BoxCollider2D>().size.y;
+        climbYOffset = GetComponent<BoxCollider2D>().size.y + climbYInsuranceValue;
         climbXOffset = GetComponent<BoxCollider2D>().size.x;
     }
 
@@ -136,15 +142,10 @@ public class PlayerMovement : MonoBehaviour
         falling = rb.velocity.y < -0.5f;
         jumping = rb.velocity.y > 0.5;
 
-        // Check for idle, falling, jumping, launched and running states                             EDIT JTallbacka: no need for these (states set in animations) if lines can be removed (left if needed for debugs)
-        //if (rb.velocity == Vector2.zero && !climbing) playerScript.SetCurrentState(Player.State.Idle);
-        //if (falling && !diving) playerScript.SetCurrentState(Player.State.Falling);
-        //if (jumping && !launched) playerScript.SetCurrentState(Player.State.Jumping);
-        //if (launched) playerScript.SetCurrentState(Player.State.Launched);
+        CheckIfHardLanding();
 
         if (moving && !falling && !jumping && !launched)
         {
-            //playerScript.SetCurrentState(Player.State.Running);
             // Offset camera while moving to create a feeling of momentum
             PlayerCamera.Instance.ChangeCameraOffset(0.2f, falling, isFacingRight ? 0.8f : -0.8f); // Centers camera a little
         }
@@ -192,19 +193,6 @@ public class PlayerMovement : MonoBehaviour
         // If button is pressed and we are in allowed walljump position
         if (context.started && canWallJump)
         {
-            // Use this commented else if, if we want to give player boost to the left or right when walljumping
-            // Jumping from left wall
-            //if (Mathf.Sign(transform.localScale.x) == -1)
-            //{
-            //    rb.velocity = new Vector2(jumpForce, jumpForce); // add x parameter to jump left or right currently jumps straight up
-            //}
-            //// Jumping from right wall
-            //else if (Mathf.Sign(transform.localScale.x) == 1)
-            //{
-            //    rb.velocity = new Vector2(-jumpForce, jumpForce); // add x parameter to jump left or right currently jumps straight up
-            //}
-
-            // Comment this if above is used 
             rb.velocity = new Vector2(jumpForce, jumpForce);
             // Set tracking float here that we jumped from some wall
             wallJumpDir = Mathf.Sign(transform.localScale.x);
@@ -239,7 +227,7 @@ public class PlayerMovement : MonoBehaviour
         // -DOUBLE JUMP-
 
         // Double jump while in the air
-        else if (playerScript.ShockwaveToolUnlocked() && canShockwaveJump) // Make sure player has acquired Shockwave Jump and that they can currently double jump
+        else if (playerScript.ShockwaveToolUnlocked() && canShockwaveJump && !diving) // Make sure player has acquired Shockwave Jump and that they can currently double jump
         {
             // If button is pressed and player has not yet double jumped
             if (context.started && !shockwaveJumping
@@ -283,6 +271,47 @@ public class PlayerMovement : MonoBehaviour
             }
             lastLaunchTime = null;
         }
+    }
+
+    // Ground check sphere
+    //private void OnDrawGizmos()
+    //{
+    //    Gizmos.DrawSphere(groundCheck.position, checkRadius);
+    //}
+
+    // Check when to update willLand bool to Player.cs can play animation when needed
+    private void CheckIfHardLanding()
+    {
+        // We need new point highest point since: in air, and we are at highest point when velocity.y is between -0.2 and 0.2 we set new position of highestPoint
+        // Normal: when jump is at highest point
+        // DoubleJump: when we use doublejump and when we reach the highest point of our second upward motion
+        if(!IsGrounded() && !climbing && (highestPointOfJump == Vector3.zero || rb.velocity.y >= -0.2f && rb.velocity.y <= 0.2f))
+        {
+            highestPointOfJump = transform.position;
+        }
+        // Landed we put this float to 0f
+        else if (IsGrounded())
+        {
+            highestPointOfJump = Vector3.zero;
+        }
+
+        // We are diving -> we will land hard
+        if (diving)
+            willLand = true;
+
+        
+
+        // We double jump to soften our landing -> no land animation
+        if (willLand && shockwaveJumping && !IsGrounded() && landingMinHeight > Mathf.Abs((transform.position - highestPointOfJump).y) || currentlyWallSliding)
+        {
+            willLand = false;
+        }
+        // HardLanding from dropping from higher than landingMinHeight 3 or greater so we dont land with every jump
+        else if (!willLand && highestPointOfJump != Vector3.zero && !currentlyWallSliding && landingMinHeight <= Mathf.Abs((transform.position - highestPointOfJump).y))
+        {
+            willLand = true;
+        }
+        
     }
 
     // Player can sometimes get stuck and not be able to jump because ground check fails
@@ -380,6 +409,9 @@ public class PlayerMovement : MonoBehaviour
                     // If we are sliding down a wall and we have gravityscale as default change gravityscale so it feel like there is kitka :) (JOrava EDIT: friction :D)
                     if (!climbing && rb.velocity.y < 0 && rb.gravityScale == defaultGravityScale)
                     {
+                        // Stop movement so it feels like we are gripping the wall to slow our vertical speed
+                        rb.velocity = Vector2.zero;
+                        // New scale to drag as slowly downwards, accelerates if wallsliding on same wall for long
                         rb.gravityScale = wallSlideGravityScale;
                     }
                     currentlyWallSliding = true;
@@ -387,6 +419,8 @@ public class PlayerMovement : MonoBehaviour
                     canWallJump = true;
                     // This is used in Wall Jump Coyote time check
                     lastWallTouchTime = Time.time;
+                    // We drop from wall we have momemntun either downwards or we jumped (downward this is our highest point AND jump we will get highest point when we reach it)
+                    highestPointOfJump = transform.position;
                 }
                 // If we are in air but Raycasts and wall side tests are not going through
                 else if (canWallJump)
@@ -569,7 +603,20 @@ public class PlayerMovement : MonoBehaviour
     }
 
 
-    // ---- OTHERS ----
+    // ---- OTHERS ---
+
+    public bool getWillLand()
+    {
+        return willLand;
+    }
+
+    public void setWillLand(bool b)
+    {
+        if (b)
+            highestPointOfJump = Vector3.zero;
+        willLand = b;
+    }
+
     public bool getClimbing()
     {
         return climbing;
