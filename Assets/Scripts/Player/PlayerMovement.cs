@@ -28,14 +28,17 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Transform wallCheckBody; // Point where Body Check Raycast is cast
     [SerializeField] private Transform wallCheckFeet; // Point where Feet Check Raycast is cast
     [SerializeField] private float checkDistance; // Distance of raycast and ledge ClimbLedge() offset positions
+    [Tooltip("Start update values from boxcollider size")]
     [SerializeField] private float climbXOffset;
     [SerializeField] private float climbYOffset;
+    [Tooltip("Assurance value to addt to Y offset to prevent climbing inside a wall")]
+    [SerializeField] private float climbYInsuranceValue;
 
     // State variables
     public float horizontal; // Tracks horizontal input direction
     public float horizontalBuffer; // Tracks horizontal input regardles of canReceiveInputMove bool
     private Vector3 highestPointOfJump = Vector3.zero;
-   
+
     private bool moving = false;
     private bool falling = false;
     private bool jumping = false;
@@ -92,7 +95,7 @@ public class PlayerMovement : MonoBehaviour
         EnableInputJump();
 
         // Setting these to these values give smoother experience on climbing
-        climbYOffset = GetComponent<BoxCollider2D>().size.y;
+        climbYOffset = GetComponent<BoxCollider2D>().size.y + climbYInsuranceValue;
         climbXOffset = GetComponent<BoxCollider2D>().size.x;
     }
 
@@ -282,7 +285,7 @@ public class PlayerMovement : MonoBehaviour
         // We need new point highest point since: in air, and we are at highest point when velocity.y is between -0.2 and 0.2 we set new position of highestPoint
         // Normal: when jump is at highest point
         // DoubleJump: when we use doublejump and when we reach the highest point of our second upward motion
-        if(!IsGrounded() && !climbing && rb.velocity.y >= -0.2f && rb.velocity.y <= 0.2f )
+        if(!IsGrounded() && !climbing && (highestPointOfJump == Vector3.zero || rb.velocity.y >= -0.2f && rb.velocity.y <= 0.2f))
         {
             highestPointOfJump = transform.position;
         }
