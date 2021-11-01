@@ -20,6 +20,7 @@ public class LandScript : StateMachineBehaviour
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         animator.SetBool("willLand", false);
+        PlayerMovement.Instance.setWillLand(false);
     }
 
     // OnStateMove is called right after Animator.OnAnimatorMove()
