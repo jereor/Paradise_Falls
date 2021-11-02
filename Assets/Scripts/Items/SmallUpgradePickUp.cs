@@ -99,9 +99,10 @@ public class SmallUpgradePickUp : Interactable
                 playerObject.GetComponent<PlayerCombat>().UpgradeThrowMaxChargeTime(throwChargeTime);
                 break;
             case Recource.MaxHealth:
-                //playerObject.GetComponent<Health>().
+                playerObject.GetComponent<Health>().UpgradeMaxHealth(maxHealth);
                 break;
             case Recource.MaxEnergy:
+                playerObject.GetComponent<Energy>().UpgradeMaxEnergy(maxEnergy);
                 break;
             default:
                 break;

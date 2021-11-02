@@ -343,13 +343,13 @@ MonoBehaviour:
   myEnum: 0
   playerIsClose: 0
   playerObject: {fileID: 0}
-  lightDamage: 0.5
-  throwDamage: 0
-  pullDamage: 0
-  powerBoostedDamage: 0
-  throwChargeTime: 0
-  maxHealth: 0
-  maxEnergy: 0
+  lightDamage: 1
+  throwDamage: 1
+  pullDamage: 1
+  powerBoostedDamage: 1
+  throwChargeTime: 0.1
+  maxHealth: 1
+  maxEnergy: 1
 --- !u!61 &7398052423922392709
 BoxCollider2D:
   m_ObjectHideFlags: 0
