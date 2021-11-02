@@ -287,8 +287,9 @@ MonoBehaviour:
   weaponPullDamage: 1
   weakPointMultiplier: 2
   rotSpeed: 720
-  ricochetImpulseForce: 5
-  ricochetYImpulse: 3
+  ricochetImpulseForce: 8
+  ricochetYImpulse: 15
+  enemyHitRicochetScaler: 0.1
   pullForce: 750
   powerBoostForce: 30
   maxDistance: 7
