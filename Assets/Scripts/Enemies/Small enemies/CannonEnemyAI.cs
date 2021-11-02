@@ -43,7 +43,7 @@ public class CannonEnemyAI : MonoBehaviour
     [SerializeField] private float pathUpdateInterval = 1f;
 
     private bool canShoot = true;
-    private float shootCooldown = 1.5f;
+    private float shootCooldown = 2f;
     [SerializeField] private float rotSpeed = 100f;
     private bool isFacingRight = true;
     //private float vectorPathLength = 1;
