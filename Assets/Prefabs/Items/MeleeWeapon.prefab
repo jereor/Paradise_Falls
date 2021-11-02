@@ -287,14 +287,16 @@ MonoBehaviour:
   weaponPullDamage: 1
   weakPointMultiplier: 2
   rotSpeed: 720
-  ricochetImpulseForce: 5
-  ricochetYImpulse: 3
+  ricochetImpulseForce: 8
+  ricochetYImpulse: 15
+  enemyHitRicochetScaler: 0.1
   pullForce: 750
   powerBoostForce: 30
   maxDistance: 7
   meleeWeaponGrapplingDistance: 1.2
   worldPickUp: 0
   knockbackForce: 500
+  mySpriteRenderer: {fileID: 4707181778522028191}
   beingPulled: 0
   powerBoosted: 0
 --- !u!96 &6049849153134103944

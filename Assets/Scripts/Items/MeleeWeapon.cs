@@ -13,7 +13,8 @@ public class MeleeWeapon : MonoBehaviour
     [SerializeField] private float weakPointMultiplier;
     [SerializeField] private float rotSpeed; // Rotation angle to spin when thowing
     [SerializeField] private float ricochetImpulseForce; // Force of hit ricochet on enemies and gorund elements
-    [SerializeField] private float ricochetYImpulse; // Float parameter if we want to ricochet weapon slightly upward feels better and tell player that we hit and dealt damage to something
+    [SerializeField] private float ricochetYImpulse; // Float parameter if we want ricochet to counter gravity
+    [SerializeField] private float enemyHitRicochetScaler;
     [SerializeField] private float pullForce; // Force we are pulling
     [SerializeField] private float powerBoostForce; // Force of shockwave power boost
     [SerializeField] private float maxDistance; // Max distance to travel with gravityscale 0
@@ -26,6 +27,8 @@ public class MeleeWeapon : MonoBehaviour
     // Other variables
     private Rigidbody2D myRB;
     private float defaultGravityScale;
+
+    public SpriteRenderer mySpriteRenderer;
 
     private Vector3 startPoint; // Used to calculate maximum distance to travel
     private bool landed; // If weapon can deal damage
@@ -109,9 +112,7 @@ public class MeleeWeapon : MonoBehaviour
             if (!landed)
             {
                 myRB.gravityScale = defaultGravityScale;
-                // Ricochet quickmaths
-                Vector2 tmp = new Vector2(collision.contacts[0].point.x - collision.transform.position.x, collision.contacts[0].point.y - collision.transform.position.y);
-                myRB.velocity = tmp.normalized + new Vector2(0, ricochetYImpulse) * ricochetImpulseForce;
+                RicochetGround(collision);
 
                 landed = true;
                 SetEnemyIgnoresOnLand();
@@ -124,12 +125,10 @@ public class MeleeWeapon : MonoBehaviour
             // Hits enemy when can deal damage
             if (!landed)
             {
-                // Ricochet quickmaths
-                Vector2 tmp = new Vector2(collision.contacts[0].point.x - collision.transform.position.x , collision.contacts[0].point.y - collision.transform.position.y);
-                myRB.velocity = tmp.normalized + new Vector2(0, ricochetYImpulse) * ricochetImpulseForce;
+                RicochetEnemy(collision);
 
                 // If this is somehow not default set it here to be sure
-                if(myRB.gravityScale != defaultGravityScale)
+                if (myRB.gravityScale != defaultGravityScale)
                     myRB.gravityScale = defaultGravityScale;
 
                 // Knockback
@@ -149,9 +148,7 @@ public class MeleeWeapon : MonoBehaviour
             // Hits enemy when can deal damage
             if (!landed)
             {
-                // Ricochet quickmaths
-                Vector2 tmp = new Vector2(collision.contacts[0].point.x - collision.transform.position.x, collision.contacts[0].point.y - collision.transform.position.y);
-                myRB.velocity = tmp.normalized + new Vector2(0, ricochetYImpulse) * ricochetImpulseForce;
+                RicochetEnemy(collision);
 
                 // If this is somehow not default set it here to be sure
                 if (myRB.gravityScale != defaultGravityScale)
@@ -172,9 +169,7 @@ public class MeleeWeapon : MonoBehaviour
             // Hits enemy when can deal damage
             if (!landed)
             {
-                // Ricochet quickmaths
-                Vector2 tmp = new Vector2(collision.contacts[0].point.x - collision.transform.position.x, collision.contacts[0].point.y - collision.transform.position.y);
-                myRB.velocity = tmp.normalized + new Vector2(0, ricochetYImpulse) * ricochetImpulseForce;
+                RicochetEnemy(collision);
 
                 // If this is somehow not default set it here to be sure
                 if (myRB.gravityScale != defaultGravityScale)
@@ -257,6 +252,32 @@ public class MeleeWeapon : MonoBehaviour
         }
     }
 
+    // Bounce from ground element
+    private void RicochetGround(Collision2D collision)
+    {
+        // Ricochet quickmaths
+        Vector2 tmp = new Vector2(collision.contacts[0].normal.x - collision.transform.position.x, collision.contacts[0].normal.y - collision.transform.position.y);
+
+        // If normal gives real normal (Unity feature :) ) y would always be -1, 0, 1 but it will not so it might be something in between -1 and 1 
+        // Multitool hit ceiling we want it to bounce downwards not to the ceiling remove ricochetYImpulse
+        if (tmp.normalized.y < -0.5f)
+            myRB.velocity = tmp.normalized * ricochetImpulseForce;
+        // Multitool hit floor we want it to bounce slightly upward not to the moon and back, divide with 2 works good
+        else if (tmp.normalized.y > 0.5f)
+            myRB.velocity = tmp.normalized * ricochetImpulseForce + new Vector2(0, ricochetYImpulse / 2);
+        // Multitool hit wall we want it to bounce to the normal direction with greater bounce
+        else
+            myRB.velocity = tmp.normalized * ricochetImpulseForce + new Vector2(0, ricochetYImpulse);
+    }
+
+    // Bounce from enemy own ricochet calculation to make it smoother
+    private void RicochetEnemy(Collision2D collision)
+    {
+        // Ricochet quickmaths
+        // Bounces most likely towards us if thrown to the back of enemys head might bounce behind him (skill / luck factor)
+        Vector2 tmp = new Vector2(collision.contacts[0].point.x - collision.transform.position.x, collision.contacts[0].point.y - collision.transform.position.y);
+        myRB.velocity = tmp.normalized * ricochetImpulseForce * enemyHitRicochetScaler + new Vector2(0, ricochetYImpulse);
+    }
 
     // Called from PlayerMeleeCombat
     public void PullWeapon(GameObject objectThatPulls)
@@ -369,7 +390,7 @@ public class MeleeWeapon : MonoBehaviour
         beingPulled = false; // No longer pulled
         powerBoosted = true; // Now power boosted
         gameObject.layer = 13; // Layer back to MeleeWeapon.
-        GetComponent<SpriteRenderer>().color = Color.blue; // Visualize power boost
+        mySpriteRenderer.color = Color.blue; // Visualize power boost
         GetComponent<TrailRenderer>().enabled = true;
 
         myRB.constraints = RigidbodyConstraints2D.FreezePositionY;
@@ -380,7 +401,7 @@ public class MeleeWeapon : MonoBehaviour
     {
         powerBoosted = false;
         myRB.constraints = RigidbodyConstraints2D.None;
-        GetComponent<SpriteRenderer>().color = Color.red;
+        mySpriteRenderer.color = Color.red;
         GetComponent<TrailRenderer>().enabled = false;
     }
 
@@ -416,5 +437,50 @@ public class MeleeWeapon : MonoBehaviour
     public bool getAttachedToGrapplePoint()
     {
         return attachedToGrapplePoint;
+    }
+
+    // ---- SAVING / LOADING ----
+    public void setThrowDmg(float dmg)
+    {
+        weaponThrowDamage = dmg;
+    }
+    public float getThrowDmg()
+    {
+        return weaponThrowDamage;
+    }
+
+    public void setPullDmg(float dmg)
+    {
+        weaponPullDamage = dmg;
+    }
+    public float getPullDmg()
+    {
+        return weaponPullDamage;
+    }
+
+    public void setPowerBoostDmg(float dmg)
+    {
+        powerBoostedDamage = dmg;
+    }
+    public float getPowerBoostDmg()
+    {
+        return powerBoostedDamage;
+    }
+
+    // ---- UPGRADES ----
+    // Called from PlayerCombat since it is only link to this prefab object
+    public void UpgradeThrowDamage(float dmg)
+    {
+        weaponThrowDamage += dmg;
+    }
+
+    public void UpgradePullDamage(float dmg)
+    {
+        weaponPullDamage += dmg;
+    }
+
+    public void UpgradePowerBoostedDamage(float dmg)
+    {
+        powerBoostedDamage += dmg;
     }
 }

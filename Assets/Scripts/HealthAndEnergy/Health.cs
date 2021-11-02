@@ -84,4 +84,24 @@ public class Health : MonoBehaviour
     {
         return CurrentHealth;
     }
+
+    // --- UPGRADE ---
+    public void UpgradeMaxHealth(float amount)
+    {
+        maxHealth += amount;
+    }
+
+
+    // --- SAVING / LOADING ---
+    public float getMaxHealth()
+    {
+        return maxHealth;
+    }
+
+    public void setMaxHealth(float health)
+    {
+        maxHealth = health;
+        // Load game set our current health to max
+        SetHealth(maxHealth);
+    }
 }
