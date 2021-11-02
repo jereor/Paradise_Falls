@@ -793,16 +793,6 @@ public class PlayerCombat : MonoBehaviour
 
     // --- SAVING / LOADING ---
 
-    public float getMaxDistance()
-    {
-        return maxDistance;
-    }
-
-    public void setMaxDistance(float d)
-    {
-        maxDistance = d;
-    }
-
     public float getLightDamage()
     {
         return lightDamage;
@@ -884,13 +874,6 @@ public class PlayerCombat : MonoBehaviour
     public void UpgradePowerBoostedDamage(float dmg)
     {
         meleeWeaponPrefab.GetComponent<MeleeWeapon>().UpgradePowerBoostedDamage(dmg);
-    }
-
-    public void UpgradeMaxDistance(float amount)
-    {
-        maxDistance += amount;
-        numberOfPoints = (int)maxDistance;
-        InitPoints();
     }
 
     public void UpgradeThrowMaxChargeTime(float time)
