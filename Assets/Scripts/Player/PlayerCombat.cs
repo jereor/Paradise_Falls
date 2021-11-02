@@ -62,6 +62,7 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private float pullCollisionCounter = 0; // If player hits a collider during the pull, release the pull after a certain time.
     [SerializeField] private GameObject magnetTether; // Magnet tether for the visual representation of the pull.
     [SerializeField] private float timeBeforeRelease = 1f;
+    private bool grapplingUnlocked = false;
 
     // State variables
     private bool throwAimHold; // True if we are holdling Throw input (MouseR)
@@ -84,8 +85,6 @@ public class PlayerCombat : MonoBehaviour
     public bool onTran1 = false;
     public bool onTran2 = false;
     public bool onTran3 = false;
-
-    Coroutine tranToIdle; // This will be replaced with correct transittion animation
     
     // These will stay 
     public bool canReceiveInputMelee = false; // If this is true we can melee (no attack animation ongoing)
@@ -125,6 +124,13 @@ public class PlayerCombat : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         movementScript = GetComponent<PlayerMovement>();
 
+        // Check if we have these unlocks (example on loading or debug testing)
+        CheckUnlocksOnStart();
+    }
+
+    private void CheckUnlocksOnStart()
+    {
+        // Multitool
         if (Player.Instance.MultitoolUnlocked())
         {
             multitoolUnlocked = true;
@@ -135,16 +141,32 @@ public class PlayerCombat : MonoBehaviour
             multitoolUnlocked = false;
             isWeaponWielded = false;
         }
+        // Grappling
+        if (Player.Instance.GrapplingUnlocked())
+            grapplingUnlocked = true;
+        else
+            grapplingUnlocked = false;
     }
 
-    private void Update()
+    private void CheckUnlocksOnUpdate()
     {
         // Check only when false save resources
+        // Multitool
         if (!multitoolUnlocked && Player.Instance.MultitoolUnlocked() != multitoolUnlocked)
         {
             multitoolUnlocked = Player.Instance.MultitoolUnlocked();
             isWeaponWielded = Player.Instance.MultitoolUnlocked();
         }
+
+        // Grappling
+        if (!grapplingUnlocked && Player.Instance.GrapplingUnlocked() != grapplingUnlocked)
+            grapplingUnlocked = Player.Instance.GrapplingUnlocked();
+    }
+
+    private void Update()
+    {
+        // Check of we aquire new unlocks
+        CheckUnlocksOnUpdate();
     }
 
     private void FixedUpdate()
@@ -169,6 +191,7 @@ public class PlayerCombat : MonoBehaviour
         CheckAttackDashDistance();
 
         PullingPlayer();
+
     }
 
     // --- INPUT FUNCITONS ---
@@ -206,7 +229,7 @@ public class PlayerCombat : MonoBehaviour
                 weaponScript.PullWeapon(gameObject);
             }
             // Left click when right is held down
-            else if (throwAimHold)
+            else if (throwAimHold && grapplingUnlocked)
             {                
                 //weaponScript.PullWeapon(gameObject);
 
@@ -768,6 +791,38 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
+    // --- SAVING / LOADING ---
+
+    public float getMaxDistance()
+    {
+        return maxDistance;
+    }
+
+    public void setMaxDistance(float d)
+    {
+        maxDistance = d;
+    }
+
+    public float getLightDamage()
+    {
+        return lightDamage;
+    }
+
+    public void setLightDamage(float dmg)
+    {
+        lightDamage = dmg;
+    }
+
+    public float getThrowChargeTime()
+    {
+        return maxChargeTime;
+    }
+
+    public void setThrowChargeTime(float time)
+    {
+        maxChargeTime = time;
+    }
+
 
     // --- GET / SET ---
 
@@ -781,25 +836,6 @@ public class PlayerCombat : MonoBehaviour
         isWeaponWielded = wield;
     }
 
-    public float getMaxDistance()
-    {
-        return maxDistance;
-    }
-
-    public void setMaxDistance(float d)
-    {
-        maxDistance = d;
-    }
-
-    public float getlightDamage()
-    {
-        return lightDamage;
-    }
-
-    public void setlightDamage(float dmg)
-    {
-        lightDamage = dmg;
-    }
 
     public GameObject getWeaponInstance()
     {
@@ -824,5 +860,41 @@ public class PlayerCombat : MonoBehaviour
     public Vector2 getVectorToMouse()
     {
         return vectorToTarget;
+    }
+
+
+    // --- UPGRADES ---
+    // Called from pickups / small upgrades
+
+    public void UpgradeLightDamage(float dmg)
+    {
+        lightDamage += dmg;
+    }
+
+    public void UpgradeThrowDamage(float dmg)
+    {
+        meleeWeaponPrefab.GetComponent<MeleeWeapon>().UpgradeThrowDamage(dmg);
+    }
+
+    public void UpgradePullDamage(float dmg)
+    {
+        meleeWeaponPrefab.GetComponent<MeleeWeapon>().UpgradePullDamage(dmg);
+    }
+
+    public void UpgradePowerBoostedDamage(float dmg)
+    {
+        meleeWeaponPrefab.GetComponent<MeleeWeapon>().UpgradePowerBoostedDamage(dmg);
+    }
+
+    public void UpgradeMaxDistance(float amount)
+    {
+        maxDistance += amount;
+        numberOfPoints = (int)maxDistance;
+        InitPoints();
+    }
+
+    public void UpgradeThrowMaxChargeTime(float time)
+    {
+        maxChargeTime -= time;
     }
 }

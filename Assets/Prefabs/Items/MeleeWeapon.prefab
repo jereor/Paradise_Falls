@@ -295,6 +295,7 @@ MonoBehaviour:
   meleeWeaponGrapplingDistance: 1.2
   worldPickUp: 0
   knockbackForce: 500
+  mySpriteRenderer: {fileID: 4707181778522028191}
   beingPulled: 0
   powerBoosted: 0
 --- !u!96 &6049849153134103944

@@ -27,6 +27,8 @@ public class MeleeWeapon : MonoBehaviour
     private Rigidbody2D myRB;
     private float defaultGravityScale;
 
+    public SpriteRenderer mySpriteRenderer;
+
     private Vector3 startPoint; // Used to calculate maximum distance to travel
     private bool landed; // If weapon can deal damage
 
@@ -369,7 +371,7 @@ public class MeleeWeapon : MonoBehaviour
         beingPulled = false; // No longer pulled
         powerBoosted = true; // Now power boosted
         gameObject.layer = 13; // Layer back to MeleeWeapon.
-        GetComponent<SpriteRenderer>().color = Color.blue; // Visualize power boost
+        mySpriteRenderer.color = Color.blue; // Visualize power boost
         GetComponent<TrailRenderer>().enabled = true;
 
         myRB.constraints = RigidbodyConstraints2D.FreezePositionY;
@@ -380,7 +382,7 @@ public class MeleeWeapon : MonoBehaviour
     {
         powerBoosted = false;
         myRB.constraints = RigidbodyConstraints2D.None;
-        GetComponent<SpriteRenderer>().color = Color.red;
+        mySpriteRenderer.color = Color.red;
         GetComponent<TrailRenderer>().enabled = false;
     }
 
@@ -416,5 +418,50 @@ public class MeleeWeapon : MonoBehaviour
     public bool getAttachedToGrapplePoint()
     {
         return attachedToGrapplePoint;
+    }
+
+    // ---- SAVING / LOADING ----
+    public void setThrowDmg(float dmg)
+    {
+        weaponThrowDamage = dmg;
+    }
+    public float getThrowDmg()
+    {
+        return weaponThrowDamage;
+    }
+
+    public void setPullDmg(float dmg)
+    {
+        weaponPullDamage = dmg;
+    }
+    public float getPullDmg()
+    {
+        return weaponPullDamage;
+    }
+
+    public void setPowerBoostDmg(float dmg)
+    {
+        powerBoostedDamage = dmg;
+    }
+    public float getPowerBoostDmg()
+    {
+        return powerBoostedDamage;
+    }
+
+    // ---- UPGRADES ----
+    // Called from PlayerCombat since it is only link to this prefab object
+    public void UpgradeThrowDamage(float dmg)
+    {
+        weaponThrowDamage += dmg;
+    }
+
+    public void UpgradePullDamage(float dmg)
+    {
+        weaponPullDamage += dmg;
+    }
+
+    public void UpgradePowerBoostedDamage(float dmg)
+    {
+        powerBoostedDamage += dmg;
     }
 }
