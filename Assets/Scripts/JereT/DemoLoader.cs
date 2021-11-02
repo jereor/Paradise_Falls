@@ -63,14 +63,14 @@ public class DemoLoader : MonoBehaviour
                 playerObject.transform.position = respawnPoint;
 
                 // Weapon if weaponAcquired == true destroy weaponPickUp from scnene if not leave it untouched
-                if (GameStatus.status.getLoadedData().weaponAcquired)
+                if (GameStatus.status.getLoadedData().multitool)
                 {
                     playerObject.GetComponent<PlayerCombat>().PickUpWeapon();
                     Destroy(weaponPickUp);
                 }
 
                 // WallJump
-                if (GameStatus.status.getLoadedData().wallJumpAcquired)
+                if (GameStatus.status.getLoadedData().wallJump)
                 {
                     Player.Instance.UnlockWalljump();
                     Destroy(wallJumpPickUp);
