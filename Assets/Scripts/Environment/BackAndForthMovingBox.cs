@@ -10,38 +10,40 @@ public class BackAndForthMovingBox : MonoBehaviour
     private BoxCollider2D boxCollider;
     private CircleCollider2D circleCollider;
     private Transform chain;
+
+    [Header("Speed and waypoint detection Radius")]
     [SerializeField] private float waitTime;
     [SerializeField] private float speed;
     [SerializeField] private float circleSize = 0.15f;
+
+    [Header("Lists to control waypoints")]
     [SerializeField] private List<Vector2> moves;
     [SerializeField] private List<bool> stepsWhenColliderChanged;
-    private Vector2 startPosition;
-    private Vector2 currentStartPosition;
-    [SerializeField] private int stepCounter = 0;
+
+    [Header("Player knockback control")]
     [SerializeField] private Vector2 velocityPlayer;
     [SerializeField] private float knockbackForce;
+
+    [Header("Bools to control Platform Movement")]
+    [SerializeField] private bool colliderDisabledAtStart = false;
+    [SerializeField] private bool cuttableChain = false;
+    [SerializeField] private bool loop = true;
+    [SerializeField] private bool teleportToStartAfterPathComplete = true;
+
+    private Vector2 startPosition;
+    private Vector2 currentStartPosition;
+    private int stepCounter = 0;
 
     private bool canChangeCurrentStartPosition = true;
     private bool changeState = false;
     private bool canStep = true;
     private bool returning = false;
     private bool shutScript = false;
-
     private bool isWaiting = false;
     private bool isChainCut = false;
-    [SerializeField] private bool colliderDisabledAtStart = false;
     private bool gizmoPositionChange = true;
 
-    [SerializeField] private bool cuttableChain = false;
-    [SerializeField] private bool loop = true;
-    [SerializeField] private bool teleportToStartAfterPathComplete = true;
-
     // Start is called before the first frame update
-
-    private void Awake()
-    {
-
-    }
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -76,7 +78,6 @@ public class BackAndForthMovingBox : MonoBehaviour
             moves.Add((startPosition - returnVector) - startPosition);
             stepsWhenColliderChanged.Add(false);
         }
-
     }
 
     // Gizmos for the path the object takes.
@@ -291,9 +292,9 @@ public class BackAndForthMovingBox : MonoBehaviour
     // Handles all the steps the box takes during it's adventure.
     private void HandleStep()
     {
-        if (!changeState && !isWaiting)
+        if (!changeState && !isWaiting) // Is the platform in moving state and not waiting?
         {
-            if (canChangeCurrentStartPosition)
+            if (canChangeCurrentStartPosition) // Changes the "point of view" for the object so it gets the right vector for next waypoint.
             {
                 currentStartPosition = transform.position;
                 canChangeCurrentStartPosition = false;
@@ -301,15 +302,17 @@ public class BackAndForthMovingBox : MonoBehaviour
             Move(moves[stepCounter]); // Moves the object to next waypoint.
 
         }
+        // Everything regarding the end possibilities of the object.
         if (changeState && stepCounter == moves.Count && !returning)
         {
+            // Disable the boxCollider for the gameobject for start. Disabling done here since no other viable solution for the disabling was found.
             if (boxCollider.enabled)
                 EnableDisableBoxCollider();
 
-            if (teleportToStartAfterPathComplete) // If the object needs to be destroyed after the path is complete.
+            if (teleportToStartAfterPathComplete) // If the object needs to be teleported back to original position after the path is complete.
             {
                 transform.position = startPosition;
-                if (loop)
+                if (loop) // If object is supposed to loop, start from the beginning.
                 {
                     changeState = false;
                     canStep = true;
@@ -317,16 +320,16 @@ public class BackAndForthMovingBox : MonoBehaviour
                 }
             }
 
-            else if (loop && !teleportToStartAfterPathComplete) // In other cases loops around the given parameters.
+            else if (loop && !teleportToStartAfterPathComplete) // In other cases loops around the given parameters. Does not teleport but moves to the original pos.
             {
                 changeState = false;
                 returning = true;
             }
-            else // If not looped, shut the script.
+            else // If not looped, shut the script. We done here.
                 shutScript = true;
 
         }
-        else if (changeState) // Object is made to return to startPosition after getting to destination.
+        else if (changeState) // Starts the movement to the next waypoint since script was not in the end yet.
         {
             returning = false;
             changeState = false;
@@ -350,7 +353,6 @@ public class BackAndForthMovingBox : MonoBehaviour
         if (changeState)
         {
             returning = false; // When at destination, not returning anymore.
-            //canStep = false;
             stepCounter = 0; // Reset the stepCounter so it starts from beginning again.
             changeState = false;
         }

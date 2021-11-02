@@ -9,39 +9,39 @@ public class StaticMovingBox : MonoBehaviour
     private Rigidbody2D playerRB;
     private BoxCollider2D boxCollider;
     private CircleCollider2D circleCollider;
-    [SerializeField] private float moveTime;
+
+    [Header("Speed and waypoint detection Radius")]
     [SerializeField] private float speed;
     [SerializeField] private float circleSize = 0.15f;
+
+    [Header("Lists to control waypoints")]
     [SerializeField] private List<Vector2> moves;
     [SerializeField] private List<Vector2> movesBack;
-    private Vector2 startPosition;
-    private Vector2 currentStartPosition;
-    [SerializeField] private int stepCounter = 0;
+
+    [Header("Player knockback control")]
     [SerializeField] private Vector2 velocityPlayer;
     [SerializeField] private float knockbackForce;
 
-    private bool canChangeCurrentStartPosition = true;
-    [SerializeField]private bool changeState = false;
+    [Header("Bools to control Platform Movement")]
     [SerializeField] private bool returningObject = false;
-
-    private bool isWaiting = false;
-    private bool isChainCut = false;
     [SerializeField] private bool colliderDisabledAtStart = false;
-    private bool gizmoPositionChange = true;
-
     [SerializeField] private bool cuttableChain = false;
     [SerializeField] private bool loop = true;
     [SerializeField] private bool destroyAfterPathComplete = true;
 
+    private Vector2 startPosition;
+    private Vector2 currentStartPosition;
+    private int stepCounter = 0;
+
+    private bool canChangeCurrentStartPosition = true;
+    private bool changeState = false;
+    private bool gizmoPositionChange = true;
+    private bool isWaiting = false;
+    private bool isChainCut = false;
+
     // Start is called before the first frame update
-
-    private void Awake()
-    {
-
-    }
     void Start()
     {
-
         movesBack = new List<Vector2>(); // Assign the array with the length of moves-array. Needed to script work properly!!
         rb = GetComponent<Rigidbody2D>();
         playerRB = GameObject.Find("Player").GetComponent<Rigidbody2D>();
@@ -144,6 +144,7 @@ public class StaticMovingBox : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+        // Everything related to chain control. Comment this if-case if not needed.
         if (gameObject.transform.childCount == 0 && !isChainCut && cuttableChain)
         {
             isChainCut = true;
@@ -158,7 +159,7 @@ public class StaticMovingBox : MonoBehaviour
             rb.constraints = RigidbodyConstraints2D.FreezePositionX;
             rb.freezeRotation = true;
         }
-        if (!changeState)
+        if (!changeState) // Moves the object through the waypoints without stopping.
         {
             if (canChangeCurrentStartPosition)
             {
@@ -191,7 +192,7 @@ public class StaticMovingBox : MonoBehaviour
     // Moves the game object with given Vectors to position. Moves it a one vector at time until the end is reached.
     private void Move()
     {
-        rb.velocity = ((((Vector2)transform.position + moves[stepCounter]) - (Vector2)transform.position).normalized) * speed * Time.deltaTime;
+        rb.velocity = ((((Vector2)transform.position + moves[stepCounter]) - (Vector2)transform.position).normalized) * speed * Time.deltaTime; // Changes velocity to move the object.
         if (ArrivedToDestination(moves[stepCounter]))
         {
             canChangeCurrentStartPosition = true;
@@ -208,7 +209,7 @@ public class StaticMovingBox : MonoBehaviour
     // Same behaviour as Move(), but in reverse order.
     private void MoveBack()
     {
-        rb.velocity = movesBack[stepCounter].normalized * speed * Time.deltaTime;
+        rb.velocity = movesBack[stepCounter].normalized * speed * Time.deltaTime; // Changes velocity to move the object.
         if (ArrivedToDestination(movesBack[stepCounter]))
         {
             canChangeCurrentStartPosition = true;
