@@ -28,7 +28,11 @@ public class RiotShield : MonoBehaviour
     // Used to check if the shield hit the ground collider. This happens when riot drone is charging towards the player but they dodge the charge. Set state to "Stunned".
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if(drone.state == RiotControlDrone.RiotState.ShieldCharge && collision.gameObject.layer == LayerMask.NameToLayer("Ground") && !drone.getIsEnraged())
+        if(drone.state == RiotControlDrone.RiotState.Stunned)
+        {
+            drone.PlayerPushback();
+        }
+        if (drone.state == RiotControlDrone.RiotState.ShieldCharge && collision.gameObject.layer == LayerMask.NameToLayer("Ground") && !drone.getIsEnraged())
         {
 
             drone.state = RiotControlDrone.RiotState.Stunned;

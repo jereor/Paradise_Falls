@@ -123,7 +123,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6622000218174222055}
   - component: {fileID: 3142315634059483558}
-  - component: {fileID: 560160748}
   - component: {fileID: 1627894804342062220}
   m_Layer: 17
   m_Name: PhaseTwoKnockbackBox
@@ -172,22 +171,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1.16, y: 0.46}
   m_EdgeRadius: 0
---- !u!114 &560160748
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4346172592286270044}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e86f73fe67ea7534e8cd88d810071be8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  velocityPlayer: {x: 0, y: 0}
-  playerRB: {fileID: 0}
-  knockbackForce: 100
-  chargeReadyTime: 1
 --- !u!114 &1627894804342062220
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -330,7 +313,7 @@ MonoBehaviour:
     m_Bits: 64
   breakableLayer:
     serializedVersion: 2
-    m_Bits: 524288
+    m_Bits: 1048576
   walkingSpeed: 900000
   runningSpeed: 1000000
   chargeSpeed: 300000
@@ -351,8 +334,8 @@ MonoBehaviour:
   velocityPlayer: {x: 0, y: 0}
   lightAttackCoolDown: 0.5
   lightAttackDamage: 2
-  heavyAttackChargeTime: 3
-  heavyAttackCoolDown: 2
+  heavyAttackChargeTime: 2
+  heavyAttackCoolDown: 1
   heavyAttackDamage: 4
   shieldSquishDamage: 10
   knockbackForce: 100
@@ -360,7 +343,7 @@ MonoBehaviour:
   taserCooldown: 1
   seedShootCooldown: 1
   dashAttackCooldown: 2
-  taserChance: 35
+  taserChance: 20
   seedShootChance: 5
   taserChanceRandomizer: 1
   seedShootChanceRandomizer: 1
@@ -380,7 +363,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e85f99a78ea71c14bb56436ea514cc78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 10
+  maxHealth: 30
   debugHealth: 0
   destroyWhenDead: 1
   onDie:
@@ -622,7 +605,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: -0.12, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -633,7 +616,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1.15, y: 1}
+  m_Size: {x: 1.39, y: 1}
   m_EdgeRadius: 0
 --- !u!114 &442696107
 MonoBehaviour:
