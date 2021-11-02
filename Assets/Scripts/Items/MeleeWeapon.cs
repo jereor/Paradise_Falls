@@ -419,4 +419,22 @@ public class MeleeWeapon : MonoBehaviour
     {
         return attachedToGrapplePoint;
     }
+
+
+    // ---- UPGRADES ----
+    // Called from PlayerCombat since it is only link to this prefab object
+    public void UpgradeThrowDamage(float dmg)
+    {
+        weaponThrowDamage += dmg;
+    }
+
+    public void UpgradePullDamage(float dmg)
+    {
+        weaponPullDamage += dmg;
+    }
+
+    public void UpgradePowerBoostedDamage(float dmg)
+    {
+        powerBoostedDamage += dmg;
+    }
 }

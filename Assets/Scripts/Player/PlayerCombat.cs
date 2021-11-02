@@ -169,6 +169,7 @@ public class PlayerCombat : MonoBehaviour
         CheckAttackDashDistance();
 
         PullingPlayer();
+
     }
 
     // --- INPUT FUNCITONS ---
@@ -828,25 +829,26 @@ public class PlayerCombat : MonoBehaviour
 
 
     // --- UPGRADES ---
+    // Called from pickups / upgrades
 
     public void UpgradeLightDamage(float dmg)
     {
         lightDamage += dmg;
     }
 
-    public void UpgradeThrowDamage()
+    public void UpgradeThrowDamage(float dmg)
     {
-
+        meleeWeaponPrefab.GetComponent<MeleeWeapon>().UpgradeThrowDamage(dmg);
     }
 
-    public void UpgradePullDamage()
+    public void UpgradePullDamage(float dmg)
     {
-        meleeWeaponPrefab.GetComponent<MeleeWeapon>();
+        meleeWeaponPrefab.GetComponent<MeleeWeapon>().UpgradePullDamage(dmg);
     }
 
-    public void UpgradeShockwaveDamage(float dmg)
+    public void UpgradePowerBoostedDamage(float dmg)
     {
-
+        meleeWeaponPrefab.GetComponent<MeleeWeapon>().UpgradePowerBoostedDamage(dmg);
     }
 
     public void UpgradeMaxDistance(float amount)
@@ -860,6 +862,4 @@ public class PlayerCombat : MonoBehaviour
     {
         maxChargeTime -= time;
     }
-
-
 }
