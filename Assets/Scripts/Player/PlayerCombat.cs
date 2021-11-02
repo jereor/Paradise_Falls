@@ -791,12 +791,12 @@ public class PlayerCombat : MonoBehaviour
         maxDistance = d;
     }
 
-    public float getlightDamage()
+    public float getLightDamage()
     {
         return lightDamage;
     }
 
-    public void setlightDamage(float dmg)
+    public void setLightDamage(float dmg)
     {
         lightDamage = dmg;
     }
@@ -825,4 +825,41 @@ public class PlayerCombat : MonoBehaviour
     {
         return vectorToTarget;
     }
+
+
+    // --- UPGRADES ---
+
+    public void UpgradeLightDamage(float dmg)
+    {
+        lightDamage += dmg;
+    }
+
+    public void UpgradeThrowDamage()
+    {
+
+    }
+
+    public void UpgradePullDamage()
+    {
+        meleeWeaponPrefab.GetComponent<MeleeWeapon>();
+    }
+
+    public void UpgradeShockwaveDamage(float dmg)
+    {
+
+    }
+
+    public void UpgradeMaxDistance(float amount)
+    {
+        maxDistance += amount;
+        numberOfPoints = (int)maxDistance;
+        InitPoints();
+    }
+
+    public void UpgradeThrowMaxChargeTime(float time)
+    {
+        maxChargeTime -= time;
+    }
+
+
 }
