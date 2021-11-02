@@ -1,8 +1,6 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.ParticleSystemJobs;
 
 public class PlayerCombat : MonoBehaviour
 {
@@ -128,7 +126,6 @@ public class PlayerCombat : MonoBehaviour
         defaultSize = psMain.startSize.constant;
 
         rb = GetComponent<Rigidbody2D>();
-        movementScript = GetComponent<PlayerMovement>();
 
         // Check if we have these unlocks (example on loading or debug testing)
         CheckUnlocksOnStart();
@@ -265,14 +262,6 @@ public class PlayerCombat : MonoBehaviour
             // Weapon is thrown hide points
             HideAllProjPoints();
         }
-    }
-
-    private IEnumerator IndicateBlockage()
-    {
-
-        yield return new WaitForSeconds(1f);
-        psMain.maxParticles = defaultParticleCount;
-        magnetTether.SetActive(false);
     }
 
     // Input from left shift
