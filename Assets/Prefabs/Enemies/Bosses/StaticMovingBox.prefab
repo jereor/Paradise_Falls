@@ -135,6 +135,7 @@ GameObject:
   - component: {fileID: 7143010858897141042}
   - component: {fileID: 7143010858897141041}
   - component: {fileID: 4697235887528743132}
+  - component: {fileID: 909870420}
   m_Layer: 6
   m_Name: StaticMovingBox
   m_TagString: MovingPlatform
@@ -268,8 +269,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveTime: 10
+  speed: 300
+  circleSize: 0.15
   moves:
-  - {x: -70.3, y: 12.5}
+  - {x: -7.7, y: -5.6}
+  - {x: -24.1, y: 3.3}
+  - {x: 1.8, y: 4.5}
   movesBack: []
   stepCounter: 0
   velocityPlayer: {x: 0, y: 0}
@@ -279,3 +284,19 @@ MonoBehaviour:
   cuttableChain: 1
   loop: 1
   destroyAfterPathComplete: 0
+--- !u!58 &909870420
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7143010858897141047}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 0.0001

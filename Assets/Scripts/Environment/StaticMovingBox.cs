@@ -8,16 +8,20 @@ public class StaticMovingBox : MonoBehaviour
     private Rigidbody2D rb;
     private Rigidbody2D playerRB;
     private BoxCollider2D boxCollider;
+    private CircleCollider2D circleCollider;
     [SerializeField] private float moveTime;
-    [SerializeField] private Vector2[] moves;
-    [SerializeField] private Vector2[] movesBack;
+    [SerializeField] private float speed;
+    [SerializeField] private float circleSize = 0.15f;
+    [SerializeField] private List<Vector2> moves;
+    [SerializeField] private List<Vector2> movesBack;
     private Vector2 startPosition;
+    private Vector2 currentStartPosition;
     [SerializeField] private int stepCounter = 0;
     [SerializeField] private Vector2 velocityPlayer;
     [SerializeField] private float knockbackForce;
 
-
-    private bool changeState = false;
+    private bool canChangeCurrentStartPosition = true;
+    [SerializeField]private bool changeState = false;
     [SerializeField] private bool returningObject = false;
 
     private bool isWaiting = false;
@@ -38,10 +42,11 @@ public class StaticMovingBox : MonoBehaviour
     void Start()
     {
 
-        movesBack = new Vector2[moves.Length + 1]; // Assign the array with the length of moves-array. Needed to script work properly!!
+        movesBack = new List<Vector2>(); // Assign the array with the length of moves-array. Needed to script work properly!!
         rb = GetComponent<Rigidbody2D>();
         playerRB = GameObject.Find("Player").GetComponent<Rigidbody2D>();
         boxCollider = GetComponent<BoxCollider2D>();
+        circleCollider = GetComponent<CircleCollider2D>();
         gizmoPositionChange = false;
         startPosition = transform.position;
 
@@ -59,45 +64,78 @@ public class StaticMovingBox : MonoBehaviour
             boxCollider.enabled = !boxCollider.enabled;
         }
         // Is this object meant to return the same path back to the beginning? If is, make a reverse array of moves to take.
-        if (returningObject)
-        {
-            for (int i = 0; i < moves.Length; i++)
-            {
-                movesBack[i] = moves[moves.Length - i - 1];
-            }
-            movesBack.SetValue(startPosition, moves.Length); // Set the starting position to the last value of the array. Does not work without this!
 
+        if(loop)
+        {
+            Vector2 returnVector = new Vector2(0,0);
+            for(int i = 0; i < moves.Count; i++)
+            {
+                returnVector += moves[i];
+            }
+            moves.Add((startPosition - returnVector) - startPosition);
         }
 
+        if (returningObject)
+        {
+            for (int i = 0; i < moves.Count; i++)
+            {
+                movesBack.Add(-moves[moves.Count - i - 1]);
+            }
+        }
     }
 
     private void OnDrawGizmosSelected()
     {
         if (gizmoPositionChange)
         {
-            Gizmos.color = Color.white;
+            Gizmos.color = Color.red;
             if (moves[0] != null)
             {
                 Vector2 position;
-                Gizmos.DrawLine((Vector2)transform.position, moves[0]);
-                Gizmos.DrawSphere(moves[0], 0.2f);
-                Gizmos.DrawSphere(transform.position, 0.2f);
-                position = moves[0];
-                for (int i = 1; i < moves.Length; i++)
+                Gizmos.DrawLine((Vector2)transform.position, (Vector2)transform.position + moves[0]);
+                Gizmos.DrawSphere((Vector2)transform.position + moves[0], circleSize);
+                position = (Vector2)transform.position + moves[0];
+                for (int i = 1; i < moves.Count; i++)
                 {
 
-                    Gizmos.DrawLine(moves[i - 1], moves[i]);
-                    Gizmos.DrawSphere(moves[i], 0.2f);
+                    Gizmos.DrawLine(position, position + moves[i]);
+                    Gizmos.DrawSphere(position, circleSize);
                     position += moves[i];
                 }
                 if (loop)
                 {
-                    Gizmos.DrawLine(moves[moves.Length - 1], transform.position);
-                    Gizmos.DrawSphere(moves[moves.Length - 1], 0.2f);
-                    Gizmos.DrawSphere(transform.position, 0.2f);
+                    Gizmos.DrawLine(position, transform.position);
+                    Gizmos.DrawSphere(position, circleSize);
+                    Gizmos.DrawSphere(transform.position, circleSize);
                 }
                 else
-                    Gizmos.DrawSphere(position, 0.2f);
+                    Gizmos.DrawSphere(position, circleSize);
+            }
+        }
+        else
+        {
+            Gizmos.color = Color.red;
+            if (moves[0] != null)
+            {
+                Vector2 position;
+                Gizmos.DrawLine(startPosition, startPosition + moves[0]);
+                Gizmos.DrawSphere(startPosition + moves[0], circleSize);
+                position = startPosition + moves[0];
+                for (int i = 1; i < moves.Count; i++)
+                {
+
+                    Gizmos.DrawLine(position, position + moves[i]);
+                    Gizmos.DrawSphere(position, circleSize);
+                    position += moves[i];
+                }
+                if (loop)
+                {
+                    Gizmos.DrawLine(position, startPosition);
+                    Gizmos.DrawSphere(position, circleSize);
+                    Gizmos.DrawSphere(startPosition, circleSize);
+                }
+                else
+                    Gizmos.DrawSphere(position, circleSize);
             }
         }
 
@@ -120,51 +158,82 @@ public class StaticMovingBox : MonoBehaviour
             rb.constraints = RigidbodyConstraints2D.FreezePositionX;
             rb.freezeRotation = true;
         }
-        if (!isWaiting && !changeState)
+        if (!changeState)
         {
-            Move(moves, moveTime); // Moves the object to the designated destination along the given path.
-            StartCoroutine(Wait(moveTime)); // Wait until the path is finished.
+            if (canChangeCurrentStartPosition)
+            {
+                currentStartPosition = transform.position;
+                canChangeCurrentStartPosition = false;
+            }
+            Move(); // Moves the object to the designated destination along the given path.
             
         }
-        if (!isWaiting && changeState && !DOTween.IsTweening(rb) && returningObject) // Is the Tweening done with the path and the object is meant to return?
+        if (changeState && returningObject) // Is the game object meant to return to original position?
         {
-            MoveBack(movesBack, moveTime); // Uses the reverse array to return.
-            StartCoroutine(WaitBack(moveTime));
+            if (canChangeCurrentStartPosition)
+            {
+                currentStartPosition = transform.position;
+                canChangeCurrentStartPosition = false;
+            }
+            MoveBack(); // Uses the reverse List to return.
 
         }
-        else if (changeState && !isWaiting && !DOTween.IsTweening(rb) && loop && !destroyAfterPathComplete) // Looped route and not deostryable object?
+        else if (changeState && loop && !destroyAfterPathComplete) // Looped route and not destroyable object?
+        {
             changeState = false;
-        else if (changeState && !isWaiting && !DOTween.IsTweening(rb) && !loop && destroyAfterPathComplete) // Doesn't loop and is destroyable object?
+            stepCounter = 0;
+        }
+
+        else if (changeState && !loop && destroyAfterPathComplete) // Doesn't loop and is destroyable object?
             Destroy(gameObject);
     }
 
-    private IEnumerator Wait(float waitTime)
+    // Moves the game object with given Vectors to position. Moves it a one vector at time until the end is reached.
+    private void Move()
     {
-        isWaiting = true;
-        yield return new WaitForSeconds(waitTime);
-        isWaiting = false;
-        changeState = true;
+        rb.velocity = ((((Vector2)transform.position + moves[stepCounter]) - (Vector2)transform.position).normalized) * speed * Time.deltaTime;
+        if (ArrivedToDestination(moves[stepCounter]))
+        {
+            canChangeCurrentStartPosition = true;
+            rb.velocity = new Vector2(0, 0);
+            stepCounter++;
+            if (stepCounter == moves.Count)
+            {
+                changeState = true;
+                stepCounter = 0;
+            }
+        }
     }
 
-    private IEnumerator WaitBack(float waitTime)
+    // Same behaviour as Move(), but in reverse order.
+    private void MoveBack()
     {
-        isWaiting = true;
-        yield return new WaitForSeconds(waitTime);
-        isWaiting = false;
-        changeState = false;
+        rb.velocity = movesBack[stepCounter].normalized * speed * Time.deltaTime;
+        if (ArrivedToDestination(movesBack[stepCounter]))
+        {
+            canChangeCurrentStartPosition = true;
+            rb.velocity = new Vector2(0, 0);
+            stepCounter++;
+            if (stepCounter == moves.Count)
+            {
+                changeState = false; 
+                stepCounter = 0;
+            }
+        }
     }
 
-    private void Move(Vector2[] move, float time)
+    // OverlapCircle to check if the moving object is in the desired position radius. Does not give the best possible result with high GameObject speeds as might not be able to detect the coming object.
+    private bool ArrivedToDestination(Vector2 move)
     {
-        rb.DOLocalPath(moves, time); // Takes an array of Vectors and follows it to the destination.
-        stepCounter++;
+        if (circleCollider == Physics2D.OverlapCircle(currentStartPosition + move, circleSize))
+        {
+            transform.position = currentStartPosition + move; // Snaps the game object to the exact desired position for better accuracy.
+            return true;
+        }
+        else
+            return false;
     }
 
-    private void MoveBack(Vector2[] move, float time)
-    {
-        rb.DOLocalPath(movesBack, time);
-        stepCounter++;
-    }
 
     // Enable or disable the collider.
     private void EnableDisableBoxCollider()
@@ -203,11 +272,6 @@ public class StaticMovingBox : MonoBehaviour
         {
             PlayerPushback();
         }
-
-        //if (collision.gameObject.tag == "Player" && !isChainCut)
-        //{
-        //    collision.collider.transform.SetParent(transform);
-        //}
     }
 
     private void OnCollisionStay2D(Collision2D collision)
@@ -216,18 +280,5 @@ public class StaticMovingBox : MonoBehaviour
         {
             PlayerPushback();
         }
-
-        //if (collision.gameObject.tag == "Player" && !isChainCut)
-        //{
-        //    collision.collider.transform.SetParent(transform);
-        //}
     }
-
-    //private void OnCollisionExit2D(Collision2D collision)
-    //{
-    //    if (collision.gameObject.tag == "Player" && !isChainCut)
-    //    {
-    //        collision.collider.transform.SetParent(GameObject.Find("[Gameplay]").transform);
-    //    }
-    //}
 }
