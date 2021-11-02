@@ -420,6 +420,33 @@ public class MeleeWeapon : MonoBehaviour
         return attachedToGrapplePoint;
     }
 
+    // ---- SAVING / LOADING ----
+    public void setThrowDmg(float dmg)
+    {
+        weaponThrowDamage = dmg;
+    }
+    public float getThrowDmg()
+    {
+        return weaponThrowDamage;
+    }
+
+    public void setPullDmg(float dmg)
+    {
+        weaponPullDamage = dmg;
+    }
+    public float getPullDmg()
+    {
+        return weaponPullDamage;
+    }
+
+    public void setPowerBoostDmg(float dmg)
+    {
+        powerBoostedDamage = dmg;
+    }
+    public float getPowerBoostDmg()
+    {
+        return powerBoostedDamage;
+    }
 
     // ---- UPGRADES ----
     // Called from PlayerCombat since it is only link to this prefab object
