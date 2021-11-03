@@ -32,15 +32,16 @@ public class BackAndForthMovingBox : MonoBehaviour
 
     private Vector2 startPosition;
     private Vector2 currentStartPosition;
-    private int stepCounter = 0;
+    [SerializeField]private int stepCounter = 0;
 
     private bool canChangeCurrentStartPosition = true;
     private bool changeState = false;
     private bool canStep = true;
-    private bool returning = false;
+    [SerializeField]private bool returning = false;
     private bool shutScript = false;
     private bool isWaiting = false;
     private bool isChainCut = false;
+    private bool canCount = false;
     private bool gizmoPositionChange = true;
 
     // Start is called before the first frame update
@@ -165,6 +166,13 @@ public class BackAndForthMovingBox : MonoBehaviour
 
             if (returning)
                 HandleReturnStep();
+
+            if (canCount && stepCounter != moves.Count - 1)
+            {
+                stepCounter++;
+                canCount = false;
+            }
+
         }
     }
 
@@ -175,7 +183,8 @@ public class BackAndForthMovingBox : MonoBehaviour
         yield return new WaitForSeconds(waitTime);
         EnableDisableBoxCollider();
         yield return new WaitForSeconds(waitTime);
-        stepCounter++;
+        //stepCounter++;
+        canCount = true;
         canChangeCurrentStartPosition = true;
         isWaiting = false;
         changeState = true;
@@ -197,8 +206,9 @@ public class BackAndForthMovingBox : MonoBehaviour
             {
                 changeState = true;
                 rb.velocity = new Vector2(0, 0);
-                stepCounter++;
+                //stepCounter++;
                 canChangeCurrentStartPosition = true;
+                canCount = true;
             }           
         }
     }
@@ -209,6 +219,7 @@ public class BackAndForthMovingBox : MonoBehaviour
         rb.velocity = move.normalized * speed * Time.deltaTime;
         if (ArrivedToDestination(move))
         {
+            Debug.Log("stop");
             rb.velocity = new Vector2(0, 0);
             canChangeCurrentStartPosition = true;
             changeState = true;
@@ -292,7 +303,11 @@ public class BackAndForthMovingBox : MonoBehaviour
     // Handles all the steps the box takes during it's adventure.
     private void HandleStep()
     {
-        if (!changeState && !isWaiting) // Is the platform in moving state and not waiting?
+        if(stepCounter == moves.Count - 1)
+        {
+            returning = true;
+        }
+        if (!changeState && !isWaiting && !returning) // Is the platform in moving state and not waiting?
         {
             if (canChangeCurrentStartPosition) // Changes the "point of view" for the object so it gets the right vector for next waypoint.
             {
@@ -303,7 +318,7 @@ public class BackAndForthMovingBox : MonoBehaviour
 
         }
         // Everything regarding the end possibilities of the object.
-        if (changeState && stepCounter == moves.Count && !returning)
+        if (changeState && stepCounter == moves.Count - 1 && !returning)
         {
             // Disable the boxCollider for the gameobject for start. Disabling done here since no other viable solution for the disabling was found.
             if (boxCollider.enabled)
@@ -348,6 +363,7 @@ public class BackAndForthMovingBox : MonoBehaviour
                 currentStartPosition = transform.position;
                 canChangeCurrentStartPosition = false;
             }
+            Debug.Log(startPosition - currentStartPosition);
             MoveBack(startPosition - currentStartPosition); // Moves the platform back to original position.
         }
         if (changeState)
