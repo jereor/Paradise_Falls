@@ -7265,6 +7265,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7707995509388065086, guid: df75306e14736564696819960c37ebf1, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7707995509388065086, guid: df75306e14736564696819960c37ebf1, type: 3}
       propertyPath: weaponPickUp
       value: 
       objectReference: {fileID: 4313399883466721123}

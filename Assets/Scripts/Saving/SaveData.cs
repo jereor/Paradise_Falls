@@ -26,9 +26,13 @@ public class SaveData
 
     public bool[] enemiesDefeated;
 
-    public bool weaponAcquired;
+    public bool shield;
+    public bool multitool;
+    public bool wallJump;
+    public bool grappling;
+    public bool shockwave;
 
-    public bool wallJumpAcquired;
+    public bool levers;
 
     public string camera;
 
