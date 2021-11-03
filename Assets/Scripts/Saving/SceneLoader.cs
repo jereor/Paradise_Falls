@@ -37,13 +37,16 @@ public class SceneLoader : MonoBehaviour
     public GameObject[] maxHealth;
     public GameObject[] maxEnergy;
 
+    [Header("Levers")]
+    public GameObject[] levers;
+
     [Header("Savepoints")]
     public GameObject savePointsParent;
     [SerializeField] private List<GameObject> savePoints = new List<GameObject>();
     [SerializeField] public Vector2 respawnPoint;
 
     [Header("Scene utilities")]
-    [SerializeField] private Transform currentRespawnPoint; // Default respawn point
+    [SerializeField] private Transform currentRespawnPoint; // Default respawn point, players transform in scene
     [SerializeField] private List<GameObject> cameras = new List<GameObject>();
     /*
      * GameScene loads initialize player and bosses

@@ -32,6 +32,8 @@ public class SaveData
     public bool grappling;
     public bool shockwave;
 
+    public bool levers;
+
     public string camera;
 
     /*
