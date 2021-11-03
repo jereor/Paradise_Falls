@@ -161,17 +161,19 @@ public class BackAndForthMovingBox : MonoBehaviour
 
         if (!shutScript || chain != null || gameObject.transform.childCount != 0) // Prevents the script to progress if chain is cut.
         {
-            if (canStep && !returning)
-                HandleStep();
-
             if (returning)
                 HandleReturnStep();
 
-            if (canCount && stepCounter != moves.Count - 1)
-            {
-                stepCounter++;
-                canCount = false;
-            }
+            if (canStep && !returning)
+                HandleStep();
+
+
+
+            //if (canCount && stepCounter != moves.Count - 1)
+            //{
+            //    stepCounter++;
+            //    canCount = false;
+            //}
 
         }
     }
@@ -183,7 +185,7 @@ public class BackAndForthMovingBox : MonoBehaviour
         yield return new WaitForSeconds(waitTime);
         EnableDisableBoxCollider();
         yield return new WaitForSeconds(waitTime);
-        //stepCounter++;
+        stepCounter++;
         canCount = true;
         canChangeCurrentStartPosition = true;
         isWaiting = false;
@@ -194,9 +196,9 @@ public class BackAndForthMovingBox : MonoBehaviour
     private void Move(Vector2 move)
     {
         rb.velocity = move.normalized * speed * Time.deltaTime;
-        if (ArrivedToDestination(move))
+        if (Vector2.Distance(currentStartPosition + moves[stepCounter], (Vector2)transform.position) < 0.5f)
         {
-
+            transform.position = currentStartPosition + moves[stepCounter];
             if (stepsWhenColliderChanged[stepCounter])
             {
 
@@ -206,7 +208,7 @@ public class BackAndForthMovingBox : MonoBehaviour
             {
                 changeState = true;
                 rb.velocity = new Vector2(0, 0);
-                //stepCounter++;
+                stepCounter++;
                 canChangeCurrentStartPosition = true;
                 canCount = true;
             }           
@@ -217,8 +219,9 @@ public class BackAndForthMovingBox : MonoBehaviour
     private void MoveBack(Vector2 move)
     {
         rb.velocity = move.normalized * speed * Time.deltaTime;
-        if (ArrivedToDestination(move))
+        if (Vector2.Distance(startPosition - currentStartPosition, (Vector2)transform.position) < 0.5f)
         {
+            transform.position = startPosition - currentStartPosition;
             Debug.Log("stop");
             rb.velocity = new Vector2(0, 0);
             canChangeCurrentStartPosition = true;
@@ -303,10 +306,10 @@ public class BackAndForthMovingBox : MonoBehaviour
     // Handles all the steps the box takes during it's adventure.
     private void HandleStep()
     {
-        if(stepCounter == moves.Count - 1)
-        {
-            returning = true;
-        }
+        //if(stepCounter == moves.Count - 1)
+        //{
+        //    returning = true;
+        //}
         if (!changeState && !isWaiting && !returning) // Is the platform in moving state and not waiting?
         {
             if (canChangeCurrentStartPosition) // Changes the "point of view" for the object so it gets the right vector for next waypoint.
@@ -318,7 +321,7 @@ public class BackAndForthMovingBox : MonoBehaviour
 
         }
         // Everything regarding the end possibilities of the object.
-        if (changeState && stepCounter == moves.Count - 1 && !returning)
+        if (changeState && stepCounter == moves.Count && !returning)
         {
             // Disable the boxCollider for the gameobject for start. Disabling done here since no other viable solution for the disabling was found.
             if (boxCollider.enabled)
@@ -338,7 +341,8 @@ public class BackAndForthMovingBox : MonoBehaviour
             else if (loop && !teleportToStartAfterPathComplete) // In other cases loops around the given parameters. Does not teleport but moves to the original pos.
             {
                 changeState = false;
-                returning = true;
+                stepCounter = 0;
+                //returning = true;
             }
             else // If not looped, shut the script. We done here.
                 shutScript = true;
@@ -346,7 +350,7 @@ public class BackAndForthMovingBox : MonoBehaviour
         }
         else if (changeState) // Starts the movement to the next waypoint since script was not in the end yet.
         {
-            returning = false;
+            //returning = false;
             changeState = false;
             canStep = true;
 
