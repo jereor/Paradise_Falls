@@ -925,24 +925,15 @@ public class PlayerCombat : MonoBehaviour
     // --- UPGRADES ---
     // Called from pickups / small upgrades
 
-    public void UpgradeLightDamage(float dmg)
+    public void UpgradeMeleeDamage(float dmgL, float dmgH)
     {
-        lightDamage += dmg;
+        lightDamage += dmgL;
+        heavyDamage += dmgH;
     }
 
     public void UpgradeThrowDamage(float dmg)
     {
         meleeWeaponPrefab.GetComponent<MeleeWeapon>().UpgradeThrowDamage(dmg);
-    }
-
-    public void UpgradePullDamage(float dmg)
-    {
-        meleeWeaponPrefab.GetComponent<MeleeWeapon>().UpgradePullDamage(dmg);
-    }
-
-    public void UpgradePowerBoostedDamage(float dmg)
-    {
-        meleeWeaponPrefab.GetComponent<MeleeWeapon>().UpgradePowerBoostedDamage(dmg);
     }
 
     public void UpgradeThrowMaxChargeTime(float time)
