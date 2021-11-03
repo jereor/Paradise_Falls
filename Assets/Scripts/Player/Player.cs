@@ -59,6 +59,8 @@ public class Player : MonoBehaviour
         Climbing,
         Attacking,
         AttackTransition,
+        HeavyCharge,
+        HeavyHold,
         Aiming,
         Throwing,
         Blocking,
@@ -100,7 +102,7 @@ public class Player : MonoBehaviour
         if(currentState == State.Idle)
         {
             // Player melees light attack and we arent currently climbing and combo is not on cooldown
-            if (combatScript.meleeInputReceived && !combatScript.heavyHold && !animator.GetBool("isClimbing") && !combatScript.getComboOnCooldown())
+            if (combatScript.meleeInputReceived && !combatScript.heavyHold && !animator.GetBool("isClimbing") && !animator.GetBool("hCharging") && !combatScript.getComboOnCooldown())
             {
                 // Combo is not active we set it to active since we attack
                 if (!combatScript.getComboActive())
@@ -124,6 +126,12 @@ public class Player : MonoBehaviour
                     default:
                         break;
                 }
+            }
+            // Heavy attack
+            if (combatScript.meleeInputReceived && combatScript.heavyHold && !animator.GetBool("isClimbing") && !animator.GetBool("hCharging"))
+            {
+                Debug.Log("ALOITETAAN");
+                animator.Play("HCharge");
             }
             // Player starts moving
             if (PlayerMovement.Instance.horizontal != 0f)
@@ -218,6 +226,48 @@ public class Player : MonoBehaviour
             else if (!movementScript.getWillLand() && animator.GetBool("willLand"))
                 animator.SetBool("willLand", false);
         }
+
+        // When the current state is HeavyCharge
+        if(currentState == State.HeavyCharge)
+        {
+            if (combatScript.heavyBeingCharged && combatScript.getHeavyCharged())
+            {
+                Debug.Log("ODOTTAMISIIN");
+                animator.Play("HeavyHold");
+            }
+            else if(!combatScript.heavyBeingCharged)
+            {
+                Debug.Log("LOPETETAAN");
+                animator.SetBool("hCharging", false);
+                combatScript.meleeInputReceived = false;
+            }
+            else
+            {
+                Debug.Log("LADATAAN");
+            }
+        }
+        
+        // When the current state is HeavyHold
+        if (currentState == State.HeavyHold)
+        {
+            if (!combatScript.heavyHold)
+            {
+                Debug.Log("PERUUTETAAN");
+                animator.SetBool("hCharging", false);
+                combatScript.meleeInputReceived = false;
+            }
+            else if (!combatScript.heavyBeingCharged && animator.GetBool("hCharging") && combatScript.getHeavyCharged())
+            {
+                Debug.Log("LYÖDÄÄN");
+                animator.Play("HAttack");
+                animator.SetBool("hCharging", false);
+            }
+            else
+            {
+                Debug.Log("ODOTTAA RELEASE");
+            }
+        }
+
 
         // When the current state is Ascending or Falling
         if (currentState == State.Ascending || currentState == State.Falling)
@@ -482,6 +532,30 @@ public class Player : MonoBehaviour
                 // Movement
                 movementScript.EnableInputJump();
                 movementScript.EnableInputMove();
+                break;
+
+            // ---- HEAVY CHARGE ----
+            case State.HeavyCharge:
+                // Combat
+                combatScript.DisableInputThrowAim();
+
+                shieldScript.DisableInputBlock();
+
+                // Movement
+                movementScript.DisableInputJump();
+                movementScript.DisableInputMove();
+                break;
+
+            // ---- HEAVY HOLD ----
+            case State.HeavyHold:
+                // Combat
+                combatScript.DisableInputThrowAim();
+
+                shieldScript.DisableInputBlock();
+
+                // Movement
+                movementScript.DisableInputJump();
+                movementScript.DisableInputMove();
                 break;
 
             // ---- AIMING ----
