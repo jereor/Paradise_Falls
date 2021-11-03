@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 2454177713136915656}
   - component: {fileID: 2454177713136915659}
   - component: {fileID: 8577049388017886117}
+  - component: {fileID: 1176346233}
   m_Layer: 6
   m_Name: BackAndForthMovingBox
   m_TagString: MovingPlatform
@@ -129,7 +130,7 @@ Rigidbody2D:
   m_AngularDrag: 200
   m_GravityScale: 0
   m_Material: {fileID: 0}
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
@@ -145,20 +146,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f66d33852a21134da80a49ed857fd66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stepTime: 4
-  waitTime: 2
+  waitTime: 1
+  speed: 200
+  circleSize: 0.2
   moves:
-  - {x: 6.77, y: 0}
-  - {x: 11.13, y: 0}
-  - {x: 6.6, y: 0}
-  stepCounter: 0
+  - {x: 6.88, y: 0}
+  - {x: 11.13, y: 7.39}
+  - {x: 6.6, y: -9.57}
+  - {x: -12.68, y: 1.79}
+  - {x: -6.45, y: 14.2}
+  - {x: -2.9, y: -8.9}
+  stepsWhenColliderChanged: 010001000001
   velocityPlayer: {x: 0, y: 0}
   knockbackForce: 40
   colliderDisabledAtStart: 1
-  comesAndGoesFromBackground: 1
   cuttableChain: 1
   loop: 1
-  teleportToStartAfterPathComplete: 1
+  teleportToStartAfterPathComplete: 0
+--- !u!58 &1176346233
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2454177713136915661}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 0.03
 --- !u!1 &2454177713594349042
 GameObject:
   m_ObjectHideFlags: 0

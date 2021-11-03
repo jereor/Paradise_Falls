@@ -8,43 +8,49 @@ public class BackAndForthMovingBox : MonoBehaviour
     private Rigidbody2D rb;
     private Rigidbody2D playerRB;
     private BoxCollider2D boxCollider;
+    private CircleCollider2D circleCollider;
     private Transform chain;
-    [SerializeField] private float stepTime;
+
+    [Header("Speed and waypoint detection Radius")]
     [SerializeField] private float waitTime;
-    [SerializeField] private Vector2[] moves;
-    private Vector2 startPosition;
-    [SerializeField] private int stepCounter = 0;
+    [SerializeField] private float speed;
+    [SerializeField] private float circleSize = 0.15f;
+
+    [Header("Lists to control waypoints")]
+    [SerializeField] private List<Vector2> moves;
+    [SerializeField] private List<bool> stepsWhenColliderChanged;
+
+    [Header("Player knockback control")]
     [SerializeField] private Vector2 velocityPlayer;
     [SerializeField] private float knockbackForce;
 
-
-    private bool changeState = false;
-    private bool canStep = true;
-    private bool returning = false;
-    private bool shutScript = false;
-
-    private bool isWaiting = false;
-    private bool isChainCut = false;
+    [Header("Bools to control Platform Movement")]
     [SerializeField] private bool colliderDisabledAtStart = false;
-    [SerializeField] private bool comesAndGoesFromBackground = false;
-    private bool gizmoPositionChange = true;
-
     [SerializeField] private bool cuttableChain = false;
     [SerializeField] private bool loop = true;
     [SerializeField] private bool teleportToStartAfterPathComplete = true;
 
+    private Vector2 startPosition;
+    private Vector2 currentStartPosition;
+    [SerializeField]private int stepCounter = 0;
+
+    private bool canChangeCurrentStartPosition = true;
+    private bool changeState = false;
+    private bool canStep = true;
+    [SerializeField]private bool returning = false;
+    private bool shutScript = false;
+    private bool isWaiting = false;
+    private bool isChainCut = false;
+    private bool canCount = false;
+    private bool gizmoPositionChange = true;
+
     // Start is called before the first frame update
-
-    private void Awake()
-    {
-
-    }
     void Start()
     {
-
         rb = GetComponent<Rigidbody2D>();
         playerRB = GameObject.Find("Player").GetComponent<Rigidbody2D>();
         boxCollider = GetComponent<BoxCollider2D>();
+        circleCollider = GetComponent<CircleCollider2D>();
         chain = GetComponentInChildren<Transform>();
         gizmoPositionChange = false;
         startPosition = transform.position;
@@ -60,9 +66,19 @@ public class BackAndForthMovingBox : MonoBehaviour
         {
             gameObject.GetComponent<SpriteRenderer>().color = Color.grey;
             transform.GetChild(0).GetComponent<SpriteRenderer>().color = Color.grey;
-            boxCollider.enabled = !boxCollider.enabled;
+            boxCollider.enabled = false;
         }
 
+        if (loop && !teleportToStartAfterPathComplete)
+        {
+            Vector2 returnVector = new Vector2(0, 0);
+            for (int i = 0; i < moves.Count; i++)
+            {
+                returnVector += moves[i];
+            }
+            moves.Add((startPosition - returnVector) - startPosition);
+            stepsWhenColliderChanged.Add(false);
+        }
     }
 
     // Gizmos for the path the object takes.
@@ -75,23 +91,23 @@ public class BackAndForthMovingBox : MonoBehaviour
             {
                 Vector2 position;
                 Gizmos.DrawLine((Vector2)transform.position, (Vector2)transform.position + moves[0]);
-                Gizmos.DrawSphere((Vector2)transform.position + moves[0], 0.2f);
+                Gizmos.DrawSphere((Vector2)transform.position + moves[0], circleSize);
                 position = (Vector2)transform.position + moves[0];
-                for (int i = 1; i < moves.Length; i++)
+                for (int i = 1; i < moves.Count; i++)
                 {
 
                     Gizmos.DrawLine(position, position + moves[i]);
-                    Gizmos.DrawSphere(position, 0.2f);
+                    Gizmos.DrawSphere(position, circleSize);
                     position += moves[i];
                 }
-                if (loop)
+                if (loop && !teleportToStartAfterPathComplete)
                 {
                     Gizmos.DrawLine(position, transform.position);
-                    Gizmos.DrawSphere(position, 0.2f);
-                    Gizmos.DrawSphere(transform.position, 0.2f);
+                    Gizmos.DrawSphere(position, circleSize);
+                    Gizmos.DrawSphere(transform.position, circleSize);
                 }
                 else
-                    Gizmos.DrawSphere(position, 0.2f);
+                    Gizmos.DrawSphere(position, circleSize);
             }
         }
         else
@@ -101,29 +117,25 @@ public class BackAndForthMovingBox : MonoBehaviour
             {
                 Vector2 position;
                 Gizmos.DrawLine(startPosition, startPosition + moves[0]);
-                Gizmos.DrawSphere(startPosition + moves[0], 0.2f);
+                Gizmos.DrawSphere(startPosition + moves[0], circleSize);
                 position = startPosition + moves[0];
-                for (int i = 1; i < moves.Length; i++)
+                for (int i = 1; i < moves.Count; i++)
                 {
 
                     Gizmos.DrawLine(position, position + moves[i]);
-                    Gizmos.DrawSphere(position, 0.2f);
+                    Gizmos.DrawSphere(position, circleSize);
                     position += moves[i];
                 }
-                if (loop)
+                if (loop && !teleportToStartAfterPathComplete)
                 {
                     Gizmos.DrawLine(position, startPosition);
-                    Gizmos.DrawSphere(position, 0.2f);
-                    Gizmos.DrawSphere(startPosition, 0.2f);
+                    Gizmos.DrawSphere(position, circleSize);
+                    Gizmos.DrawSphere(startPosition, circleSize);
                 }
                 else
-                    Gizmos.DrawSphere(position, 0.2f);
+                    Gizmos.DrawSphere(position, circleSize);
             }
         }
-
-    }
-    private void Update()
-    {
 
     }
 
@@ -151,32 +163,80 @@ public class BackAndForthMovingBox : MonoBehaviour
         {
             if (canStep && !returning)
                 HandleStep();
-            else if (!canStep && !returning)
-                HandleWait();
 
             if (returning)
                 HandleReturnStep();
+
+            if (canCount && stepCounter != moves.Count - 1)
+            {
+                stepCounter++;
+                canCount = false;
+            }
+
         }
     }
-
-    //public void InstantiateBox()
-    //{
-    //    if()
-    //}
 
     private IEnumerator Wait(float waitTime)
     {
         isWaiting = true;
+        rb.velocity = new Vector2(0, 0);
         yield return new WaitForSeconds(waitTime);
+        EnableDisableBoxCollider();
+        yield return new WaitForSeconds(waitTime);
+        //stepCounter++;
+        canCount = true;
+        canChangeCurrentStartPosition = true;
         isWaiting = false;
         changeState = true;
     }
 
-    private void Move(Vector2 move, float time)
+    // Moves the object with rigidbody velocity to the next waypoint direction.
+    private void Move(Vector2 move)
     {
-        rb.DOMove((Vector2)transform.position + move, time);
+        rb.velocity = move.normalized * speed * Time.deltaTime;
+        if (ArrivedToDestination(move))
+        {
 
+            if (stepsWhenColliderChanged[stepCounter])
+            {
 
+                StartCoroutine(Wait(waitTime));
+            }
+            else
+            {
+                changeState = true;
+                rb.velocity = new Vector2(0, 0);
+                //stepCounter++;
+                canChangeCurrentStartPosition = true;
+                canCount = true;
+            }           
+        }
+    }
+
+    // Moves the object back to it's original position.
+    private void MoveBack(Vector2 move)
+    {
+        rb.velocity = move.normalized * speed * Time.deltaTime;
+        if (ArrivedToDestination(move))
+        {
+            Debug.Log("stop");
+            rb.velocity = new Vector2(0, 0);
+            canChangeCurrentStartPosition = true;
+            changeState = true;
+        }
+    }
+
+    // OverlapCircle to check if the moving object is in the desired position radius. Does not give the best possible result with high GameObject speeds as might not be able to detect the coming object.
+    private bool ArrivedToDestination(Vector2 move)
+    {
+        if (circleCollider == Physics2D.OverlapCircle(currentStartPosition + move, circleSize))
+        {
+            transform.position = currentStartPosition + move; // Snaps the game object to the exact desired position for better accuracy.
+            return true;
+        }
+
+        else
+            return false;
     }
 
     // Enable or disable the collider.
@@ -222,7 +282,6 @@ public class BackAndForthMovingBox : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        //Debug.Log(collision.collider.name);
         if (collision.gameObject.tag == "Boss" && rb.isKinematic == false)
         {
             Destroy(gameObject);
@@ -241,66 +300,51 @@ public class BackAndForthMovingBox : MonoBehaviour
         }
     }
 
-
-    private void HandleWait()
+    // Handles all the steps the box takes during it's adventure.
+    private void HandleStep()
     {
-        if (!isWaiting && !changeState)
+        if(stepCounter == moves.Count - 1)
         {
-
-            // Change the box and chain's color when enabled or disabled.
-            if (comesAndGoesFromBackground)
-            {
-                //if (boxCollider.enabled)
-                //{
-                //    gameObject.GetComponent<SpriteRenderer>().color = Color.grey;
-                //    transform.GetChild(0).GetComponent<SpriteRenderer>().color = Color.grey;
-                //}
-                //else if (!cuttableChain)
-                //{
-                //    gameObject.GetComponent<SpriteRenderer>().color = Color.white;
-                //    transform.GetChild(0).GetComponent<SpriteRenderer>().color = Color.black;
-                //}
-                //else if(cuttableChain)
-                //{
-                //    gameObject.GetComponent<SpriteRenderer>().color = Color.white;
-                //    transform.GetChild(0).GetComponent<SpriteRenderer>().color = Color.red;
-                //}
-
-                EnableDisableBoxCollider();
-            }
-
-            StartCoroutine(Wait(waitTime)); // Waits the given time until moves again.
+            returning = true;
         }
-
-        if (changeState && stepCounter == moves.Length && !returning)
+        if (!changeState && !isWaiting && !returning) // Is the platform in moving state and not waiting?
         {
-            if (teleportToStartAfterPathComplete) // If the object needs to be destroyed after the path is complete.
+            if (canChangeCurrentStartPosition) // Changes the "point of view" for the object so it gets the right vector for next waypoint.
+            {
+                currentStartPosition = transform.position;
+                canChangeCurrentStartPosition = false;
+            }
+            Move(moves[stepCounter]); // Moves the object to next waypoint.
+
+        }
+        // Everything regarding the end possibilities of the object.
+        if (changeState && stepCounter == moves.Count - 1 && !returning)
+        {
+            // Disable the boxCollider for the gameobject for start. Disabling done here since no other viable solution for the disabling was found.
+            if (boxCollider.enabled)
+                EnableDisableBoxCollider();
+
+            if (teleportToStartAfterPathComplete) // If the object needs to be teleported back to original position after the path is complete.
             {
                 transform.position = startPosition;
-                if(loop)
+                if (loop) // If object is supposed to loop, start from the beginning.
                 {
                     changeState = false;
                     canStep = true;
                     stepCounter = 0;
-                    if(colliderDisabledAtStart && boxCollider.enabled)
-                    {
-                        EnableDisableBoxCollider();
-                        //gameObject.GetComponent<SpriteRenderer>().color = Color.grey;
-                        //transform.GetChild(0).GetComponent<SpriteRenderer>().color = Color.grey;
-                    }
                 }
             }
-                
-            else if (loop && !teleportToStartAfterPathComplete) // In other cases loops around the given parameters.
+
+            else if (loop && !teleportToStartAfterPathComplete) // In other cases loops around the given parameters. Does not teleport but moves to the original pos.
             {
                 changeState = false;
                 returning = true;
             }
-            else // If not looped, shut the script.
+            else // If not looped, shut the script. We done here.
                 shutScript = true;
 
         }
-        else if (changeState) // Object is made to return to startPosition after getting to destination.
+        else if (changeState) // Starts the movement to the next waypoint since script was not in the end yet.
         {
             returning = false;
             changeState = false;
@@ -309,41 +353,22 @@ public class BackAndForthMovingBox : MonoBehaviour
         }
     }
 
-    // Handles all the steps the box takes during it's adventure.
-    private void HandleStep()
-    {
-        if (!isWaiting && !changeState)
-        {
-            //if (moves[stepCounter] == null)
-            //{
-            //    return;
-            //}
-            StartCoroutine(Wait(stepTime));
-            Move(moves[stepCounter], stepTime); // Moves the object to next waypoint.
-            Debug.Log(stepCounter);
-            stepCounter++;
-        }
-        if (changeState) // Checks if the step is done.
-        {
-
-            changeState = false;
-            canStep = false;
-        }
-    }
-
     // Own function for handling the return to startPosition.
     private void HandleReturnStep()
     {
-        if (!isWaiting && !changeState)
+        if (!changeState)
         {
-            Debug.Log(startPosition);
-            rb.DOMove(startPosition, stepTime);
-            StartCoroutine(Wait(stepTime));
+            if (canChangeCurrentStartPosition)
+            {
+                currentStartPosition = transform.position;
+                canChangeCurrentStartPosition = false;
+            }
+            Debug.Log(startPosition - currentStartPosition);
+            MoveBack(startPosition - currentStartPosition); // Moves the platform back to original position.
         }
         if (changeState)
         {
             returning = false; // When at destination, not returning anymore.
-            canStep = false;
             stepCounter = 0; // Reset the stepCounter so it starts from beginning again.
             changeState = false;
         }
