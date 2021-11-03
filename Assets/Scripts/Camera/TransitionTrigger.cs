@@ -31,7 +31,7 @@ public class TransitionTrigger : MonoBehaviour
 
     private bool InTransition()
     {
-        List<TransitionTrigger> triggerList = CameraTransitions.Instance.GetTriggers();
+        TransitionTrigger[] triggerList = CameraTransitions.Instance.GetTriggers();
         foreach (TransitionTrigger trigger in triggerList)
         {
             if (trigger.triggered && trigger != this)
