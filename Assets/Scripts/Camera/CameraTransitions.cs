@@ -13,12 +13,17 @@ public class CameraTransitions : MonoBehaviour
     public static CameraTransitions Instance { get; private set; }
 
     [SerializeField] private GameObject currentCamera;
-    [SerializeField] private List<TransitionTrigger> triggerList;
+    [SerializeField] private TransitionTrigger[] triggerList;
 
     private void Awake()
     {
         Instance = this;
         currentCamera.SetActive(true);
+    }
+
+    private void Start()
+    {
+        triggerList = FindObjectsOfType(typeof(TransitionTrigger)) as TransitionTrigger[];
     }
 
     // Switches current camera to the new one
@@ -29,7 +34,7 @@ public class CameraTransitions : MonoBehaviour
         currentCamera = newCamera;
     }
 
-    public List<TransitionTrigger> GetTriggers()
+    public TransitionTrigger[] GetTriggers()
     {
         return triggerList;
     }

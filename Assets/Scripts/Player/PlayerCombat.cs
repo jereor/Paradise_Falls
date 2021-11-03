@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -55,13 +54,22 @@ public class PlayerCombat : MonoBehaviour
     [Header("Weapon")]
     [SerializeField] private GameObject meleeWeaponPrefab;
     private GameObject weaponInstance; // Players weapon in scene after throwing used in pull backs
+    private MeleeWeapon weaponInstanceScript;
     [SerializeField] private bool isWeaponWielded = false;
     private bool multitoolUnlocked = false;
 
     [Header("Variables used with pulling player towards the weapon")]
     [SerializeField] private float pullCollisionCounter = 0; // If player hits a collider during the pull, release the pull after a certain time.
     [SerializeField] private GameObject magnetTether; // Magnet tether for the visual representation of the pull.
+    private ParticleSystem.MainModule psMain;
+
+    // Magnet tether default particle values
+    private Color defaultColor;
+    private int defaultParticleCount;
+    private float defaultSize;
+    private bool psDefaultValues = true; // Used in updating magnetTether ParticleSystem values only once
     [SerializeField] private float timeBeforeRelease = 1f;
+    private bool grapplingUnlocked = false;
 
     // State variables
     private bool throwAimHold; // True if we are holdling Throw input (MouseR)
@@ -78,14 +86,6 @@ public class PlayerCombat : MonoBehaviour
     Ray mousePosRay; // Ray from MainCamera to mouse position in screen (endpoint aka .origin vector is what we can use)
 
     Vector2 vectorToTarget; // Vector to mousepos from player gameobject
-
-    [Header("Placeholder anim debugs")]
-    public bool onIdle = true;
-    public bool onTran1 = false;
-    public bool onTran2 = false;
-    public bool onTran3 = false;
-
-    Coroutine tranToIdle; // This will be replaced with correct transittion animation
     
     // These will stay 
     public bool canReceiveInputMelee = false; // If this is true we can melee (no attack animation ongoing)
@@ -94,7 +94,6 @@ public class PlayerCombat : MonoBehaviour
     public bool throwInputReceived = false;
 
     Rigidbody2D rb;
-    PlayerMovement movementScript;
 
     // Used in dash 
     private Vector3 posBeforeDash;
@@ -119,12 +118,22 @@ public class PlayerCombat : MonoBehaviour
 
         EnableInputMelee();
         EnableInputThrowAim();
-        
-        //InputManager();
+
+        // Get default values for magnetTether ParticleSystem
+        psMain = magnetTether.GetComponent<ParticleSystem>().main;
+        defaultParticleCount = psMain.maxParticles;
+        defaultColor = psMain.startColor.color;
+        defaultSize = psMain.startSize.constant;
 
         rb = GetComponent<Rigidbody2D>();
-        movementScript = GetComponent<PlayerMovement>();
 
+        // Check if we have these unlocks (example on loading or debug testing)
+        CheckUnlocksOnStart();
+    }
+
+    private void CheckUnlocksOnStart()
+    {
+        // Multitool
         if (Player.Instance.MultitoolUnlocked())
         {
             multitoolUnlocked = true;
@@ -135,16 +144,32 @@ public class PlayerCombat : MonoBehaviour
             multitoolUnlocked = false;
             isWeaponWielded = false;
         }
+        // Grappling
+        if (Player.Instance.GrapplingUnlocked())
+            grapplingUnlocked = true;
+        else
+            grapplingUnlocked = false;
     }
 
-    private void Update()
+    private void CheckUnlocksOnUpdate()
     {
         // Check only when false save resources
+        // Multitool
         if (!multitoolUnlocked && Player.Instance.MultitoolUnlocked() != multitoolUnlocked)
         {
             multitoolUnlocked = Player.Instance.MultitoolUnlocked();
             isWeaponWielded = Player.Instance.MultitoolUnlocked();
         }
+
+        // Grappling
+        if (!grapplingUnlocked && Player.Instance.GrapplingUnlocked() != grapplingUnlocked)
+            grapplingUnlocked = Player.Instance.GrapplingUnlocked();
+    }
+
+    private void Update()
+    {
+        // Check of we aquire new unlocks
+        CheckUnlocksOnUpdate();
     }
 
     private void FixedUpdate()
@@ -153,6 +178,7 @@ public class PlayerCombat : MonoBehaviour
         if(throwAimHold)
             vectorToTarget = new Vector2(mousePosRay.origin.x - gameObject.transform.position.x, mousePosRay.origin.y - gameObject.transform.position.y);
 
+        // Just debug to see ray pointing to weapon
         if (weaponInstance)
         {
             Debug.DrawRay(transform.position, weaponInstance.transform.position - transform.position, Color.red);
@@ -169,7 +195,10 @@ public class PlayerCombat : MonoBehaviour
         CheckAttackDashDistance();
 
         PullingPlayer();
+
+        MagnetTether();
     }
+
 
     // --- INPUT FUNCITONS ---
 
@@ -202,28 +231,19 @@ public class PlayerCombat : MonoBehaviour
             // Just left click
             if (!throwAimHold)
             {
-                Debug.Log("Trying to pull weapon");
                 weaponScript.PullWeapon(gameObject);
             }
             // Left click when right is held down
             else if (throwAimHold)
-            {                
-                //weaponScript.PullWeapon(gameObject);
-
-                Vector2 vectorToWeapon = weaponInstance.transform.position - transform.position;
-                RaycastHit2D hitGround;
-                RaycastHit2D hitGrapplePoint;
-                hitGround = Physics2D.Raycast(transform.position, vectorToWeapon, vectorToWeapon.magnitude, LayerMask.GetMask("Ground"));
-                hitGrapplePoint = Physics2D.Raycast(transform.position, vectorToWeapon, vectorToWeapon.magnitude, LayerMask.GetMask("GrapplePoint"));
+            {
+                if (!Player.Instance.GrapplingUnlocked()) return;
 
                 //Sets the collision between the player and weapon false again. Magnet tether becomes active during the flight to the weapon.
-                if (hitGround && hitGround.collider.tag == "MeleeWeapon" && !hitGrapplePoint)
+                if (IsGrapplePossible())
                 {
-                    Debug.Log("Grappling to point!");
                     Physics2D.IgnoreLayerCollision(3, 13);
                     isPlayerBeingPulled = true;
                     pullCollisionCounter = 0f;
-                    magnetTether.SetActive(true);
                 }
             }
         }
@@ -286,17 +306,26 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
-    private void PullingPlayer()
+    // Change canReceiveInput boolean to opposite
+    public void EnableInputMelee()
     {
-        if (isPlayerBeingPulled)
-        {
-            Vector3 vectorToTargetWeapon = weaponInstance.transform.position - transform.position;
-            gameObject.GetComponent<Rigidbody2D>().gravityScale = 0f;
-            gameObject.GetComponent<Rigidbody2D>().velocity = vectorToTargetWeapon.normalized * playerPullForce * Time.deltaTime;
-        }
-
+        canReceiveInputMelee = true;
     }
 
+    public void DisableInputMelee()
+    {
+        canReceiveInputMelee = false;
+    }
+
+    public void EnableInputThrowAim()
+    {
+        canReceiveInputThrow = true;
+    }
+
+    public void DisableInputThrowAim()
+    {
+        canReceiveInputThrow = false;
+    }
 
     // --- MELEE ---
 
@@ -400,27 +429,6 @@ public class PlayerCombat : MonoBehaviour
         {
             rb.velocity = new Vector2(transform.localScale.x * dashSpeed, rb.velocity.y);
         }
-    }
-
-    // Change canReceiveInput boolean to opposite
-    public void EnableInputMelee()
-    {
-        canReceiveInputMelee = true;
-    }
-
-    public void DisableInputMelee()
-    {
-        canReceiveInputMelee = false;
-    }
-
-    public void EnableInputThrowAim()
-    {
-        canReceiveInputThrow = true;
-    }
-
-    public void DisableInputThrowAim()
-    {
-        canReceiveInputThrow = false;
     }
 
     // Made to own function less copy pasta 
@@ -714,26 +722,26 @@ public class PlayerCombat : MonoBehaviour
     {
         // Instantiate meleeWeaponPrefab on attackPoint
         weaponInstance = Instantiate(meleeWeaponPrefab, throwPoint.position, Quaternion.identity);
-
+        weaponInstanceScript = weaponInstance.GetComponent<MeleeWeapon>(); 
         weaponInstance.transform.right = vectorToTarget.normalized;
 
         // Give force to weaponInstance to throw
         if (ratio * maxDistance >= minDistance)
         {
             // Throw with charged maxDistance (hold)
-            if (weaponInstance.GetComponent<MeleeWeapon>().getMaxDistance() != maxDistance)
+            if (weaponInstanceScript.getMaxDistance() != maxDistance)
             {
-                weaponInstance.GetComponent<MeleeWeapon>().setMaxDistance(maxDistance * ratio); // Favor distance set in this script easier upgrade handling
+                weaponInstanceScript.setMaxDistance(maxDistance * ratio); // Favor distance set in this script easier upgrade handling
             }
             // Throw with default minDistance (tap)
             else
             {
-                weaponInstance.GetComponent<MeleeWeapon>().setMaxDistance(weaponInstance.GetComponent<MeleeWeapon>().getMaxDistance() * ratio);
+                weaponInstanceScript.setMaxDistance(weaponInstanceScript.getMaxDistance() * ratio);
             }
         }
         else
         {
-            weaponInstance.GetComponent<MeleeWeapon>().setMaxDistance(minDistance);
+            weaponInstanceScript.setMaxDistance(minDistance);
         }
 
         // Give force to vector mousePosRay - gameObjectPos, use default force and adjust length of throw iva MaxDistance calculations above
@@ -748,6 +756,90 @@ public class PlayerCombat : MonoBehaviour
 
         //Deactivate the tether. Weapon reached.
         magnetTether.SetActive(false);
+    }
+
+    // --- MAGNET TETHER / GRAPPLING ---
+
+    // Shows magnetTether and modifies its color and particle amount when attached to grapple point
+    private void MagnetTether()
+    {
+        // We had a weapon and it is now attached to grapplepoint
+        if (weaponInstance != null && weaponInstanceScript != null && weaponInstanceScript.getAttachedToGrapplePoint())
+        {
+            // We are being pulled
+            if (isPlayerBeingPulled)
+            {
+                // Check so we do this only once if needed
+                if (!magnetTether.activeInHierarchy || !psDefaultValues)
+                {
+                    magnetTether.SetActive(true);
+                    AdjustTetherValues(defaultParticleCount, defaultColor, defaultSize);
+                    psDefaultValues = true;
+                }
+            }
+            // Aim button is held down and we are not being pulled atm
+            if (multitoolUnlocked && throwAimHold && !isWeaponWielded && !isPlayerBeingPulled)
+            {
+                // Check so we do this only once if needed
+                if (psDefaultValues)
+                {
+                    magnetTether.SetActive(true);
+                    AdjustTetherValues(10, defaultColor, 0.5f);
+                    psDefaultValues = false;
+                }
+
+                // If we can grapple aka nothing in the way defaultColor
+                if (IsGrapplePossible())
+                    psMain.startColor = defaultColor;
+                else
+                    psMain.startColor = Color.red;
+            }
+            // Aim button is released or we took the weapon from grappling point
+            else if (multitoolUnlocked && (!throwAimHold || isWeaponWielded))
+            {
+                // Check so we do this only once if needed
+                if (magnetTether.activeInHierarchy || !psDefaultValues)
+                {
+                    magnetTether.SetActive(false);
+                    AdjustTetherValues(defaultParticleCount, defaultColor, defaultSize);
+                    psDefaultValues = true;
+                }
+            }
+        }
+    }
+
+    // Tether ParticleSystem is modified to given values
+    private void AdjustTetherValues(int particles, Color color, float size)
+    {
+        psMain.maxParticles = particles;
+        psMain.startColor = color;
+        psMain.startSize = size;
+    }
+
+    private bool IsGrapplePossible()
+    {
+        Vector2 vectorToWeapon = weaponInstance.transform.position - transform.position;
+        RaycastHit2D hitGround;
+        RaycastHit2D hitGrapplePoint;
+        hitGround = Physics2D.Raycast(transform.position, vectorToWeapon, vectorToWeapon.magnitude, LayerMask.GetMask("Ground"));
+        hitGrapplePoint = Physics2D.Raycast(transform.position, vectorToWeapon, vectorToWeapon.magnitude, LayerMask.GetMask("GrapplePoint"));
+
+        //Sets the collision between the player and weapon false again. Magnet tether becomes active during the flight to the weapon.
+        if (hitGround && hitGround.collider.tag == "MeleeWeapon" && !hitGrapplePoint)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    private void PullingPlayer()
+    {
+        if (isPlayerBeingPulled)
+        {
+            Vector3 vectorToTargetWeapon = weaponInstance.transform.position - transform.position;
+            gameObject.GetComponent<Rigidbody2D>().gravityScale = 0f;
+            gameObject.GetComponent<Rigidbody2D>().velocity = vectorToTargetWeapon.normalized * playerPullForce * Time.deltaTime;
+        }
     }
 
 
@@ -768,6 +860,28 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
+    // --- SAVING / LOADING ---
+
+    public float getLightDamage()
+    {
+        return lightDamage;
+    }
+
+    public void setLightDamage(float dmg)
+    {
+        lightDamage = dmg;
+    }
+
+    public float getThrowChargeTime()
+    {
+        return maxChargeTime;
+    }
+
+    public void setThrowChargeTime(float time)
+    {
+        maxChargeTime = time;
+    }
+
 
     // --- GET / SET ---
 
@@ -781,25 +895,6 @@ public class PlayerCombat : MonoBehaviour
         isWeaponWielded = wield;
     }
 
-    public float getMaxDistance()
-    {
-        return maxDistance;
-    }
-
-    public void setMaxDistance(float d)
-    {
-        maxDistance = d;
-    }
-
-    public float getlightDamage()
-    {
-        return lightDamage;
-    }
-
-    public void setlightDamage(float dmg)
-    {
-        lightDamage = dmg;
-    }
 
     public GameObject getWeaponInstance()
     {
@@ -824,5 +919,34 @@ public class PlayerCombat : MonoBehaviour
     public Vector2 getVectorToMouse()
     {
         return vectorToTarget;
+    }
+
+
+    // --- UPGRADES ---
+    // Called from pickups / small upgrades
+
+    public void UpgradeLightDamage(float dmg)
+    {
+        lightDamage += dmg;
+    }
+
+    public void UpgradeThrowDamage(float dmg)
+    {
+        meleeWeaponPrefab.GetComponent<MeleeWeapon>().UpgradeThrowDamage(dmg);
+    }
+
+    public void UpgradePullDamage(float dmg)
+    {
+        meleeWeaponPrefab.GetComponent<MeleeWeapon>().UpgradePullDamage(dmg);
+    }
+
+    public void UpgradePowerBoostedDamage(float dmg)
+    {
+        meleeWeaponPrefab.GetComponent<MeleeWeapon>().UpgradePowerBoostedDamage(dmg);
+    }
+
+    public void UpgradeThrowMaxChargeTime(float time)
+    {
+        maxChargeTime -= time;
     }
 }

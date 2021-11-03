@@ -31,6 +31,7 @@ public class Player : MonoBehaviour
     [SerializeField] private bool shieldUnlocked = false;
     [SerializeField] private bool multitoolUnlocked = false;
     [SerializeField] private bool walljumpUnlocked = false;
+    [SerializeField] private bool grapplingUnlocked = false;
     [SerializeField] private bool shockwaveToolUnlocked = false;
 
     // Component references
@@ -691,6 +692,16 @@ public class Player : MonoBehaviour
     {
         walljumpUnlocked = true;
     }
+
+    public bool GrapplingUnlocked()
+    {
+        return grapplingUnlocked;
+    }
+    public void UnlockGrappling()
+    {
+        grapplingUnlocked = true;
+    }
+
 
     public bool ShockwaveToolUnlocked()
     {

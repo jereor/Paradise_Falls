@@ -45,4 +45,25 @@ public class Energy : MonoBehaviour
     {
         return currentEnergy == 0;
     }
+
+
+    // --- UPGRADE ---
+    public void UpgradeMaxEnergy(float amount)
+    {
+        maxEnergy += amount;
+    }
+
+
+    // --- SAVING / LOADING ---
+    public float getMaxEnergy()
+    {
+        return maxEnergy;
+    }
+
+    public void setMaxEnergy(float energy)
+    {
+        maxEnergy = energy;
+        // Load game set our current energy to max
+        SetEnergy(maxEnergy);
+    }
 }
