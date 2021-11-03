@@ -705,7 +705,9 @@ public class RiotControlDrone : MonoBehaviour
         }
         else if(IsBoxInHitRange())
         {
-            Destroy(GameObject.FindGameObjectWithTag("Box"));
+            Collider2D box = Physics2D.OverlapBox(new Vector2(transform.position.x + (transform.localScale.x * hitOffset.x), transform.position.y + hitOffset.y), areaToAttack, 0, breakableLayer);
+            Destroy(box.gameObject);
+
             if (!isEnraged)
                 gameObject.transform.GetChild(5).rotation = batonRotation;
 
@@ -932,7 +934,7 @@ public class RiotControlDrone : MonoBehaviour
         {
             lastChargeCounter += Time.deltaTime;
         }
-        if (lastChargeCounter >= chargeCooldownRandomizer)
+        if (lastChargeCounter >= 100)
         {
             chargeOnCooldown = false;
             canChargeToTarget = true;

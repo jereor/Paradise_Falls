@@ -25,6 +25,7 @@ public class BoxChainController : MonoBehaviour
             {
                 // Destroy the chain if collided with MeleeWeapon. Check if the collider is enabled and the chain is cuttable.
                 transform.parent.gameObject.tag = "Box";
+                transform.parent.gameObject.layer = LayerMask.GetMask("Breakable");
                 Destroy(gameObject);
 
             }
@@ -34,6 +35,7 @@ public class BoxChainController : MonoBehaviour
             if (collision.gameObject.tag == "MeleeWeapon" && backAndForthBox.getIsBoxColliderEnabled() && backAndForthBox.getIsCuttableChain())
             {
                 transform.parent.gameObject.tag = "Box";
+                transform.parent.gameObject.layer = LayerMask.GetMask("Breakable");
                 Destroy(gameObject);
 
             }
