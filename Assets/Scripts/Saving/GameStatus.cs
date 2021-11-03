@@ -119,12 +119,12 @@ public class GameStatus : MonoBehaviour
 
     public void UpdateWallJump(bool b)
     {
-        dataToSave.wallJumpAcquired = b;
+        dataToSave.wallJump = b;
     }
 
     public void UpdateWeapon(bool b)
     {
-        dataToSave.weaponAcquired = b;
+        dataToSave.multitool = b;
     }
 
     public void UpdateEnemyKilled(int index, bool defeated)

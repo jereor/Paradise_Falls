@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class DemoLoader : MonoBehaviour
+public class SceneLoader : MonoBehaviour
 {
-    public static DemoLoader levelLoaderInstance;
+    public static SceneLoader Instance;
 
     [Header("Player Objects")]
     public GameObject playerPrefab; // Prefab if we need to instantiate player
@@ -23,7 +23,22 @@ public class DemoLoader : MonoBehaviour
 
     [Header("Pick ups")]
     public GameObject wallJumpPickUp; // Used in start to check if have acquired wallJump ability before last save
-    public GameObject weaponPickUp;
+    public GameObject multitoolPickUp;
+    public GameObject shieldPickUp;
+    public GameObject grapplingPickUp;
+    public GameObject shockwavePickUp;
+
+    [Header("Collectibles")]
+    public GameObject[] lightDamage;
+    public GameObject[] throwDamage;
+    public GameObject[] pullDamage;
+    public GameObject[] powerBoostedDamage;
+    public GameObject[] chargeTime;
+    public GameObject[] maxHealth;
+    public GameObject[] maxEnergy;
+
+    [Header("Levers")]
+    public GameObject[] levers;
 
     [Header("Savepoints")]
     public GameObject savePointsParent;
@@ -31,14 +46,14 @@ public class DemoLoader : MonoBehaviour
     [SerializeField] public Vector2 respawnPoint;
 
     [Header("Scene utilities")]
-    [SerializeField] private Transform currentRespawnPoint; // Default respawn point
+    [SerializeField] private Transform currentRespawnPoint; // Default respawn point, players transform in scene
     [SerializeField] private List<GameObject> cameras = new List<GameObject>();
     /*
      * GameScene loads initialize player and bosses
      */
     private void Start()
     {
-        levelLoaderInstance = this;
+        Instance = this;
 
         if (GameStatus.status != null)
         {
@@ -53,7 +68,7 @@ public class DemoLoader : MonoBehaviour
                 // Player respawnPosition
                 playerObject = GameObject.Find("Player");
                 // If there was zero vector loaded, set new respawn point as currentRespawnPoint (default) 
-                if(respawnPoint == Vector2.zero)
+                if (respawnPoint == Vector2.zero)
                 {
                     respawnPoint = currentRespawnPoint.transform.position;
                 }
@@ -62,11 +77,18 @@ public class DemoLoader : MonoBehaviour
                 // Move player to respawn
                 playerObject.transform.position = respawnPoint;
 
-                // Weapon if weaponAcquired == true destroy weaponPickUp from scnene if not leave it untouched
+                // Shield
+                if (GameStatus.status.getLoadedData().wallJump)
+                {
+                    Player.Instance.UnlockShield();
+                    Destroy(wallJumpPickUp);
+                }
+
+                // Weapon if multitool == true destroy weaponPickUp from scnene if not leave it untouched
                 if (GameStatus.status.getLoadedData().multitool)
                 {
-                    playerObject.GetComponent<PlayerCombat>().PickUpWeapon();
-                    Destroy(weaponPickUp);
+                    Player.Instance.UnlockMultitool();
+                    Destroy(multitoolPickUp);
                 }
 
                 // WallJump
@@ -74,6 +96,20 @@ public class DemoLoader : MonoBehaviour
                 {
                     Player.Instance.UnlockWalljump();
                     Destroy(wallJumpPickUp);
+                }
+
+                // Grappling
+                if (GameStatus.status.getLoadedData().grappling)
+                {
+                    Player.Instance.UnlockGrappling();
+                    Destroy(grapplingPickUp);
+                }
+
+                // Shockwave
+                if (GameStatus.status.getLoadedData().shockwave)
+                {
+                    Player.Instance.UnlockShockwaveTool();
+                    Destroy(shockwavePickUp);
                 }
 
                 // Camera
@@ -120,7 +156,7 @@ public class DemoLoader : MonoBehaviour
             {
                 if (GameStatus.status.getLoadedData().enemiesDefeated[i])
                 {
-                    Destroy(enemies[i]);                  
+                    Destroy(enemies[i]);
                 }
             }
 
@@ -152,12 +188,6 @@ public class DemoLoader : MonoBehaviour
             Save();
         }
 
-
-        // FOR DEBUGGING -- Kill ENEMY 1
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            EnemyKilled(enemies[0]);
-        }
         // FOR DEBUGGING -- Respawn 
         if (Input.GetKeyDown(KeyCode.O))
         {
@@ -175,11 +205,20 @@ public class DemoLoader : MonoBehaviour
             // Boss
             GameStatus.status.UpdateBossKilled(0, firstBossKilled);
 
-            // Weapon
-            GameStatus.status.UpdateWeapon(playerObject.GetComponent<PlayerCombat>().getWeaponWielded());
+            // Shield
+            GameStatus.status.UpdateWallJump(Player.Instance.WalljumpUnlocked());
+
+            // Multitool
+            GameStatus.status.UpdateWeapon(Player.Instance.MultitoolUnlocked());
 
             // Wall jump ability
             GameStatus.status.UpdateWallJump(Player.Instance.WalljumpUnlocked());
+
+            // Grappling
+            GameStatus.status.UpdateWallJump(Player.Instance.GrapplingUnlocked());
+
+            // Shockwave
+            GameStatus.status.UpdateWallJump(Player.Instance.ShockwaveToolUnlocked());
 
             // Enemies
             for (int i = 0; i < enemies.Count; i++)
@@ -223,10 +262,10 @@ public class DemoLoader : MonoBehaviour
     public void EnemyKilled(GameObject enemyThatIsKilled)
     {
         // As enemyThatIsKilled will be Destroyed from scene when health is less that zero we have bool array 
-        foreach  (GameObject enemy in enemies)
+        foreach (GameObject enemy in enemies)
         {
             // GameObject given is found in array
-            if(enemy == enemyThatIsKilled)
+            if (enemy == enemyThatIsKilled)
             {
                 // enemies and enemiesKilled indexes are the same made in Start()
                 enemiesKilled[enemies.IndexOf(enemy)] = true;
