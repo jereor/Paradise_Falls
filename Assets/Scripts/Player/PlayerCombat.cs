@@ -77,9 +77,10 @@ public class PlayerCombat : MonoBehaviour
     // State variables
     private bool throwAimHold; // True if we are holdling Throw input (MouseR)
 
-
+    // Heavy attack variables
     public bool heavyHold; // True if we are holding HeavyMelee input (LAlt)
-    public bool isHeavyCharged;
+    private bool heavyBeingCharged = false;
+    private bool isHeavyCharged;
     private float? heavyMeleeButtonPressedTime;
 
     private float? throwButtonPressedTime; // Time when we start throwing
@@ -93,11 +94,10 @@ public class PlayerCombat : MonoBehaviour
 
     Vector2 vectorToTarget; // Vector to mousepos from player gameobject
     
-    // These will stay 
+    // Melee + throw inputs for Player.cs
     public bool canReceiveInputMelee = false; // If this is true we can melee (no attack animation ongoing)
     public bool canReceiveInputThrow = false; // If this is true we can melee (no attack animation ongoing)
     public bool meleeInputReceived = false; // Used in transitions and idle to tell animator to start correct attack if this turns true
-    public bool heavyBeingCharged = false;
     public bool throwInputReceived = false;
 
     Rigidbody2D rb;
@@ -208,24 +208,6 @@ public class PlayerCombat : MonoBehaviour
         HeavyCharge();
     }
 
-
-    private void HeavyCharge()
-    {
-        if(heavyHold && heavyMeleeButtonPressedTime != null)
-        {
-            if(!heavyBeingCharged)
-                heavyBeingCharged = true;
-
-            if (Time.time - heavyMeleeButtonPressedTime >= heavyChargeTime && !isHeavyCharged)
-                isHeavyCharged = true;
-        }
-        else
-        {
-            if (heavyBeingCharged)
-                heavyBeingCharged = false;
-        }
-    }
-
     // --- INPUT FUNCITONS ---
 
     // Input from mouse left
@@ -242,6 +224,8 @@ public class PlayerCombat : MonoBehaviour
                 // Set time here since we start charging
                 throwButtonPressedTime = Time.time;
             }
+
+            // Input for heavy attack
             else if(!throwAimHold && heavyHold)
             {
                 meleeInputReceived = true;
@@ -464,6 +448,29 @@ public class PlayerCombat : MonoBehaviour
         else if (dash)
         {
             rb.velocity = new Vector2(transform.localScale.x * dashSpeed, rb.velocity.y);
+        }
+    }
+
+    // Heavy attack hold time calculator
+    private void HeavyCharge()
+    {
+        // We hold alt and heavy melee button at the same time and we are grounded
+        if (heavyHold && heavyMeleeButtonPressedTime != null && PlayerMovement.Instance.IsGrounded())
+        {
+            // We are charging
+            if (!heavyBeingCharged)
+                heavyBeingCharged = true;
+
+            // If right button is held for heavyChargeTime amount we have charged it
+            if (Time.time - heavyMeleeButtonPressedTime >= heavyChargeTime && !isHeavyCharged)
+                isHeavyCharged = true;
+        }
+        // We are not charging heavy attack
+        else
+        {
+            // Stopped charging
+            if (heavyBeingCharged)
+                heavyBeingCharged = false;
         }
     }
 
@@ -904,6 +911,16 @@ public class PlayerCombat : MonoBehaviour
         lightDamage = dmg;
     }
 
+    public float getHeavyDamage()
+    {
+        return heavyDamage;
+    }
+
+    public void setHeavyDamage(float dmg)
+    {
+        heavyDamage = dmg;
+    }
+
     public float getThrowChargeTime()
     {
         return maxChargeTime;
@@ -914,6 +931,16 @@ public class PlayerCombat : MonoBehaviour
         maxChargeTime = time;
     }
 
+    //public float getThrowMaxChargeDamage()
+    //{
+    //    return ;
+    //}
+
+    //public void setThrowMaxChargeDamage(float dmg)
+    //{
+    //    maxChargeTime = time;
+    //}
+
 
     // --- GET / SET ---
 
@@ -921,12 +948,10 @@ public class PlayerCombat : MonoBehaviour
     {
         return isWeaponWielded;
     }
-
     public void setWeaponWielded(bool wield)
     {
         isWeaponWielded = wield;
     }
-
 
     public GameObject getWeaponInstance()
     {
@@ -946,6 +971,15 @@ public class PlayerCombat : MonoBehaviour
     public bool getHeavyCharged()
     {
         return isHeavyCharged;
+    }
+    public void setHeavyCharged(bool b)
+    {
+        isHeavyCharged = b;
+    }
+
+    public bool getHeavyBeingCharged()
+    {
+        return heavyBeingCharged;
     }
 
     public bool getThrowAiming()

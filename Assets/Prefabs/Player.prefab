@@ -10563,7 +10563,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lightDamage: 1
-  heavyDamage: 2
+  heavyDamage: 6
   heavyChargeTime: 2
   lastHitMultiplier: 1.5
   weakPointMultiplier: 2
@@ -10575,8 +10575,8 @@ MonoBehaviour:
   playerPullForce: 750
   kbOnLight: 1
   kbOnLightLast: 1
-  kbOnHeavy: 0
-  comboCooldownTime: 0.5
+  kbOnHeavy: 1
+  comboCooldownTime: 0
   enemyLayer:
     serializedVersion: 2
     m_Bits: 128
@@ -10606,12 +10606,9 @@ MonoBehaviour:
   magnetTether: {fileID: 5454362082765361711}
   timeBeforeRelease: 0.5
   heavyHold: 0
-  isHeavyCharged: 0
-  heavyChargeCounter: 0
   canReceiveInputMelee: 0
   canReceiveInputThrow: 0
   meleeInputReceived: 0
-  heavyBeingCharged: 0
   throwInputReceived: 0
 --- !u!95 &3265684260011797273
 Animator:

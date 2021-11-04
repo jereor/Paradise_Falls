@@ -128,9 +128,8 @@ public class Player : MonoBehaviour
                 }
             }
             // Heavy attack
-            if (combatScript.meleeInputReceived && combatScript.heavyHold && !animator.GetBool("isClimbing") && !animator.GetBool("hCharging"))
+            if (combatScript.meleeInputReceived && combatScript.heavyHold && !animator.GetBool("isClimbing") && !animator.GetBool("hCharging") && movementScript.IsGrounded())
             {
-                Debug.Log("ALOITETAAN");
                 animator.Play("HCharge");
             }
             // Player starts moving
@@ -176,16 +175,16 @@ public class Player : MonoBehaviour
                         break;
                 }
             }
+            // Heavy attack
+            if (combatScript.meleeInputReceived && combatScript.heavyHold && !animator.GetBool("isClimbing") && !animator.GetBool("hCharging") && movementScript.IsGrounded())
+            {
+                animator.Play("HCharge");
+            }
             // Throw
             if (PlayerCombat.Instance.throwInputReceived)
             {
                 animator.Play("Throw");
             }
-            // Landing animation
-            if (movementScript.getWillLand())
-                animator.SetBool("willLand", true);
-            else if (!movementScript.getWillLand() && animator.GetBool("willLand"))
-                animator.SetBool("willLand", false);
         }
 
         // When current state is attack transition
@@ -219,53 +218,46 @@ public class Player : MonoBehaviour
                         break;
                 }
             }
-
-            // Landing animation
-            if (movementScript.getWillLand())
-                animator.SetBool("willLand", true);
-            else if (!movementScript.getWillLand() && animator.GetBool("willLand"))
-                animator.SetBool("willLand", false);
+            // Heavy attack
+            if (combatScript.meleeInputReceived && combatScript.heavyHold && !animator.GetBool("isClimbing") && !animator.GetBool("hCharging") && movementScript.IsGrounded())
+            {
+                animator.Play("HCharge");
+            }
         }
 
         // When the current state is HeavyCharge
         if(currentState == State.HeavyCharge)
         {
-            if (combatScript.heavyBeingCharged && combatScript.getHeavyCharged())
+            // We charged until Heavy attack is charged PlayerCombat.cs heavyChargeTime
+            if (combatScript.getHeavyBeingCharged() && combatScript.getHeavyCharged())
             {
-                Debug.Log("ODOTTAMISIIN");
                 animator.Play("HeavyHold");
             }
-            else if(!combatScript.heavyBeingCharged)
+            // Released alt or mouse right
+            else if(!combatScript.getHeavyBeingCharged())
             {
-                Debug.Log("LOPETETAAN");
-                animator.SetBool("hCharging", false);
                 combatScript.meleeInputReceived = false;
-            }
-            else
-            {
-                Debug.Log("LADATAAN");
+                animator.SetBool("hCharging", false);
             }
         }
         
         // When the current state is HeavyHold
         if (currentState == State.HeavyHold)
         {
+            // Relesed alt
             if (!combatScript.heavyHold)
             {
-                Debug.Log("PERUUTETAAN");
-                animator.SetBool("hCharging", false);
                 combatScript.meleeInputReceived = false;
+                combatScript.setHeavyCharged(false);
+                animator.SetBool("hCharging", false);
             }
-            else if (!combatScript.heavyBeingCharged && animator.GetBool("hCharging") && combatScript.getHeavyCharged())
+            // Released mouse right
+            else if (!combatScript.getHeavyBeingCharged() /*&& animator.GetBool("hCharging")*/ && combatScript.getHeavyCharged())
             {
-                Debug.Log("LYÖDÄÄN");
                 animator.Play("HAttack");
                 animator.SetBool("hCharging", false);
             }
-            else
-            {
-                Debug.Log("ODOTTAA RELEASE");
-            }
+
         }
 
 
@@ -306,11 +298,6 @@ public class Player : MonoBehaviour
             {
                 animator.Play("Throw");
             }
-            // Landing animation
-            if (movementScript.getWillLand())
-                animator.SetBool("willLand", true);
-            else if (!movementScript.getWillLand() && animator.GetBool("willLand"))
-                animator.SetBool("willLand", false);
         }
 
         // When the current state is Blocking or Parrying
@@ -321,6 +308,15 @@ public class Player : MonoBehaviour
             {
                 animator.SetBool("isRunning", true);
             }
+        }
+
+        // When the current state is Attacking
+        if(currentState == State.Attacking)
+        {
+            if (movementScript.IsGrounded())
+                movementScript.DisableInputMove();
+            else
+                movementScript.EnableInputMove();
         }
 
         // When the current state is WallSliding
@@ -336,7 +332,7 @@ public class Player : MonoBehaviour
 
         // LedgeClimb animation
         // LedgeChecks return true
-        if (movementScript.getClimbing() && !animator.GetBool("isAttacking") && !animator.GetBool("isAiming") && !animator.GetBool("isBlocking") && !animator.GetBool("isParrying"))
+        if (movementScript.getClimbing() && !animator.GetBool("isAttacking") && !animator.GetBool("hCharging") && !animator.GetBool("isBlocking") && !animator.GetBool("isParrying"))
         {
             if (animator.GetBool("willLand"))
             {
@@ -362,6 +358,11 @@ public class Player : MonoBehaviour
         if (animator.GetBool("jump") && movementScript.IsGrounded() && rb.velocity.y >= -0.2f && rb.velocity.y <= 0.2f)
         {
             animator.SetBool("jump", false);
+            // Landing animation
+            if (movementScript.getWillLand())
+                animator.SetBool("willLand", true);
+            else if (!movementScript.getWillLand() && animator.GetBool("willLand"))
+                animator.SetBool("willLand", false);
         }
         // We are in air and we are currently moving upwards or downwards
         else if (!movementScript.IsGrounded() && (rb.velocity.y <= -0.2f || rb.velocity.y >= 0.2f))
@@ -504,7 +505,6 @@ public class Player : MonoBehaviour
             case State.Climbing:
                 // Combat
                 combatScript.DisableInputMelee();
-                combatScript.DisableInputThrowAim();
 
                 shieldScript.DisableInputBlock();
 
@@ -669,6 +669,11 @@ public class Player : MonoBehaviour
     public bool GetIsAttacking()
     {
         return animator.GetBool("isAttacking");
+    }
+
+    public bool GetHCharging()
+    {
+        return animator.GetBool("hCharging");
     }
 
     public bool GetIsAiming()

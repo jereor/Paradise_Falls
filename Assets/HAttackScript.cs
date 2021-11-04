@@ -23,7 +23,7 @@ public class HAttackScript : StateMachineBehaviour
     {
         PlayerCombat.Instance.meleeInputReceived = false;
 
-        PlayerCombat.Instance.isHeavyCharged = false;
+        PlayerCombat.Instance.setHeavyCharged(false);
 
         PlayerCombat.Instance.DealDamage(0, true);
 
