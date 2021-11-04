@@ -7,9 +7,11 @@ public class DisappearingPlatform : MonoBehaviour
     private Collider2D boxCollider;
     private SpriteRenderer spriteRenderer;
 
-    [SerializeField] private Sprite transitionSprite;
+    //[SerializeField] private Sprite transitionSprite;
     [SerializeField] private Sprite appearedBlock;
     [SerializeField] private Sprite disappearedBlock;
+
+    [SerializeField] private Animator transitionAnimator;
 
     [SerializeField] private bool onTimer;
     [SerializeField] private bool enabledOnStart;
@@ -22,6 +24,7 @@ public class DisappearingPlatform : MonoBehaviour
     {
         boxCollider = GetComponent<BoxCollider2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        transitionAnimator = GetComponent<Animator>();
 
         if(enabledOnStart)
         {
@@ -30,7 +33,7 @@ public class DisappearingPlatform : MonoBehaviour
         else
         {
             boxCollider.enabled = false;
-            gameObject.GetComponent<SpriteRenderer>().color = Color.grey;
+            //spriteRenderer.color = Color.grey;
         }
     }
 
@@ -45,6 +48,14 @@ public class DisappearingPlatform : MonoBehaviour
         if(counter > timeBeforeTransition && onTimer)
         {
             EnableDisableBoxCollider();
+
+            transitionAnimator.Play("DisappearingPlatform");
+
+            if (boxCollider.enabled == true)
+                spriteRenderer.sprite = appearedBlock;
+            else if (boxCollider.enabled == false)
+                spriteRenderer.sprite = disappearedBlock;
+
             counter = 0;
         }
     }
@@ -53,13 +64,13 @@ public class DisappearingPlatform : MonoBehaviour
     public void EnableDisableBoxCollider()
     {
         boxCollider.enabled = !boxCollider.enabled;
-        if (boxCollider.enabled)
-        {
-            gameObject.GetComponent<SpriteRenderer>().color = Color.white;
-        }
-        else
-        {
-            gameObject.GetComponent<SpriteRenderer>().color = Color.grey;
-        }
+        //if (boxCollider.enabled)
+        //{
+        //    gameObject.GetComponent<SpriteRenderer>().color = Color.white;
+        //}
+        //else
+        //{
+        //    gameObject.GetComponent<SpriteRenderer>().color = Color.grey;
+        //}
     }
 }
