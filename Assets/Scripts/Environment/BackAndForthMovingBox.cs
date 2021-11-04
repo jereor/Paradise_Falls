@@ -8,7 +8,7 @@ public class BackAndForthMovingBox : MonoBehaviour
     private Rigidbody2D rb;
     private Rigidbody2D playerRB;
     private BoxCollider2D boxCollider;
-    private CircleCollider2D circleCollider;
+    //private CircleCollider2D circleCollider;
     private Transform chain;
 
     [Header("Speed and waypoint detection Radius")]
@@ -50,7 +50,7 @@ public class BackAndForthMovingBox : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         playerRB = GameObject.Find("Player").GetComponent<Rigidbody2D>();
         boxCollider = GetComponent<BoxCollider2D>();
-        circleCollider = GetComponent<CircleCollider2D>();
+        //circleCollider = GetComponent<CircleCollider2D>();
         chain = GetComponentInChildren<Transform>();
         gizmoPositionChange = false;
         startPosition = transform.position;
@@ -196,7 +196,7 @@ public class BackAndForthMovingBox : MonoBehaviour
     private void Move(Vector2 move)
     {
         rb.velocity = move.normalized * speed * Time.deltaTime;
-        if (Vector2.Distance(currentStartPosition + moves[stepCounter], (Vector2)transform.position) < 0.5f)
+        if (Vector2.Distance(currentStartPosition + moves[stepCounter], (Vector2)transform.position) < circleSize)
         {
             transform.position = currentStartPosition + moves[stepCounter];
             if (stepsWhenColliderChanged[stepCounter])
@@ -219,7 +219,7 @@ public class BackAndForthMovingBox : MonoBehaviour
     private void MoveBack(Vector2 move)
     {
         rb.velocity = move.normalized * speed * Time.deltaTime;
-        if (Vector2.Distance(startPosition - currentStartPosition, (Vector2)transform.position) < 0.5f)
+        if (Vector2.Distance(startPosition - currentStartPosition, (Vector2)transform.position) < circleSize)
         {
             transform.position = startPosition - currentStartPosition;
             Debug.Log("stop");
@@ -230,17 +230,17 @@ public class BackAndForthMovingBox : MonoBehaviour
     }
 
     // OverlapCircle to check if the moving object is in the desired position radius. Does not give the best possible result with high GameObject speeds as might not be able to detect the coming object.
-    private bool ArrivedToDestination(Vector2 move)
-    {
-        if (circleCollider == Physics2D.OverlapCircle(currentStartPosition + move, circleSize))
-        {
-            transform.position = currentStartPosition + move; // Snaps the game object to the exact desired position for better accuracy.
-            return true;
-        }
+    //private bool ArrivedToDestination(Vector2 move)
+    //{
+    //    if (circleCollider == Physics2D.OverlapCircle(currentStartPosition + move, circleSize))
+    //    {
+    //        transform.position = currentStartPosition + move; // Snaps the game object to the exact desired position for better accuracy.
+    //        return true;
+    //    }
 
-        else
-            return false;
-    }
+    //    else
+    //        return false;
+    //}
 
     // Enable or disable the collider.
     private void EnableDisableBoxCollider()

@@ -8,14 +8,14 @@ public class StaticMovingBox : MonoBehaviour
     private Rigidbody2D rb;
     private Rigidbody2D playerRB;
     private BoxCollider2D boxCollider;
-    private CircleCollider2D circleCollider;
+    //private CircleCollider2D circleCollider;
 
-    public Vector2 velocity = Vector2.zero;
-    private Vector2 _distance;
-    private Vector2 _oldPosition;
-    private PlayerCollision _player;
-    private bool _playerIsOnTop;
-    private float time;
+    //public Vector2 velocity = Vector2.zero;
+    //private Vector2 _distance;
+    //private Vector2 _oldPosition;
+    //private PlayerCollision _player;
+    //private bool _playerIsOnTop;
+    //private float time;
 
     [Header("Speed and waypoint detection Radius")]
     [SerializeField] private float speed;
@@ -43,7 +43,7 @@ public class StaticMovingBox : MonoBehaviour
     private bool canChangeCurrentStartPosition = true;
     private bool changeState = false;
     private bool gizmoPositionChange = true;
-    private bool isWaiting = false;
+    //private bool isWaiting = false;
     private bool isChainCut = false;
 
     // Start is called before the first frame update
@@ -53,10 +53,10 @@ public class StaticMovingBox : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         playerRB = GameObject.Find("Player").GetComponent<Rigidbody2D>();
         boxCollider = GetComponent<BoxCollider2D>();
-        circleCollider = GetComponent<CircleCollider2D>();
+        //circleCollider = GetComponent<CircleCollider2D>();
         gizmoPositionChange = false;
         startPosition = transform.position;
-        _oldPosition = rb.position;
+        //_oldPosition = rb.position;
 
         // Is the chain cuttable by melee weapon
         if (!cuttableChain)
@@ -195,21 +195,13 @@ public class StaticMovingBox : MonoBehaviour
 
         else if (changeState && !loop && destroyAfterPathComplete) // Doesn't loop and is destroyable object?
             Destroy(gameObject);
-
-        if (_playerIsOnTop && _player)
-        {
-            // custom function on my player component
-            _player.AddVelocity(velocity);
-        }
     }
 
     // Moves the game object with given Vectors to position. Moves it a one vector at time until the end is reached.
     private void Move()
     {
-        Debug.Log("Destination: " + (currentStartPosition + moves[stepCounter]));
         rb.velocity = ((moves[stepCounter]).normalized) * speed * Time.fixedDeltaTime; // Changes velocity to move the object.
-        Debug.Log(rb.velocity);
-        if (Vector2.Distance(currentStartPosition + moves[stepCounter], (Vector2)transform.position) < 0.5f)
+        if (Vector2.Distance(currentStartPosition + moves[stepCounter], (Vector2)transform.position) < circleSize)
         {
             transform.position = currentStartPosition + moves[stepCounter];
             canChangeCurrentStartPosition = true;
@@ -227,7 +219,7 @@ public class StaticMovingBox : MonoBehaviour
     private void MoveBack()
     {
         rb.velocity = movesBack[stepCounter].normalized * speed * Time.deltaTime; // Changes velocity to move the object.
-        if (Vector2.Distance(currentStartPosition + movesBack[stepCounter], (Vector2)transform.position) < 0.5f)
+        if (Vector2.Distance(currentStartPosition + movesBack[stepCounter], (Vector2)transform.position) < circleSize)
         {
             transform.position = currentStartPosition + movesBack[stepCounter];
             canChangeCurrentStartPosition = true;
@@ -266,19 +258,19 @@ public class StaticMovingBox : MonoBehaviour
         //StartCoroutine(KnockbackCooldown());
     }
 
-    //private void OnCollisionEnter2D(Collision2D collision)
-    //{
-    //    //Debug.Log(collision.collider.name);
-    //    if (collision.gameObject.tag == "Boss")
-    //    {
-    //        Destroy(gameObject);
-    //    }
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        //Debug.Log(collision.collider.name);
+        if (collision.gameObject.tag == "Boss")
+        {
+            Destroy(gameObject);
+        }
 
-    //    if (collision.gameObject.tag == "Player" && rb.isKinematic == false && rb.velocity.y < -1 && (transform.position.y - playerRB.transform.position.y) > 0)
-    //    {
-    //        PlayerPushback();
-    //    }
-    //}
+        if (collision.gameObject.tag == "Player" && rb.isKinematic == false && rb.velocity.y < -1 && (transform.position.y - playerRB.transform.position.y) > 0)
+        {
+            PlayerPushback();
+        }
+    }
 
     private void OnCollisionStay2D(Collision2D collision)
     {
@@ -288,24 +280,24 @@ public class StaticMovingBox : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter2D(Collision2D other)
-    {
-        if (!other.collider.CompareTag("Player")) return;
-        // only when player is on top of the platform
-        if (!(Vector3.Dot(other.contacts[0].normal, Vector3.down) > 0.5)) return;
-        // some caching
-        if (_player == null)
-        {
-            // get whatever component used to able to access your player
-            _player = other.transform.GetComponent<PlayerCollision>();
-        }
+    //private void OnCollisionEnter2D(Collision2D other)
+    //{
+    //    if (!other.collider.CompareTag("Player")) return;
+    //    // only when player is on top of the platform
+    //    if (!(Vector3.Dot(other.contacts[0].normal, Vector3.down) > 0.5)) return;
+    //    // some caching
+    //    if (_player == null)
+    //    {
+    //        // get whatever component used to able to access your player
+    //        _player = other.transform.GetComponent<PlayerCollision>();
+    //    }
 
-        _playerIsOnTop = true;
-    }
+    //    _playerIsOnTop = true;
+    //}
 
-    private void OnCollisionExit2D(Collision2D other)
-    {
-        if (!other.collider.CompareTag("Player")) return;
-        _playerIsOnTop = false;
-    }
+    //private void OnCollisionExit2D(Collision2D other)
+    //{
+    //    if (!other.collider.CompareTag("Player")) return;
+    //    _playerIsOnTop = false;
+    //}
 }
