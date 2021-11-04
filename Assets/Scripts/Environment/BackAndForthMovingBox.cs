@@ -44,6 +44,23 @@ public class BackAndForthMovingBox : MonoBehaviour
     private bool canCount = false;
     private bool gizmoPositionChange = true;
 
+    private BoxCollider2D playerCollider;
+    public float yOffset;
+    private Vector2 leftSideClimbPos;
+    private Vector2 rightSideClimbPos;
+    public GameObject test;
+    public GameObject test2;
+    private void Awake()
+    {
+        playerCollider = GameObject.FindGameObjectWithTag("Player").GetComponent<BoxCollider2D>();
+        rightSideClimbPos = ((Vector2)gameObject.GetComponent<BoxCollider2D>().size / 2 - Vector2.zero) + (new Vector2(-playerCollider.size.x * (1 / gameObject.transform.localScale.x), playerCollider.size.y * (1 / gameObject.transform.localScale.y)) / 2 + new Vector2(0f, yOffset));
+        test.transform.localPosition = rightSideClimbPos;
+
+        leftSideClimbPos = ((Vector2)gameObject.GetComponent<BoxCollider2D>().size * new Vector2(-1f, 1f) / 2 - Vector2.zero) + (new Vector2(playerCollider.size.x * (1 / gameObject.transform.localScale.x), playerCollider.size.y * (1 / gameObject.transform.localScale.y)) / 2 + new Vector2(0f, yOffset));
+        test2.transform.localPosition = leftSideClimbPos;
+    }
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -376,5 +393,23 @@ public class BackAndForthMovingBox : MonoBehaviour
             stepCounter = 0; // Reset the stepCounter so it starts from beginning again.
             changeState = false;
         }
+    }
+
+    public bool getWillPlayerFit()
+    {
+        if (Physics2D.OverlapBox(rightSideClimbPos, playerCollider.size * 1.5f, 0f, gameObject.layer) || Physics2D.OverlapBox(leftSideClimbPos, new Vector2(-1f, 1) * playerCollider.size * 1.5f, 0f, gameObject.layer))
+            return false;
+
+        return true;
+    }
+
+    public Vector2 getLeftClimbPos()
+    {
+        return leftSideClimbPos;
+    }
+
+    public Vector2 getRightClimbPos()
+    {
+        return rightSideClimbPos;
     }
 }
