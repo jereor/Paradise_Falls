@@ -8,7 +8,14 @@ public class StaticMovingBox : MonoBehaviour
     private Rigidbody2D rb;
     private Rigidbody2D playerRB;
     private BoxCollider2D boxCollider;
-    private CircleCollider2D circleCollider;
+    //private CircleCollider2D circleCollider;
+
+    //public Vector2 velocity = Vector2.zero;
+    //private Vector2 _distance;
+    //private Vector2 _oldPosition;
+    //private PlayerCollision _player;
+    //private bool _playerIsOnTop;
+    //private float time;
 
     [Header("Speed and waypoint detection Radius")]
     [SerializeField] private float speed;
@@ -31,12 +38,12 @@ public class StaticMovingBox : MonoBehaviour
 
     private Vector2 startPosition;
     private Vector2 currentStartPosition;
-    private int stepCounter = 0;
+    [SerializeField]private int stepCounter = 0;
 
     private bool canChangeCurrentStartPosition = true;
     private bool changeState = false;
     private bool gizmoPositionChange = true;
-    private bool isWaiting = false;
+    //private bool isWaiting = false;
     private bool isChainCut = false;
 
     // Start is called before the first frame update
@@ -46,9 +53,10 @@ public class StaticMovingBox : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         playerRB = GameObject.Find("Player").GetComponent<Rigidbody2D>();
         boxCollider = GetComponent<BoxCollider2D>();
-        circleCollider = GetComponent<CircleCollider2D>();
+        //circleCollider = GetComponent<CircleCollider2D>();
         gizmoPositionChange = false;
         startPosition = transform.position;
+        //_oldPosition = rb.position;
 
         // Is the chain cuttable by melee weapon
         if (!cuttableChain)
@@ -192,9 +200,10 @@ public class StaticMovingBox : MonoBehaviour
     // Moves the game object with given Vectors to position. Moves it a one vector at time until the end is reached.
     private void Move()
     {
-        rb.velocity = ((((Vector2)transform.position + moves[stepCounter]) - (Vector2)transform.position).normalized) * speed * Time.deltaTime; // Changes velocity to move the object.
-        if (ArrivedToDestination(moves[stepCounter]))
+        rb.velocity = ((moves[stepCounter]).normalized) * speed * Time.fixedDeltaTime; // Changes velocity to move the object.
+        if (Vector2.Distance(currentStartPosition + moves[stepCounter], (Vector2)transform.position) < circleSize)
         {
+            transform.position = currentStartPosition + moves[stepCounter];
             canChangeCurrentStartPosition = true;
             rb.velocity = new Vector2(0, 0);
             stepCounter++;
@@ -210,8 +219,9 @@ public class StaticMovingBox : MonoBehaviour
     private void MoveBack()
     {
         rb.velocity = movesBack[stepCounter].normalized * speed * Time.deltaTime; // Changes velocity to move the object.
-        if (ArrivedToDestination(movesBack[stepCounter]))
+        if (Vector2.Distance(currentStartPosition + movesBack[stepCounter], (Vector2)transform.position) < circleSize)
         {
+            transform.position = currentStartPosition + movesBack[stepCounter];
             canChangeCurrentStartPosition = true;
             rb.velocity = new Vector2(0, 0);
             stepCounter++;
@@ -222,19 +232,6 @@ public class StaticMovingBox : MonoBehaviour
             }
         }
     }
-
-    // OverlapCircle to check if the moving object is in the desired position radius. Does not give the best possible result with high GameObject speeds as might not be able to detect the coming object.
-    private bool ArrivedToDestination(Vector2 move)
-    {
-        if (circleCollider == Physics2D.OverlapCircle(currentStartPosition + move, circleSize))
-        {
-            transform.position = currentStartPosition + move; // Snaps the game object to the exact desired position for better accuracy.
-            return true;
-        }
-        else
-            return false;
-    }
-
 
     // Enable or disable the collider.
     private void EnableDisableBoxCollider()
@@ -282,4 +279,25 @@ public class StaticMovingBox : MonoBehaviour
             PlayerPushback();
         }
     }
+
+    //private void OnCollisionEnter2D(Collision2D other)
+    //{
+    //    if (!other.collider.CompareTag("Player")) return;
+    //    // only when player is on top of the platform
+    //    if (!(Vector3.Dot(other.contacts[0].normal, Vector3.down) > 0.5)) return;
+    //    // some caching
+    //    if (_player == null)
+    //    {
+    //        // get whatever component used to able to access your player
+    //        _player = other.transform.GetComponent<PlayerCollision>();
+    //    }
+
+    //    _playerIsOnTop = true;
+    //}
+
+    //private void OnCollisionExit2D(Collision2D other)
+    //{
+    //    if (!other.collider.CompareTag("Player")) return;
+    //    _playerIsOnTop = false;
+    //}
 }
