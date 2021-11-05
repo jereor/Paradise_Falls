@@ -26,6 +26,8 @@ public class FlyingEnemyAI : MonoBehaviour
     [SerializeField] LayerMask groundLayer;
     [SerializeField] LayerMask playerLayer;
 
+    public EnemyState enemyState = EnemyState.Roam;
+
     [Header("Mobility")]
     [SerializeField] private float speed = 250f;
     [SerializeField] private float chargeSpeed = 400f;
@@ -75,7 +77,7 @@ public class FlyingEnemyAI : MonoBehaviour
         // Set speed and state to charge that if bossMode is true enemy starts at charge state with charge speed
         if (bossMode)
         {
-            state = "charge";
+            enemyState = EnemyState.BossModeCharge;
             speed = chargeSpeed;
         }
 
@@ -179,26 +181,45 @@ public class FlyingEnemyAI : MonoBehaviour
             //Keeps the count of the waypoints
             if (distance < nextWaypointDistance) { currentWaypoint++; }
 
-            //Used for turning the enemy sprite into the direction it is currently going towards to
-
             ObstacleCheck();
-            if (bossMode)
-                EnemyBossStateChange(force);
-            else
-                EnemyStateChange(force);
-        }
-    }
 
-    //Does not serve any purpose at the moment.
-    private IEnumerator UpdatePath(float waitTime)
-    {
-        if (seeker.IsDone())
-        {
-            seeker.StartPath(rb.position, target.position, OnPathComplete);
-            Debug.Log("Path updated.");
-        }
+            switch (enemyState)
+            {
+                case EnemyState.Roam:
+                    HandleRoamState(force);
+                    break;
 
-        yield return new WaitForSeconds(waitTime);
+                case EnemyState.Charge:
+                    HandleChargeState(force);
+                    break;
+
+                case EnemyState.Shoot:
+                    HandleShootState(force);
+                    break;
+
+                case EnemyState.Ram:
+                    HandleRamState(force);
+                    break;
+
+                case EnemyState.Alert:
+                    HandleAlertState(force);
+                    break;
+
+                case EnemyState.BossModeCharge:
+                    HandleBossModeCharge(force);
+                    break;
+
+                case EnemyState.BossModeShoot:
+                    HandleBossModeShoot(force);
+                    break;
+
+                case EnemyState.BossModeRam:
+                    HandleBossModeRam(force);
+                    break;
+            }
+
+
+        }
     }
 
     private IEnumerator ShootCoolDown()
@@ -257,374 +278,6 @@ public class FlyingEnemyAI : MonoBehaviour
         return Physics2D.CircleCast(transform.position, 4, transform.position, 4, groundLayer);
     }
 
-    // ENEMY BEHAVIOUR STATES
-    // --------------------------------------------------------------------------------------------------------------------------
-
-    private void EnemyStateChange(Vector2 force)
-    {
-        //switch-case system between different enemy states.
-        switch (state)
-        {
-            // ROAM STATE
-            //-------------------------------------------------------------------------------------------------------
-            //Roams in a specified area given to the enemy unit and stays inside of it.
-            case "roam":
-                // Checks if enemy unit has given up a chase and is returning to spawn point. If target comes too close to the enemy, it begins to chase again.
-                if(returningFromChase && (!IsPlayerInAggroRange() || !IsPlayerInRange()))
-                {
-                    FlipLocalScaleWithForce(force);
-                    rb.AddForce(force);
-                    if (_collider.bounds.Contains(spawnPosition))
-                    {
-                        returningFromChase = false;
-                        rb.velocity = new Vector2(0,0);
-                        InvokeRepeating("UpdatePathToPlayer", 0f, pathUpdateInterval);
-                    }
-                    break;
-                }
-                //If the enemy unit tries to go outside of the given area parameters in X-axis, it turns around.
-                if (transform.position.x >= (spawnPosition.x + roamingRange.x/2 + roamingOffset.x))
-                {
-                    transform.localScale = new Vector3(-1f, 1f, 1f);
-                    isFacingRight = false;
-                    rb.AddForce(new Vector2(transform.localScale.x * speed * Time.deltaTime, 0));
-                }
-                else if (transform.position.x <= (spawnPosition.x - roamingRange.x/2 + roamingOffset.x))
-                {
-                    transform.localScale = new Vector3(1f, 1f, 1f);
-                    isFacingRight = true;
-                    rb.AddForce(new Vector2(transform.localScale.x * speed * Time.deltaTime, 0));
-                }
-
-                //If target is close enough the enemy unit, charges it towards the player.              
-                else if (IsPlayerInAggroRange() && IsPlayerInRange())
-                {
-                    CancelInvoke();
-                    InvokeRepeating("UpdatePathToPlayer", 0f, pathUpdateInterval);
-                    state = "charge";
-                    speed = chargeSpeed;
-                    break;
-                }
-
-                // WallCheck! If enemy unit is about to hit a wall in roaming state, it turns around and continues to the opposite direction.
-                if (transform.position.x <= (spawnPosition.x + roamingRange.x) && transform.position.x >= (spawnPosition.x - roamingRange.x))
-                {
-                    RaycastHit2D hit;
-                    if(isFacingRight)
-                    {
-                        hit = Physics2D.Raycast(transform.position, Vector2.right, 3, groundLayer);
-                        Debug.DrawRay(transform.position, Vector2.right, Color.red);
-                        if(hit.collider != null)
-                        {
-                            transform.localScale = new Vector3(-1, 1f, 1f);
-                        }
-                    }
-                    else
-                    {
-                        hit = Physics2D.Raycast(transform.position, Vector2.left, 3, groundLayer);
-                        Debug.DrawRay(transform.position, Vector2.left, Color.red);
-                        if (hit.collider != null)
-                        {
-                            transform.localScale = new Vector3(1, 1f, 1f);
-                        }
-                    }
-
-                    rb.AddForce(new Vector2(transform.localScale.x * speed * Time.deltaTime, 0));
-                }
-                break;
-
-
-            // CHARGE STATE
-            //------------------------------------------------------------------------------------------------------------------
-            //Here enemy charges the player. Checks if player is inside enemy unit's roaming range.
-            case "charge":
-                // Target is out of aggro range, return to roaming state.
-                if (!IsPlayerInAggroRange() && !IsPlayerInRange())
-                {
-                    returningFromChase = true;
-                    CancelInvoke();
-                    InvokeRepeating("UpdatePathReturn", 0f, pathUpdateInterval);
-                    state = "roam";
-                    speed = roamSpeed;
-                    break;
-                }
-
-                FlipLocalScaleWithForce(force);
-                if (IsPlayerInAggroRange() && !IsPlayerInShootingRange())
-                {
-                    rb.AddForce(force);
-                }
-
-                //If target is close enough the enemy unit, it changes the state to "shoot"
-                else if (IsPlayerInShootingRange())
-                {
-                    if (targetShield.Blocking)
-                    {
-                        state = "ram";
-                    }
-                    else
-                    {
-                        state = "shoot";
-                    }
-                    
-                }
-
-                // Target disappears from sight, start seraching them from the last seen location.
-                if(!IsPlayerInAggroRange() && IsPlayerInRange())
-                {
-                    lastSeenTargetPosition = target.transform.position;
-                    CancelInvoke();
-                    InvokeRepeating("UpdatePathToLastSeenTargetLocation", 0f, pathUpdateInterval);
-                    state = "alert";
-                }
-                break;
-
-
-            // SHOOT STATE
-            //-------------------------------------------------------------------------------------------------------------------
-            //Does damage to target if close enough. Otherwise goes to roam or charge state.
-            case "shoot":
-                // Bullets do the damage, this only checks if the bullet can hit the target from current angle.
-                gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.green;
-                Debug.DrawRay(transform.position, target.transform.position - transform.position, Color.blue);
-                if(targetShield.Blocking)
-                {
-                    state = "ram";
-                    break;
-                }
-                if (canShoot)
-                {
-                    // Draws two rays in the direction of the target. First checks if there's ground in between the enemy unit and the target, second checks if it hit the target.
-                    RaycastHit2D hitGround;
-                    RaycastHit2D hitPlayer;
-                    hitGround = Physics2D.Raycast(transform.position, (target.transform.position - transform.position), (target.transform.position - transform.position).magnitude, groundLayer);
-                    hitPlayer = Physics2D.Raycast(transform.position, (target.transform.position - transform.position), (target.transform.position - transform.position).magnitude, playerLayer);
-                    if (hitPlayer && !hitGround)
-                    {
-                        // Instantiate a bullet prefab from enemy unit location.
-                        GameObject bulletObject = Instantiate(bullet, transform.position, Quaternion.identity);
-                        bulletObject.GetComponent<BulletBehaviour>().shooter = this.gameObject;
-                        StartCoroutine(ShootCoolDown());
-                    }
-                    // If the target is in shooting range but there's a ground in between, enemy unit tries to find a path past it.
-                    else if(hitPlayer && hitGround)
-                    {
-                        //Debug.Log("Moving closer.");
-                        rb.AddForce(force);
-                    }
-
-                    // Turns the enemy unit torwards the target when shooting.
-                    if (target.transform.position.x - transform.position.x >= 0)
-                    {
-                        transform.localScale = new Vector3(1f, 1f, 1f);
-                    }
-                    else
-                    {
-                        transform.localScale = new Vector3(-1f, 1f, 1f);
-                    }
-                }
-                // If target goes out of enemy's bounds, return to "roam" state, otherwise start chasing again.
-                if (!IsPlayerInRange())
-                {
-                    returningFromChase = true;
-                    CancelInvoke();
-                    InvokeRepeating("UpdatePathReturn", 0f, pathUpdateInterval);
-                    state = "roam";
-                    speed = roamSpeed;
-                    break;
-                }
-                else if (!IsPlayerInShootingRange() && IsPlayerInAggroRange())
-                {
-                    state = "charge";
-                    speed = chargeSpeed;
-                    break;
-                }
-                break;
-
-            // RAM STATE
-            //------------------------------------------------------------------------------------------------------------------------
-            // Enemy unit rams into player if they're holding shield up, since shooting would only kill the enemy certainly.
-            case "ram":
-                // Make player and enemy colliders hit each other
-                if(Physics2D.GetIgnoreLayerCollision(3, 7) == true)
-                {
-                    Physics2D.IgnoreLayerCollision(3, 7, false);
-                }
-
-                FlipLocalScaleWithForce(force);
-                // Check if player is still holding their shield up.
-                if (!targetShield.Blocking)
-                {
-                    state = "shoot";
-                    Physics2D.IgnoreLayerCollision(3, 7);
-                    break;
-                }
-                // Ramming into player!
-                else
-                {
-                    rb.AddForce(force);
-                }
-                // Flash red color when ramming.
-                if(isFlashingRed)
-                {
-                    StartCoroutine(FlashCoolDown());
-                }
-                
-                break;
-
-            // ALERT STATE
-            //-------------------------------------------------------------------------------------------------------------------------
-            // If player escapes the range, enemy unit enters in a alert state where it will follow player to it's last seen position.
-            case "alert":
-                // Player is in shooting range. Shoot!
-                if (IsPlayerInShootingRange() && IsPlayerInRange())
-                {
-                    CancelInvoke();
-                    InvokeRepeating("UpdatePathToPlayer", 0f, pathUpdateInterval);
-                    state = "shoot";
-                    break;
-                }
-                // Player is in Aggro range. Charge towards the player.
-                else if (IsPlayerInAggroRange() && IsPlayerInRange())
-                {
-                    CancelInvoke();
-                    InvokeRepeating("UpdatePathToPlayer", 0f, pathUpdateInterval);
-                    state = "charge";
-                    break;
-                }
-                // In every other case find the last player location and go there. When the position is reached and player is nowhere to be seen, return to spawn position.
-                else
-                {
-                    rb.AddForce(force);
-                    if (_collider.bounds.Contains(lastSeenTargetPosition))
-                    {
-                        returningFromChase = true;
-                        rb.velocity = new Vector2(0, 0);
-                        CancelInvoke();
-                        InvokeRepeating("UpdatePathReturn", 0f, pathUpdateInterval);
-                        state = "roam";
-                        break;
-                    }
-                }
-                break;
-        }
-    }
-
-    // ENEMY BEHAVIOUR STATES
-    // --------------------------------------------------------------------------------------------------------------------------
-    private void EnemyBossStateChange(Vector2 force)
-    {
-        //switch-case system between different enemy states.
-        switch (state)
-        {
-            // CHARGE STATE
-            //------------------------------------------------------------------------------------------------------------------
-            //Here enemy charges the player. Checks if player is inside enemy unit's roaming range.
-            case "charge":
-                FlipLocalScaleWithForce(force);
-                if (!IsPlayerInShootingRange())
-                {
-                    rb.AddForce(force);
-                }
-
-                //If target is close enough the enemy unit, it changes the state to "shoot"
-                else if (IsPlayerInShootingRange())
-                {
-                    if (targetShield.Blocking)
-                    {
-                        state = "ram";
-                    }
-                    else
-                    {
-                        state = "shoot";
-                    }
-
-                }
-                break;
-
-
-            // SHOOT STATE
-            //-------------------------------------------------------------------------------------------------------------------
-            //Does damage to target if close enough. Otherwise goes to roam or charge state.
-            case "shoot":
-                // Bullets do the damage, this only checks if the bullet can hit the target from current angle.
-                gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.green;
-                Debug.DrawRay(transform.position, target.transform.position - transform.position, Color.blue);
-                if (targetShield.Blocking)
-                {
-                    state = "ram";
-                }
-                if (canShoot)
-                {
-                    // Draws two rays in the direction of the target. First checks if there's ground in between the enemy unit and the target, second checks if it hit the target.
-                    RaycastHit2D hitGround;
-                    RaycastHit2D hitPlayer;
-                    hitGround = Physics2D.Raycast(transform.position, (target.transform.position - transform.position), (target.transform.position - transform.position).magnitude, groundLayer);
-                    hitPlayer = Physics2D.Raycast(transform.position, (target.transform.position - transform.position), (target.transform.position - transform.position).magnitude, playerLayer);
-                    if (hitPlayer && !hitGround)
-                    {
-                        // Instantiate a bullet prefab from enemy unit location.
-                        GameObject bulletObject = Instantiate(bullet, transform.position, Quaternion.identity);
-                        bulletObject.GetComponent<BulletBehaviour>().shooter = this.gameObject;
-                        StartCoroutine(ShootCoolDown());
-                    }
-                    // If the target is in shooting range but there's a ground in between, enemy unit tries to find a path past it.
-                    else if (hitPlayer && hitGround)
-                    {
-                        //Debug.Log("Moving closer.");
-                        rb.AddForce(force);
-                    }
-
-                    // Turns the enemy unit torwards the target when shooting.
-                    if (target.transform.position.x - transform.position.x >= 0)
-                    {
-                        transform.localScale = new Vector3(1f, 1f, 1f);
-                    }
-                    else
-                    {
-                        transform.localScale = new Vector3(-1f, 1f, 1f);
-                    }
-                }
-                else if (!IsPlayerInShootingRange())
-                {
-                    state = "charge";
-                    speed = chargeSpeed;
-                    break;
-                }
-                break;
-
-            // RAM STATE
-            //------------------------------------------------------------------------------------------------------------------------
-            // Enemy unit rams into player if they're holding shield up, since shooting would only kill the enemy certainly.
-            case "ram":
-                // Make player and enemy colliders hit each other
-                if (Physics2D.GetIgnoreLayerCollision(3, 7) == true)
-                {
-                    Physics2D.IgnoreLayerCollision(3, 7, false);
-                }
-
-                FlipLocalScaleWithForce(force);
-                // Check if player is still holding their shield up.
-                if (!targetShield.Blocking)
-                {
-                    state = "shoot";
-                    Physics2D.IgnoreLayerCollision(3, 7);
-                    break;
-                }
-                // Ramming into player!
-                else
-                {
-                    rb.AddForce(force);
-                }
-                // Flash red color when ramming.
-                if (isFlashingRed)
-                {
-                    StartCoroutine(FlashCoolDown());
-                }
-                break;
-        }
-    }
-
     // No purpose yet in flying enemy script.
     void PlayerPushback()
     {
@@ -664,6 +317,20 @@ public class FlyingEnemyAI : MonoBehaviour
         }
     }
 
+    private void Flip()
+    {
+        // Character flip
+        isFacingRight = !isFacingRight;
+        Vector3 localScale = transform.localScale;
+        localScale.x *= -1f;
+        transform.localScale = localScale;
+    }
+
+    private void Move()
+    {
+        rb.AddForce(new Vector2(transform.localScale.x * speed * Time.deltaTime, 0));
+    }
+
     // When enemy is ramming desperately into player. If hit, EXPLODE and deal damage to player!
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -674,5 +341,350 @@ public class FlyingEnemyAI : MonoBehaviour
             PlayerPushback();
         }
         
+    }
+
+    private void HandleRoamState(Vector2 force)
+    {
+        // Checks if enemy unit has given up a chase and is returning to spawn point. If target comes too close to the enemy, it begins to chase again.
+        if (returningFromChase && (!IsPlayerInAggroRange() || !IsPlayerInRange()))
+        {
+            FlipLocalScaleWithForce(force);
+            rb.AddForce(force);
+            if (_collider.bounds.Contains(spawnPosition))
+            {
+                returningFromChase = false;
+                rb.velocity = new Vector2(0, 0);
+                InvokeRepeating("UpdatePathToPlayer", 0f, pathUpdateInterval);
+            }
+            return;
+        }
+        //If the enemy unit tries to go outside of the given area parameters in X-axis, it turns around.
+        if (transform.position.x >= (spawnPosition.x + roamingRange.x / 2 + roamingOffset.x))
+        {
+            if(isFacingRight)
+                Flip();
+
+            Move();
+        }
+        else if (transform.position.x <= (spawnPosition.x - roamingRange.x / 2 + roamingOffset.x))
+        {
+            if(!isFacingRight)
+                Flip();
+
+            Move();
+        }
+
+        //If target is close enough the enemy unit, charges it towards the player.              
+        else if (IsPlayerInAggroRange() && IsPlayerInRange())
+        {
+            CancelInvoke();
+            InvokeRepeating("UpdatePathToPlayer", 0f, pathUpdateInterval);
+            enemyState = EnemyState.Charge;
+            speed = chargeSpeed;
+            return;
+        }
+
+        // WallCheck! If enemy unit is about to hit a wall in roaming state, it turns around and continues to the opposite direction.
+        if (transform.position.x <= (spawnPosition.x + roamingRange.x) && transform.position.x >= (spawnPosition.x - roamingRange.x))
+        {
+            RaycastHit2D hit;
+            if (isFacingRight)
+            {
+                hit = Physics2D.Raycast(transform.position, Vector2.right, 3, groundLayer);
+                Debug.DrawRay(transform.position, Vector2.right, Color.red);
+                if (hit.collider != null)
+                {
+                    transform.localScale = new Vector3(-1, 1f, 1f);
+                }
+            }
+            else
+            {
+                hit = Physics2D.Raycast(transform.position, Vector2.left, 3, groundLayer);
+                Debug.DrawRay(transform.position, Vector2.left, Color.red);
+                if (hit.collider != null)
+                {
+                    transform.localScale = new Vector3(1, 1f, 1f);
+                }
+            }
+
+            Move();
+        }
+        return;               
+
+    }
+
+    private void HandleChargeState(Vector2 force)
+    {
+        // Target is out of aggro range, return to roaming state.
+        if (!IsPlayerInAggroRange() && !IsPlayerInRange())
+        {
+            returningFromChase = true;
+            CancelInvoke();
+            InvokeRepeating("UpdatePathReturn", 0f, pathUpdateInterval);
+            enemyState = EnemyState.Roam;
+            speed = roamSpeed;
+            return;
+        }
+
+        FlipLocalScaleWithForce(force);
+        if (IsPlayerInAggroRange() && !IsPlayerInShootingRange())
+        {
+            rb.AddForce(force);
+        }
+
+        //If target is close enough the enemy unit, it changes the state to "shoot"
+        else if (IsPlayerInShootingRange())
+        {
+            if (targetShield.Blocking)
+            {
+                enemyState = EnemyState.Ram;
+            }
+            else
+            {
+                enemyState = EnemyState.Shoot;
+            }
+
+        }
+
+        // Target disappears from sight, start seraching them from the last seen location.
+        if (!IsPlayerInAggroRange() && IsPlayerInRange())
+        {
+            lastSeenTargetPosition = target.transform.position;
+            CancelInvoke();
+            InvokeRepeating("UpdatePathToLastSeenTargetLocation", 0f, pathUpdateInterval);
+            enemyState = EnemyState.Alert;
+        }
+        return;
+    }
+
+    private void HandleShootState(Vector2 force)
+    {
+        // Bullets do the damage, this only checks if the bullet can hit the target from current angle.
+        gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.green;
+        Debug.DrawRay(transform.position, target.transform.position - transform.position, Color.blue);
+        if (targetShield.Blocking)
+        {
+            enemyState = EnemyState.Ram;
+            return;
+        }
+        if (canShoot)
+        {
+            // Draws two rays in the direction of the target. First checks if there's ground in between the enemy unit and the target, second checks if it hit the target.
+            RaycastHit2D hitGround;
+            RaycastHit2D hitPlayer;
+            hitGround = Physics2D.Raycast(transform.position, (target.transform.position - transform.position), (target.transform.position - transform.position).magnitude, groundLayer);
+            hitPlayer = Physics2D.Raycast(transform.position, (target.transform.position - transform.position), (target.transform.position - transform.position).magnitude, playerLayer);
+            if (hitPlayer && !hitGround)
+            {
+                // Instantiate a bullet prefab from enemy unit location.
+                GameObject bulletObject = Instantiate(bullet, transform.position, Quaternion.identity);
+                bulletObject.GetComponent<BulletBehaviour>().shooter = this.gameObject;
+                StartCoroutine(ShootCoolDown());
+            }
+            // If the target is in shooting range but there's a ground in between, enemy unit tries to find a path past it.
+            else if (hitPlayer && hitGround)
+            {
+                //Debug.Log("Moving closer.");
+                rb.AddForce(force);
+            }
+
+            // Turns the enemy unit torwards the target when shooting.
+            if (target.transform.position.x - transform.position.x >= 0)
+            {
+                transform.localScale = new Vector3(1f, 1f, 1f);
+            }
+            else
+            {
+                transform.localScale = new Vector3(-1f, 1f, 1f);
+            }
+        }
+        // If target goes out of enemy's bounds, return to "roam" state, otherwise start chasing again.
+        if (!IsPlayerInRange())
+        {
+            returningFromChase = true;
+            CancelInvoke();
+            InvokeRepeating("UpdatePathReturn", 0f, pathUpdateInterval);
+            enemyState = EnemyState.Roam;
+            speed = roamSpeed;
+            return;
+        }
+        else if (!IsPlayerInShootingRange() && IsPlayerInAggroRange())
+        {
+            enemyState = EnemyState.Charge;
+            speed = chargeSpeed;
+            return;
+        }
+    }
+
+    private void HandleRamState(Vector2 force)
+    {
+        // Make player and enemy colliders hit each other
+        if (Physics2D.GetIgnoreLayerCollision(3, 7) == true)
+        {
+            Physics2D.IgnoreLayerCollision(3, 7, false);
+        }
+
+        FlipLocalScaleWithForce(force);
+        // Check if player is still holding their shield up.
+        if (!targetShield.Blocking)
+        {
+            enemyState = EnemyState.Shoot;
+            Physics2D.IgnoreLayerCollision(3, 7);
+            return;
+        }
+        // Ramming into player!
+        else
+        {
+            rb.AddForce(force);
+        }
+        // Flash red color when ramming.
+        if (isFlashingRed)
+        {
+            StartCoroutine(FlashCoolDown());
+        }
+    }
+
+    private void HandleAlertState(Vector2 force)
+    {
+        // Player is in shooting range. Shoot!
+        if (IsPlayerInShootingRange() && IsPlayerInRange())
+        {
+            CancelInvoke();
+            InvokeRepeating("UpdatePathToPlayer", 0f, pathUpdateInterval);
+            enemyState = EnemyState.Shoot;
+            return;
+        }
+        // Player is in Aggro range. Charge towards the player.
+        else if (IsPlayerInAggroRange() && IsPlayerInRange())
+        {
+            CancelInvoke();
+            InvokeRepeating("UpdatePathToPlayer", 0f, pathUpdateInterval);
+            enemyState = EnemyState.Charge;
+            return;
+        }
+        // In every other case find the last player location and go there. When the position is reached and player is nowhere to be seen, return to spawn position.
+        else
+        {
+            rb.AddForce(force);
+            if (_collider.bounds.Contains(lastSeenTargetPosition))
+            {
+                returningFromChase = true;
+                rb.velocity = new Vector2(0, 0);
+                CancelInvoke();
+                InvokeRepeating("UpdatePathReturn", 0f, pathUpdateInterval);
+                enemyState = EnemyState.Roam;
+                return;
+            }
+        }
+    }
+
+    private void HandleBossModeCharge(Vector2 force)
+    {
+        FlipLocalScaleWithForce(force);
+        if (!IsPlayerInShootingRange())
+        {
+            rb.AddForce(force);
+        }
+
+        //If target is close enough the enemy unit, it changes the state to "shoot"
+        else if (IsPlayerInShootingRange())
+        {
+            if (targetShield.Blocking)
+            {
+                enemyState = EnemyState.BossModeRam;
+            }
+            else
+            {
+                enemyState = EnemyState.BossModeShoot;
+            }
+
+        }
+    }
+
+    private void HandleBossModeShoot(Vector2 force)
+    {
+        // Bullets do the damage, this only checks if the bullet can hit the target from current angle.
+        gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.green;
+        Debug.DrawRay(transform.position, target.transform.position - transform.position, Color.blue);
+        if (targetShield.Blocking)
+        {
+            enemyState = EnemyState.BossModeRam;
+        }
+        if (canShoot)
+        {
+            // Draws two rays in the direction of the target. First checks if there's ground in between the enemy unit and the target, second checks if it hit the target.
+            RaycastHit2D hitGround;
+            RaycastHit2D hitPlayer;
+            hitGround = Physics2D.Raycast(transform.position, (target.transform.position - transform.position), (target.transform.position - transform.position).magnitude, groundLayer);
+            hitPlayer = Physics2D.Raycast(transform.position, (target.transform.position - transform.position), (target.transform.position - transform.position).magnitude, playerLayer);
+            if (hitPlayer && !hitGround)
+            {
+                // Instantiate a bullet prefab from enemy unit location.
+                GameObject bulletObject = Instantiate(bullet, transform.position, Quaternion.identity);
+                bulletObject.GetComponent<BulletBehaviour>().shooter = this.gameObject;
+                StartCoroutine(ShootCoolDown());
+            }
+            // If the target is in shooting range but there's a ground in between, enemy unit tries to find a path past it.
+            else if (hitPlayer && hitGround)
+            {
+                //Debug.Log("Moving closer.");
+                rb.AddForce(force);
+            }
+
+            // Turns the enemy unit torwards the target when shooting.
+            if (target.transform.position.x - transform.position.x >= 0)
+            {
+                transform.localScale = new Vector3(1f, 1f, 1f);
+            }
+            else
+            {
+                transform.localScale = new Vector3(-1f, 1f, 1f);
+            }
+        }
+        else if (!IsPlayerInShootingRange())
+        {
+            enemyState = EnemyState.BossModeCharge;
+            speed = chargeSpeed;
+        }
+    }
+
+    private void HandleBossModeRam(Vector2 force)
+    {
+        // Make player and enemy colliders hit each other
+        if (Physics2D.GetIgnoreLayerCollision(3, 7) == true)
+        {
+            Physics2D.IgnoreLayerCollision(3, 7, false);
+        }
+
+        FlipLocalScaleWithForce(force);
+        // Check if player is still holding their shield up.
+        if (!targetShield.Blocking)
+        {
+            enemyState = EnemyState.BossModeShoot;
+            Physics2D.IgnoreLayerCollision(3, 7);
+            return;
+        }
+        // Ramming into player!
+        else
+        {
+            rb.AddForce(force);
+        }
+        // Flash red color when ramming.
+        if (isFlashingRed)
+        {
+            StartCoroutine(FlashCoolDown());
+        }
+    }
+
+    public enum EnemyState
+    {
+        Roam,
+        Charge,
+        Shoot,
+        Ram,
+        Alert,
+        BossModeCharge,
+        BossModeShoot,
+        BossModeRam
     }
 }
