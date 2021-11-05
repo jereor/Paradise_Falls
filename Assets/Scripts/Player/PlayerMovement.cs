@@ -351,7 +351,7 @@ public class PlayerMovement : MonoBehaviour
                 && Time.time - lastTimeClimbed >= climbTimeBuffer           // We have to climb stairlike object step by step not instantly to the top
                 && horizontal != 0                                          // Player is moving and wanting to climb if no move input fall
                 && !Player.Instance.GetIsAttacking()                        // If we are attacking we cannot climb at the same time
-                && !Player.Instance.GetIsAiming()
+                && !Player.Instance.GetHCharging()
                 && !Player.Instance.GetIsBlocking()
                 && !Player.Instance.GetIsParrying())
 

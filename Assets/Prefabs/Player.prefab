@@ -10436,6 +10436,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxEnergy: 100
   currentEnergy: 0
+  energyRegenMultiplier: 0
 --- !u!212 &2646993275326716547
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -10562,17 +10563,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lightDamage: 1
-  heavyDamage: 2
+  heavyDamage: 6
+  heavyChargeTime: 2
   lastHitMultiplier: 1.5
   weakPointMultiplier: 2
   knockbackForceLight: 300
-  knockbackForceHeavy: 750
+  knockbackForceLightLast: 750
+  knockbackForceHeavy: 1000
   dashSpeed: 5
   dashDistance: 0.05
   playerPullForce: 750
   kbOnLight: 1
   kbOnLightLast: 1
-  comboCooldownTime: 0.5
+  kbOnHeavy: 1
+  comboCooldownTime: 0
   enemyLayer:
     serializedVersion: 2
     m_Bits: 128
