@@ -9,14 +9,6 @@ public class StaticMovingPlatform : MonoBehaviour
     private Rigidbody2D playerRB;
     private BoxCollider2D boxCollider;
     public SpriteRenderer[] platformRenderers;
-    //private CircleCollider2D circleCollider;
-
-    //public Vector2 velocity = Vector2.zero;
-    //private Vector2 _distance;
-    //private Vector2 _oldPosition;
-    //private PlayerCollision _player;
-    //private bool _playerIsOnTop;
-    //private float time;
 
     [Header("Speed and waypoint detection Radius")]
     [SerializeField] private float speed;
@@ -42,8 +34,6 @@ public class StaticMovingPlatform : MonoBehaviour
     private bool canChangeCurrentStartPosition = true;
     private bool changeState = false;
     private bool gizmoPositionChange = true;
-    //private bool isWaiting = false;
-    private bool isChainCut = false;
 
     private BoxCollider2D playerCollider;
     public float yOffset;

@@ -8,15 +8,13 @@ public class StaticMovingBox : MonoBehaviour
     private Rigidbody2D rb;
     private Rigidbody2D playerRB;
     private BoxCollider2D boxCollider;
-    //private CircleCollider2D circleCollider;
 
-    //public Vector2 velocity = Vector2.zero;
-    //private Vector2 _distance;
-    //private Vector2 _oldPosition;
-    //private PlayerCollision _player;
-    //private bool _playerIsOnTop;
-    //private float time;
+    [Header("Chain controller")]
+    [SerializeField] private BoxChainController chainController;
 
+    [Header("Knockback trigger")]
+    [SerializeField] private BoxKnockback knockbackScript;
+ 
     [Header("Speed and waypoint detection Radius")]
     [SerializeField] private float speed;
     [SerializeField] private float circleSize = 0.15f;
@@ -25,16 +23,10 @@ public class StaticMovingBox : MonoBehaviour
     [SerializeField] private List<Vector2> moves;
     [SerializeField] private List<Vector2> movesBack;
 
-    [Header("Player knockback control")]
-    [SerializeField] private Vector2 velocityPlayer;
-    [SerializeField] private float knockbackForce;
-
     [Header("Bools to control Platform Movement")]
     [SerializeField] private bool returningObject = false;
-    [SerializeField] private bool colliderDisabledAtStart = false;
     [SerializeField] private bool cuttableChain = false;
     [SerializeField] private bool loop = true;
-    [SerializeField] private bool destroyAfterPathComplete = true;
 
     private Vector2 startPosition;
     private Vector2 currentStartPosition;
@@ -43,7 +35,6 @@ public class StaticMovingBox : MonoBehaviour
     private bool canChangeCurrentStartPosition = true;
     private bool changeState = false;
     private bool gizmoPositionChange = true;
-    //private bool isWaiting = false;
     private bool isChainCut = false;
 
     private BoxCollider2D playerCollider;
@@ -66,23 +57,23 @@ public class StaticMovingBox : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         playerRB = GameObject.Find("Player").GetComponent<Rigidbody2D>();
         boxCollider = GetComponent<BoxCollider2D>();
-        //circleCollider = GetComponent<CircleCollider2D>();
         gizmoPositionChange = false;
         startPosition = transform.position;
-        //_oldPosition = rb.position;
 
         // Is the chain cuttable by melee weapon
         if (!cuttableChain)
-            transform.GetChild(0).GetComponent<SpriteRenderer>().color = Color.black;
-        else
-            transform.GetChild(0).GetComponent<SpriteRenderer>().color = Color.red;
-
-        // Sets the collider inactive if bool is true.
-
-        if (colliderDisabledAtStart)
         {
-            gameObject.GetComponent<SpriteRenderer>().color = Color.gray;
-            boxCollider.enabled = !boxCollider.enabled;
+            foreach (GameObject chain in chainController.getChains())
+            {
+                chain.GetComponent<SpriteRenderer>().color = Color.black;
+            }
+        }
+        else
+        {
+            foreach (GameObject chain in chainController.getChains())
+            {
+                chain.GetComponent<SpriteRenderer>().color = Color.red;
+            }
         }
         // Is this object meant to return the same path back to the beginning? If is, make a reverse array of moves to take.
 
@@ -166,7 +157,7 @@ public class StaticMovingBox : MonoBehaviour
     void FixedUpdate()
     {
         // Everything related to chain control. Comment this if-case if not needed.
-        if (gameObject.transform.childCount == 0 && !isChainCut && cuttableChain)
+        if (chainController.getIfCut() && !isChainCut && cuttableChain)
         {
             isChainCut = true;
             DOTween.Kill(rb); // Stops all Tweenings so the object doesn't move after the chain is cut.
@@ -179,8 +170,11 @@ public class StaticMovingBox : MonoBehaviour
             rb.constraints = RigidbodyConstraints2D.None;
             rb.constraints = RigidbodyConstraints2D.FreezePositionX;
             rb.freezeRotation = true;
+
+            gameObject.tag = "Box";
+            knockbackScript.setFalling(true);
         }
-        if (!changeState) // Moves the object through the waypoints without stopping.
+        if (!changeState && !isChainCut) // Moves the object through the waypoints without stopping.
         {
             if (canChangeCurrentStartPosition)
             {
@@ -190,7 +184,7 @@ public class StaticMovingBox : MonoBehaviour
             Move(); // Moves the object to the designated destination along the given path.
             
         }
-        if (changeState && returningObject) // Is the game object meant to return to original position?
+        if (changeState && returningObject && !isChainCut) // Is the game object meant to return to original position?
         {
             if (canChangeCurrentStartPosition)
             {
@@ -200,14 +194,6 @@ public class StaticMovingBox : MonoBehaviour
             MoveBack(); // Uses the reverse List to return.
 
         }
-        else if (changeState && loop && !destroyAfterPathComplete) // Looped route and not destroyable object?
-        {
-            changeState = false;
-            stepCounter = 0;
-        }
-
-        else if (changeState && !loop && destroyAfterPathComplete) // Doesn't loop and is destroyable object?
-            Destroy(gameObject);
     }
 
     // Moves the game object with given Vectors to position. Moves it a one vector at time until the end is reached.
@@ -264,32 +250,11 @@ public class StaticMovingBox : MonoBehaviour
         return cuttableChain;
     }
 
-    void PlayerPushback()
-    {
-        velocityPlayer = new Vector2(playerRB.position.x - transform.position.x > 0 ? knockbackForce * 1 : knockbackForce * -1, 0);
-        playerRB.MovePosition(playerRB.position + velocityPlayer * Time.deltaTime);
-        //StartCoroutine(KnockbackCooldown());
-    }
-
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        //Debug.Log(collision.collider.name);
         if (collision.gameObject.tag == "Boss")
         {
             Destroy(gameObject);
-        }
-
-        if (collision.gameObject.tag == "Player" && rb.isKinematic == false && rb.velocity.y < -1 && (transform.position.y - playerRB.transform.position.y) > 0)
-        {
-            PlayerPushback();
-        }
-    }
-
-    private void OnCollisionStay2D(Collision2D collision)
-    {
-        if (collision.gameObject.tag == "Player" && rb.isKinematic == false  && (transform.position.y - playerRB.transform.position.y) > 0)
-        {
-            PlayerPushback();
         }
     }
 
@@ -315,25 +280,4 @@ public class StaticMovingBox : MonoBehaviour
     {
         return (Vector2)rightSideClimbTransform.position;
     }
-
-    //private void OnCollisionEnter2D(Collision2D other)
-    //{
-    //    if (!other.collider.CompareTag("Player")) return;
-    //    // only when player is on top of the platform
-    //    if (!(Vector3.Dot(other.contacts[0].normal, Vector3.down) > 0.5)) return;
-    //    // some caching
-    //    if (_player == null)
-    //    {
-    //        // get whatever component used to able to access your player
-    //        _player = other.transform.GetComponent<PlayerCollision>();
-    //    }
-
-    //    _playerIsOnTop = true;
-    //}
-
-    //private void OnCollisionExit2D(Collision2D other)
-    //{
-    //    if (!other.collider.CompareTag("Player")) return;
-    //    _playerIsOnTop = false;
-    //}
 }

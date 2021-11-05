@@ -8,7 +8,6 @@ public class BackAndForthMovingBox : MonoBehaviour
     private Rigidbody2D rb;
     private Rigidbody2D playerRB;
     private BoxCollider2D boxCollider;
-    //private CircleCollider2D circleCollider;
     private Transform chain;
 
     [Header("Speed and waypoint detection Radius")]
