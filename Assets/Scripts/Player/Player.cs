@@ -354,8 +354,8 @@ public class Player : MonoBehaviour
         }
  
         // Jump / Fall animation
-        // We are in air and we land with rb velocity downwards or zero 
-        if (animator.GetBool("jump") && movementScript.IsGrounded() && rb.velocity.y >= -0.2f && rb.velocity.y <= 0.2f)
+        // We are in air and we land with rb velocity downwards or zero OR we are on moving platform
+        if (animator.GetBool("jump") && movementScript.IsGrounded() && rb.velocity.y >= -0.2f && rb.velocity.y <= 0.2f || movementScript.getIfOnMovingPlatform())
         {
             animator.SetBool("jump", false);
             // Landing animation

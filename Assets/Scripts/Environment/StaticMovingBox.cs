@@ -48,18 +48,15 @@ public class StaticMovingBox : MonoBehaviour
 
     private BoxCollider2D playerCollider;
     public float yOffset;
-    private Vector2 leftSideClimbPos;
-    private Vector2 rightSideClimbPos;
-    //public GameObject test;
-    //public GameObject test2;
+    public Transform leftSideClimbTransform;
+    public Transform rightSideClimbTransform;
     private void Awake()
     {
+        // Get size of collider to calculate the positions for climbing this platform (should scale with any sizes)
         playerCollider = GameObject.FindGameObjectWithTag("Player").GetComponent<BoxCollider2D>();
-        rightSideClimbPos = ((Vector2)gameObject.GetComponent<BoxCollider2D>().size / 2 - Vector2.zero) + (new Vector2(-playerCollider.size.x * (1 / gameObject.transform.localScale.x), playerCollider.size.y * (1 / gameObject.transform.localScale.y)) / 2 + new Vector2(0f, yOffset));
-        //test.transform.localPosition = rightSideClimbPos;
+        rightSideClimbTransform.localPosition = ((Vector2)gameObject.GetComponent<BoxCollider2D>().size / 2 - Vector2.zero) + (new Vector2(-playerCollider.size.x * (1 / gameObject.transform.localScale.x), playerCollider.size.y * (1 / gameObject.transform.localScale.y)) / 2 + new Vector2(0f, yOffset));
 
-        leftSideClimbPos = ((Vector2)gameObject.GetComponent<BoxCollider2D>().size * new Vector2(-1f,1f) / 2 - Vector2.zero) + (new Vector2(playerCollider.size.x * (1 / gameObject.transform.localScale.x), playerCollider.size.y * (1 / gameObject.transform.localScale.y)) / 2 + new Vector2(0f, yOffset));
-        //test2.transform.localPosition = leftSideClimbPos;
+        leftSideClimbTransform.localPosition = ((Vector2)gameObject.GetComponent<BoxCollider2D>().size * new Vector2(-1f,1f) / 2 - Vector2.zero) + (new Vector2(playerCollider.size.x * (1 / gameObject.transform.localScale.x), playerCollider.size.y * (1 / gameObject.transform.localScale.y)) / 2 + new Vector2(0f, yOffset));
     }
 
     // Start is called before the first frame update
@@ -296,9 +293,14 @@ public class StaticMovingBox : MonoBehaviour
         }
     }
 
+    // Return if player will fit on top of moving platform example: moving upward and ceiling would block our climb or we would be squashed
     public bool getWillPlayerFit()
     {
-        if (Physics2D.OverlapBox(rightSideClimbPos, playerCollider.size * 1.5f, 0f, gameObject.layer) || Physics2D.OverlapBox(leftSideClimbPos, new Vector2(-1f,1) * playerCollider.size * 1.5f, 0f, gameObject.layer))
+        // Check both positions we should not make boxes that only block on the other side
+        if (Physics2D.Raycast((Vector2)rightSideClimbTransform.position + new Vector2(playerCollider.size.x / 2, 0f), new Vector2(0f, 1f), playerCollider.size.y * 0.7f, gameObject.layer)
+            && Physics2D.Raycast((Vector2)rightSideClimbTransform.position - new Vector2(playerCollider.size.x / 2, 0f), new Vector2(0f, 1f), playerCollider.size.y * 0.7f, gameObject.layer)
+            && Physics2D.Raycast((Vector2)leftSideClimbTransform.position + new Vector2(playerCollider.size.x / 2, 0f), new Vector2(0f, 1f), playerCollider.size.y * 0.7f, gameObject.layer)
+            && Physics2D.Raycast((Vector2)leftSideClimbTransform.position - new Vector2(playerCollider.size.x / 2, 0f), new Vector2(0f, 1f), playerCollider.size.y * 0.7f, gameObject.layer))
             return false;
 
         return true;
@@ -306,12 +308,12 @@ public class StaticMovingBox : MonoBehaviour
 
     public Vector2 getLeftClimbPos()
     {
-        return leftSideClimbPos;
+        return (Vector2)leftSideClimbTransform.position;
     }
 
     public Vector2 getRightClimbPos()
     {
-        return rightSideClimbPos;
+        return (Vector2)rightSideClimbTransform.position;
     }
 
     //private void OnCollisionEnter2D(Collision2D other)
