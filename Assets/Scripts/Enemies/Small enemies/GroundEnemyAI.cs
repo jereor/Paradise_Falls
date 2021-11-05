@@ -118,13 +118,13 @@ public class GroundEnemyAI : MonoBehaviour
         if (bossMode)
         {
             enemyState = EnemyState.BossModeCharge;
-            //animator.SetBool("Run", true);
+            animator.SetBool("Run", true);
             speed = chargeSpeed;
         }
-        //else
-        //{
-        //    animator.SetBool("Walk", true);
-        //}
+        else
+        {
+            animator.SetBool("Walk", true);
+        }
 
         //Updates the path repeatedly with a chosen time interval
         InvokeRepeating("UpdatePath", 0f, 0.5f);
@@ -768,6 +768,10 @@ public class GroundEnemyAI : MonoBehaviour
 
     private void HandleAnimations()
     {
+        if(enemyState != EnemyState.Staggered)
+        {
+            animator.SetBool("Stagger", false);
+        }
         if(enemyState == EnemyState.Roam)
         {
             animator.SetBool("Walk", true);

@@ -1,7 +1,16 @@
 fileFormatVersion: 2
-guid: 85b644481faf9344d93f8890af3a3948
+guid: d932408de0e16944db3e4c41677baecb
 TextureImporter:
-  internalIDToNameTable: []
+  internalIDToNameTable:
+  - first:
+      213: -6112160122655222085
+    second: workdrone_attack 1_0
+  - first:
+      213: 7124437467113763132
+    second: workdrone_attack 1_1
+  - first:
+      213: 3213150209493058768
+    second: workdrone_attack 1_2
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -41,7 +50,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -89,7 +98,70 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: workdrone_attack 1_0
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 14
+        width: 116
+        height: 142
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bb6d3d680ce3d2ba0800000000000000
+      internalID: -6112160122655222085
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workdrone_attack 1_1
+      rect:
+        serializedVersion: 2
+        x: 115
+        y: 13
+        width: 162
+        height: 130
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c31bcc321261fd260800000000000000
+      internalID: 7124437467113763132
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workdrone_attack 1_2
+      rect:
+        serializedVersion: 2
+        x: 275
+        y: 13
+        width: 98
+        height: 123
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0d44ece6717679c20800000000000000
+      internalID: 3213150209493058768
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
