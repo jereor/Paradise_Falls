@@ -325,7 +325,6 @@ public class PlayerMovement : MonoBehaviour
         // Check if we are on moving platform currently
         if (getMovingPlatformRigidbody() != null)
         {
-            Debug.Log("EI");
             // Climbing the platform
             if (getIfClimbingMovingPlatform())
             {
@@ -419,7 +418,7 @@ public class PlayerMovement : MonoBehaviour
         // Check if player fits on top of the moving platform
         if (movingPlatformRaycastHit && movingPlatformRaycastHit.transform.gameObject.CompareTag("MovingPlatform"))
         {
-            // 2 different scripts, if script is found check from correct script if not return false
+            // 3 different scripts, if script is found check from correct script if not return false
             if(movingPlatformRaycastHit.transform.gameObject.TryGetComponent(out StaticMovingBox staticScript))
             {
                 return staticScript.getWillPlayerFit();
@@ -427,6 +426,10 @@ public class PlayerMovement : MonoBehaviour
             else if (movingPlatformRaycastHit.transform.gameObject.TryGetComponent(out BackAndForthMovingBox movingScript))
             {
                 return movingScript.getWillPlayerFit();
+            }
+            else if (movingPlatformRaycastHit.transform.gameObject.TryGetComponent(out StaticMovingPlatform platformScript))
+            {
+                return platformScript.getWillPlayerFit();
             }
             // Did not find these components we don't really know what we are climbing
             return false;
@@ -445,11 +448,13 @@ public class PlayerMovement : MonoBehaviour
             // Climbing to left side of platform
             if (isFacingRight)
             {
-                // 2 different scripts, if script is found check from correct script if not return false
+                // 3 different scripts, if script is found check from correct script if not return false
                 if (movingPlatformRaycastHit.transform.gameObject.TryGetComponent(out StaticMovingBox staticScript))
                     transform.position = staticScript.getLeftClimbPos();
                 else if (movingPlatformRaycastHit.transform.gameObject.TryGetComponent(out BackAndForthMovingBox movingScript))
                     transform.position = movingScript.getLeftClimbPos();
+                else if (movingPlatformRaycastHit.transform.gameObject.TryGetComponent(out StaticMovingPlatform platformScript))
+                    transform.position = platformScript.getLeftClimbPos();
             }
             // Right
             else
@@ -459,6 +464,8 @@ public class PlayerMovement : MonoBehaviour
                     transform.position = staticScript.getRightClimbPos();
                 else if (movingPlatformRaycastHit.transform.gameObject.TryGetComponent(out BackAndForthMovingBox movingScript))
                     transform.position = movingScript.getRightClimbPos();
+                else if (movingPlatformRaycastHit.transform.gameObject.TryGetComponent(out StaticMovingPlatform platformScript))
+                    transform.position = platformScript.getRightClimbPos();
             }
             // Reset so we know next time if we are climbin moving platform (set again in CheckPlayerFitPlatform())
             movingPlatformRaycastHit = new RaycastHit2D();
