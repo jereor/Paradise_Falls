@@ -50,7 +50,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -132,7 +132,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -271,6 +271,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05926f1ba4bca4145b5f91c0b05b6b5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bossMode: 0
   target: {fileID: 0}
   enemyGFX: {fileID: 674690727670028638}
   playerRB: {fileID: 0}
@@ -286,7 +287,6 @@ MonoBehaviour:
   speed: 250
   chargeSpeed: 400
   roamSpeed: 250
-  attackPower: 1
   explosionPower: 4
   state: roam
   roamingRange: {x: 22.2, y: 13.82}

@@ -49,3 +49,24 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Background
+    uniqueID: 3283211149
+    locked: 0
+  - name: Near Background
+    uniqueID: 409960295
+    locked: 0
+  - name: Interior
+    uniqueID: 142948381
+    locked: 0
+  - name: Objects
+    uniqueID: 2229172679
+    locked: 0
+  - name: Exterior
+    uniqueID: 433996785
+    locked: 0
+  - name: Foreground
+    uniqueID: 97978461
+    locked: 0
+  - name: Near Foreground
+    uniqueID: 1236590743
+    locked: 0
