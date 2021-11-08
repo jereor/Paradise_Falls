@@ -76,6 +76,7 @@ public class GroundEnemyAI : MonoBehaviour
     [Header("Check Distances for Behaviours")]
     [SerializeField] private float jumpableWallCheckDistance = 1.5f;
     [SerializeField] private float higherWallCheckDistance = 1.5f;
+    [SerializeField] private float obstacleJumpforce = 140;
     [SerializeField] private float groundCheckDistance = 2f;
     [SerializeField] private Vector2 wallCheckDirection;
   
@@ -548,7 +549,7 @@ public class GroundEnemyAI : MonoBehaviour
     {
         float pushbackX = target.transform.position.x - transform.position.x;
         Vector2 knockbackDirection = new Vector2(pushbackX, Math.Abs(pushbackX / 4)).normalized;
-        playerRB.AddForce(knockbackDirection * knockbackForce);
+        playerRB.AddForce(knockbackDirection * knockbackForce * Time.deltaTime);
     }
 
 
@@ -755,7 +756,7 @@ public class GroundEnemyAI : MonoBehaviour
     private IEnumerator JumpForceForward(float jumpDirection)
     {
         yield return new WaitForSeconds(0.4f);
-        rb.AddForce(new Vector2(100 * jumpDirection, 0));
+        rb.AddForce(new Vector2(obstacleJumpforce * jumpDirection * Time.deltaTime, 0));
     }
 
     private IEnumerator Staggered(float time)

@@ -173,10 +173,10 @@ MonoBehaviour:
   speed: 10000
   roamingSpeed: 10000
   chargeSpeed: 16000
-  jumpChargeSpeed: 5
-  jumpHeight: 13
+  jumpChargeSpeed: 6
+  jumpHeight: 14
   walkStepInterval: 1
-  runStepInterval: 0.6
+  runStepInterval: 0.5
   jumpChargeInterval: 0.5
   punchChargeTime: 0.6
   punchCooldown: 0.4
@@ -197,8 +197,9 @@ MonoBehaviour:
   amountWhenHealthIsSpawnable: 0.7
   nextWaypointDistance: 1
   pathUpdateInterval: 0.5
-  jumpableWallCheckDistance: 1.5
+  jumpableWallCheckDistance: 1
   higherWallCheckDistance: 2
+  obstacleJumpforce: 800
   groundCheckDistance: 2
   wallCheckDirection: {x: 1, y: 0}
 --- !u!114 &2085753358315985748
