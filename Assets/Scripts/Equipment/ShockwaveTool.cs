@@ -82,7 +82,7 @@ public class ShockwaveTool : MonoBehaviour
     // ShockwaveAttack action: Called when the ShockwaveAttack Action Button is pressed
     public void ShockwaveAttack(InputAction.CallbackContext context) // Context tells the function when the action is triggered
     {
-        if (!playerScript.ShockwaveToolUnlocked()) return;
+        if (!playerScript.ShockwaveAttackUnlocked()) return;
 
         if (context.started && Time.time >= nextShockwave)
         {
@@ -101,7 +101,7 @@ public class ShockwaveTool : MonoBehaviour
 
     public void DashInput(InputAction.CallbackContext context)
     {
-        //if (!playerScript.DashUnlocked()) return;
+        if (!playerScript.DashUnlocked()) return;
 
         if (context.started && Time.time >= nextDash)
         {

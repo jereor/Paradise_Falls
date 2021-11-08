@@ -218,7 +218,7 @@ public class SceneLoader : MonoBehaviour
             GameStatus.status.UpdateWallJump(Player.Instance.GrapplingUnlocked());
 
             // Shockwave
-            GameStatus.status.UpdateWallJump(Player.Instance.ShockwaveToolUnlocked());
+            GameStatus.status.UpdateWallJump(Player.Instance.ShockwaveJumpAndDiveUnlocked());
 
             // Enemies
             for (int i = 0; i < enemies.Count; i++)

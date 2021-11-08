@@ -32,7 +32,10 @@ public class Player : MonoBehaviour
     [SerializeField] private bool multitoolUnlocked = false;
     [SerializeField] private bool walljumpUnlocked = false;
     [SerializeField] private bool grapplingUnlocked = false;
-    [SerializeField] private bool shockwaveToolUnlocked = false;
+    [SerializeField] private bool dashUnlocked = false;
+    [SerializeField] private bool shockwaveJumpAndDiveUnlocked = false;
+    [SerializeField] private bool shockwaveAttackUnlocked = false;
+    [SerializeField] private bool shieldGrindUnlocked = false;
 
     // Component references
     public Animator animator;
@@ -781,13 +784,38 @@ public class Player : MonoBehaviour
         grapplingUnlocked = true;
     }
 
-
-    public bool ShockwaveToolUnlocked()
+    public bool DashUnlocked()
     {
-        return shockwaveToolUnlocked;
+        return dashUnlocked;
+    }
+    public void UnlockDash()
+    {
+        dashUnlocked = true;
+    }
+
+    public bool ShockwaveJumpAndDiveUnlocked()
+    {
+        return shockwaveJumpAndDiveUnlocked;
     }
     public void UnlockShockwaveTool()
     {
-        shockwaveToolUnlocked = true;
+        shockwaveJumpAndDiveUnlocked = true;
+    }
+
+    public bool ShockwaveAttackUnlocked()
+    {
+        return shockwaveAttackUnlocked;
+    }
+    public void UnlockShockwaveAttack()
+    {
+        shockwaveAttackUnlocked = true;
+    }
+    public bool ShieldGrindUnlocked()
+    {
+        return shieldGrindUnlocked;
+    }
+    public void UnlockShieldGrind()
+    {
+        shieldGrindUnlocked = true;
     }
 }

@@ -214,7 +214,7 @@ public class PlayerMovement : MonoBehaviour
         // -AIR DIVE-
 
         // Air dive while in the air
-        else if (context.started && !IsGrounded() && playerScript.ShockwaveToolUnlocked() // Grounded and shockwave tool is unlocked
+        else if (context.started && !IsGrounded() && playerScript.ShockwaveJumpAndDiveUnlocked() // Grounded and shockwave tool is unlocked
             && playerScript.InputVertical == -1 // Pressing downwards
             && (Time.time - lastLaunchTime > 0.2f || lastLaunchTime == null)) // Not just launched
         {
@@ -230,7 +230,7 @@ public class PlayerMovement : MonoBehaviour
         // -DOUBLE JUMP-
 
         // Double jump while in the air
-        else if (playerScript.ShockwaveToolUnlocked() && canShockwaveJump && !diving) // Make sure player has acquired Shockwave Jump and that they can currently double jump
+        else if (playerScript.ShockwaveJumpAndDiveUnlocked() && canShockwaveJump && !diving) // Make sure player has acquired Shockwave Jump and that they can currently double jump
         {
             // If button is pressed and player has not yet double jumped
             if (context.started && !shockwaveJumping
@@ -257,7 +257,7 @@ public class PlayerMovement : MonoBehaviour
         // If button was pressed
         if (context.performed && (Time.time - lastGroundedTime <= coyoteTime) // Check if coyote time is online
             && (Time.time - jumpButtonPressedTime <= coyoteTime) && !climbing // Check if jump has been buffered
-            && (playerScript.InputVertical != -1 || !playerScript.ShockwaveToolUnlocked())) // Not diving or not able to dive
+            && (playerScript.InputVertical != -1 || !playerScript.ShockwaveJumpAndDiveUnlocked())) // Not diving or not able to dive
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce); // Jump!
         }
