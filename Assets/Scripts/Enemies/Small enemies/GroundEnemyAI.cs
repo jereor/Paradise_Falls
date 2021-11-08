@@ -114,6 +114,7 @@ public class GroundEnemyAI : MonoBehaviour
         healthCount = health.CurrentHealth;
         spawnPosition = transform.position;
         gizmoPositionChange = false;
+        animator.SetFloat("AttackTime", punchCooldown);
 
         if (bossMode)
         {
@@ -230,6 +231,7 @@ public class GroundEnemyAI : MonoBehaviour
                 // This means that player has done a surprise attack. Stun the enemy briefly by given parameter.
                 healthCount = health.CurrentHealth;
                 hurtCounter = 0;
+                StopAllCoroutines();
                 if (enemyState == EnemyState.Roam && !obstacleBetweenTarget)
                 {
                     Debug.Log("It hurts...");
@@ -333,31 +335,31 @@ public class GroundEnemyAI : MonoBehaviour
     {
         if (stunned) enemyState = EnemyState.Stunned;
         if (!obstacleBetweenTarget) hurtCounter = 0;
-        spriteRndr.color = Color.red;
         // Outside the range, return to roam state.
         if ((!IsPlayerInAggroRange() && !isForcedToAggro) || !IsPlayerInRange())
         {
-            spriteRndr.color = Color.white;
             speed = roamingSpeed;
             enemyState = EnemyState.Roam;
             return;
         }
         // Inside the range, runs towards the target or jump randomly towards the target
-        if (IsGrounded() && ((IsPlayerInAggroRange() && canMove && !IsPlayerInPunchingRange()) || (!IsPlayerInAggroRange() && canMove && isForcedToAggro && !IsPlayerInPunchingRange())))
+        if (IsGrounded() && canMove && ((IsPlayerInAggroRange() && !IsPlayerInPunchingRange()) || (!IsPlayerInAggroRange() && isForcedToAggro && !IsPlayerInPunchingRange())))
         {
             int rand = UnityEngine.Random.Range(1, 101);
-            if (rand <= jumpProbability)
+            if (rand <= jumpProbability && canJump)
             {
-
                 StartCoroutine(JumpCharge());
+                Debug.Log("jump");
+                return;
             }
             else
             {
-                FlipLocalScaleWithForce(force);
+                Debug.Log("moving");
                 Move();
+                FlipLocalScaleWithForce(force);
                 StartCoroutine(RunCoolDown());
+                return;
             }
-            return;
         }
         //If target is close enough the enemy unit, it changes the state to "punch"
         if (IsPlayerInPunchingRange())
@@ -377,17 +379,16 @@ public class GroundEnemyAI : MonoBehaviour
         // If target goes out of enemy's bounds, return to "roam" state
         if (!IsPlayerInRange())
         {
-            spriteRndr.color = Color.white;
             speed = roamingSpeed;
             enemyState = EnemyState.Roam;
-            StopCoroutine(Attack());
+            //StopCoroutine(Attack());
             return;
         }
         else if (!IsPlayerInPunchingRange())
         {
             isForcedToAggro = true;
             speed = chargeSpeed;
-            StopCoroutine(Attack());
+            //StopCoroutine(Attack());
             enemyState = EnemyState.Charge;
             //Debug.Log("Charge again!");
             return;
@@ -414,7 +415,6 @@ public class GroundEnemyAI : MonoBehaviour
     private void HandleBossModeCharge(Vector2 force)
     {
         if (stunned) enemyState = EnemyState.Stunned;
-        spriteRndr.color = Color.red;
         // Inside the range, runs towards the target or jump randomly towards the target
         if (IsGrounded() && ((canMove && !IsPlayerInPunchingRange()) || (!IsPlayerInAggroRange() && canMove && !IsPlayerInPunchingRange())))
         {
@@ -594,7 +594,8 @@ public class GroundEnemyAI : MonoBehaviour
 
     private void Move()
     {
-        rb.AddForce(new Vector2(transform.localScale.x * speed * Time.deltaTime, 0));
+        if(IsGrounded())
+            rb.AddForce(new Vector2(transform.localScale.x * speed * Time.deltaTime, 0));
 
     }
 
@@ -642,10 +643,14 @@ public class GroundEnemyAI : MonoBehaviour
         yield return new WaitForSeconds(jumpChargeInterval);
         Vector2 jumpForce = new Vector2(transform.localScale.x * 1.5f, 1);
         FlipLocalScaleWithForce(jumpForce);
-        rb.AddForce(jumpForce * jumpChargeSpeed * Time.deltaTime, ForceMode2D.Impulse);
-        yield return new WaitForSeconds(jumpChargeInterval);
-        canMove = true;
-        canJump = true;
+        rb.AddForce(jumpForce * jumpChargeSpeed, ForceMode2D.Impulse);
+        if(IsGrounded())
+        {
+            yield return new WaitForSeconds(jumpChargeInterval);
+            canMove = true;
+            canJump = true;
+        }
+
     }
 
     private IEnumerator JumpCoolDown()
@@ -665,7 +670,6 @@ public class GroundEnemyAI : MonoBehaviour
     IEnumerator Stunned(float stunTime)
     {
         stunned = true;
-        spriteRndr.color = Color.blue;
 
         float timer = stunTime;
         while (timer > 0)
@@ -675,11 +679,13 @@ public class GroundEnemyAI : MonoBehaviour
         }
 
         stunned = false;
+        canMove = true;
+        canJump = true;
+        canPunch = true;
         isForcedToAggro = true;
         hurtCounter = 0;
         speed = chargeSpeed;
         enemyState = EnemyState.Charge;
-        spriteRndr.color = Color.white;
     }
 
     // Briefly flashes player sprite red when enemy hits them.
@@ -697,7 +703,7 @@ public class GroundEnemyAI : MonoBehaviour
         if (IsPlayerInPunchingRange())
         {
             //Do damage to player here
-            Debug.Log("Player hit");
+            //Debug.Log("Player hit");
 
             // Turns the enemy unit torwards the target when punching.
             if (target.transform.position.x - transform.position.x >= 0)
@@ -736,7 +742,7 @@ public class GroundEnemyAI : MonoBehaviour
         }
         else
         {
-            Debug.Log("Player dodged the attack?!");
+            //Debug.Log("Player dodged the attack?!");
         }
         yield return new WaitForSeconds(punchCooldown);
         canPunch = true;
@@ -762,6 +768,9 @@ public class GroundEnemyAI : MonoBehaviour
 
         isForcedToAggro = true;
         hurtCounter = 0;
+        canMove = true;
+        canJump = true;
+        canPunch = true;
         spriteRndr.color = Color.white;
         stunned = false;
     }
@@ -774,33 +783,49 @@ public class GroundEnemyAI : MonoBehaviour
         }
         if(enemyState == EnemyState.Roam)
         {
+
             animator.SetBool("Walk", true);
             animator.SetBool("Run", false);
+            animator.SetBool("Attack", false);
+            animator.SetBool("Stagger", false);
+
+
         }
 
         if(enemyState == EnemyState.Charge)
         {
             animator.SetBool("Run", true);
             animator.SetBool("Walk", false);
+            animator.SetBool("Attack", false);
+            animator.SetBool("Stagger", false);
         }
 
         if (enemyState == EnemyState.Punch)
         {
             animator.Play("Attack");
+            animator.SetBool("Attack", true);
+            animator.SetBool("Run", false);
+            animator.SetBool("Walk", false);
         }
 
         if (enemyState == EnemyState.Stunned)
         {
+            Debug.Log("Staggered");
+            animator.StopPlayback();
             animator.SetBool("Stagger", true);
             animator.SetBool("Run", false);
             animator.SetBool("Walk", false);
+            animator.SetBool("Attack", false);
         }
 
         if (enemyState == EnemyState.Staggered)
         {
+            Debug.Log("Staggered");
+            animator.StopPlayback();
             animator.SetBool("Stagger", true);
             animator.SetBool("Run", false);
             animator.SetBool("Walk", false);
+            animator.SetBool("Attack", false);
         }
 
         if (enemyState == EnemyState.BossModeCharge)
