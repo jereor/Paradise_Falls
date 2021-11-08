@@ -10586,6 +10586,9 @@ MonoBehaviour:
   bossWeakPointLayer:
     serializedVersion: 2
     m_Bits: 65536
+  breakableLayer:
+    serializedVersion: 2
+    m_Bits: 1048576
   attackPoint: {fileID: 7716404287092780390}
   attackRangeX: 1.5
   attackRangeY: 1.5
