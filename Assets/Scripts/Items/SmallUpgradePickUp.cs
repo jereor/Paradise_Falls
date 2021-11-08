@@ -4,30 +4,26 @@ using UnityEngine;
 
 public class SmallUpgradePickUp : Interactable
 {
-    enum Recource
+    enum Upgrade
     {
         LightDmg,
-        ThrowDmg,
-        PullDmg,
-        PowerBoostedDmg,
-        ThrowChargeTime,
+        Throw,
         MaxHealth,
-        MaxEnergy
+        EnergyRegen
     }
 
     [Header("Variables from This script")]
-    [SerializeField] private Recource myEnum;
+    [SerializeField] private Upgrade myEnum;
     [SerializeField] private bool playerIsClose;
     [SerializeField] private GameObject playerObject;
 
     [Header("Upgrade amounts(change these only on prefab, amount that is added when picked up)")]
     [SerializeField] private float lightDamage;
-    [SerializeField] private float throwDamage;
-    [SerializeField] private float pullDamage;
-    [SerializeField] private float powerBoostedDamage;
+    [SerializeField] private float heavyDamage;
+    [SerializeField] private float throwMaxChargeDamage;
     [SerializeField] private float throwChargeTime;
-    [SerializeField] private float maxHealth;
-    [SerializeField] private float maxEnergy;
+    [SerializeField] private float maxHealthAmount;
+    [SerializeField] private float energyRegenMultiplier;
 
     void Start()
     {
@@ -83,26 +79,18 @@ public class SmallUpgradePickUp : Interactable
     {
         switch (myEnum)
         {
-            case Recource.LightDmg:
-                playerObject.GetComponent<PlayerCombat>().UpgradeLightDamage(lightDamage);
+            case Upgrade.LightDmg:
+                playerObject.GetComponent<PlayerCombat>().UpgradeMeleeDamage(lightDamage, heavyDamage);
                 break;
-            case Recource.ThrowDmg:
-                playerObject.GetComponent<PlayerCombat>().UpgradeThrowDamage(throwDamage);
-                break;
-            case Recource.PullDmg:
-                playerObject.GetComponent<PlayerCombat>().UpgradePullDamage(pullDamage);
-                break;
-            case Recource.PowerBoostedDmg:
-                playerObject.GetComponent<PlayerCombat>().UpgradePowerBoostedDamage(powerBoostedDamage);
-                break;
-            case Recource.ThrowChargeTime:
+            case Upgrade.Throw:
+                playerObject.GetComponent<PlayerCombat>().UpgradeThrowDamage(throwMaxChargeDamage);
                 playerObject.GetComponent<PlayerCombat>().UpgradeThrowMaxChargeTime(throwChargeTime);
                 break;
-            case Recource.MaxHealth:
-                playerObject.GetComponent<Health>().UpgradeMaxHealth(maxHealth);
+            case Upgrade.MaxHealth:
+                playerObject.GetComponent<Health>().UpgradeMaxHealth(maxHealthAmount);
                 break;
-            case Recource.MaxEnergy:
-                playerObject.GetComponent<Energy>().UpgradeMaxEnergy(maxEnergy);
+            case Upgrade.EnergyRegen:
+                playerObject.GetComponent<Energy>().UpgradeEnergyRegen(energyRegenMultiplier);
                 break;
             default:
                 break;

@@ -14,9 +14,9 @@ public class CannonEnemyAI : MonoBehaviour
 
     [Header("Transforms")]
     [SerializeField] private Transform target;
-    [SerializeField] private Transform enemyGFX;
-    [SerializeField] private Rigidbody2D playerRB;
     [SerializeField] private Transform cannonTransform;
+    [SerializeField] private Transform cannon1;
+    [SerializeField] private Transform cannon2;
     [SerializeField] private Transform shootTransform;
     [SerializeField] private GameObject bullet;
     [SerializeField] private GameObject energyItem;
@@ -237,7 +237,8 @@ public class CannonEnemyAI : MonoBehaviour
             gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.red;
         }
         // Turns the enemy unit torwards the target when aiming.
-        cannonTransform.rotation = Quaternion.RotateTowards(cannonTransform.rotation, q, rotSpeed * Time.fixedDeltaTime);
+        cannon1.rotation = Quaternion.RotateTowards(cannon1.rotation, q, rotSpeed * Time.fixedDeltaTime);
+        cannon2.rotation = Quaternion.RotateTowards(cannon2.rotation, q, rotSpeed * Time.fixedDeltaTime);
 
         // If target goes out of enemy's bounds, return to "idle" state
         if (!IsPlayerInAggroRange() && !staticMode && !bossMode)

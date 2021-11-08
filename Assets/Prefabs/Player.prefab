@@ -4816,7 +4816,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4913,7 +4913,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -9781,7 +9781,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -9892,7 +9892,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -10143,6 +10143,7 @@ MonoBehaviour:
   shieldUnlocked: 0
   multitoolUnlocked: 0
   walljumpUnlocked: 0
+  grapplingUnlocked: 0
   shockwaveToolUnlocked: 0
   animator: {fileID: 3265684260011797273}
   rb: {fileID: 0}
@@ -10435,6 +10436,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxEnergy: 100
   currentEnergy: 0
+  energyRegenMultiplier: 0
 --- !u!212 &2646993275326716547
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -10454,7 +10456,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -10561,17 +10563,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lightDamage: 1
-  heavyDamage: 2
+  heavyDamage: 6
+  heavyChargeTime: 2
   lastHitMultiplier: 1.5
   weakPointMultiplier: 2
   knockbackForceLight: 300
-  knockbackForceHeavy: 750
+  knockbackForceLightLast: 750
+  knockbackForceHeavy: 1000
   dashSpeed: 5
   dashDistance: 0.05
   playerPullForce: 750
   kbOnLight: 1
   kbOnLightLast: 1
-  comboCooldownTime: 0.5
+  kbOnHeavy: 1
+  comboCooldownTime: 0
   enemyLayer:
     serializedVersion: 2
     m_Bits: 128
@@ -10581,6 +10586,9 @@ MonoBehaviour:
   bossWeakPointLayer:
     serializedVersion: 2
     m_Bits: 65536
+  breakableLayer:
+    serializedVersion: 2
+    m_Bits: 1048576
   attackPoint: {fileID: 7716404287092780390}
   attackRangeX: 1.5
   attackRangeY: 1.5
@@ -10601,10 +10609,6 @@ MonoBehaviour:
   magnetTether: {fileID: 5454362082765361711}
   timeBeforeRelease: 0.5
   heavyHold: 0
-  onIdle: 1
-  onTran1: 0
-  onTran2: 0
-  onTran3: 0
   canReceiveInputMelee: 0
   canReceiveInputThrow: 0
   meleeInputReceived: 0
@@ -10738,7 +10742,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

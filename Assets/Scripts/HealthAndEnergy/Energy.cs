@@ -6,6 +6,7 @@ public class Energy : MonoBehaviour
 {
     [SerializeField] private float maxEnergy;
     [SerializeField] private float currentEnergy;
+    [SerializeField] private float energyRegenMultiplier;
 
     // Start is called before the first frame update
     void Start()
@@ -48,9 +49,9 @@ public class Energy : MonoBehaviour
 
 
     // --- UPGRADE ---
-    public void UpgradeMaxEnergy(float amount)
+    public void UpgradeEnergyRegen(float amount)
     {
-        maxEnergy += amount;
+        energyRegenMultiplier += amount;
     }
 
 

@@ -5112,8 +5112,12 @@ MonoBehaviour:
     - 0
     bossesDefeated: 00
     enemiesDefeated: 00000000
-    weaponAcquired: 0
-    wallJumpAcquired: 0
+    shield: 0
+    multitool: 0
+    wallJump: 0
+    grappling: 0
+    shockwave: 0
+    levers: 0
     camera: 
   loadedData:
     position:
@@ -5121,8 +5125,12 @@ MonoBehaviour:
     - 0
     bossesDefeated: 00
     enemiesDefeated: 00000000
-    weaponAcquired: 0
-    wallJumpAcquired: 0
+    shield: 0
+    multitool: 0
+    wallJump: 0
+    grappling: 0
+    shockwave: 0
+    levers: 0
     camera: 
 --- !u!4 &1462657396
 Transform:

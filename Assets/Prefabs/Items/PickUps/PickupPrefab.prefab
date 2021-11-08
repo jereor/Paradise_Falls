@@ -287,7 +287,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -344,12 +344,11 @@ MonoBehaviour:
   playerIsClose: 0
   playerObject: {fileID: 0}
   lightDamage: 1
-  throwDamage: 1
-  pullDamage: 1
-  powerBoostedDamage: 1
-  throwChargeTime: 0.1
-  maxHealth: 1
-  maxEnergy: 1
+  heavyDamage: 4
+  throwMaxChargeDamage: 1
+  throwChargeTime: 0.2
+  maxHealthAmount: 1
+  energyRegenMultiplier: 0.5
 --- !u!61 &7398052423922392709
 BoxCollider2D:
   m_ObjectHideFlags: 0

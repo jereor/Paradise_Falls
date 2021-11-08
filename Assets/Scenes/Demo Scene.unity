@@ -237,7 +237,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a96bbc724c08bc46893f19ec3d924d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  newCamera: {fileID: 1163531830}
+  triggered: 0
+  zoneCamera: {fileID: 0}
 --- !u!61 &30167091
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -553,7 +554,7 @@ Transform:
   - {fileID: 315156367}
   - {fileID: 1286171524}
   m_Father: {fileID: 1358736378}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &217751925
 PrefabInstance:
@@ -915,6 +916,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentCamera: {fileID: 1543148539}
+  triggerList: []
 --- !u!1 &392510340 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8573934192724097574, guid: 8bac6f9709cdb534896f74f5ba66fabb, type: 3}
@@ -1588,7 +1590,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a96bbc724c08bc46893f19ec3d924d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  newCamera: {fileID: 2049820519841350929}
+  triggered: 0
+  zoneCamera: {fileID: 0}
 --- !u!1001 &604229745
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1755,11 +1758,15 @@ PrefabInstance:
       propertyPath: m_Name
       value: '[Canvas]'
       objectReference: {fileID: 0}
+    - target: {fileID: 8978081931078757661, guid: a655144b432639548a8f6b7175f6390a, type: 3}
+      propertyPath: m_RootOrder
+      value: 8
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a655144b432639548a8f6b7175f6390a, type: 3}
 --- !u!224 &611025018 stripped
 RectTransform:
-  m_CorrespondingSourceObject: {fileID: 4160816440653676630, guid: a655144b432639548a8f6b7175f6390a, type: 3}
+  m_CorrespondingSourceObject: {fileID: 8978081931078757661, guid: a655144b432639548a8f6b7175f6390a, type: 3}
   m_PrefabInstance: {fileID: 611025017}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &615615510
@@ -2116,7 +2123,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a96bbc724c08bc46893f19ec3d924d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  newCamera: {fileID: 1163531830}
+  triggered: 0
+  zoneCamera: {fileID: 0}
 --- !u!1 &770988451
 GameObject:
   m_ObjectHideFlags: 3
@@ -2274,6 +2282,37 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &869335497
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 869335498}
+  m_Layer: 0
+  m_Name: '[Lighting]'
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &869335498
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 869335497}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 2092508347}
+  m_Father: {fileID: 0}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &884687215
 GameObject:
   m_ObjectHideFlags: 0
@@ -2576,7 +2615,7 @@ Transform:
   m_LocalScale: {x: 10.358979, y: 1.3231299, z: 1}
   m_Children: []
   m_Father: {fileID: 1358736378}
-  m_RootOrder: 8
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
 --- !u!61 &960154202
 BoxCollider2D:
@@ -3726,7 +3765,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a96bbc724c08bc46893f19ec3d924d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  newCamera: {fileID: 1163531830}
+  triggered: 0
+  zoneCamera: {fileID: 0}
 --- !u!61 &1207316310
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -4347,10 +4387,10 @@ Transform:
   - {fileID: 604229747}
   - {fileID: 1162629479}
   - {fileID: 1383424518}
-  - {fileID: 611025018}
   - {fileID: 213819070}
   - {fileID: 1639018519}
   - {fileID: 960154201}
+  - {fileID: 611025018}
   - {fileID: 2094723621}
   - {fileID: 314914158}
   - {fileID: 978704476}
@@ -4674,7 +4714,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a96bbc724c08bc46893f19ec3d924d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  newCamera: {fileID: 2049820519841350929}
+  triggered: 0
+  zoneCamera: {fileID: 0}
 --- !u!61 &1439982172
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -4804,7 +4845,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a96bbc724c08bc46893f19ec3d924d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  newCamera: {fileID: 1543148539}
+  triggered: 0
+  zoneCamera: {fileID: 0}
 --- !u!61 &1446788675
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -5414,7 +5456,7 @@ Transform:
   - {fileID: 543937366}
   - {fileID: 4313399883466721127}
   m_Father: {fileID: 1358736378}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1669387220
 GameObject:
@@ -6223,7 +6265,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a96bbc724c08bc46893f19ec3d924d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  newCamera: {fileID: 1543148539}
+  triggered: 0
+  zoneCamera: {fileID: 0}
 --- !u!61 &1828169929
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -6337,7 +6380,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a96bbc724c08bc46893f19ec3d924d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  newCamera: {fileID: 1163531830}
+  triggered: 0
+  zoneCamera: {fileID: 0}
 --- !u!61 &1974293805
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -6936,6 +6980,78 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &2092508346
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2092508347}
+  - component: {fileID: 2092508348}
+  m_Layer: 0
+  m_Name: Global Light 2D
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2092508347
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2092508346}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 869335498}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2092508348
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2092508346}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_LightType: 4
+  m_BlendStyleIndex: 0
+  m_FalloffIntensity: 0.5
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Intensity: 1
+  m_LightVolumeOpacity: 0
+  m_ApplyToSortingLayers: 00000000
+  m_LightCookieSprite: {fileID: 0}
+  m_UseNormalMap: 0
+  m_LightOrder: 0
+  m_AlphaBlendOnOverlap: 0
+  m_ShadowIntensity: 0
+  m_ShadowVolumeIntensity: 0
+  m_PointLightInnerAngle: 360
+  m_PointLightOuterAngle: 360
+  m_PointLightInnerRadius: 0
+  m_PointLightOuterRadius: 1
+  m_PointLightDistance: 3
+  m_PointLightQuality: 1
+  m_ShapeLightParametricSides: 5
+  m_ShapeLightParametricAngleOffset: 0
+  m_ShapeLightParametricRadius: 1
+  m_ShapeLightFalloffSize: 0.5
+  m_ShapeLightFalloffOffset: {x: 0, y: 0}
+  m_ShapePath:
+  - {x: -0.5, y: -0.5, z: 0}
+  - {x: 0.5, y: -0.5, z: 0}
+  - {x: 0.5, y: 0.5, z: 0}
+  - {x: -0.5, y: 0.5, z: 0}
 --- !u!4 &2094723621 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3607895715631322098, guid: d03de263ba5235d4aae4a9d3efc0b1c1, type: 3}
@@ -7621,15 +7737,18 @@ MonoBehaviour:
   weaponThrowDamage: 1
   powerBoostedDamage: 0
   weaponPullDamage: 1
+  weakPointMultiplier: 0
   rotSpeed: 0
   ricochetImpulseForce: 0
   ricochetYImpulse: 0
+  enemyHitRicochetScaler: 0
   pullForce: 750
   powerBoostForce: 0
   maxDistance: 7
   meleeWeaponGrapplingDistance: 0
   worldPickUp: 1
   knockbackForce: 500
+  mySpriteRenderer: {fileID: 0}
   beingPulled: 0
   powerBoosted: 0
 --- !u!61 &4313399883466721121

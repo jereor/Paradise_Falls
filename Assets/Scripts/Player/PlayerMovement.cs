@@ -80,6 +80,8 @@ public class PlayerMovement : MonoBehaviour
 
     // Others
     RaycastHit2D ledgeHitOffsetRay;
+    private Rigidbody2D movingPlatformRB;
+    private RaycastHit2D movingPlatformRaycastHit = new RaycastHit2D();
 
     private void Start()
     {
@@ -99,7 +101,7 @@ public class PlayerMovement : MonoBehaviour
         climbXOffset = GetComponent<BoxCollider2D>().size.x;
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         // Movement
         // We cannot move and horizontal is something else than zero 
@@ -113,8 +115,13 @@ public class PlayerMovement : MonoBehaviour
             // Replace with our desired movement if we were pressing move during !canReceiveInputMove or before action that stops movement
             horizontal = horizontalBuffer;
         }
-        rb.velocity = new Vector2(horizontal * movementVelocity, rb.velocity.y); // Moves the player by horizontal input
-
+  
+        // Basic movement
+        // PlatformMovement() modifies rv.velcity and returns true if player is on platform
+        if(!MovingPlatformMovement())
+        {
+            rb.velocity = new Vector2(horizontal * movementVelocity, rb.velocity.y); // Moves the player by horizontal input
+        }
 
         /* DISABLED FOR NOW. Launch checks to use when using directional boost plant launch
         if (launched && horizontal != 0)
@@ -151,11 +158,7 @@ public class PlayerMovement : MonoBehaviour
         }
         else
             PlayerCamera.Instance.ChangeCameraOffset(0.2f, falling, isFacingRight ? 1 : -1); // Offset camera with character front direction
-    }
 
-    // Physic based operations should be called in FixedUpdate(), else hardware can affect Physics (frame drops can skip Update() calls)
-    private void FixedUpdate()
-    {
         CheckLedgeClimb();
         CheckWallJump();
         CheckShockwaveJump();
@@ -314,6 +317,37 @@ public class PlayerMovement : MonoBehaviour
         
     }
 
+    // ---- Moving Platform movement ----
+
+    // Checks if we are interacting with moving platform(standing, jumping, climbing) and modifies velocity and returns true ELSE does nothing to velocity and returns false
+    private bool MovingPlatformMovement()
+    {
+        // Check if we are on moving platform currently
+        if (getMovingPlatformRigidbody() != null)
+        {
+            // Climbing the platform
+            if (getIfClimbingMovingPlatform())
+            {
+                if (rb.gravityScale != movingPlatformRB.gravityScale)
+                {
+                    rb.gravityScale = movingPlatformRB.gravityScale;
+                }
+                rb.velocity = movingPlatformRB.velocity;
+            }
+            // Jump from platform we need to subtract Y values
+            else if (jumpButtonPressedTime != null)
+                rb.velocity = movingPlatformRB.velocity + new Vector2(horizontal * movementVelocity, rb.velocity.y - movingPlatformRB.velocity.y);
+            // Standing still and moving on moving platform
+            else if (IsGrounded())
+                rb.velocity = movingPlatformRB.velocity + new Vector2(horizontal * movementVelocity, 0f);
+            // Return true to let FixedUpdate() know we did move with platform
+            return true;
+        }
+
+        // We are not interaction with moving platform return false and move normally
+        return false;
+    }
+
     // Player can sometimes get stuck and not be able to jump because ground check fails
     // This check eliminates those situations and enables jumping even when not grounded if player is clearly stuck
     private void CheckIfStuck()
@@ -350,11 +384,11 @@ public class PlayerMovement : MonoBehaviour
                 && !LedgeIsOccupied()                                       // Player sees(raycasts) ledge and space is vacant to climb
                 && Time.time - lastTimeClimbed >= climbTimeBuffer           // We have to climb stairlike object step by step not instantly to the top
                 && horizontal != 0                                          // Player is moving and wanting to climb if no move input fall
+                && CheckPlayerFitPlatform()                                 // Check if player fit on top of platform if this is the case
                 && !Player.Instance.GetIsAttacking()                        // If we are attacking we cannot climb at the same time
-                && !Player.Instance.GetIsAiming()
+                && !Player.Instance.GetHCharging()
                 && !Player.Instance.GetIsBlocking()
                 && !Player.Instance.GetIsParrying())
-
             {
                 canClimb = true;
             }
@@ -370,19 +404,77 @@ public class PlayerMovement : MonoBehaviour
                 lastTimeClimbed = Time.time; // We start climbing set time here
             }
         }
-        else if (climbing)
+        else if (climbing && !getIfClimbingMovingPlatform())
         {
             rb.gravityScale = 0f; // Keep gravity at zero so player stays still until climbing animation is done
             rb.velocity = Vector2.zero;
         }
     }
 
+    // Check if we will fit on top of the platform example: moving upward and ceiling would block our climb or we would be squashed
+    public bool CheckPlayerFitPlatform()
+    {
+        movingPlatformRaycastHit = Physics2D.Raycast(wallCheckBody.position, transform.right * transform.localScale.x, checkDistance + 1f, groundLayer);
+        // Check if player fits on top of the moving platform
+        if (movingPlatformRaycastHit && movingPlatformRaycastHit.transform.gameObject.CompareTag("MovingPlatform"))
+        {
+            // 3 different scripts, if script is found check from correct script if not return false
+            if(movingPlatformRaycastHit.transform.gameObject.TryGetComponent(out StaticMovingBox staticScript))
+            {
+                return staticScript.getWillPlayerFit();
+            }
+            else if (movingPlatformRaycastHit.transform.gameObject.TryGetComponent(out BackAndForthMovingBox movingScript))
+            {
+                return movingScript.getWillPlayerFit();
+            }
+            else if (movingPlatformRaycastHit.transform.gameObject.TryGetComponent(out StaticMovingPlatform platformScript))
+            {
+                return platformScript.getWillPlayerFit();
+            }
+            // Did not find these components we don't really know what we are climbing
+            return false;
+        }
+        // We are climbing normal ground object we return true
+        return true;
+    }
+
     // Moves player instantly on top of the ledge he is climbing
     // Called from LedgeClimbScript OnStateExit() aka animation end
     public void LedgeClimb()
     {
-        // Move player for offset amount to X and Y directions. X dir will need localScale.x to track where player is looking
-        transform.position = new Vector2(transform.position.x + climbXOffset * transform.localScale.x, transform.position.y + climbYOffset - ledgeHitOffsetRay.distance);
+        // Moving platform climb
+        if (movingPlatformRaycastHit && movingPlatformRaycastHit.transform.gameObject.CompareTag("MovingPlatform"))
+        {
+            // Climbing to left side of platform
+            if (isFacingRight)
+            {
+                // 3 different scripts, if script is found check from correct script if not return false
+                if (movingPlatformRaycastHit.transform.gameObject.TryGetComponent(out StaticMovingBox staticScript))
+                    transform.position = staticScript.getLeftClimbPos();
+                else if (movingPlatformRaycastHit.transform.gameObject.TryGetComponent(out BackAndForthMovingBox movingScript))
+                    transform.position = movingScript.getLeftClimbPos();
+                else if (movingPlatformRaycastHit.transform.gameObject.TryGetComponent(out StaticMovingPlatform platformScript))
+                    transform.position = platformScript.getLeftClimbPos();
+            }
+            // Right
+            else
+            {
+                // 2 different scripts, if script is found check from correct script if not return false
+                if (movingPlatformRaycastHit.transform.gameObject.TryGetComponent(out StaticMovingBox staticScript))
+                    transform.position = staticScript.getRightClimbPos();
+                else if (movingPlatformRaycastHit.transform.gameObject.TryGetComponent(out BackAndForthMovingBox movingScript))
+                    transform.position = movingScript.getRightClimbPos();
+                else if (movingPlatformRaycastHit.transform.gameObject.TryGetComponent(out StaticMovingPlatform platformScript))
+                    transform.position = platformScript.getRightClimbPos();
+            }
+            // Reset so we know next time if we are climbin moving platform (set again in CheckPlayerFitPlatform())
+            movingPlatformRaycastHit = new RaycastHit2D();
+        }
+        else
+        {
+            // Move player for offset amount to X and Y directions. X dir will need localScale.x to track where player is looking
+            transform.position = new Vector2(transform.position.x + climbXOffset * transform.localScale.x, transform.position.y + climbYOffset - ledgeHitOffsetRay.distance);
+        }
         shockwaveTool.CancelShockwaveDive(); // Checks if shockwave dive graphics are on and disables them
         rb.gravityScale = defaultGravityScale; // Set this to default here
         canWallJump = false; // Prevent wall jumps
@@ -426,15 +518,17 @@ public class PlayerMovement : MonoBehaviour
                 else if (canWallJump)
                 {
                     currentlyWallSliding = false;
-                    rb.gravityScale = defaultGravityScale;
+                    if (rb.gravityScale != defaultGravityScale)
+                        rb.gravityScale = defaultGravityScale;
                     canWallJump = false;
                 }
             }
             // We land set wall jump wall direction tracking to zero
-            if (IsGrounded())
+            if (IsGrounded() && !climbing)
             {
                 currentlyWallSliding = false;
-                rb.gravityScale = defaultGravityScale;
+                if(rb.gravityScale != defaultGravityScale)
+                    rb.gravityScale = defaultGravityScale;
                 wallJumpDir = 0f;
                 canWallJump = false;
             }
@@ -502,10 +596,16 @@ public class PlayerMovement : MonoBehaviour
         return true;
     }
 
-    // Returns true if ground check detects ground
+    // Returns true if ground check detects ground + stores information of moving platform gameobject if grounded on it
     public bool IsGrounded()
     {
-        return Physics2D.OverlapCircle(groundCheck.position, checkRadius, groundLayer);
+        Collider2D obj = Physics2D.OverlapCircle(groundCheck.position, checkRadius, groundLayer);
+        if (obj && obj.gameObject.CompareTag("MovingPlatform"))
+            movingPlatformRB = obj.GetComponent<Rigidbody2D>();
+        else if (!climbing)
+            movingPlatformRB = null;
+
+        return obj;
     }
 
     // Flips player by changing localScale
@@ -604,6 +704,27 @@ public class PlayerMovement : MonoBehaviour
 
 
     // ---- OTHERS ---
+
+    public bool getIfOnMovingPlatform()
+    {
+        return movingPlatformRB;
+    }
+
+    public bool getIfClimbingMovingPlatform()
+    {
+        if (movingPlatformRaycastHit.transform != null && movingPlatformRaycastHit.transform.gameObject.CompareTag("MovingPlatform"))
+            return true;
+
+        return false;
+    }
+
+    public Rigidbody2D getMovingPlatformRigidbody()
+    {
+        if (movingPlatformRaycastHit.transform != null && movingPlatformRaycastHit.transform.gameObject.CompareTag("MovingPlatform") && movingPlatformRaycastHit.transform.gameObject.TryGetComponent(out Rigidbody2D rb))
+            movingPlatformRB = rb;
+
+        return movingPlatformRB;
+    }
 
     public bool getWillLand()
     {

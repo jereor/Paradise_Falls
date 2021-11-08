@@ -9,15 +9,18 @@ public class PlayerCombat : MonoBehaviour
     [Header("Melee Variables")]
     [SerializeField] private float lightDamage; // Light hits 1, 2 and 3 = lightDamage + lightDamage/2 (pyoristettyna ylospain) 
     [SerializeField] private float heavyDamage; // Same as above but with different float
+    [SerializeField] private float heavyChargeTime;
     [SerializeField] private float lastHitMultiplier;
     [SerializeField] private float weakPointMultiplier;
     [SerializeField] private float knockbackForceLight;
+    [SerializeField] private float knockbackForceLightLast;
     [SerializeField] private float knockbackForceHeavy;
     [SerializeField] private float dashSpeed; // Velocity for dash if 0 no dash 
     [SerializeField] private float dashDistance; // Distance of dash
     [SerializeField] private float playerPullForce;
     [SerializeField] private bool kbOnLight;
     [SerializeField] private bool kbOnLightLast;
+    [SerializeField] private bool kbOnHeavy;
 
     [Header("Combo Variables")]
     private bool comboOnCooldown = false; // Boolean of active combo cooldown
@@ -30,6 +33,7 @@ public class PlayerCombat : MonoBehaviour
     public LayerMask enemyLayer;
     public LayerMask bossLayer;
     public LayerMask bossWeakPointLayer;
+    public LayerMask breakableLayer;
     public Transform attackPoint; // Center of the hit point box we draw to check collisions
     public float attackRangeX; // Width of the check box
     public float attackRangeY; // Height
@@ -74,7 +78,11 @@ public class PlayerCombat : MonoBehaviour
     // State variables
     private bool throwAimHold; // True if we are holdling Throw input (MouseR)
 
-    public bool heavyHold; // True if we are holding HeavyMelee input (LShift)
+    // Heavy attack variables
+    public bool heavyHold; // True if we are holding HeavyMelee input (LAlt)
+    private bool heavyBeingCharged = false;
+    private bool isHeavyCharged;
+    private float? heavyMeleeButtonPressedTime;
 
     private float? throwButtonPressedTime; // Time when we start throwing
     private float throwChargeStartTime; // Time when we start charging
@@ -87,7 +95,7 @@ public class PlayerCombat : MonoBehaviour
 
     Vector2 vectorToTarget; // Vector to mousepos from player gameobject
     
-    // These will stay 
+    // Melee + throw inputs for Player.cs
     public bool canReceiveInputMelee = false; // If this is true we can melee (no attack animation ongoing)
     public bool canReceiveInputThrow = false; // If this is true we can melee (no attack animation ongoing)
     public bool meleeInputReceived = false; // Used in transitions and idle to tell animator to start correct attack if this turns true
@@ -197,8 +205,9 @@ public class PlayerCombat : MonoBehaviour
         PullingPlayer();
 
         MagnetTether();
-    }
 
+        HeavyCharge();
+    }
 
     // --- INPUT FUNCITONS ---
 
@@ -215,6 +224,13 @@ public class PlayerCombat : MonoBehaviour
             {
                 // Set time here since we start charging
                 throwButtonPressedTime = Time.time;
+            }
+
+            // Input for heavy attack
+            else if(!throwAimHold && heavyHold)
+            {
+                meleeInputReceived = true;
+                heavyMeleeButtonPressedTime = Time.time;
             }
 
             // Input for melee 
@@ -262,9 +278,13 @@ public class PlayerCombat : MonoBehaviour
             // Weapon is thrown hide points
             HideAllProjPoints();
         }
+        else if(context.canceled && isWeaponWielded && heavyHold && meleeWeaponPrefab && heavyMeleeButtonPressedTime != null)
+        {
+            heavyMeleeButtonPressedTime = null;
+        }
     }
 
-    // Input from left shift
+    // Input from alt
     public void HeavyMelee(InputAction.CallbackContext context)
     {
         if (!Player.Instance.MultitoolUnlocked()) return;
@@ -277,6 +297,7 @@ public class PlayerCombat : MonoBehaviour
         if (context.canceled)
         {
             heavyHold = false;
+            heavyMeleeButtonPressedTime = null;
         }
     }
 
@@ -431,6 +452,29 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
+    // Heavy attack hold time calculator
+    private void HeavyCharge()
+    {
+        // We hold alt and heavy melee button at the same time and we are grounded
+        if (heavyHold && heavyMeleeButtonPressedTime != null && PlayerMovement.Instance.IsGrounded())
+        {
+            // We are charging
+            if (!heavyBeingCharged)
+                heavyBeingCharged = true;
+
+            // If right button is held for heavyChargeTime amount we have charged it
+            if (Time.time - heavyMeleeButtonPressedTime >= heavyChargeTime && !isHeavyCharged)
+                isHeavyCharged = true;
+        }
+        // We are not charging heavy attack
+        else
+        {
+            // Stopped charging
+            if (heavyBeingCharged)
+                heavyBeingCharged = false;
+        }
+    }
+
     // Made to own function less copy pasta 
     // colliders to what collider array we are going to be deal dmg
     // kb bool from kbOnLight or kbOnLightLast aka if we wish to knockback
@@ -481,6 +525,8 @@ public class PlayerCombat : MonoBehaviour
 
         Collider2D[] hitBossesWeakPoint = Physics2D.OverlapBoxAll(attackPoint.position, new Vector2(attackRangeX, attackRangeY), 0f, bossWeakPointLayer);
 
+        Collider2D[] hitBreakables = Physics2D.OverlapBoxAll(attackPoint.position, new Vector2(attackRangeX, attackRangeY), 0f, breakableLayer);
+
         Debug.Log("DEALING DMG!! combo hit: " + comboIndex + " Heavy?: " + heavyHit);
         // Normal combo hits 1 and 2
         if (comboIndex < 3 && !heavyHit)
@@ -502,29 +548,53 @@ public class PlayerCombat : MonoBehaviour
             {
                 DealDamageTo(hitBosses, lightDamage, kbOnLight, knockbackForceLight, bossLayer);
             }
+
+            // Breaking breakables
+            if(hitBreakables.Length != 0)
+            {
+                foreach (Collider2D collider in hitBreakables)
+                {
+                    if (collider.TryGetComponent(out Chain chainScript))
+                    {
+                        chainScript.CutChain(true);
+                    }
+                }
+            }
         }
         // Normal combo hit 3 aka last hit of combo
         else if (comboIndex == 3 && !heavyHit)
         {
             if (hitEnemies.Length != 0)
             {
-                DealDamageTo(hitEnemies, Mathf.Ceil(lightDamage * lastHitMultiplier), kbOnLightLast, knockbackForceLight, enemyLayer);
+                DealDamageTo(hitEnemies, Mathf.Ceil(lightDamage * lastHitMultiplier), kbOnLightLast, knockbackForceLightLast, enemyLayer);
             }
 
             if (hitBossesWeakPoint.Length != 0)
             {
                 // Deal damage
-                DealDamageTo(hitBossesWeakPoint, Mathf.Ceil(lightDamage * weakPointMultiplier * lastHitMultiplier), kbOnLightLast, knockbackForceLight, bossWeakPointLayer);
+                DealDamageTo(hitBossesWeakPoint, Mathf.Ceil(lightDamage * weakPointMultiplier * lastHitMultiplier), kbOnLightLast, knockbackForceLightLast, bossWeakPointLayer);
             }
             else if (hitBosses.Length != 0)
             {
-                 DealDamageTo(hitBosses, Mathf.Ceil(lightDamage * lastHitMultiplier), kbOnLightLast, knockbackForceLight, bossLayer);
+                 DealDamageTo(hitBosses, Mathf.Ceil(lightDamage * lastHitMultiplier), kbOnLightLast, knockbackForceLightLast, bossLayer);
+            }
+
+            // Breaking breakables
+            if (hitBreakables.Length != 0)
+            {
+                foreach (Collider2D collider in hitBreakables)
+                {
+                    if (collider.TryGetComponent(out Chain chainScript))
+                    {
+                        chainScript.CutChain(true);
+                    }
+                }
             }
         }
 
 
-        // Heavy combo hits 1 and 2
-        if (comboIndex < 3 && heavyHit)
+        // Heavy hit
+        if (heavyHit)
         {
             // If there is elements on hitEnemies array go through it
             foreach (Collider2D enemy in hitEnemies)
@@ -538,29 +608,37 @@ public class PlayerCombat : MonoBehaviour
                     Knockback(enemy.gameObject, gameObject, knockbackForceHeavy);
                 }
             }
-        }
-        // Heavy combo hit 3 aka last hit of combo
-        else if (comboIndex == 3 && heavyHit)
-        {
-            // If there is elements on hitEnemies array go through it
-            foreach (Collider2D enemy in hitEnemies)
+
+            // Dealing damage to enemies
+            if (hitEnemies.Length != 0)
+                DealDamageTo(hitEnemies, heavyDamage, kbOnHeavy, knockbackForceHeavy, enemyLayer);
+
+            // Dealing damage to bosses 
+            // If we hit weakpoint we deal only the amount from weakpoint hit and "skip" checkin hitBosses colliders (prevent from dealing weakpoint + normal damage on one hit)
+            if (hitBossesWeakPoint.Length != 0)
             {
-                // Error check if there isn't Health script attached don't do damage
-                if (enemy.TryGetComponent<Health>(out var healthScript))
+                // Deal damage
+                // Ceil since example: weakPointMultiplier = 1.5 lightDamage = 1 without rounding dmg = 1.5 with Floor dmg 1 with Ceil dmg = 2
+                // most likely not needed since weakPointMult 2x is standard in games 
+                DealDamageTo(hitBossesWeakPoint, Mathf.Ceil(heavyDamage * weakPointMultiplier), kbOnHeavy, knockbackForceHeavy, bossWeakPointLayer);
+            }
+            else if (hitBosses.Length != 0)
+            {
+                DealDamageTo(hitBosses, heavyDamage, kbOnHeavy, knockbackForceHeavy, bossLayer);
+            }
+
+            // Breaking breakables
+            if (hitBreakables.Length != 0)
+            {
+                foreach (Collider2D collider in hitBreakables)
                 {
-                    // Deal damage
-                    if (heavyDamage % 2 == 1) // Example if heavyDamage = 3 --> 3 / 2 = 1.5 --> Floor(1.5) = 1 total damage 4 OR Ceil(1.5) = 2 total damage 5 
+                    if (collider.TryGetComponent(out Chain chainScript))
                     {
-                        healthScript.TakeDamage(heavyDamage + Mathf.Floor(heavyDamage / 2));
+                        chainScript.CutChain(true);
                     }
-                    else
-                    {
-                        healthScript.TakeDamage(heavyDamage + Mathf.Ceil(heavyDamage / 2));
-                    }
-                    // Knockback enemy
-                    Knockback(enemy.gameObject, gameObject, knockbackForceHeavy);
                 }
             }
+
         }
     }
 
@@ -872,6 +950,16 @@ public class PlayerCombat : MonoBehaviour
         lightDamage = dmg;
     }
 
+    public float getHeavyDamage()
+    {
+        return heavyDamage;
+    }
+
+    public void setHeavyDamage(float dmg)
+    {
+        heavyDamage = dmg;
+    }
+
     public float getThrowChargeTime()
     {
         return maxChargeTime;
@@ -882,6 +970,16 @@ public class PlayerCombat : MonoBehaviour
         maxChargeTime = time;
     }
 
+    //public float getThrowMaxChargeDamage()
+    //{
+    //    return ;
+    //}
+
+    //public void setThrowMaxChargeDamage(float dmg)
+    //{
+    //    maxChargeTime = time;
+    //}
+
 
     // --- GET / SET ---
 
@@ -889,12 +987,10 @@ public class PlayerCombat : MonoBehaviour
     {
         return isWeaponWielded;
     }
-
     public void setWeaponWielded(bool wield)
     {
         isWeaponWielded = wield;
     }
-
 
     public GameObject getWeaponInstance()
     {
@@ -911,6 +1007,20 @@ public class PlayerCombat : MonoBehaviour
         isPlayerBeingPulled = isPulled;
     }
 
+    public bool getHeavyCharged()
+    {
+        return isHeavyCharged;
+    }
+    public void setHeavyCharged(bool b)
+    {
+        isHeavyCharged = b;
+    }
+
+    public bool getHeavyBeingCharged()
+    {
+        return heavyBeingCharged;
+    }
+
     public bool getThrowAiming()
     {
         return throwAimHold;
@@ -925,24 +1035,15 @@ public class PlayerCombat : MonoBehaviour
     // --- UPGRADES ---
     // Called from pickups / small upgrades
 
-    public void UpgradeLightDamage(float dmg)
+    public void UpgradeMeleeDamage(float dmgL, float dmgH)
     {
-        lightDamage += dmg;
+        lightDamage += dmgL;
+        heavyDamage += dmgH;
     }
 
     public void UpgradeThrowDamage(float dmg)
     {
         meleeWeaponPrefab.GetComponent<MeleeWeapon>().UpgradeThrowDamage(dmg);
-    }
-
-    public void UpgradePullDamage(float dmg)
-    {
-        meleeWeaponPrefab.GetComponent<MeleeWeapon>().UpgradePullDamage(dmg);
-    }
-
-    public void UpgradePowerBoostedDamage(float dmg)
-    {
-        meleeWeaponPrefab.GetComponent<MeleeWeapon>().UpgradePowerBoostedDamage(dmg);
     }
 
     public void UpgradeThrowMaxChargeTime(float time)
