@@ -15,6 +15,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float climbTimeBuffer; // Time when we can climb again
     [SerializeField] private float wallSlideGravityScale;
     [SerializeField] private float shockwaveDiveGravityScale;
+    [SerializeField] private float jumpAndDiveCost;
 
     [Header("Ground Check")]
     [SerializeField] private Transform groundCheck; // GameObject attached to player that checks if touching ground
@@ -77,6 +78,7 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody2D rb;
     private float defaultGravityScale;
     private ShockwaveTool shockwaveTool;
+    private Energy energyScript;
 
     // Others
     RaycastHit2D ledgeHitOffsetRay;
@@ -90,6 +92,7 @@ public class PlayerMovement : MonoBehaviour
         rb = gameObject.GetComponent<Rigidbody2D>();
         shockwaveTool = gameObject.GetComponentInChildren<ShockwaveTool>();
         playerScript = gameObject.GetComponent<Player>();
+        energyScript = gameObject.GetComponent<Energy>();
         PlayerCamera.Instance.ChangeCameraOffset(0.2f, false, 1);
         defaultGravityScale = rb.gravityScale;
 
@@ -216,8 +219,10 @@ public class PlayerMovement : MonoBehaviour
         // Air dive while in the air
         else if (context.started && !IsGrounded() && playerScript.ShockwaveJumpAndDiveUnlocked() // Grounded and shockwave tool is unlocked
             && playerScript.InputVertical == -1 // Pressing downwards
-            && (Time.time - lastLaunchTime > 0.2f || lastLaunchTime == null)) // Not just launched
+            && (Time.time - lastLaunchTime > 0.2f || lastLaunchTime == null)
+            && energyScript.CheckForEnergy(jumpAndDiveCost)) // Not just launched
         {
+            energyScript.UseEnergy(jumpAndDiveCost);
             shockwaveTool.DoShockwaveDive(); // Activate VFX
             rb.gravityScale = shockwaveDiveGravityScale;
             diving = true;
@@ -230,12 +235,13 @@ public class PlayerMovement : MonoBehaviour
         // -DOUBLE JUMP-
 
         // Double jump while in the air
-        else if (playerScript.ShockwaveJumpAndDiveUnlocked() && canShockwaveJump && !diving) // Make sure player has acquired Shockwave Jump and that they can currently double jump
+        else if (playerScript.ShockwaveJumpAndDiveUnlocked() && canShockwaveJump && !diving && energyScript.CheckForEnergy(jumpAndDiveCost)) // Make sure player has acquired Shockwave Jump and that they can currently double jump
         {
             // If button is pressed and player has not yet double jumped
             if (context.started && !shockwaveJumping
                 && !(Time.time - lastGroundedTime <= coyoteTime)) // Check if coyote time is online (if yes, no double jump needed)
             {
+                energyScript.UseEnergy(jumpAndDiveCost);
                 shockwaveTool.CancelShockwaveDive(); // Checks if shockwave dive graphics are on and disables them
 
                 // Activate the event through the ShockwaveTool script and do a double jump

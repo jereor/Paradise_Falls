@@ -6,12 +6,32 @@ public class Energy : MonoBehaviour
 {
     [SerializeField] private float maxEnergy;
     [SerializeField] private float currentEnergy;
+    [Tooltip("Give float like 0.5 (50%)")]
+    [SerializeField] private float thresholdPercent;
     [SerializeField] private float energyRegenMultiplier;
 
     // Start is called before the first frame update
     void Start()
     {
         currentEnergy = maxEnergy;
+    }
+
+    private void FixedUpdate()
+    {
+        Regeneration();
+    }
+
+    private void Regeneration()
+    {
+        // Energy drops below threshold value return to threshold energy
+        if (currentEnergy / maxEnergy < thresholdPercent)
+            currentEnergy += maxEnergy * thresholdPercent * Time.fixedDeltaTime;
+        // Normal regeneration
+        else if (currentEnergy < maxEnergy)
+            currentEnergy += 1f * energyRegenMultiplier * Time.fixedDeltaTime;
+        // Prevent energy from going above maxEnergy
+        else if (currentEnergy >= maxEnergy)
+            currentEnergy = maxEnergy;
     }
 
     // This function uses the energy. If current energy amount tries to go below 0, function sets it to 0.
