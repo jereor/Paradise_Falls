@@ -5561,6 +5561,10 @@ PrefabInstance:
       propertyPath: m_RootOrder
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 1324585190677409388, guid: a6db953d52cc83b4abf394f18a7533e0, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4941224138654063640, guid: a6db953d52cc83b4abf394f18a7533e0, type: 3}
       propertyPath: m_LocalRotation.w
       value: 0.09184928
@@ -6973,6 +6977,18 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1358736378}
     m_Modifications:
+    - target: {fileID: 1940316768, guid: 4154d57994558ff489a9180c3151e624, type: 3}
+      propertyPath: dashSpeed
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 1940316768, guid: 4154d57994558ff489a9180c3151e624, type: 3}
+      propertyPath: dashCooldown
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1940316768, guid: 4154d57994558ff489a9180c3151e624, type: 3}
+      propertyPath: dashDistance
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 2646993275326716544, guid: 4154d57994558ff489a9180c3151e624, type: 3}
       propertyPath: m_RootOrder
       value: 2
@@ -7020,6 +7036,14 @@ PrefabInstance:
     - target: {fileID: 2646993275326716545, guid: 4154d57994558ff489a9180c3151e624, type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 2646993275326716551, guid: 4154d57994558ff489a9180c3151e624, type: 3}
+      propertyPath: shockwaveToolUnlocked
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8760275387346948364, guid: 4154d57994558ff489a9180c3151e624, type: 3}
+      propertyPath: currentEnergy
+      value: 100
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4154d57994558ff489a9180c3151e624, type: 3}
@@ -7948,6 +7972,10 @@ PrefabInstance:
     - target: {fileID: 1324585190677409384, guid: a6db953d52cc83b4abf394f18a7533e0, type: 3}
       propertyPath: m_RootOrder
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1324585190677409388, guid: a6db953d52cc83b4abf394f18a7533e0, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4941224138654063640, guid: a6db953d52cc83b4abf394f18a7533e0, type: 3}
       propertyPath: m_LocalRotation.w
@@ -16799,6 +16827,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1324585190677409388, guid: a6db953d52cc83b4abf394f18a7533e0, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7678043367400694314, guid: a6db953d52cc83b4abf394f18a7533e0, type: 3}
       propertyPath: m_Name
       value: CannonEnemy

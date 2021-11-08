@@ -118,7 +118,7 @@ public class PlayerMovement : MonoBehaviour
   
         // Basic movement
         // PlatformMovement() modifies rv.velcity and returns true if player is on platform
-        if(!MovingPlatformMovement())
+        if(!MovingPlatformMovement() && !shockwaveTool.ShockwaveDashUsed)
         {
             rb.velocity = new Vector2(horizontal * movementVelocity, rb.velocity.y); // Moves the player by horizontal input
         }

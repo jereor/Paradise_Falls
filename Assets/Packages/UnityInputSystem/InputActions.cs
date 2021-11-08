@@ -81,6 +81,14 @@ public class @InputActions : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""Dash"",
+                    ""type"": ""Button"",
+                    ""id"": ""83bd5f33-bc2d-4d93-bce7-256c464c19ae"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -347,6 +355,17 @@ public class @InputActions : IInputActionCollection, IDisposable
                     ""action"": ""ShockwaveAttack"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""285856cc-bd0d-4a84-b011-9ecc357e9254"",
+                    ""path"": ""<Keyboard>/leftShift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Dash"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -554,6 +573,7 @@ public class @InputActions : IInputActionCollection, IDisposable
         m_Player_ThrowAim = m_Player.FindAction("ThrowAim", throwIfNotFound: true);
         m_Player_HeavyMelee = m_Player.FindAction("HeavyMelee", throwIfNotFound: true);
         m_Player_ShockwaveAttack = m_Player.FindAction("ShockwaveAttack", throwIfNotFound: true);
+        m_Player_Dash = m_Player.FindAction("Dash", throwIfNotFound: true);
         // GameUI
         m_GameUI = asset.FindActionMap("GameUI", throwIfNotFound: true);
         m_GameUI_Pause = m_GameUI.FindAction("Pause", throwIfNotFound: true);
@@ -618,6 +638,7 @@ public class @InputActions : IInputActionCollection, IDisposable
     private readonly InputAction m_Player_ThrowAim;
     private readonly InputAction m_Player_HeavyMelee;
     private readonly InputAction m_Player_ShockwaveAttack;
+    private readonly InputAction m_Player_Dash;
     public struct PlayerActions
     {
         private @InputActions m_Wrapper;
@@ -630,6 +651,7 @@ public class @InputActions : IInputActionCollection, IDisposable
         public InputAction @ThrowAim => m_Wrapper.m_Player_ThrowAim;
         public InputAction @HeavyMelee => m_Wrapper.m_Player_HeavyMelee;
         public InputAction @ShockwaveAttack => m_Wrapper.m_Player_ShockwaveAttack;
+        public InputAction @Dash => m_Wrapper.m_Player_Dash;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -663,6 +685,9 @@ public class @InputActions : IInputActionCollection, IDisposable
                 @ShockwaveAttack.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnShockwaveAttack;
                 @ShockwaveAttack.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnShockwaveAttack;
                 @ShockwaveAttack.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnShockwaveAttack;
+                @Dash.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDash;
+                @Dash.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDash;
+                @Dash.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDash;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -691,6 +716,9 @@ public class @InputActions : IInputActionCollection, IDisposable
                 @ShockwaveAttack.started += instance.OnShockwaveAttack;
                 @ShockwaveAttack.performed += instance.OnShockwaveAttack;
                 @ShockwaveAttack.canceled += instance.OnShockwaveAttack;
+                @Dash.started += instance.OnDash;
+                @Dash.performed += instance.OnDash;
+                @Dash.canceled += instance.OnDash;
             }
         }
     }
@@ -770,6 +798,7 @@ public class @InputActions : IInputActionCollection, IDisposable
         void OnThrowAim(InputAction.CallbackContext context);
         void OnHeavyMelee(InputAction.CallbackContext context);
         void OnShockwaveAttack(InputAction.CallbackContext context);
+        void OnDash(InputAction.CallbackContext context);
     }
     public interface IGameUIActions
     {
