@@ -81,7 +81,7 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
-  m_LinearDrag: 3
+  m_LinearDrag: 4
   m_AngularDrag: 0.05
   m_GravityScale: 3
   m_Material: {fileID: 0}
@@ -157,7 +157,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bossMode: 0
   target: {fileID: 0}
-  enemyGFX: {fileID: 8401565248790612542}
   playerRB: {fileID: 0}
   groundDetection: {fileID: 1249067800}
   energyItem: {fileID: 7526672294046396501, guid: 4049d0c991ec2534dbef2099a278b67e, type: 3}
@@ -170,35 +169,37 @@ MonoBehaviour:
   playerLayer:
     serializedVersion: 2
     m_Bits: 8
+  enemyState: 1
   speed: 10000
   roamingSpeed: 10000
-  chargeSpeed: 17000
-  jumpChargeSpeed: 700
-  jumpHeight: 13
+  chargeSpeed: 16000
+  jumpChargeSpeed: 6
+  jumpHeight: 14
   walkStepInterval: 1
-  runStepInterval: 0.4
-  jumpChargeInterval: 1.2
-  punchCooldown: 2
+  runStepInterval: 0.5
+  jumpChargeInterval: 0.5
+  punchChargeTime: 0.6
+  punchCooldown: 0.4
   attackPower: 2
-  state: roam
+  staggerTime: 0.5
+  stunTime: 1.5
   roamingRange: {x: 33.45, y: 5.01}
   roamingOffset: {x: 3, y: 1.3}
   aggroDistance: {x: 10.19, y: 3.19}
-  aggroOffset: {x: 4.49, y: 0.7}
-  aggroDistanceLength: 5
-  hitDistance: {x: 1.1, y: 1}
-  hitOffset: {x: 0.3, y: 0}
+  aggroOffset: {x: 4.76, y: 0.7}
+  hitDistance: {x: 1.52, y: 1}
+  hitOffset: {x: 0.43, y: 0}
   knockbackForce: 1000
-  jumpProbability: 15
-  forcedAggroTime: 5
+  jumpProbability: 10
+  forcedAggroTime: 4
   healthProbability: 80
   energyProbability: 80
   amountWhenHealthIsSpawnable: 0.7
   nextWaypointDistance: 1
   pathUpdateInterval: 0.5
-  isFacingRight: 1
-  jumpableWallCheckDistance: 1.5
+  jumpableWallCheckDistance: 1
   higherWallCheckDistance: 2
+  obstacleJumpforce: 800
   groundCheckDistance: 2
   wallCheckDirection: {x: 1, y: 0}
 --- !u!114 &2085753358315985748
@@ -215,6 +216,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 10
   debugHealth: 0
+  blockedColor: {r: 0, g: 0, b: 1, a: 1}
+  damageColor: {r: 1, g: 0, b: 0, a: 1}
   destroyWhenDead: 1
   onDie:
     m_PersistentCalls:
@@ -241,6 +244,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8401565248790612542}
   - component: {fileID: 8401565248790612541}
+  - component: {fileID: 272605665}
   m_Layer: 7
   m_Name: GroundEnemyOneSprite
   m_TagString: Untagged
@@ -256,7 +260,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8401565248790612543}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.042, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8401565248732910214}
@@ -302,7 +306,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: 21300000, guid: 31bf1b5a7726e3a4abfe90bbaeef6be3, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 84999fc189417084e833565d04c1b244, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -313,6 +317,25 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!95 &272605665
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8401565248790612543}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 9b8a55d70c227e7488734cdbd7181e09, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &8401565248830553075
 GameObject:
   m_ObjectHideFlags: 0

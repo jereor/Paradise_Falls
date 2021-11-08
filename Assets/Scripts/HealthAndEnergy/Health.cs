@@ -9,6 +9,10 @@ public class Health : MonoBehaviour
     [SerializeField] private float maxHealth;
     public float debugHealth;
 
+    private SpriteRenderer rndr;
+    [SerializeField] private Color blockedColor = Color.blue; // Block indication color.
+    [SerializeField] private Color damageColor = Color.red; // Damage indication color.
+
     [Tooltip("Enable if you want this script to destroy the gameobject after health reaches zero")]
     public bool destroyWhenDead;
 
@@ -34,9 +38,16 @@ public class Health : MonoBehaviour
     // Prevent assigning health at or below zero at the start
     private void Start()
     {
+        blockedColor = Color.blue;
+        damageColor = Color.red;
         CurrentHealth = (maxHealth > 0 ? maxHealth : 1);
         MaxHealth = CurrentHealth;
         debugHealth = CurrentHealth; // DEBUG: For tracking health in inspector
+        rndr = GetComponent<SpriteRenderer>();
+        if(rndr == null) // If gameobject has not SpriteRenderer, search from childs.
+        {
+            rndr = GetComponentInChildren<SpriteRenderer>();
+        }
     }
 
     /// <summary>
@@ -52,9 +63,19 @@ public class Health : MonoBehaviour
         if (gameObject.TryGetComponent(out Shield shield))
         {
             if (shield.Parrying) amount = 0;
-            else if (shield.Blocking) amount -= shield.ProtectionAmount;
+            else if (shield.Blocking)
+            {
+                amount -= shield.ProtectionAmount;
+                StartCoroutine(HitIndication(blockedColor)); // Player blocked the attack.
+            }
+            else
+                StartCoroutine(HitIndication(damageColor)); // Player got hit.
 
             if (amount < 0) amount = 0;
+        }
+        else
+        {
+            StartCoroutine(HitIndication(damageColor)); // Enemy got hit.
         }
 
         CurrentHealth -= amount;
@@ -69,6 +90,13 @@ public class Health : MonoBehaviour
             if (destroyWhenDead)
                 Destroy(gameObject);
         }
+    }
+
+    IEnumerator HitIndication(Color color)
+    {
+        rndr.color = color;
+        yield return new WaitForSeconds(0.1f);
+        rndr.color = Color.white;
     }
 
     // Setter for new CurrentHealth amount.
