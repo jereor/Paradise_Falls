@@ -3,17 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
-public class StaticMovingBox : MonoBehaviour
+public class StaticMovingPlatform : MonoBehaviour
 {
     private Rigidbody2D rb;
+    private Rigidbody2D playerRB;
     private BoxCollider2D boxCollider;
+    public SpriteRenderer[] platformRenderers;
 
-    [Header("Chain controller")]
-    [SerializeField] private BoxChainController chainController;
-
-    [Header("Knockback trigger")]
-    [SerializeField] private BoxKnockback knockbackScript;
- 
     [Header("Speed and waypoint detection Radius")]
     [SerializeField] private float speed;
     [SerializeField] private float circleSize = 0.15f;
@@ -22,21 +18,23 @@ public class StaticMovingBox : MonoBehaviour
     [SerializeField] private List<Vector2> moves;
     [SerializeField] private List<Vector2> movesBack;
 
+    [Header("Player knockback control")]
+    [SerializeField] private Vector2 velocityPlayer;
+    [SerializeField] private float knockbackForce;
+
     [Header("Bools to control Platform Movement")]
     [SerializeField] private bool returningObject = false;
-    [SerializeField] private bool cuttableChain = false;
     [SerializeField] private bool loop = true;
+    [SerializeField] private bool destroyAfterPathComplete = true;
 
     private Vector2 startPosition;
     private Vector2 currentStartPosition;
-    [SerializeField]private int stepCounter = 0;
+    [SerializeField] private int stepCounter = 0;
 
     private bool canChangeCurrentStartPosition = true;
     private bool changeState = false;
     private bool gizmoPositionChange = true;
-    private bool isChainCut = false;
-    
-    // Used in ledge climb calculations
+
     private BoxCollider2D playerCollider;
     public float yOffset;
     public Transform leftSideClimbTransform;
@@ -47,7 +45,7 @@ public class StaticMovingBox : MonoBehaviour
         playerCollider = GameObject.FindGameObjectWithTag("Player").GetComponent<BoxCollider2D>();
         rightSideClimbTransform.localPosition = ((Vector2)gameObject.GetComponent<BoxCollider2D>().size / 2 - Vector2.zero) + (new Vector2(-playerCollider.size.x * (1 / gameObject.transform.localScale.x), playerCollider.size.y * (1 / gameObject.transform.localScale.y)) / 2 + new Vector2(0f, yOffset));
 
-        leftSideClimbTransform.localPosition = ((Vector2)gameObject.GetComponent<BoxCollider2D>().size * new Vector2(-1f,1f) / 2 - Vector2.zero) + (new Vector2(playerCollider.size.x * (1 / gameObject.transform.localScale.x), playerCollider.size.y * (1 / gameObject.transform.localScale.y)) / 2 + new Vector2(0f, yOffset));
+        leftSideClimbTransform.localPosition = ((Vector2)gameObject.GetComponent<BoxCollider2D>().size * new Vector2(-1f, 1f) / 2 - Vector2.zero) + (new Vector2(playerCollider.size.x * (1 / gameObject.transform.localScale.x), playerCollider.size.y * (1 / gameObject.transform.localScale.y)) / 2 + new Vector2(0f, yOffset));
     }
 
     // Start is called before the first frame update
@@ -55,31 +53,17 @@ public class StaticMovingBox : MonoBehaviour
     {
         movesBack = new List<Vector2>(); // Assign the array with the length of moves-array. Needed to script work properly!!
         rb = GetComponent<Rigidbody2D>();
+        playerRB = GameObject.Find("Player").GetComponent<Rigidbody2D>();
         boxCollider = GetComponent<BoxCollider2D>();
         gizmoPositionChange = false;
         startPosition = transform.position;
 
-        // Is the chain cuttable by melee weapon
-        if (!cuttableChain)
-        {
-            foreach (GameObject chain in chainController.getChains())
-            {
-                chain.GetComponent<SpriteRenderer>().color = Color.black;
-            }
-        }
-        else
-        {
-            foreach (GameObject chain in chainController.getChains())
-            {
-                chain.GetComponent<SpriteRenderer>().color = Color.red;
-            }
-        }
         // Is this object meant to return the same path back to the beginning? If is, make a reverse array of moves to take.
 
-        if(loop)
+        if (loop)
         {
-            Vector2 returnVector = new Vector2(0,0);
-            for(int i = 0; i < moves.Count; i++)
+            Vector2 returnVector = new Vector2(0, 0);
+            for (int i = 0; i < moves.Count; i++)
             {
                 returnVector += moves[i];
             }
@@ -155,25 +139,7 @@ public class StaticMovingBox : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        // Everything related to chain control. Comment this if-case if not needed.
-        if (chainController.getIfCut() && !isChainCut && cuttableChain)
-        {
-            isChainCut = true;
-            DOTween.Kill(rb); // Stops all Tweenings so the object doesn't move after the chain is cut.
-            StopAllCoroutines();
-            rb.isKinematic = false; // Change the rigidbody to dynamic and set the parameters.
-            rb.velocity = new Vector2(0, 0);
-            rb.useAutoMass = true;
-            rb.gravityScale = 3f;
-            rb.drag = 0.05f;
-            rb.constraints = RigidbodyConstraints2D.None;
-            rb.constraints = RigidbodyConstraints2D.FreezePositionX;
-            rb.freezeRotation = true;
-
-            gameObject.tag = "Box";
-            knockbackScript.setFalling(true);
-        }
-        if (!changeState && !isChainCut) // Moves the object through the waypoints without stopping.
+        if (!changeState) // Moves the object through the waypoints without stopping.
         {
             if (canChangeCurrentStartPosition)
             {
@@ -181,9 +147,9 @@ public class StaticMovingBox : MonoBehaviour
                 canChangeCurrentStartPosition = false;
             }
             Move(); // Moves the object to the designated destination along the given path.
-            
+
         }
-        if (changeState && returningObject && !isChainCut) // Is the game object meant to return to original position?
+        if (changeState && returningObject) // Is the game object meant to return to original position?
         {
             if (canChangeCurrentStartPosition)
             {
@@ -193,6 +159,14 @@ public class StaticMovingBox : MonoBehaviour
             MoveBack(); // Uses the reverse List to return.
 
         }
+        else if (changeState && loop && !destroyAfterPathComplete) // Looped route and not destroyable object?
+        {
+            changeState = false;
+            stepCounter = 0;
+        }
+
+        else if (changeState && !loop && destroyAfterPathComplete) // Doesn't loop and is destroyable object?
+            Destroy(gameObject);
     }
 
     // Moves the game object with given Vectors to position. Moves it a one vector at time until the end is reached.
@@ -225,7 +199,7 @@ public class StaticMovingBox : MonoBehaviour
             stepCounter++;
             if (stepCounter == moves.Count)
             {
-                changeState = false; 
+                changeState = false;
                 stepCounter = 0;
             }
         }
@@ -243,17 +217,32 @@ public class StaticMovingBox : MonoBehaviour
         return boxCollider.isActiveAndEnabled;
     }
 
-    // Used by BoxChainController script.
-    public bool getIsCuttableChain()
+    void PlayerPushback()
     {
-        return cuttableChain;
+        velocityPlayer = new Vector2(playerRB.position.x - transform.position.x > 0 ? knockbackForce * 1 : knockbackForce * -1, 0);
+        playerRB.MovePosition(playerRB.position + velocityPlayer * Time.deltaTime);
+        //StartCoroutine(KnockbackCooldown());
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        //Debug.Log(collision.collider.name);
         if (collision.gameObject.tag == "Boss")
         {
             Destroy(gameObject);
+        }
+
+        if (collision.gameObject.tag == "Player" && rb.isKinematic == false && rb.velocity.y < -1 && (transform.position.y - playerRB.transform.position.y) > 0)
+        {
+            PlayerPushback();
+        }
+    }
+
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "Player" && rb.isKinematic == false && (transform.position.y - playerRB.transform.position.y) > 0)
+        {
+            PlayerPushback();
         }
     }
 

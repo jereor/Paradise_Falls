@@ -6,10 +6,16 @@ using DG.Tweening;
 public class BackAndForthMovingBox : MonoBehaviour
 {
     private Rigidbody2D rb;
-    private Rigidbody2D playerRB;
     private BoxCollider2D boxCollider;
-    //private CircleCollider2D circleCollider;
-    private Transform chain;
+
+    [Header("Box SpriteRenderers")]
+    [SerializeField] private List<SpriteRenderer> boxRenderers = new List<SpriteRenderer>();
+
+    [Header("Chain controller")]
+    [SerializeField] private BoxChainController chainController;
+
+    [Header("Knockback trigger")]
+    [SerializeField] private BoxKnockback knockbackScript;
 
     [Header("Speed and waypoint detection Radius")]
     [SerializeField] private float waitTime;
@@ -19,10 +25,6 @@ public class BackAndForthMovingBox : MonoBehaviour
     [Header("Lists to control waypoints")]
     [SerializeField] private List<Vector2> moves;
     [SerializeField] private List<bool> stepsWhenColliderChanged;
-
-    [Header("Player knockback control")]
-    [SerializeField] private Vector2 velocityPlayer;
-    [SerializeField] private float knockbackForce;
 
     [Header("Bools to control Platform Movement")]
     [SerializeField] private bool colliderDisabledAtStart = false;
@@ -44,29 +46,61 @@ public class BackAndForthMovingBox : MonoBehaviour
     private bool canCount = false;
     private bool gizmoPositionChange = true;
 
+    private BoxCollider2D playerCollider;
+    public float yOffset;
+    public Transform leftSideClimbTransform;
+    public Transform rightSideClimbTransform;
+    private void Awake()
+    {
+        // Get size of collider to calculate the positions for climbing this platform (should scale with any sizes)
+        playerCollider = GameObject.FindGameObjectWithTag("Player").GetComponent<BoxCollider2D>();
+        rightSideClimbTransform.localPosition = ((Vector2)gameObject.GetComponent<BoxCollider2D>().size / 2 - Vector2.zero) + (new Vector2(-playerCollider.size.x * (1 / gameObject.transform.localScale.x), playerCollider.size.y * (1 / gameObject.transform.localScale.y)) / 2 + new Vector2(0f, yOffset));
+
+        leftSideClimbTransform.localPosition = ((Vector2)gameObject.GetComponent<BoxCollider2D>().size * new Vector2(-1f, 1f) / 2 - Vector2.zero) + (new Vector2(playerCollider.size.x * (1 / gameObject.transform.localScale.x), playerCollider.size.y * (1 / gameObject.transform.localScale.y)) / 2 + new Vector2(0f, yOffset));
+    }
+
+
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        playerRB = GameObject.Find("Player").GetComponent<Rigidbody2D>();
         boxCollider = GetComponent<BoxCollider2D>();
-        //circleCollider = GetComponent<CircleCollider2D>();
-        chain = GetComponentInChildren<Transform>();
         gizmoPositionChange = false;
         startPosition = transform.position;
 
         // Is the chain cuttable by melee weapon
+        // Is the chain cuttable by melee weapon
         if (!cuttableChain)
-            transform.GetChild(0).GetComponent<SpriteRenderer>().color = Color.black;
+        {
+            foreach (GameObject chain in chainController.getChains())
+            {
+                chain.GetComponent<SpriteRenderer>().color = Color.black;
+                chain.GetComponent<BoxCollider2D>().enabled = false;
+            }
+        }
         else
-            transform.GetChild(0).GetComponent<SpriteRenderer>().color = Color.red;
+        {
+            foreach (GameObject chain in chainController.getChains())
+            {
+                chain.GetComponent<SpriteRenderer>().color = Color.red;
+            }
+        }
 
         // Sets the collider inactive if bool is true.
         if (colliderDisabledAtStart)
         {
-            gameObject.GetComponent<SpriteRenderer>().color = Color.grey;
-            transform.GetChild(0).GetComponent<SpriteRenderer>().color = Color.grey;
+            // Box sprites
+            foreach (SpriteRenderer renderer in boxRenderers)
+            {
+                renderer.color = Color.grey;
+            }
             boxCollider.enabled = false;
+            // Chains
+            foreach (GameObject chain in chainController.getChains())
+            {
+                chain.GetComponent<SpriteRenderer>().color = Color.grey;
+                chain.GetComponent<BoxCollider2D>().enabled = false;
+            }
         }
 
         if (loop && !teleportToStartAfterPathComplete)
@@ -142,9 +176,8 @@ public class BackAndForthMovingBox : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (gameObject.transform.childCount == 0 && !isChainCut && cuttableChain)
+        if (chainController.getIfCut() && !isChainCut && cuttableChain)
         {
-            Debug.Log("test");
             isChainCut = true;
 
             rb.isKinematic = false; // Change the rigidbody to dynamic and set the parameters.
@@ -155,26 +188,18 @@ public class BackAndForthMovingBox : MonoBehaviour
             rb.constraints = RigidbodyConstraints2D.None;
             rb.constraints = RigidbodyConstraints2D.FreezePositionX;
             rb.freezeRotation = true;
-            DOTween.Kill(rb); // Stops all Tweenings so the object doesn't move after the chain is cut.
-            StopAllCoroutines();
+
+            gameObject.tag = "Box";
+            knockbackScript.setFalling(true);
         }
 
-        if (!shutScript || chain != null || gameObject.transform.childCount != 0) // Prevents the script to progress if chain is cut.
+        if (!isChainCut) // Prevents the script to progress if chain is cut.
         {
             if (returning)
                 HandleReturnStep();
 
             if (canStep && !returning)
                 HandleStep();
-
-
-
-            //if (canCount && stepCounter != moves.Count - 1)
-            //{
-            //    stepCounter++;
-            //    canCount = false;
-            //}
-
         }
     }
 
@@ -222,25 +247,11 @@ public class BackAndForthMovingBox : MonoBehaviour
         if (Vector2.Distance(startPosition - currentStartPosition, (Vector2)transform.position) < circleSize)
         {
             transform.position = startPosition - currentStartPosition;
-            Debug.Log("stop");
             rb.velocity = new Vector2(0, 0);
             canChangeCurrentStartPosition = true;
             changeState = true;
         }
     }
-
-    // OverlapCircle to check if the moving object is in the desired position radius. Does not give the best possible result with high GameObject speeds as might not be able to detect the coming object.
-    //private bool ArrivedToDestination(Vector2 move)
-    //{
-    //    if (circleCollider == Physics2D.OverlapCircle(currentStartPosition + move, circleSize))
-    //    {
-    //        transform.position = currentStartPosition + move; // Snaps the game object to the exact desired position for better accuracy.
-    //        return true;
-    //    }
-
-    //    else
-    //        return false;
-    //}
 
     // Enable or disable the collider.
     private void EnableDisableBoxCollider()
@@ -248,18 +259,54 @@ public class BackAndForthMovingBox : MonoBehaviour
         boxCollider.enabled = !boxCollider.enabled;
         if(boxCollider.enabled && cuttableChain)
         {
-            gameObject.GetComponent<SpriteRenderer>().color = Color.white;
-            transform.GetChild(0).GetComponent<SpriteRenderer>().color = Color.red;
+            // Box sprites
+            foreach (SpriteRenderer renderer in boxRenderers)
+            {
+                renderer.color = Color.white;
+            }
+            // Chains
+            foreach (GameObject chain in chainController.getChains())
+            {
+                if (chain != null)
+                {
+                    chain.GetComponent<SpriteRenderer>().color = Color.red;
+                    chain.GetComponent<BoxCollider2D>().enabled = true;
+                }
+            }
         }
         else if(boxCollider.enabled && !cuttableChain)
         {
-            gameObject.GetComponent<SpriteRenderer>().color = Color.white;
-            transform.GetChild(0).GetComponent<SpriteRenderer>().color = Color.black;
+            // Box sprites
+            foreach (SpriteRenderer renderer in boxRenderers)
+            {
+                renderer.color = Color.white;
+            }
+            // Chains
+            foreach (GameObject chain in chainController.getChains())
+            {
+                if (chain != null)
+                {
+                    chain.GetComponent<SpriteRenderer>().color = Color.black;
+                    chain.GetComponent<BoxCollider2D>().enabled = false;
+                }
+            }
         }
         else
         {
-            gameObject.GetComponent<SpriteRenderer>().color = Color.grey;
-            transform.GetChild(0).GetComponent<SpriteRenderer>().color = Color.grey;
+            // Box sprites
+            foreach (SpriteRenderer renderer in boxRenderers)
+            {
+                renderer.color = Color.grey;
+            }
+            // Chains
+            foreach (GameObject chain in chainController.getChains())
+            {
+                if (chain != null)
+                {
+                    chain.GetComponent<SpriteRenderer>().color = Color.grey;
+                    chain.GetComponent<BoxCollider2D>().enabled = false;
+                }
+            }
         }
     }
 
@@ -275,31 +322,11 @@ public class BackAndForthMovingBox : MonoBehaviour
         return cuttableChain;
     }
 
-    void PlayerPushback()
-    {
-        velocityPlayer = new Vector2(playerRB.position.x - transform.position.x > 0 ? knockbackForce * 1 : knockbackForce * -1, 0);
-        playerRB.MovePosition(playerRB.position + velocityPlayer * Time.deltaTime);
-        //StartCoroutine(KnockbackCooldown());
-    }
-
-
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.tag == "Boss" && rb.isKinematic == false)
         {
             Destroy(gameObject);
-        }
-        if(collision.gameObject.tag == "Player" && rb.isKinematic == false && rb.velocity.y < -1 && (transform.position.y - playerRB.transform.position.y) > 0)
-        {
-            PlayerPushback();
-        }
-    }
-
-    private void OnCollisionStay2D(Collision2D collision)
-    {
-        if (collision.gameObject.tag == "Player" && rb.isKinematic == false && (transform.position.y - playerRB.transform.position.y) > 0)
-        {
-            PlayerPushback();
         }
     }
 
@@ -376,5 +403,28 @@ public class BackAndForthMovingBox : MonoBehaviour
             stepCounter = 0; // Reset the stepCounter so it starts from beginning again.
             changeState = false;
         }
+    }
+
+    // Return if player will fit on top of moving platform example: moving upward and ceiling would block our climb or we would be squashed
+    public bool getWillPlayerFit()
+    {
+        // Check both positions we should not make boxes that only block on the other side
+        if (Physics2D.Raycast((Vector2)rightSideClimbTransform.position + new Vector2(playerCollider.size.x / 2, 0f), new Vector2(0f, 1f), playerCollider.size.y * 0.7f, gameObject.layer)
+            && Physics2D.Raycast((Vector2)rightSideClimbTransform.position - new Vector2(playerCollider.size.x / 2, 0f), new Vector2(0f, 1f), playerCollider.size.y * 0.7f, gameObject.layer)
+            && Physics2D.Raycast((Vector2)leftSideClimbTransform.position + new Vector2(playerCollider.size.x / 2, 0f), new Vector2(0f, 1f), playerCollider.size.y * 0.7f, gameObject.layer)
+            && Physics2D.Raycast((Vector2)leftSideClimbTransform.position - new Vector2(playerCollider.size.x / 2, 0f), new Vector2(0f, 1f), playerCollider.size.y * 0.7f, gameObject.layer))
+            return false;
+
+        return true;
+    }
+
+    public Vector2 getLeftClimbPos()
+    {
+        return leftSideClimbTransform.position;
+    }
+
+    public Vector2 getRightClimbPos()
+    {
+        return rightSideClimbTransform.position;
     }
 }

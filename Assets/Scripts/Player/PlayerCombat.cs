@@ -33,6 +33,7 @@ public class PlayerCombat : MonoBehaviour
     public LayerMask enemyLayer;
     public LayerMask bossLayer;
     public LayerMask bossWeakPointLayer;
+    public LayerMask breakableLayer;
     public Transform attackPoint; // Center of the hit point box we draw to check collisions
     public float attackRangeX; // Width of the check box
     public float attackRangeY; // Height
@@ -524,6 +525,8 @@ public class PlayerCombat : MonoBehaviour
 
         Collider2D[] hitBossesWeakPoint = Physics2D.OverlapBoxAll(attackPoint.position, new Vector2(attackRangeX, attackRangeY), 0f, bossWeakPointLayer);
 
+        Collider2D[] hitBreakables = Physics2D.OverlapBoxAll(attackPoint.position, new Vector2(attackRangeX, attackRangeY), 0f, breakableLayer);
+
         Debug.Log("DEALING DMG!! combo hit: " + comboIndex + " Heavy?: " + heavyHit);
         // Normal combo hits 1 and 2
         if (comboIndex < 3 && !heavyHit)
@@ -545,6 +548,18 @@ public class PlayerCombat : MonoBehaviour
             {
                 DealDamageTo(hitBosses, lightDamage, kbOnLight, knockbackForceLight, bossLayer);
             }
+
+            // Breaking breakables
+            if(hitBreakables.Length != 0)
+            {
+                foreach (Collider2D collider in hitBreakables)
+                {
+                    if (collider.TryGetComponent(out Chain chainScript))
+                    {
+                        chainScript.CutChain(true);
+                    }
+                }
+            }
         }
         // Normal combo hit 3 aka last hit of combo
         else if (comboIndex == 3 && !heavyHit)
@@ -562,6 +577,18 @@ public class PlayerCombat : MonoBehaviour
             else if (hitBosses.Length != 0)
             {
                  DealDamageTo(hitBosses, Mathf.Ceil(lightDamage * lastHitMultiplier), kbOnLightLast, knockbackForceLightLast, bossLayer);
+            }
+
+            // Breaking breakables
+            if (hitBreakables.Length != 0)
+            {
+                foreach (Collider2D collider in hitBreakables)
+                {
+                    if (collider.TryGetComponent(out Chain chainScript))
+                    {
+                        chainScript.CutChain(true);
+                    }
+                }
             }
         }
 
@@ -598,6 +625,18 @@ public class PlayerCombat : MonoBehaviour
             else if (hitBosses.Length != 0)
             {
                 DealDamageTo(hitBosses, heavyDamage, kbOnHeavy, knockbackForceHeavy, bossLayer);
+            }
+
+            // Breaking breakables
+            if (hitBreakables.Length != 0)
+            {
+                foreach (Collider2D collider in hitBreakables)
+                {
+                    if (collider.TryGetComponent(out Chain chainScript))
+                    {
+                        chainScript.CutChain(true);
+                    }
+                }
             }
 
         }
