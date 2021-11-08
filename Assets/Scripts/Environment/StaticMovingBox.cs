@@ -6,7 +6,6 @@ using DG.Tweening;
 public class StaticMovingBox : MonoBehaviour
 {
     private Rigidbody2D rb;
-    private Rigidbody2D playerRB;
     private BoxCollider2D boxCollider;
 
     [Header("Chain controller")]
@@ -36,7 +35,8 @@ public class StaticMovingBox : MonoBehaviour
     private bool changeState = false;
     private bool gizmoPositionChange = true;
     private bool isChainCut = false;
-
+    
+    // Used in ledge climb calculations
     private BoxCollider2D playerCollider;
     public float yOffset;
     public Transform leftSideClimbTransform;
@@ -55,7 +55,6 @@ public class StaticMovingBox : MonoBehaviour
     {
         movesBack = new List<Vector2>(); // Assign the array with the length of moves-array. Needed to script work properly!!
         rb = GetComponent<Rigidbody2D>();
-        playerRB = GameObject.Find("Player").GetComponent<Rigidbody2D>();
         boxCollider = GetComponent<BoxCollider2D>();
         gizmoPositionChange = false;
         startPosition = transform.position;
