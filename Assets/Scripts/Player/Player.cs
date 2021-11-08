@@ -797,7 +797,7 @@ public class Player : MonoBehaviour
     {
         return shockwaveJumpAndDiveUnlocked;
     }
-    public void UnlockShockwaveTool()
+    public void UnlockJumpAndDive()
     {
         shockwaveJumpAndDiveUnlocked = true;
     }

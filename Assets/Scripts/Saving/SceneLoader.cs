@@ -108,7 +108,7 @@ public class SceneLoader : MonoBehaviour
                 // Shockwave
                 if (GameStatus.status.getLoadedData().shockwave)
                 {
-                    Player.Instance.UnlockShockwaveTool();
+                    Player.Instance.UnlockJumpAndDive();
                     Destroy(shockwavePickUp);
                 }
 
