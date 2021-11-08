@@ -18,7 +18,7 @@ public class Chain : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (cut)
+        if (cut && chainController != null)
             chainController.ChainIsCut(gameObject);
     }
 
