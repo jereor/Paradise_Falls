@@ -17,22 +17,21 @@ public class GroundEnemyAI : MonoBehaviour
 
     [Header("Transforms")]
     [SerializeField] private Transform target;
-    [SerializeField] private Transform enemyGFX;
-    [SerializeField] private BoxCollider2D boxCollider;
     [SerializeField] private Rigidbody2D playerRB;
     [SerializeField] private Transform groundDetection;
     [SerializeField] private GameObject energyItem;
     [SerializeField] private GameObject healthItem;
-    [SerializeField] private SpriteRenderer spriteRndr;
-    [SerializeField] private Animator animator;
+    private SpriteRenderer spriteRndr;
+    private Animator animator;
 
-    [Header("Ground Check")]
+    [Header("Ground And Player Check")]
     [SerializeField] private Transform groundCheck; // GameObject attached to player that checks if touching ground
     [SerializeField] private float checkRadius; // Radius for ground checks
     [SerializeField] LayerMask groundLayer; // Chosen layer that is recognized as ground in ground checks
 
     [SerializeField] LayerMask playerLayer;
 
+    [Header ("Enemy State")]
     public EnemyState enemyState = EnemyState.Idle;
 
     [Header("Mobility")]
@@ -44,16 +43,17 @@ public class GroundEnemyAI : MonoBehaviour
     [SerializeField] private float walkStepInterval = 1f;
     [SerializeField] private float runStepInterval = 0.5f;
     [SerializeField] private float jumpChargeInterval = 1f;
+    [SerializeField] private float punchChargeTime = 1f;
     [SerializeField] private float punchCooldown = 1.5f;
     [SerializeField] private float attackPower = 2f;
+    [SerializeField] private float staggerTime = 0.7f;
+    [SerializeField] private float stunTime = 1.5f;
 
     [Header("State and Parameters")]
-    //[SerializeField] private string state = "roam";
     [SerializeField] private Vector2 roamingRange = new Vector2(10, 10);
     [SerializeField] private Vector2 roamingOffset;
     [SerializeField] private Vector2 aggroDistance = new Vector2(5f, 5f);
     [SerializeField] private Vector2 aggroOffset;
-    [SerializeField] private float aggroDistanceLength = 5f;
     [SerializeField] private Vector2 hitDistance = new Vector2(3f, 3f);
     [SerializeField] private Vector2 hitOffset;
     [SerializeField] private float knockbackForce = 5f;
@@ -68,7 +68,7 @@ public class GroundEnemyAI : MonoBehaviour
     [Header("Pathfinding info")]
     [SerializeField] private float nextWaypointDistance = 1f;
     [SerializeField] private float pathUpdateInterval = 1f;
-    [SerializeField] private bool isFacingRight = true;
+    private bool isFacingRight = true;
 
     private float hurtCounter = 0f;  
     private bool isForcedToAggro = false;
@@ -83,7 +83,6 @@ public class GroundEnemyAI : MonoBehaviour
     private bool canMove = true;
     private bool canJump = true;
     private bool canPunch = true;
-
     
     private float healthCount;
 
@@ -114,7 +113,7 @@ public class GroundEnemyAI : MonoBehaviour
         healthCount = health.CurrentHealth;
         spawnPosition = transform.position;
         gizmoPositionChange = false;
-        animator.SetFloat("AttackTime", punchCooldown);
+        //animator.SetFloat("AttackTime", punchCooldown + punchChargeTime);
 
         if (bossMode)
         {
@@ -191,8 +190,6 @@ public class GroundEnemyAI : MonoBehaviour
                 hurtCounter += Time.deltaTime;
             }
 
-
-
             // Forced aggro timer. If it reaches the given parameter and target isn't in aggro range, return to normal roam state. (This is done in the state function.)
             if (hurtCounter >= forcedAggroTime)
             {
@@ -241,7 +238,7 @@ public class GroundEnemyAI : MonoBehaviour
                 }
                 else
                 {
-                    StartCoroutine(Staggered(1));
+                    StartCoroutine(Staggered(staggerTime));
                 }
             }
 
@@ -272,7 +269,7 @@ public class GroundEnemyAI : MonoBehaviour
                     break;
 
                 case EnemyState.Staggered:
-                    HandleStaggeredState();
+                    //HandleStaggeredState();
                     break;
 
                 case EnemyState.BossModeCharge:
@@ -320,6 +317,7 @@ public class GroundEnemyAI : MonoBehaviour
         if ((IsPlayerInAggroRange() || isForcedToAggro) && IsPlayerInRange() && !obstacleBetweenTarget)
         {
             speed = chargeSpeed;
+            pathUpdateInterval = 0.5f;
             enemyState = EnemyState.Charge;
             return;
         }
@@ -339,6 +337,7 @@ public class GroundEnemyAI : MonoBehaviour
         if ((!IsPlayerInAggroRange() && !isForcedToAggro) || !IsPlayerInRange())
         {
             speed = roamingSpeed;
+            pathUpdateInterval = 1;
             enemyState = EnemyState.Roam;
             return;
         }
@@ -348,15 +347,14 @@ public class GroundEnemyAI : MonoBehaviour
             int rand = UnityEngine.Random.Range(1, 101);
             if (rand <= jumpProbability && canJump)
             {
-                StartCoroutine(JumpCharge());
-                Debug.Log("jump");
+                StartCoroutine(JumpCharge(force));
                 return;
             }
             else
             {
-                Debug.Log("moving");
-                Move();
                 FlipLocalScaleWithForce(force);
+                Move();
+
                 StartCoroutine(RunCoolDown());
                 return;
             }
@@ -371,46 +369,52 @@ public class GroundEnemyAI : MonoBehaviour
     private void HandlePunchState()
     {
         if (stunned) enemyState = EnemyState.Stunned;
-        if (canPunch && IsPlayerInPunchingRange())
-        {
-            StartCoroutine(Attack());
-        }
 
         // If target goes out of enemy's bounds, return to "roam" state
-        if (!IsPlayerInRange())
+        if(canPunch)
         {
-            speed = roamingSpeed;
-            enemyState = EnemyState.Roam;
-            //StopCoroutine(Attack());
-            return;
+            if (!IsPlayerInRange())
+            {
+                speed = roamingSpeed;
+                pathUpdateInterval = 1;
+                enemyState = EnemyState.Roam;
+                return;
+            }
+            else if (!IsPlayerInPunchingRange())
+            {
+                isForcedToAggro = true;
+                speed = chargeSpeed;
+                pathUpdateInterval = 0.5f;
+                enemyState = EnemyState.Charge;
+                return;
+            }
+
+            if (IsPlayerInPunchingRange())
+            {
+                StartCoroutine(Attack());
+            }
         }
-        else if (!IsPlayerInPunchingRange())
-        {
-            isForcedToAggro = true;
-            speed = chargeSpeed;
-            //StopCoroutine(Attack());
-            enemyState = EnemyState.Charge;
-            //Debug.Log("Charge again!");
-            return;
-        }
+
+
+
     }
 
     private void HandleStunnedState()
     {
         if (!stunned)
         {
-            StartCoroutine(Stunned(1.5f));
+            StartCoroutine(Stunned(stunTime));
         }
 
     }
 
-    private void HandleStaggeredState()
-    {
-        if(!stunned)
-        {
-            StartCoroutine(Stunned(1f));
-        }
-    }
+    //private void HandleStaggeredState()
+    //{
+    //    if(!stunned)
+    //    {
+    //        StartCoroutine(Stunned(1f));
+    //    }
+    //}
 
     private void HandleBossModeCharge(Vector2 force)
     {
@@ -419,15 +423,14 @@ public class GroundEnemyAI : MonoBehaviour
         if (IsGrounded() && ((canMove && !IsPlayerInPunchingRange()) || (!IsPlayerInAggroRange() && canMove && !IsPlayerInPunchingRange())))
         {
             int rand = UnityEngine.Random.Range(1, 101);
-            FlipLocalScaleWithForce(force);
             if (rand <= jumpProbability && IsGrounded())
             {
-                StartCoroutine(JumpCharge());
+                StartCoroutine(JumpCharge(force));
             }
             else
             {
                 FlipLocalScaleWithForce(force);
-                rb.AddForce(force);
+                Move();
                 StartCoroutine(RunCoolDown());
             }
         }
@@ -451,8 +454,6 @@ public class GroundEnemyAI : MonoBehaviour
             enemyState = EnemyState.BossModeCharge;
         }
     }
-
-
 
     // Trying to raycast and check if there's an obstacle in front of the enemy. Function also checks if the obstacle is too high to jump over and turns around if impossible to get over.
     // Third ray checks if there's a pit coming ahead so the enemy unit doesn't fall off from the edge.
@@ -636,13 +637,13 @@ public class GroundEnemyAI : MonoBehaviour
         canMove = true;
     }
 
-    private IEnumerator JumpCharge()
+    private IEnumerator JumpCharge(Vector2 force)
     {
         canJump = false;
         canMove = false;
         yield return new WaitForSeconds(jumpChargeInterval);
         Vector2 jumpForce = new Vector2(transform.localScale.x * 1.5f, 1);
-        FlipLocalScaleWithForce(jumpForce);
+        FlipLocalScaleWithForce(force);
         rb.AddForce(jumpForce * jumpChargeSpeed, ForceMode2D.Impulse);
         if(IsGrounded())
         {
@@ -667,11 +668,11 @@ public class GroundEnemyAI : MonoBehaviour
         canPunch = true;
     }
 
-    IEnumerator Stunned(float stunTime)
+    IEnumerator Stunned(float stunT)
     {
         stunned = true;
-
-        float timer = stunTime;
+        spriteRndr.color = Color.blue;
+        float timer = stunT;
         while (timer > 0)
         {
             timer -= Time.deltaTime;
@@ -685,21 +686,23 @@ public class GroundEnemyAI : MonoBehaviour
         isForcedToAggro = true;
         hurtCounter = 0;
         speed = chargeSpeed;
+        pathUpdateInterval = 0.5f;
+        spriteRndr.color = Color.white;
         enemyState = EnemyState.Charge;
     }
 
     // Briefly flashes player sprite red when enemy hits them.
-    IEnumerator PlayerHit()
-    {
-        GameObject.Find("Player").GetComponent<SpriteRenderer>().color = Color.red;
-        yield return new WaitForSeconds(0.1f);
-        GameObject.Find("Player").GetComponent<SpriteRenderer>().color = Color.white;
-    }
+    //IEnumerator PlayerHit()
+    //{
+    //    GameObject.Find("Player").GetComponent<SpriteRenderer>().color = Color.red;
+    //    yield return new WaitForSeconds(0.1f);
+    //    GameObject.Find("Player").GetComponent<SpriteRenderer>().color = Color.white;
+    //}
 
     private IEnumerator Attack()
     {
         canPunch = false;
-        yield return new WaitForSeconds(punchCooldown);
+        yield return new WaitForSeconds(punchChargeTime);
         if (IsPlayerInPunchingRange())
         {
             //Do damage to player here
@@ -729,7 +732,7 @@ public class GroundEnemyAI : MonoBehaviour
                     _targetHealth.TakeDamage(attackPower);
 
                     //PlayerPushback();
-                    StartCoroutine(PlayerHit());
+                    //StartCoroutine(PlayerHit());
                 }
             }
             else
@@ -737,7 +740,7 @@ public class GroundEnemyAI : MonoBehaviour
                 _targetHealth.TakeDamage(attackPower);
 
                 //PlayerPushback();
-                StartCoroutine(PlayerHit());
+                //StartCoroutine(PlayerHit());
             }
         }
         else
@@ -758,10 +761,11 @@ public class GroundEnemyAI : MonoBehaviour
     private IEnumerator Staggered(float time)
     {
         stunned = true;
-        spriteRndr.color = Color.magenta;
+        //spriteRndr.color = Color.magenta;
         yield return new WaitForSeconds(time);
         speed = chargeSpeed;
-        if(bossMode)
+        pathUpdateInterval = 0.5f;
+        if (bossMode)
             enemyState = EnemyState.BossModeCharge;
         else
             enemyState = EnemyState.Charge;
@@ -771,7 +775,7 @@ public class GroundEnemyAI : MonoBehaviour
         canMove = true;
         canJump = true;
         canPunch = true;
-        spriteRndr.color = Color.white;
+        //spriteRndr.color = Color.white;
         stunned = false;
     }
 
@@ -783,13 +787,10 @@ public class GroundEnemyAI : MonoBehaviour
         }
         if(enemyState == EnemyState.Roam)
         {
-
             animator.SetBool("Walk", true);
             animator.SetBool("Run", false);
             animator.SetBool("Attack", false);
             animator.SetBool("Stagger", false);
-
-
         }
 
         if(enemyState == EnemyState.Charge)
@@ -810,7 +811,6 @@ public class GroundEnemyAI : MonoBehaviour
 
         if (enemyState == EnemyState.Stunned)
         {
-            Debug.Log("Staggered");
             animator.StopPlayback();
             animator.SetBool("Stagger", true);
             animator.SetBool("Run", false);
@@ -820,7 +820,6 @@ public class GroundEnemyAI : MonoBehaviour
 
         if (enemyState == EnemyState.Staggered)
         {
-            Debug.Log("Staggered");
             animator.StopPlayback();
             animator.SetBool("Stagger", true);
             animator.SetBool("Run", false);

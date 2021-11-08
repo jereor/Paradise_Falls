@@ -81,7 +81,7 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
-  m_LinearDrag: 3
+  m_LinearDrag: 4
   m_AngularDrag: 0.05
   m_GravityScale: 3
   m_Material: {fileID: 0}
@@ -155,16 +155,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5423c9748d8c6194ab4391113e8374e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bossMode: 1
+  bossMode: 0
   target: {fileID: 0}
-  enemyGFX: {fileID: 8401565248790612542}
-  boxCollider: {fileID: 0}
   playerRB: {fileID: 0}
   groundDetection: {fileID: 1249067800}
   energyItem: {fileID: 7526672294046396501, guid: 4049d0c991ec2534dbef2099a278b67e, type: 3}
   healthItem: {fileID: 8475744114839058090, guid: 0aeb80a14b2a8254dbe07e4c54a022f6, type: 3}
-  spriteRndr: {fileID: 0}
-  animator: {fileID: 0}
   groundCheck: {fileID: 8401565248830553074}
   checkRadius: 0.5
   groundLayer:
@@ -182,24 +178,25 @@ MonoBehaviour:
   walkStepInterval: 1
   runStepInterval: 0.6
   jumpChargeInterval: 0.5
-  punchCooldown: 0.6
+  punchChargeTime: 0.6
+  punchCooldown: 0.4
   attackPower: 2
+  staggerTime: 0.5
+  stunTime: 1.5
   roamingRange: {x: 33.45, y: 5.01}
   roamingOffset: {x: 3, y: 1.3}
   aggroDistance: {x: 10.19, y: 3.19}
   aggroOffset: {x: 4.76, y: 0.7}
-  aggroDistanceLength: 5
-  hitDistance: {x: 1.1, y: 1}
-  hitOffset: {x: 0.3, y: 0}
+  hitDistance: {x: 1.52, y: 1}
+  hitOffset: {x: 0.43, y: 0}
   knockbackForce: 1000
-  jumpProbability: 30
-  forcedAggroTime: 5
+  jumpProbability: 10
+  forcedAggroTime: 4
   healthProbability: 80
   energyProbability: 80
   amountWhenHealthIsSpawnable: 0.7
   nextWaypointDistance: 1
   pathUpdateInterval: 0.5
-  isFacingRight: 1
   jumpableWallCheckDistance: 1.5
   higherWallCheckDistance: 2
   groundCheckDistance: 2
@@ -218,6 +215,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 10
   debugHealth: 0
+  blockedColor: {r: 0, g: 0, b: 1, a: 1}
+  damageColor: {r: 1, g: 0, b: 0, a: 1}
   destroyWhenDead: 1
   onDie:
     m_PersistentCalls:
