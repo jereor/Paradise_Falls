@@ -12,6 +12,7 @@ public class PlayerCamera : MonoBehaviour
 
     public static PlayerCamera Instance { get; private set; }
 
+    [SerializeField] [Range(5, 10)] private float zoomOutLevel;
     [SerializeField] private float yOffsetFalling;
     private float yOffset;
 
@@ -26,6 +27,11 @@ public class PlayerCamera : MonoBehaviour
         Instance = this;
         mainCam = GameObject.Find("Main Camera");
         transposer = GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachineFramingTransposer>();
+    }
+
+    private void OnEnable()
+    {
+        GetComponent<CinemachineVirtualCamera>().m_Lens.OrthographicSize = zoomOutLevel;
     }
 
     public void ChangeCameraOffset(float timer, bool falling, float x)
