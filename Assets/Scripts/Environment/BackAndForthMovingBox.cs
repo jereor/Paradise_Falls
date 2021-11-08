@@ -262,9 +262,8 @@ public class BackAndForthMovingBox : MonoBehaviour
             // Box sprites
             foreach (SpriteRenderer renderer in boxRenderers)
             {
-                renderer.color = Color.clear;
+                renderer.color = Color.white;
             }
-            boxCollider.enabled = false;
             // Chains
             foreach (GameObject chain in chainController.getChains())
             {
@@ -280,9 +279,8 @@ public class BackAndForthMovingBox : MonoBehaviour
             // Box sprites
             foreach (SpriteRenderer renderer in boxRenderers)
             {
-                renderer.color = Color.clear;
+                renderer.color = Color.white;
             }
-            boxCollider.enabled = false;
             // Chains
             foreach (GameObject chain in chainController.getChains())
             {
