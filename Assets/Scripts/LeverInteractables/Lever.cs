@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using DG.Tweening;
+using UnityEngine.Events;
 
 public class Lever : Interactable
 {
@@ -11,13 +12,15 @@ public class Lever : Interactable
     [SerializeField] private string ifRequiresMultitoolText = "Wield Multitool to interact.";
     [SerializeField] private float leverTurnTime;
 
-    [Header("Bools for interaction")]
+    [Header("Interaction")]
     public bool isMultiUseLever = false; // If this lever is used multiple times, tap this bool.
+    public UnityEvent @event;
 
     private bool isLeverUsed = false;
     private bool isTurnedToLeft = false;
     private bool turning = false;
     private bool objectIsMoving = false;
+    private bool isEventInvoked = false;
 
     // Player is in the range of lever
     private void OnTriggerEnter2D(Collider2D collision)
@@ -102,6 +105,11 @@ public class Lever : Interactable
                 if (!isMultiUseLever)
                 {
                     isLeverUsed = true;
+                }
+                if (!isEventInvoked)
+                {
+                    @event.Invoke();
+                    isEventInvoked = true;
                 }
             }
             objectIsMoving = false;

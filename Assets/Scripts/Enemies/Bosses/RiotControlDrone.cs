@@ -97,7 +97,7 @@ public class RiotControlDrone : MonoBehaviour
     public bool spawnEnemies = false;
     private bool isWaveOneEnemiesDestroyed = false;
     private bool isWaveTwoEnemiesDestroyed = false;
-    [SerializeField] private bool phaseTwoEnemiesDestroyed = false;
+    [SerializeField] private bool phaseTwoComplete = false;
 
     private bool chargeDirectionCalculated;
 
@@ -409,7 +409,7 @@ public class RiotControlDrone : MonoBehaviour
     {
         stunned = true;
         gameObject.GetComponentsInChildren<SpriteRenderer>()[0].color = Color.cyan;
-        if (phaseTwoEnemiesDestroyed)
+        if (phaseTwoComplete)
         {
             if(GameObject.Find("RiotShield").GetComponent<Health>().CurrentHealth == 0)
             {
@@ -431,7 +431,7 @@ public class RiotControlDrone : MonoBehaviour
 
     private void HandleWaveOne()
     {
-        if(phaseTwoEnemiesDestroyed || isWaveOneEnemiesDestroyed) { return; }
+        if(phaseTwoComplete || isWaveOneEnemiesDestroyed) { return; }
 
         //if(!isWaiting)
         //{
@@ -456,7 +456,7 @@ public class RiotControlDrone : MonoBehaviour
 
     private void HandleWaveTwo()
     {
-        if (!isWaveOneEnemiesDestroyed || phaseTwoEnemiesDestroyed || isWaveTwoEnemiesDestroyed) { return; }
+        if (!isWaveOneEnemiesDestroyed || phaseTwoComplete || isWaveTwoEnemiesDestroyed) { return; }
 
         //if (!isWaiting)
         //{
@@ -473,7 +473,6 @@ public class RiotControlDrone : MonoBehaviour
             if (bossEnemies[2] == null && bossEnemies[3] == null)
             {
                 isWaveTwoEnemiesDestroyed = true;
-                phaseTwoEnemiesDestroyed = true;
             }
 
         }
@@ -1014,14 +1013,14 @@ public class RiotControlDrone : MonoBehaviour
 
     }
 
-    public bool getPhaseTwoEnemiesDestroyed()
+    public bool getPhaseTwoComplete()
     {
-        return phaseTwoEnemiesDestroyed;
+        return phaseTwoComplete;
     }
 
-    public void setPhaseTwoEnemiesDestroyed(bool b)
+    public void setPhaseTwoComplete(bool b)
     {
-        phaseTwoEnemiesDestroyed = b;
+        phaseTwoComplete = b;
     }
 
     public bool getIsEnraged()

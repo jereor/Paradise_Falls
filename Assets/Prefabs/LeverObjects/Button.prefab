@@ -144,7 +144,6 @@ GameObject:
   m_Component:
   - component: {fileID: 3607895715631322098}
   - component: {fileID: 3607895715631322101}
-  - component: {fileID: -1953640047348114972}
   - component: {fileID: 2088726879546039785}
   - component: {fileID: -9084572798194470414}
   m_Layer: 0
@@ -195,31 +194,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &-1953640047348114972
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3607895715631322103}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cb24b8dd3efe92a42882ef1502e82bb4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  floatingText: {fileID: 3607895714917058658}
-  showFloatingText: 1
-  updateTextOnInteract: 1
-  inputActions: {fileID: -944628639613478452, guid: 206544e4602af98409f32e57ede731cb, type: 3}
-  textToShow: Press # to interact
-  interactedText: Interacted
-  objectsToInteractWith:
-  - {fileID: 0}
-  leverTurnTime: 1
-  isMultiUseLever: 0
 --- !u!212 &2088726879546039785
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -286,13 +260,16 @@ MonoBehaviour:
   itemEvent:
     m_PersistentCalls:
       m_Calls: []
-  floatingText: {fileID: 0}
+  floatingText: {fileID: 3607895714917058658}
   showFloatingText: 1
   updateTextOnInteract: 1
-  inputActions: {fileID: 0}
+  inputActions: {fileID: -944628639613478452, guid: 206544e4602af98409f32e57ede731cb, type: 3}
   textToShow: Press # to interact
   interactedText: Interacted
   objectsToInteractWith: []
+  event:
+    m_PersistentCalls:
+      m_Calls: []
   isMultiUse: 0
   pressedSprite: {fileID: 0}
 --- !u!1 &3607895715702450345
