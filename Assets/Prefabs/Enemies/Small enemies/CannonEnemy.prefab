@@ -129,7 +129,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bossMode: 0
-  staticMode: 0
+  staticMode: 1
   target: {fileID: 0}
   cannonTransform: {fileID: 4359200598242365534}
   cannon1: {fileID: 8713406405896936486}
@@ -168,7 +168,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.5, y: 0}
+  m_Offset: {x: -0.014968872, y: 0.008728027}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -179,7 +179,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1.5, y: 1}
+  m_Size: {x: 1.2381592, y: 2.0648441}
   m_EdgeRadius: 0
 --- !u!1 &4359200597949835365
 GameObject:
