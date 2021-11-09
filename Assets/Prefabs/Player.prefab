@@ -10624,6 +10624,7 @@ MonoBehaviour:
   throwIndicator: {fileID: 533264429858380022}
   throwPoint: {fileID: 3243163536262417571}
   defaultThrowingForce: 15
+  maxThrowingForce: 20
   maxChargeTime: 2
   maxDistance: 7
   minDistance: 2

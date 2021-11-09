@@ -42,10 +42,13 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private GameObject throwIndicator; // Object used to rotate throwPoint and pointPrefabs
     [SerializeField] private Transform throwPoint; // Point where the weapon will be Instantiated
     [SerializeField] private float defaultThrowingForce;
+    [SerializeField] private float maxThrowingForce;
     [SerializeField] private float maxChargeTime;
     [SerializeField] private float maxDistance;
     [SerializeField] private float minDistance;
     [SerializeField] private float maxDistanceBetween;
+
+    private bool throwMaxCharged;
 
     [Header("Throw projection points")]
     public GameObject pointPrefab;
@@ -797,8 +800,10 @@ public class PlayerCombat : MonoBehaviour
         if (ratio * maxDistance >= minDistance)
         {
             // Throw with charged maxDistance (hold)
-            if (weaponInstanceScript.getMaxDistance() != maxDistance)
+            if (weaponInstanceScript.getMaxDistance() == maxDistance)
             {
+                weaponInstanceScript.MaxCharged(true);
+                throwMaxCharged = true;
                 weaponInstanceScript.setMaxDistance(maxDistance * ratio); // Favor distance set in this script easier upgrade handling
             }
             // Throw with default minDistance (tap)
@@ -811,9 +816,15 @@ public class PlayerCombat : MonoBehaviour
         {
             weaponInstanceScript.setMaxDistance(minDistance);
         }
-
-        // Give force to vector mousePosRay - gameObjectPos, use default force and adjust length of throw iva MaxDistance calculations above
-        weaponInstance.GetComponent<Rigidbody2D>().AddForce(vectorToTarget.normalized * defaultThrowingForce, ForceMode2D.Impulse);
+        // Throw was charged to max give more speed to weapon
+        if (throwMaxCharged)
+        {
+            weaponInstance.GetComponent<Rigidbody2D>().AddForce(vectorToTarget.normalized * maxThrowingForce, ForceMode2D.Impulse);
+            throwMaxCharged = false;
+        }
+        else
+            // Give force to vector mousePosRay - gameObjectPos, use default force and adjust length of throw iva MaxDistance calculations above
+            weaponInstance.GetComponent<Rigidbody2D>().AddForce(vectorToTarget.normalized * defaultThrowingForce, ForceMode2D.Impulse);
     }
 
     // Called from Weapon script if pulled or we Interact with weapon
@@ -1033,7 +1044,7 @@ public class PlayerCombat : MonoBehaviour
 
     public void UpgradeThrowDamage(float dmg)
     {
-        meleeWeaponPrefab.GetComponent<MeleeWeapon>().UpgradeThrowDamage(dmg);
+        meleeWeaponPrefab.GetComponent<MeleeWeapon>().UpgradeThrowMaxChargeDmg(dmg);
     }
 
     public void UpgradeThrowMaxChargeTime(float time)

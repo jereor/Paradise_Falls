@@ -283,6 +283,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weaponThrowDamage: 1
+  throwMaxChargeDmg: 2
   powerBoostedDamage: 3
   weaponPullDamage: 1
   weakPointMultiplier: 2
@@ -299,6 +300,7 @@ MonoBehaviour:
   mySpriteRenderer: {fileID: 4707181778522028191}
   beingPulled: 0
   powerBoosted: 0
+  maxCharged: 0
 --- !u!96 &6049849153134103944
 TrailRenderer:
   serializedVersion: 2
