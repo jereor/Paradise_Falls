@@ -121,7 +121,7 @@ public class PlayerMovement : MonoBehaviour
   
         // Basic movement
         // PlatformMovement() modifies rv.velcity and returns true if player is on platform
-        if(!MovingPlatformMovement() && !shockwaveTool.ShockwaveDashUsed)
+        if(!MovingPlatformMovement() && !shockwaveTool.ShockwaveDashUsed && !PlayerCombat.Instance.getIsPlayerBeingPulled())
         {
             rb.velocity = new Vector2(horizontal * movementVelocity, rb.velocity.y); // Moves the player by horizontal input
         }
@@ -235,7 +235,7 @@ public class PlayerMovement : MonoBehaviour
         // -DOUBLE JUMP-
 
         // Double jump while in the air
-        else if (playerScript.ShockwaveJumpAndDiveUnlocked() && canShockwaveJump && !diving && energyScript.CheckForEnergy(jumpAndDiveCost)) // Make sure player has acquired Shockwave Jump and that they can currently double jump
+        else if (playerScript.ShockwaveJumpAndDiveUnlocked() && canShockwaveJump && !diving && energyScript.CheckForEnergy(jumpAndDiveCost) && !shockwaveTool.ShockwaveDashUsed) // Make sure player has acquired Shockwave Jump and that they can currently double jump
         {
             // If button is pressed and player has not yet double jumped
             if (context.started && !shockwaveJumping

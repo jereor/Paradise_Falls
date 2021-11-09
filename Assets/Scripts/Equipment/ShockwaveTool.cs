@@ -103,7 +103,7 @@ public class ShockwaveTool : MonoBehaviour
     {
         if (!playerScript.DashUnlocked()) return;
 
-        if (context.started && Time.time >= nextDash)
+        if (context.started && Time.time >= nextDash && !playerMovementScript.getClimbing())
         {
             if (energyScript.CheckForEnergy(dashCost))
             {
