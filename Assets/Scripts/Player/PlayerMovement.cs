@@ -15,6 +15,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float climbTimeBuffer; // Time when we can climb again
     [SerializeField] private float wallSlideGravityScale;
     [SerializeField] private float shockwaveDiveGravityScale;
+    [SerializeField] private float jumpAndDiveCost;
 
     [Header("Ground Check")]
     [SerializeField] private Transform groundCheck; // GameObject attached to player that checks if touching ground
@@ -77,6 +78,7 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody2D rb;
     private float defaultGravityScale;
     private ShockwaveTool shockwaveTool;
+    private Energy energyScript;
 
     // Others
     RaycastHit2D ledgeHitOffsetRay;
@@ -90,6 +92,7 @@ public class PlayerMovement : MonoBehaviour
         rb = gameObject.GetComponent<Rigidbody2D>();
         shockwaveTool = gameObject.GetComponentInChildren<ShockwaveTool>();
         playerScript = gameObject.GetComponent<Player>();
+        energyScript = gameObject.GetComponent<Energy>();
         PlayerCamera.Instance.ChangeCameraOffset(0.2f, false, 1);
         defaultGravityScale = rb.gravityScale;
 
@@ -118,7 +121,7 @@ public class PlayerMovement : MonoBehaviour
   
         // Basic movement
         // PlatformMovement() modifies rv.velcity and returns true if player is on platform
-        if(!MovingPlatformMovement())
+        if(!MovingPlatformMovement() && !shockwaveTool.ShockwaveDashUsed && !PlayerCombat.Instance.getIsPlayerBeingPulled())
         {
             rb.velocity = new Vector2(horizontal * movementVelocity, rb.velocity.y); // Moves the player by horizontal input
         }
@@ -214,10 +217,12 @@ public class PlayerMovement : MonoBehaviour
         // -AIR DIVE-
 
         // Air dive while in the air
-        else if (context.started && !IsGrounded() && playerScript.ShockwaveToolUnlocked() // Grounded and shockwave tool is unlocked
+        else if (context.started && !IsGrounded() && playerScript.ShockwaveJumpAndDiveUnlocked() // Grounded and shockwave tool is unlocked
             && playerScript.InputVertical == -1 // Pressing downwards
-            && (Time.time - lastLaunchTime > 0.2f || lastLaunchTime == null)) // Not just launched
+            && (Time.time - lastLaunchTime > 0.2f || lastLaunchTime == null)
+            && energyScript.CheckForEnergy(jumpAndDiveCost)) // Not just launched
         {
+            energyScript.UseEnergy(jumpAndDiveCost);
             shockwaveTool.DoShockwaveDive(); // Activate VFX
             rb.gravityScale = shockwaveDiveGravityScale;
             diving = true;
@@ -230,12 +235,13 @@ public class PlayerMovement : MonoBehaviour
         // -DOUBLE JUMP-
 
         // Double jump while in the air
-        else if (playerScript.ShockwaveToolUnlocked() && canShockwaveJump && !diving) // Make sure player has acquired Shockwave Jump and that they can currently double jump
+        else if (playerScript.ShockwaveJumpAndDiveUnlocked() && canShockwaveJump && !diving && energyScript.CheckForEnergy(jumpAndDiveCost) && !shockwaveTool.ShockwaveDashUsed) // Make sure player has acquired Shockwave Jump and that they can currently double jump
         {
             // If button is pressed and player has not yet double jumped
             if (context.started && !shockwaveJumping
                 && !(Time.time - lastGroundedTime <= coyoteTime)) // Check if coyote time is online (if yes, no double jump needed)
             {
+                energyScript.UseEnergy(jumpAndDiveCost);
                 shockwaveTool.CancelShockwaveDive(); // Checks if shockwave dive graphics are on and disables them
 
                 // Activate the event through the ShockwaveTool script and do a double jump
@@ -257,7 +263,7 @@ public class PlayerMovement : MonoBehaviour
         // If button was pressed
         if (context.performed && (Time.time - lastGroundedTime <= coyoteTime) // Check if coyote time is online
             && (Time.time - jumpButtonPressedTime <= coyoteTime) && !climbing // Check if jump has been buffered
-            && (playerScript.InputVertical != -1 || !playerScript.ShockwaveToolUnlocked())) // Not diving or not able to dive
+            && (playerScript.InputVertical != -1 || !playerScript.ShockwaveJumpAndDiveUnlocked())) // Not diving or not able to dive
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce); // Jump!
         }
@@ -323,7 +329,7 @@ public class PlayerMovement : MonoBehaviour
     private bool MovingPlatformMovement()
     {
         // Check if we are on moving platform currently
-        if (getMovingPlatformRigidbody() != null)
+        if (getMovingPlatformRigidbody() != null && !shockwaveTool.ShockwaveDashUsed)
         {
             // Climbing the platform
             if (getIfClimbingMovingPlatform())
@@ -554,21 +560,21 @@ public class PlayerMovement : MonoBehaviour
     // ---- THOUCH / GROUNDED FUNCTIONS ----
 
     // Returns true if Raycast hits to something aka our body is so close to wall that it counts as touching
-    private bool BodyIsTouchingWall()
+    public bool BodyIsTouchingWall()
     {
         Debug.DrawRay(wallCheckBody.position, transform.right * checkDistance * transform.localScale.x, Color.red);
         return Physics2D.Raycast(wallCheckBody.position, transform.right * transform.localScale.x, checkDistance, groundLayer); // Raycast from body
     }
 
     // Returns true if Raycast hits to something aka our feet are so close to wall that it counts as touching
-    private bool FeetAreTouchingWall()
+    public bool FeetAreTouchingWall()
     {
         Debug.DrawRay(wallCheckFeet.position, transform.right * checkDistance * transform.localScale.x, Color.red);
         return Physics2D.Raycast(wallCheckFeet.position, transform.right * transform.localScale.x, checkDistance, groundLayer); // Raycast from feet
     }
 
     // Returns true if Raycast hits to something or OverlapBox overlaps with groundLayer object aka there is something on top of the wall we might be climbing
-    private bool LedgeIsOccupied()
+    public bool LedgeIsOccupied()
     {
         // DEBUG RAYS IF CHECK BREAKS (takes time to calculate again)
         //Ledge check ray

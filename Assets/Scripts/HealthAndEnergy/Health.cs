@@ -47,6 +47,10 @@ public class Health : MonoBehaviour
         if(rndr == null) // If gameobject has not SpriteRenderer, search from childs.
         {
             rndr = GetComponentInChildren<SpriteRenderer>();
+            //if(rndr == null)
+            //{
+            //    rndr = GetComponentInParent<SpriteRenderer>();
+            //}
         }
     }
 

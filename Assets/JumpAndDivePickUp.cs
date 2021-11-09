@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class ShockwaveToolPickUp : Interactable
+public class JumpAndDivePickUp : Interactable
 {
     [Header("Variables from This script")]
     [SerializeField] private bool playerIsClose;
@@ -51,7 +51,7 @@ public class ShockwaveToolPickUp : Interactable
         if (playerObject != null)
         {
             // Unlock Multitool for the Player
-            playerObject.GetComponent<Player>().UnlockShockwaveTool();
+            playerObject.GetComponent<Player>().UnlockJumpAndDive();
             // Destroy this item from scene
             Destroy(gameObject);
         }

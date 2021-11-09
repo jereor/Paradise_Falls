@@ -730,7 +730,7 @@ public class GroundEnemyAI : MonoBehaviour
                 }
                 else
                 {
-                    _targetHealth.TakeDamage(attackPower);
+                    //_targetHealth.TakeDamage(attackPower);
 
                     //PlayerPushback();
                     //StartCoroutine(PlayerHit());
@@ -738,7 +738,7 @@ public class GroundEnemyAI : MonoBehaviour
             }
             else
             {
-                _targetHealth.TakeDamage(attackPower);
+                //_targetHealth.TakeDamage(attackPower);
 
                 //PlayerPushback();
                 //StartCoroutine(PlayerHit());
@@ -750,6 +750,14 @@ public class GroundEnemyAI : MonoBehaviour
         }
         yield return new WaitForSeconds(punchCooldown);
         canPunch = true;
+    }
+
+    public void DealDamage()
+    {
+        if(IsPlayerInPunchingRange())
+        {
+            _targetHealth.TakeDamage(attackPower);
+        }
     }
 
     // This function adds force on X-axis, so the enemy unit doesn't get stuck to small obstacles when moving
