@@ -402,6 +402,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   platformRenderers: []
+  waitTime: 1
   speed: 300
   circleSize: 0.15
   moves:
