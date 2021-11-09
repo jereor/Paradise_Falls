@@ -974,36 +974,45 @@ public class RiotControlDrone : MonoBehaviour
     {
         if(state == RiotState.Idle)
         {
-
+            riotAnimator.SetBool("Idle", true);
+            riotAnimator.SetBool("Stunned", false);
+            riotAnimator.SetBool("TaserShoot", false);
         }
 
         if (state == RiotState.Moving)
         {
-
+            riotAnimator.SetBool("SlowWalk", true);
         }
 
         if (state == RiotState.ShieldCharge)
         {
+            riotAnimator.SetBool("ShieldCharge", true);
+            riotAnimator.SetBool("Idle", false);
 
         }
 
         if (state == RiotState.Attack)
         {
-
+            riotAnimator.SetBool("LightAttack", true);
         }
 
         if (state == RiotState.TaserShoot)
         {
+            riotAnimator.SetBool("TaserShoot", true);
 
         }
 
         if (state == RiotState.Stunned)
         {
+            riotAnimator.SetBool("Stunned", true);
+            riotAnimator.SetBool("ShieldCharge", false);
+            riotAnimator.SetBool("TaserShoot", false);
 
         }
 
         if (state == RiotState.Backstepping)
         {
+            riotAnimator.SetBool("BackStepping", true);
 
         }
 
@@ -1012,7 +1021,7 @@ public class RiotControlDrone : MonoBehaviour
 
         if (state == RiotState.PhaseTwoRun)
         {
-
+            riotAnimator.SetBool("PhaseTwoRun", true);
         }
 
         // PHASE THREE
@@ -1020,27 +1029,27 @@ public class RiotControlDrone : MonoBehaviour
 
         if (state == RiotState.PhaseThreeStun)
         {
-
+            riotAnimator.SetBool("PhaseThreeStun", true);
         }
 
         if (state == RiotState.PhaseThreeMoving)
         {
-
+            riotAnimator.SetBool("Run", true);
         }
 
         if (state == RiotState.PhaseThreeAttack)
         {
-
+            riotAnimator.SetBool("Attack", true);
         }
 
         if (state == RiotState.SeedShoot)
         {
-
+            riotAnimator.SetBool("SeedShoot", true);
         }
 
         if (state == RiotState.DashAttack)
         {
-
+            riotAnimator.SetBool("Dash", true);
         }
     }
 
