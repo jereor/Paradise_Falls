@@ -1,19 +1,37 @@
 fileFormatVersion: 2
-guid: 3cf39bb9158ee264ba2423292662373b
+guid: 938f995120bcfc34889b7def5f207a65
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -5169930169466886594
-    second: workdrone_walk_placeholder_0
+      213: -7449755176692883070
+    second: workdrone_stagger_0
   - first:
-      213: 5043403781556522432
-    second: workdrone_walk_placeholder_1
+      213: -3015713798715739541
+    second: workdrone_stagger_1
   - first:
-      213: -7915816978239378656
-    second: workdrone_walk_placeholder_2
+      213: 8911051622679870056
+    second: workdrone_stagger_2
   - first:
-      213: 3879484596640833911
-    second: workdrone_walk_placeholder_3
+      213: -2069074573703233357
+    second: workdrone_stagger_3
+  - first:
+      213: 7014011618600505278
+    second: workdrone_stagger_4
+  - first:
+      213: 6249010332935915321
+    second: workdrone_stagger_5
+  - first:
+      213: -3927054120138536880
+    second: workdrone_stagger_6
+  - first:
+      213: -2272104777306530072
+    second: workdrone_stagger_7
+  - first:
+      213: -4744870900053035760
+    second: workdrone_stagger_8
+  - first:
+      213: -405530076284329383
+    second: workdrone_stagger_9
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -103,85 +121,85 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: workdrone_walk_placeholder_0
+      name: workdrone_stagger_5
       rect:
         serializedVersion: 2
-        x: 17
-        y: 15
-        width: 94
-        height: 140
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: e36e95ff6e7b048b0800000000000000
-      internalID: -5169930169466886594
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: workdrone_walk_placeholder_1
-      rect:
-        serializedVersion: 2
-        x: 132
-        y: 15
-        width: 96
-        height: 122
+        x: 12
+        y: 16
+        width: 159
+        height: 151
       alignment: 9
-      pivot: {x: 0.43, y: 0.5}
+      pivot: {x: 0.5000001, y: 0.45348468}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0cdc98aa405cdf540800000000000000
-      internalID: 5043403781556522432
+      spriteID: 93704640ac1f8b650800000000000000
+      internalID: 6249010332935915321
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: workdrone_walk_placeholder_2
+      name: workdrone_stagger_6
       rect:
         serializedVersion: 2
-        x: 248
+        x: 181
         y: 15
-        width: 87
-        height: 136
+        width: 167
+        height: 154
       alignment: 9
-      pivot: {x: 0.37886837, y: 0.50000006}
+      pivot: {x: 0.5046734, y: 0.45439073}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 02b2909e56e552290800000000000000
-      internalID: -7915816978239378656
+      spriteID: 058886b851d4089c0800000000000000
+      internalID: -3927054120138536880
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: workdrone_walk_placeholder_3
+      name: workdrone_stagger_8
       rect:
         serializedVersion: 2
         x: 362
         y: 15
-        width: 78
-        height: 124
+        width: 173
+        height: 157
       alignment: 9
-      pivot: {x: 0.5675511, y: 0.50607044}
+      pivot: {x: 0.50000036, y: 0.44532052}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 771606eafa2b6d530800000000000000
-      internalID: 3879484596640833911
+      spriteID: 01530494e05d62eb0800000000000000
+      internalID: -4744870900053035760
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workdrone_stagger_9
+      rect:
+        serializedVersion: 2
+        x: 547
+        y: 14
+        width: 178
+        height: 131
+      alignment: 9
+      pivot: {x: 0.5131538, y: 0.52978736}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 952e5515b844f5af0800000000000000
+      internalID: -405530076284329383
       vertices: []
       indices: 
       edges: []
