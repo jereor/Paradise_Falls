@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Energy : MonoBehaviour
@@ -9,6 +7,8 @@ public class Energy : MonoBehaviour
     [Tooltip("Give float like 0.5 (50%)")]
     [SerializeField] private float thresholdPercent;
     [SerializeField] private float energyRegenMultiplier;
+
+    //public Slider energySlider;
 
     // Start is called before the first frame update
     void Start()

@@ -124,7 +124,6 @@ public class ShockwaveTool : MonoBehaviour
         // We reach the dashDistance
         if (ShockwaveDashUsed && (posBeforeDash - transform.position).magnitude >= dashDistance)
         {
-            Debug.Log("Reached");
             rb.velocity = Vector2.zero;
             ShockwaveDashUsed = false;
         }

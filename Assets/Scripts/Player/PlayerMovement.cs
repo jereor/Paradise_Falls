@@ -329,7 +329,7 @@ public class PlayerMovement : MonoBehaviour
     private bool MovingPlatformMovement()
     {
         // Check if we are on moving platform currently
-        if (getMovingPlatformRigidbody() != null)
+        if (getMovingPlatformRigidbody() != null && !shockwaveTool.ShockwaveDashUsed)
         {
             // Climbing the platform
             if (getIfClimbingMovingPlatform())
