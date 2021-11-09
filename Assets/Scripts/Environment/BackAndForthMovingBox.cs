@@ -7,6 +7,7 @@ public class BackAndForthMovingBox : MonoBehaviour
 {
     private Rigidbody2D rb;
     private BoxCollider2D boxCollider;
+    public BoxCollider2D knockbackTrigger;
 
     [Header("Box SpriteRenderers")]
     [SerializeField] private List<SpriteRenderer> boxRenderers = new List<SpriteRenderer>();
@@ -67,6 +68,7 @@ public class BackAndForthMovingBox : MonoBehaviour
         boxCollider = GetComponent<BoxCollider2D>();
         gizmoPositionChange = false;
         startPosition = transform.position;
+        knockbackTrigger.enabled = false;
 
         // Is the chain cuttable by melee weapon
         // Is the chain cuttable by melee weapon
@@ -188,6 +190,8 @@ public class BackAndForthMovingBox : MonoBehaviour
             rb.constraints = RigidbodyConstraints2D.None;
             rb.constraints = RigidbodyConstraints2D.FreezePositionX;
             rb.freezeRotation = true;
+
+            knockbackTrigger.enabled = true;
 
             gameObject.tag = "Box";
             knockbackScript.setFalling(true);

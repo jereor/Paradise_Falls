@@ -1219,6 +1219,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a7da1f5da467134aa7abe1064039f5b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  knockbackTrigger: {fileID: 7130048507064952917}
   chainController: {fileID: 6806826914227927485}
   knockbackScript: {fileID: 419343170195829634}
   speed: 100

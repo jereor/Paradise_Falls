@@ -485,6 +485,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f66d33852a21134da80a49ed857fd66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  knockbackTrigger: {fileID: 355519854666416979}
   boxRenderers:
   - {fileID: 3490839797673652551}
   - {fileID: 1778020812901573744}
