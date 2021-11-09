@@ -560,21 +560,21 @@ public class PlayerMovement : MonoBehaviour
     // ---- THOUCH / GROUNDED FUNCTIONS ----
 
     // Returns true if Raycast hits to something aka our body is so close to wall that it counts as touching
-    private bool BodyIsTouchingWall()
+    public bool BodyIsTouchingWall()
     {
         Debug.DrawRay(wallCheckBody.position, transform.right * checkDistance * transform.localScale.x, Color.red);
         return Physics2D.Raycast(wallCheckBody.position, transform.right * transform.localScale.x, checkDistance, groundLayer); // Raycast from body
     }
 
     // Returns true if Raycast hits to something aka our feet are so close to wall that it counts as touching
-    private bool FeetAreTouchingWall()
+    public bool FeetAreTouchingWall()
     {
         Debug.DrawRay(wallCheckFeet.position, transform.right * checkDistance * transform.localScale.x, Color.red);
         return Physics2D.Raycast(wallCheckFeet.position, transform.right * transform.localScale.x, checkDistance, groundLayer); // Raycast from feet
     }
 
     // Returns true if Raycast hits to something or OverlapBox overlaps with groundLayer object aka there is something on top of the wall we might be climbing
-    private bool LedgeIsOccupied()
+    public bool LedgeIsOccupied()
     {
         // DEBUG RAYS IF CHECK BREAKS (takes time to calculate again)
         //Ledge check ray

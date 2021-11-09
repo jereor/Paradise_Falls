@@ -37,6 +37,7 @@ public class ShockwaveTool : MonoBehaviour
 
     private float nextShockwave = -1; // Initialize as -1. First time it will always be less than the current time so use it can be used. 
     private float nextDash = -1;
+    private float timeDashed = -1;
 
     private void Start()
     {
@@ -108,6 +109,7 @@ public class ShockwaveTool : MonoBehaviour
             if (energyScript.CheckForEnergy(dashCost))
             {
                 nextDash = Time.time + dashCooldown;
+                timeDashed = Time.time;
                 shockwaveDashEffect.Play();
                 energyScript.UseEnergy(dashCost);
                 ShockwaveDashUsed = true;
@@ -121,8 +123,8 @@ public class ShockwaveTool : MonoBehaviour
 
     private void Dash()
     {
-        // We reach the dashDistance
-        if (ShockwaveDashUsed && (posBeforeDash - transform.position).magnitude >= dashDistance)
+        // We reach the dashDistance OR time it would take to move to max dis is reached OR body OR feet are touching wall
+        if (ShockwaveDashUsed && ((posBeforeDash - transform.position).magnitude >= dashDistance || Time.time - timeDashed >= dashDistance / dashSpeed || playerMovementScript.BodyIsTouchingWall() || playerMovementScript.FeetAreTouchingWall()))
         {
             rb.velocity = Vector2.zero;
             ShockwaveDashUsed = false;
