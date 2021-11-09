@@ -9972,7 +9972,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attackCooldown: 1
-  attackCost: 20
+  attackCost: 50
   dashSpeed: 20
   dashDistance: 3
   dashCooldown: 1
@@ -10177,7 +10177,7 @@ MonoBehaviour:
   climbTimeBuffer: 0.5
   wallSlideGravityScale: 1
   shockwaveDiveGravityScale: 20
-  jumpAndDiveCost: 0
+  jumpAndDiveCost: 10
   groundCheck: {fileID: 2646993277219195828}
   checkRadius: 0.37
   groundLayer:
@@ -10444,6 +10444,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 100
   debugHealth: 0
+  blockedColor: {r: 0, g: 0, b: 1, a: 1}
+  damageColor: {r: 1, g: 0, b: 0, a: 1}
   destroyWhenDead: 1
   onDie:
     m_PersistentCalls:
@@ -10462,9 +10464,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxEnergy: 100
   currentEnergy: 0
-  thresholdPercent: 0
-  energyRegenMultiplier: 0
-  energySlider: {fileID: 0}
+  thresholdPercent: 0.2
+  energyRegenMultiplier: 10
 --- !u!212 &2646993275326716547
 SpriteRenderer:
   m_ObjectHideFlags: 0
