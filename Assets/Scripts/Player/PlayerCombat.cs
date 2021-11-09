@@ -52,7 +52,7 @@ public class PlayerCombat : MonoBehaviour
     GameObject[] points; // Array of pointsPrefabs Instantiated
     private int numberOfPoints; // Amount should be same as maxDistance we can throw, 1 point = 1 distance unit
     [SerializeField] private float spaceBetweenPoints;
-    [SerializeField] private int pointsShown;
+    [SerializeField] private int pointsShown = 0;
     [SerializeField] private float pointScaleRatio;
 
     [Header("Weapon")]
@@ -313,6 +313,8 @@ public class PlayerCombat : MonoBehaviour
             // Show weapon throw min distance direction
             if (isWeaponWielded)
             {
+                HideAllProjPoints();
+
                 // Show minDistance amount of points
                 ShowProjPoints((int)minDistance);
             }
@@ -720,6 +722,7 @@ public class PlayerCombat : MonoBehaviour
 
                 // Floor ratio to int to show correct amount of points
                 int pointsToShow = Mathf.FloorToInt(ratio * numberOfPoints);
+       
                 // Check if we need to show more points since ratio is growing
                 if (pointsShown < pointsToShow + 1)
                 {
