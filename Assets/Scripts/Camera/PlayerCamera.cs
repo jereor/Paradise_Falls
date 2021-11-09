@@ -12,7 +12,7 @@ public class PlayerCamera : MonoBehaviour
 
     public static PlayerCamera Instance { get; private set; }
 
-    [SerializeField] [Range(5, 10)] private float zoomOutLevel;
+    [SerializeField] [Range(5, 10)] private float zoomOutLevel = 6.5f;
     [SerializeField] private float yOffsetFalling;
     private float yOffset;
 
