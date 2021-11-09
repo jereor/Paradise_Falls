@@ -1,0 +1,222 @@
+fileFormatVersion: 2
+guid: 938f995120bcfc34889b7def5f207a65
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -7449755176692883070
+    second: workdrone_stagger_0
+  - first:
+      213: -3015713798715739541
+    second: workdrone_stagger_1
+  - first:
+      213: 8911051622679870056
+    second: workdrone_stagger_2
+  - first:
+      213: -2069074573703233357
+    second: workdrone_stagger_3
+  - first:
+      213: 7014011618600505278
+    second: workdrone_stagger_4
+  - first:
+      213: 6249010332935915321
+    second: workdrone_stagger_5
+  - first:
+      213: -3927054120138536880
+    second: workdrone_stagger_6
+  - first:
+      213: -2272104777306530072
+    second: workdrone_stagger_7
+  - first:
+      213: -4744870900053035760
+    second: workdrone_stagger_8
+  - first:
+      213: -405530076284329383
+    second: workdrone_stagger_9
+  externalObjects: {}
+  serializedVersion: 11
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: workdrone_stagger_5
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 16
+        width: 159
+        height: 151
+      alignment: 9
+      pivot: {x: 0.5000001, y: 0.45348468}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 93704640ac1f8b650800000000000000
+      internalID: 6249010332935915321
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workdrone_stagger_6
+      rect:
+        serializedVersion: 2
+        x: 181
+        y: 15
+        width: 167
+        height: 154
+      alignment: 9
+      pivot: {x: 0.5046734, y: 0.45439073}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 058886b851d4089c0800000000000000
+      internalID: -3927054120138536880
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workdrone_stagger_8
+      rect:
+        serializedVersion: 2
+        x: 362
+        y: 15
+        width: 173
+        height: 157
+      alignment: 9
+      pivot: {x: 0.50000036, y: 0.44532052}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 01530494e05d62eb0800000000000000
+      internalID: -4744870900053035760
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workdrone_stagger_9
+      rect:
+        serializedVersion: 2
+        x: 547
+        y: 14
+        width: 178
+        height: 131
+      alignment: 9
+      pivot: {x: 0.5131538, y: 0.52978736}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 952e5515b844f5af0800000000000000
+      internalID: -405530076284329383
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+  spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

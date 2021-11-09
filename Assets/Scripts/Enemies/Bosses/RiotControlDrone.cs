@@ -934,7 +934,7 @@ public class RiotControlDrone : MonoBehaviour
         {
             lastChargeCounter += Time.deltaTime;
         }
-        if (lastChargeCounter >= 100)
+        if (lastChargeCounter >= chargeCooldownRandomizer)
         {
             chargeOnCooldown = false;
             canChargeToTarget = true;

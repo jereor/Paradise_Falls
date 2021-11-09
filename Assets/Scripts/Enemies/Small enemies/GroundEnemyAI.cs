@@ -17,18 +17,22 @@ public class GroundEnemyAI : MonoBehaviour
 
     [Header("Transforms")]
     [SerializeField] private Transform target;
-    [SerializeField] private Transform enemyGFX;
     [SerializeField] private Rigidbody2D playerRB;
     [SerializeField] private Transform groundDetection;
     [SerializeField] private GameObject energyItem;
     [SerializeField] private GameObject healthItem;
+    private SpriteRenderer spriteRndr;
+    private Animator animator;
 
-    [Header("Ground Check")]
+    [Header("Ground And Player Check")]
     [SerializeField] private Transform groundCheck; // GameObject attached to player that checks if touching ground
     [SerializeField] private float checkRadius; // Radius for ground checks
     [SerializeField] LayerMask groundLayer; // Chosen layer that is recognized as ground in ground checks
 
     [SerializeField] LayerMask playerLayer;
+
+    [Header ("Enemy State")]
+    public EnemyState enemyState = EnemyState.Idle;
 
     [Header("Mobility")]
     [SerializeField] private float speed = 10000f;
@@ -39,16 +43,17 @@ public class GroundEnemyAI : MonoBehaviour
     [SerializeField] private float walkStepInterval = 1f;
     [SerializeField] private float runStepInterval = 0.5f;
     [SerializeField] private float jumpChargeInterval = 1f;
+    [SerializeField] private float punchChargeTime = 1f;
     [SerializeField] private float punchCooldown = 1.5f;
     [SerializeField] private float attackPower = 2f;
+    [SerializeField] private float staggerTime = 0.7f;
+    [SerializeField] private float stunTime = 1.5f;
 
     [Header("State and Parameters")]
-    [SerializeField] private string state = "roam";
     [SerializeField] private Vector2 roamingRange = new Vector2(10, 10);
     [SerializeField] private Vector2 roamingOffset;
     [SerializeField] private Vector2 aggroDistance = new Vector2(5f, 5f);
     [SerializeField] private Vector2 aggroOffset;
-    [SerializeField] private float aggroDistanceLength = 5f;
     [SerializeField] private Vector2 hitDistance = new Vector2(3f, 3f);
     [SerializeField] private Vector2 hitOffset;
     [SerializeField] private float knockbackForce = 5f;
@@ -63,7 +68,7 @@ public class GroundEnemyAI : MonoBehaviour
     [Header("Pathfinding info")]
     [SerializeField] private float nextWaypointDistance = 1f;
     [SerializeField] private float pathUpdateInterval = 1f;
-    [SerializeField] private bool isFacingRight = true;
+    private bool isFacingRight = true;
 
     private float hurtCounter = 0f;  
     private bool isForcedToAggro = false;
@@ -71,6 +76,7 @@ public class GroundEnemyAI : MonoBehaviour
     [Header("Check Distances for Behaviours")]
     [SerializeField] private float jumpableWallCheckDistance = 1.5f;
     [SerializeField] private float higherWallCheckDistance = 1.5f;
+    [SerializeField] private float obstacleJumpforce = 140;
     [SerializeField] private float groundCheckDistance = 2f;
     [SerializeField] private Vector2 wallCheckDirection;
   
@@ -78,7 +84,6 @@ public class GroundEnemyAI : MonoBehaviour
     private bool canMove = true;
     private bool canJump = true;
     private bool canPunch = true;
-
     
     private float healthCount;
 
@@ -98,19 +103,29 @@ public class GroundEnemyAI : MonoBehaviour
     void Start()
     {
         // Set speed and state to charge that if bossMode is true enemy starts at charge state with charge speed
-        if (bossMode)
-        {
-            state = "charge";
-            speed = chargeSpeed;
-        }
+
 
         seeker = GetComponent<Seeker>();
         rb = GetComponent<Rigidbody2D>();
         _targetHealth = target.GetComponent<Health>();
         health = GetComponent<Health>();
+        spriteRndr = GetComponentInChildren<SpriteRenderer>();
+        animator = GetComponentInChildren<Animator>();
         healthCount = health.CurrentHealth;
         spawnPosition = transform.position;
         gizmoPositionChange = false;
+        //animator.SetFloat("AttackTime", punchCooldown + punchChargeTime);
+
+        if (bossMode)
+        {
+            enemyState = EnemyState.BossModeCharge;
+            animator.SetBool("Run", true);
+            speed = chargeSpeed;
+        }
+        else
+        {
+            animator.SetBool("Walk", true);
+        }
 
         //Updates the path repeatedly with a chosen time interval
         InvokeRepeating("UpdatePath", 0f, 0.5f);
@@ -151,6 +166,8 @@ public class GroundEnemyAI : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+
+
         //If the target was not found, returns to the start of the update
         if (path == null) { return; }
 
@@ -169,6 +186,18 @@ public class GroundEnemyAI : MonoBehaviour
         // Every action enemy takes falls under this if-statement. If target is absolutely out of reach (currently hard coded as 60), start the action.
         if (isTargetInBehaviourRange)
         {
+            if (isForcedToAggro)
+            {
+                hurtCounter += Time.deltaTime;
+            }
+
+            // Forced aggro timer. If it reaches the given parameter and target isn't in aggro range, return to normal roam state. (This is done in the state function.)
+            if (hurtCounter >= forcedAggroTime)
+            {
+                isForcedToAggro = false;
+                hurtCounter = 0;
+            }
+
             //Checks if the enemy is in the end of the path
             if (currentWaypoint >= path.vectorPath.Count)
             {
@@ -200,84 +229,231 @@ public class GroundEnemyAI : MonoBehaviour
                 // This means that player has done a surprise attack. Stun the enemy briefly by given parameter.
                 healthCount = health.CurrentHealth;
                 hurtCounter = 0;
-                if (state == "roam" && !obstacleBetweenTarget)
+                StopAllCoroutines();
+                if (enemyState == EnemyState.Roam && !obstacleBetweenTarget)
                 {
                     Debug.Log("It hurts...");
                     healthCount = health.CurrentHealth;
-                    if (!stunned)
-                    {
-                        StartCoroutine(Stunned(1));
-                    }
-                    state = "charge";
-                    isForcedToAggro = true;
-                }
-            }
+                    enemyState = EnemyState.Stunned;
 
-            // Forced aggro timer. If it reaches the given parameter and target isn't in aggro range, return to normal roam state. (This is done in the state function.)
-            if(isForcedToAggro)
-            {
-                hurtCounter += Time.deltaTime;
-            }
-            if(hurtCounter >= forcedAggroTime)
-            {
-                isForcedToAggro = false;
-                hurtCounter = 0;
+                }
+                else
+                {
+                    StartCoroutine(Staggered(staggerTime));
+                }
             }
 
             // Checks only for ground ahead, jumpable obstacles and walls.
             ObstacleCheck();
 
-            // bossMode true do bossMode states (charge, punch) ELSE do all other states (roam, charge etc.)
-            if (bossMode)
-                EnemyBossStateChange(forceX);
-            else
-                EnemyStateChange(forceX, obstacleBetweenTarget);
+
+            switch (enemyState)
+            {
+                case EnemyState.Idle:
+                    HandleIdleState();
+                    break;
+
+                case EnemyState.Roam:
+                    HandleRoamState();
+                    break;
+
+                case EnemyState.Charge:
+                    HandleChargeState(forceX);
+                    break;
+
+                case EnemyState.Punch:
+                    HandlePunchState();
+                    break;
+
+                case EnemyState.Stunned:
+                    HandleStunnedState();
+                    break;
+
+                case EnemyState.Staggered:
+                    //HandleStaggeredState();
+                    break;
+
+                case EnemyState.BossModeCharge:
+                    HandleBossModeCharge(forceX);
+                    break;
+
+                case EnemyState.BossModePunch:
+                    HandleBossModePunch();
+                    break;
+
+                default:
+                    break;
+            }
+
+            HandleAnimations();
         }
     }
 
-    //Cooldowns for walk, run, jump and punch.
-    private IEnumerator WalkCoolDown()
+    private void HandleIdleState()
     {
-        canMove = false;
-        yield return new WaitForSeconds(walkStepInterval);
-        canMove = true;
+
     }
 
-    private IEnumerator RunCoolDown()
+    private void HandleRoamState()
     {
-        canMove = false;
-        yield return new WaitForSeconds(runStepInterval);
-        canMove = true;
+        if (stunned) enemyState = EnemyState.Stunned;
+        // If the enemy unit tries to go outside of the given area parameters, it turns around.
+        if (transform.position.x >= (spawnPosition.x + roamingRange.x / 2 + roamingOffset.x) && canMove && IsGrounded())
+        {
+            //Debug.Log("Left");
+            Flip();
+            Move();
+            StartCoroutine(WalkCoolDown());
+            return;
+        }
+        else if (transform.position.x <= (spawnPosition.x - roamingRange.x / 2 + roamingOffset.x) && canMove && IsGrounded())
+        {
+            //Debug.Log("Right");
+            Flip();
+            Move();
+            StartCoroutine(WalkCoolDown());
+            return;
+        }
+        // If target is close enough the enemy unit, charges it towards the player.
+        if ((IsPlayerInAggroRange() || isForcedToAggro) && IsPlayerInRange() && !obstacleBetweenTarget)
+        {
+            speed = chargeSpeed;
+            pathUpdateInterval = 0.5f;
+            enemyState = EnemyState.Charge;
+            return;
+        }
+        // If the enemy unit is inside the given roaming range and target is nowhere near, it roams around.
+        if (transform.position.x <= (spawnPosition.x + roamingRange.x) && transform.position.x >= (spawnPosition.x - roamingRange.x) && canMove && IsGrounded())
+        {
+            Move();
+            StartCoroutine(WalkCoolDown());
+        }
     }
 
-    private IEnumerator JumpChargeCoolDown()
+    private void HandleChargeState(Vector2 force)
     {
-        canJump = false;
-        canMove = false;
-        yield return new WaitForSeconds(jumpChargeInterval);
-        canMove = true;
-        canJump = true;
+        if (stunned) enemyState = EnemyState.Stunned;
+        if (!obstacleBetweenTarget) hurtCounter = 0;
+        // Outside the range, return to roam state.
+        if ((!IsPlayerInAggroRange() && !isForcedToAggro) || !IsPlayerInRange())
+        {
+            speed = roamingSpeed;
+            pathUpdateInterval = 1;
+            enemyState = EnemyState.Roam;
+            return;
+        }
+        // Inside the range, runs towards the target or jump randomly towards the target
+        if (IsGrounded() && canMove && ((IsPlayerInAggroRange() && !IsPlayerInPunchingRange()) || (!IsPlayerInAggroRange() && isForcedToAggro && !IsPlayerInPunchingRange())))
+        {
+            int rand = UnityEngine.Random.Range(1, 101);
+            if (rand <= jumpProbability && canJump)
+            {
+                StartCoroutine(JumpCharge(force));
+                return;
+            }
+            else
+            {
+                FlipLocalScaleWithForce(force);
+                Move();
+
+                StartCoroutine(RunCoolDown());
+                return;
+            }
+        }
+        //If target is close enough the enemy unit, it changes the state to "punch"
+        if (IsPlayerInPunchingRange())
+        {
+            enemyState = EnemyState.Punch;
+        }
     }
 
-    private IEnumerator JumpCoolDown()
+    private void HandlePunchState()
     {
-        canJump = false;
-        yield return new WaitForSeconds(walkStepInterval);
-        canJump = true;
+        if (stunned) enemyState = EnemyState.Stunned;
+
+        // If target goes out of enemy's bounds, return to "roam" state
+        if(canPunch)
+        {
+            if (!IsPlayerInRange())
+            {
+                speed = roamingSpeed;
+                pathUpdateInterval = 1;
+                enemyState = EnemyState.Roam;
+                return;
+            }
+            else if (!IsPlayerInPunchingRange())
+            {
+                isForcedToAggro = true;
+                speed = chargeSpeed;
+                pathUpdateInterval = 0.5f;
+                enemyState = EnemyState.Charge;
+                return;
+            }
+
+            if (IsPlayerInPunchingRange())
+            {
+                StartCoroutine(Attack());
+            }
+        }
+
+
+
     }
 
-    private IEnumerator PunchCoolDown()
+    private void HandleStunnedState()
     {
-        canPunch = false;
-        yield return new WaitForSeconds(punchCooldown);
-        canPunch = true;
+        if (!stunned)
+        {
+            StartCoroutine(Stunned(stunTime));
+        }
+
     }
 
-    // This function adds force on X-axis, so the enemy unit doesn't get stuck to small obstacles when moving
-    private IEnumerator JumpForceForward(float jumpDirection)
+    //private void HandleStaggeredState()
+    //{
+    //    if(!stunned)
+    //    {
+    //        StartCoroutine(Stunned(1f));
+    //    }
+    //}
+
+    private void HandleBossModeCharge(Vector2 force)
     {
-        yield return new WaitForSeconds(0.4f);
-        rb.AddForce(new Vector2(100 * jumpDirection, 0));
+        if (stunned) enemyState = EnemyState.Stunned;
+        // Inside the range, runs towards the target or jump randomly towards the target
+        if (IsGrounded() && ((canMove && !IsPlayerInPunchingRange()) || (!IsPlayerInAggroRange() && canMove && !IsPlayerInPunchingRange())))
+        {
+            int rand = UnityEngine.Random.Range(1, 101);
+            if (rand <= jumpProbability && IsGrounded())
+            {
+                StartCoroutine(JumpCharge(force));
+            }
+            else
+            {
+                FlipLocalScaleWithForce(force);
+                Move();
+                StartCoroutine(RunCoolDown());
+            }
+        }
+        //If target is close enough the enemy unit, it changes the state to "punch"
+        if (IsPlayerInPunchingRange())
+        {
+            enemyState = EnemyState.BossModePunch;
+        }
+    }
+
+    private void HandleBossModePunch()
+    {
+        if (stunned) enemyState = EnemyState.Stunned;
+        if (canPunch && IsPlayerInPunchingRange())
+        {
+            StartCoroutine(Attack());
+        }
+        else if (!IsPlayerInPunchingRange())
+        {
+            speed = chargeSpeed;
+            enemyState = EnemyState.BossModeCharge;
+        }
     }
 
     // Trying to raycast and check if there's an obstacle in front of the enemy. Function also checks if the obstacle is too high to jump over and turns around if impossible to get over.
@@ -348,6 +524,11 @@ public class GroundEnemyAI : MonoBehaviour
     }
 
     // Checks if target is in a box shaped area given by parameters.
+    //private bool IsUnitInRoamingRange()
+    //{
+    //    return Physics2D.OverlapBox(new Vector2(spawnPosition.x + roamingOffset.x, spawnPosition.y + roamingOffset.y), roamingRange, 0,, boxCollider);
+    //}
+
     private bool IsPlayerInRange()
     {
         return Physics2D.OverlapBox(new Vector2(spawnPosition.x + roamingOffset.x, spawnPosition.y + roamingOffset.y), roamingRange, 0, playerLayer);
@@ -363,295 +544,15 @@ public class GroundEnemyAI : MonoBehaviour
         return Physics2D.OverlapBox(new Vector2(transform.position.x + (transform.localScale.x * aggroOffset.x), transform.position.y + aggroOffset.y), aggroDistance, 0, playerLayer);
     }
 
-
-
-    // ENEMY BEHAVIOUR STATES
-    // ---------------------------------------------------------------------------------------------------------------
-    private void EnemyStateChange(Vector2 forceX, RaycastHit2D obstacleBetweenTarget)
-    {
-        // switch-case system between different enemy states.
-        switch (state)
-        {
-            // ROAM STATE
-            //-------------------------------------------------------------------------------------------------------
-            // Roams in a specified area given to the enemy unit and stays inside of it.
-            case "roam":
-                if (stunned) break;
-                // If the enemy unit tries to go outside of the given area parameters, it turns around.
-                if (transform.position.x >= (spawnPosition.x + roamingRange.x / 2 + roamingOffset.x) && canMove && IsGrounded())
-                {
-                    //Debug.Log("Left");
-                    transform.localScale = new Vector3(-1f, 1f, 1f);
-                    isFacingRight = false;
-                    rb.AddForce(new Vector2(transform.localScale.x * speed * Time.deltaTime, 0));
-                    StartCoroutine(WalkCoolDown());
-                    break;
-                }
-                else if (transform.position.x <= (spawnPosition.x - roamingRange.x / 2 + roamingOffset.x) && canMove && IsGrounded())
-                {
-                    //Debug.Log("Right");
-                    transform.localScale = new Vector3(1f, 1f, 1f);
-                    isFacingRight = true;
-                    rb.AddForce(new Vector2(transform.localScale.x * speed * Time.deltaTime, 0));
-                    StartCoroutine(WalkCoolDown());
-                    break;
-                }
-                // If target is close enough the enemy unit, charges it towards the player.
-                if ((IsPlayerInAggroRange() || isForcedToAggro) && IsPlayerInRange() && !obstacleBetweenTarget)
-                {
-                    speed = chargeSpeed;
-                    state = "charge";
-                    break;
-                }
-                // If the enemy unit is inside the given roaming range and target is nowhere near, it roams around.
-                if (transform.position.x <= (spawnPosition.x + roamingRange.x) && transform.position.x >= (spawnPosition.x - roamingRange.x) && canMove && IsGrounded())
-                {
-                    rb.AddForce(new Vector2(transform.localScale.x * speed * Time.deltaTime, 0));
-                    StartCoroutine(WalkCoolDown());
-                }
-                break;
-
-            // CHARGE STATE
-            //------------------------------------------------------------------------------------------------------------------
-            //Here enemy charges the target. Checks if target is inside enemy unit's roaming range.
-            case "charge":                
-                if (stunned) break;
-                gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.red;
-                // Outside the range, return to roam state.
-                if ((!IsPlayerInAggroRange() && !isForcedToAggro) || !IsPlayerInRange())
-                {
-                    gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.black;
-                    speed = roamingSpeed;
-                    state = "roam";
-                    break;
-                }
-                // Inside the range, runs towards the target or jump randomly towards the target
-                if (IsGrounded() && ((IsPlayerInAggroRange() && canMove && !IsPlayerInPunchingRange()) || (!IsPlayerInAggroRange() && canMove && isForcedToAggro && !IsPlayerInPunchingRange())))
-                {
-                    int rand = UnityEngine.Random.Range(1, 101);
-                    FlipLocalScaleWithForce(forceX);
-                    if(rand <= jumpProbability && IsGrounded())
-                    {
-                        Vector2 force = new Vector2(transform.localScale.x * jumpHeight * 1.5f, jumpHeight).normalized;
-                        FlipLocalScaleWithForce(force);                        
-                        rb.AddForce(force * jumpChargeSpeed * Time.deltaTime, ForceMode2D.Impulse);                       
-                        StartCoroutine(JumpChargeCoolDown());
-                    }
-                    else
-                    {
-                        FlipLocalScaleWithForce(forceX);
-                        rb.AddForce(forceX);                       
-                        StartCoroutine(RunCoolDown());
-                    }
-                    break;
-                }
-                //If target is close enough the enemy unit, it changes the state to "punch"
-                if (IsPlayerInPunchingRange())
-                {
-                    state = "punch";
-                }
-                break;
-
-            // PUNCH STATE
-            //------------------------------------------------------------------------------------------------------------------
-            //Does damage to target if close enough. Otherwise goes to roam or charge state.
-            case "punch":
-                if (stunned) break;
-                if (canPunch && IsPlayerInPunchingRange())
-                {
-                    //Do damage to player here
-                    Debug.Log("Player hit");
-
-                    // Turns the enemy unit torwards the target when punching.
-                    if (target.transform.position.x - transform.position.x >= 0)
-                    {
-                        isFacingRight = true;
-                        transform.localScale = new Vector3(1f, 1f, 1f);
-                    }
-                    else
-                    {
-                        isFacingRight = false;
-                        transform.localScale = new Vector3(-1f, 1f, 1f);
-                    }
-
-                    if (target.TryGetComponent(out Shield shield))
-                    {
-                        if (shield.Parrying)
-                        {
-                            target.GetComponent<Shield>().HitWhileParried(); // Tell player parry was successful
-                            StartCoroutine(Stunned(1.5f)); // Get stunned
-                        }
-                        else
-                        {
-                            _targetHealth.TakeDamage(attackPower);
-
-                            //PlayerPushback();
-                            StartCoroutine(PlayerHit());
-                            StartCoroutine(PunchCoolDown());
-                        }
-                    }
-                    else
-                    {
-                        _targetHealth.TakeDamage(attackPower);
-
-                        //PlayerPushback();
-                        StartCoroutine(PlayerHit());
-                        StartCoroutine(PunchCoolDown());
-                    }
-                }
-
-                // If target goes out of enemy's bounds, return to "roam" state
-                if (!IsPlayerInRange())
-                {
-                    gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.black;
-                    speed = roamingSpeed;
-                    state = "roam";
-                    break;
-                }
-                else if (!IsPlayerInPunchingRange())
-                {
-                    isForcedToAggro = true;
-                    speed = chargeSpeed;
-                    state = "charge";
-                    //Debug.Log("Charge again!");
-                    break;
-                }
-                break;
-        }
-    }
-
-    // ENEMY BEHAVIOUR STATES on bossMode charge, punch
-    // ---------------------------------------------------------------------------------------------------------------
-    private void EnemyBossStateChange(Vector2 forceX)
-    {
-        // switch-case system between different enemy states.
-        switch (state)
-        {
-            // CHARGE STATE
-            //------------------------------------------------------------------------------------------------------------------
-            //Here enemy charges the target. Checks if target is inside enemy unit's roaming range.
-            case "charge":
-                if (stunned) break;
-                gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.red;
-                // Inside the range, runs towards the target or jump randomly towards the target
-                if (IsGrounded() && ((canMove && !IsPlayerInPunchingRange()) || (!IsPlayerInAggroRange() && canMove && !IsPlayerInPunchingRange())))
-                {
-                    int rand = UnityEngine.Random.Range(1, 101);
-                    FlipLocalScaleWithForce(forceX);
-                    if (rand <= jumpProbability && IsGrounded())
-                    {
-                        Vector2 force = new Vector2(transform.localScale.x * jumpHeight * 1.5f, jumpHeight).normalized;
-                        FlipLocalScaleWithForce(force);
-                        rb.AddForce(force * jumpChargeSpeed * Time.deltaTime, ForceMode2D.Impulse);
-                        StartCoroutine(JumpChargeCoolDown());
-                    }
-                    else
-                    {
-                        FlipLocalScaleWithForce(forceX);
-                        rb.AddForce(forceX);
-                        StartCoroutine(RunCoolDown());
-                    }
-                    break;
-                }
-                //If target is close enough the enemy unit, it changes the state to "punch"
-                if (IsPlayerInPunchingRange())
-                {
-                    state = "punch";
-                }
-                break;
-
-            // PUNCH STATE
-            //------------------------------------------------------------------------------------------------------------------
-            //Does damage to target if close enough. Otherwise goes to roam or charge state.
-            case "punch":
-                if (stunned) break;
-                if (canPunch && IsPlayerInPunchingRange())
-                {
-                    //Do damage to player here
-                    Debug.Log("Player hit");
-
-                    // Turns the enemy unit torwards the target when punching.
-                    if (target.transform.position.x - transform.position.x >= 0)
-                    {
-                        isFacingRight = true;
-                        transform.localScale = new Vector3(1f, 1f, 1f);
-                    }
-                    else
-                    {
-                        isFacingRight = false;
-                        transform.localScale = new Vector3(-1f, 1f, 1f);
-                    }
-
-                    if (target.TryGetComponent(out Shield shield))
-                    {
-                        if (shield.Parrying)
-                        {
-                            target.GetComponent<Shield>().HitWhileParried(); // Tell player parry was successful
-                            StartCoroutine(Stunned(1.5f)); // Get stunned
-                        }
-                        else
-                        {
-                            Debug.Log(attackPower);
-                            _targetHealth.TakeDamage(attackPower);
-
-                            //PlayerPushback();
-                            StartCoroutine(PlayerHit());
-                            StartCoroutine(PunchCoolDown());
-                        }
-                    }
-                    else
-                    {
-                        Debug.Log(attackPower);
-                        _targetHealth.TakeDamage(attackPower);
-
-                        //PlayerPushback();
-                        StartCoroutine(PlayerHit());
-                        StartCoroutine(PunchCoolDown());
-                    }
-                }
-                else if (!IsPlayerInPunchingRange())
-                {
-                    speed = chargeSpeed;
-                    state = "charge";
-                    //Debug.Log("Charge again!");
-                    break;
-                }
-                break;
-        }
-    }
-
-
     // Small knockback to the target when too close to the enemy unit. Knockback knocks slightly upwards so the friction doesn't stop the target right away.
     void PlayerPushback()
     {
         float pushbackX = target.transform.position.x - transform.position.x;
         Vector2 knockbackDirection = new Vector2(pushbackX, Math.Abs(pushbackX / 4)).normalized;
-        playerRB.AddForce(knockbackDirection * knockbackForce);
+        playerRB.AddForce(knockbackDirection * knockbackForce * Time.deltaTime);
     }
 
-    IEnumerator Stunned(float stunTime)
-    {
-        stunned = true;
-        gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.blue;
 
-        float timer = stunTime;
-        while (timer > 0)
-        {
-            timer -= Time.deltaTime;
-            yield return new WaitForEndOfFrame();
-        }
-
-        stunned = false;
-        gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.black;
-    }
-
-    // Briefly flashes player sprite red when enemy hits them.
-    IEnumerator PlayerHit()
-    {
-        GameObject.Find("Player").GetComponent<SpriteRenderer>().color = Color.red;
-        yield return new WaitForSeconds(0.1f);
-        GameObject.Find("Player").GetComponent<SpriteRenderer>().color = Color.white;
-    }
 
     // Flip the local scale of the enemy by force value.
     private void FlipLocalScaleWithForce(Vector2 force)
@@ -693,14 +594,280 @@ public class GroundEnemyAI : MonoBehaviour
 
     }
 
+    private void Move()
+    {
+        if(IsGrounded())
+            rb.AddForce(new Vector2(transform.localScale.x * speed * Time.deltaTime, 0));
+
+    }
+
+
+    private void Flip()
+    {
+        // Character flip
+        isFacingRight = !isFacingRight;
+        Vector3 localScale = transform.localScale;
+        localScale.x *= -1f;
+        transform.localScale = localScale;
+    }
+
     // If enemy is hit by the flying melee weapon, enemy is forced to aggro.
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if(collision.collider.tag == "MeleeWeapon")
+        if (collision.collider.tag == "MeleeWeapon")
         {
             isForcedToAggro = true;
             hurtCounter = 0;
         }
+    }
+
+
+
+    //Cooldowns for walk, run, jump and punch.
+    private IEnumerator WalkCoolDown()
+    {
+        canMove = false;
+        yield return new WaitForSeconds(walkStepInterval);
+        canMove = true;
+    }
+
+    private IEnumerator RunCoolDown()
+    {
+        canMove = false;
+        yield return new WaitForSeconds(runStepInterval);
+        canMove = true;
+    }
+
+    private IEnumerator JumpCharge(Vector2 force)
+    {
+        canJump = false;
+        canMove = false;
+        yield return new WaitForSeconds(jumpChargeInterval);
+        Vector2 jumpForce = new Vector2(transform.localScale.x * 1.5f, 1);
+        FlipLocalScaleWithForce(force);
+        rb.AddForce(jumpForce * jumpChargeSpeed, ForceMode2D.Impulse);
+        if(IsGrounded())
+        {
+            yield return new WaitForSeconds(jumpChargeInterval);
+            canMove = true;
+            canJump = true;
+        }
+
+    }
+
+    private IEnumerator JumpCoolDown()
+    {
+        canJump = false;
+        yield return new WaitForSeconds(walkStepInterval);
+        canJump = true;
+    }
+
+    private IEnumerator PunchCoolDown()
+    {
+        canPunch = false;
+        yield return new WaitForSeconds(punchCooldown);
+        canPunch = true;
+    }
+
+    IEnumerator Stunned(float stunT)
+    {
+        stunned = true;
+        spriteRndr.color = Color.blue;
+        float timer = stunT;
+        while (timer > 0)
+        {
+            timer -= Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+
+        stunned = false;
+        canMove = true;
+        canJump = true;
+        canPunch = true;
+        isForcedToAggro = true;
+        hurtCounter = 0;
+        speed = chargeSpeed;
+        pathUpdateInterval = 0.5f;
+        spriteRndr.color = Color.white;
+        enemyState = EnemyState.Charge;
+    }
+
+    // Briefly flashes player sprite red when enemy hits them.
+    //IEnumerator PlayerHit()
+    //{
+    //    GameObject.Find("Player").GetComponent<SpriteRenderer>().color = Color.red;
+    //    yield return new WaitForSeconds(0.1f);
+    //    GameObject.Find("Player").GetComponent<SpriteRenderer>().color = Color.white;
+    //}
+
+    private IEnumerator Attack()
+    {
+        canPunch = false;
+        yield return new WaitForSeconds(punchChargeTime);
+        if (IsPlayerInPunchingRange())
+        {
+            //Do damage to player here
+            //Debug.Log("Player hit");
+
+            // Turns the enemy unit torwards the target when punching.
+            if (target.transform.position.x - transform.position.x >= 0)
+            {
+                isFacingRight = true;
+                transform.localScale = new Vector3(1f, 1f, 1f);
+            }
+            else
+            {
+                isFacingRight = false;
+                transform.localScale = new Vector3(-1f, 1f, 1f);
+            }
+
+            if (target.TryGetComponent(out Shield shield))
+            {
+                if (shield.Parrying)
+                {
+                    target.GetComponent<Shield>().HitWhileParried(); // Tell player parry was successful
+                    enemyState = EnemyState.Stunned; // Get stunned
+                }
+                else
+                {
+                    //_targetHealth.TakeDamage(attackPower);
+
+                    //PlayerPushback();
+                    //StartCoroutine(PlayerHit());
+                }
+            }
+            else
+            {
+                //_targetHealth.TakeDamage(attackPower);
+
+                //PlayerPushback();
+                //StartCoroutine(PlayerHit());
+            }
+        }
+        else
+        {
+            //Debug.Log("Player dodged the attack?!");
+        }
+        yield return new WaitForSeconds(punchCooldown);
+        canPunch = true;
+    }
+
+    public void DealDamage()
+    {
+        if(IsPlayerInPunchingRange())
+        {
+            _targetHealth.TakeDamage(attackPower);
+        }
+    }
+
+    // This function adds force on X-axis, so the enemy unit doesn't get stuck to small obstacles when moving
+    private IEnumerator JumpForceForward(float jumpDirection)
+    {
+        yield return new WaitForSeconds(0.4f);
+        rb.AddForce(new Vector2(obstacleJumpforce * jumpDirection * Time.deltaTime, 0));
+    }
+
+    private IEnumerator Staggered(float time)
+    {
+        stunned = true;
+        //spriteRndr.color = Color.magenta;
+        yield return new WaitForSeconds(time);
+        speed = chargeSpeed;
+        pathUpdateInterval = 0.5f;
+        if (bossMode)
+            enemyState = EnemyState.BossModeCharge;
+        else
+            enemyState = EnemyState.Charge;
+
+        isForcedToAggro = true;
+        hurtCounter = 0;
+        canMove = true;
+        canJump = true;
+        canPunch = true;
+        //spriteRndr.color = Color.white;
+        stunned = false;
+    }
+
+    private void HandleAnimations()
+    {
+        if(enemyState != EnemyState.Staggered)
+        {
+            animator.SetBool("Stagger", false);
+        }
+        if(enemyState == EnemyState.Roam)
+        {
+            animator.SetBool("Walk", true);
+            animator.SetBool("Run", false);
+            animator.SetBool("Attack", false);
+            animator.SetBool("Stagger", false);
+        }
+
+        if(enemyState == EnemyState.Charge)
+        {
+            animator.SetBool("Run", true);
+            animator.SetBool("Walk", false);
+            animator.SetBool("Attack", false);
+            animator.SetBool("Stagger", false);
+        }
+
+        if (enemyState == EnemyState.Punch)
+        {
+            animator.Play("Attack");
+            animator.SetBool("Attack", true);
+            animator.SetBool("Run", false);
+            animator.SetBool("Walk", false);
+        }
+
+        if (enemyState == EnemyState.Stunned)
+        {
+            animator.StopPlayback();
+            animator.SetBool("Stagger", true);
+            animator.SetBool("Run", false);
+            animator.SetBool("Walk", false);
+            animator.SetBool("Attack", false);
+        }
+
+        if (enemyState == EnemyState.Staggered)
+        {
+            animator.StopPlayback();
+            animator.SetBool("Stagger", true);
+            animator.SetBool("Run", false);
+            animator.SetBool("Walk", false);
+            animator.SetBool("Attack", false);
+        }
+
+        if (enemyState == EnemyState.BossModeCharge)
+        {
+            animator.SetBool("Run", true);
+            animator.SetBool("Walk", false);
+        }
+
+        if (enemyState == EnemyState.BossModePunch)
+        {
+            animator.Play("Attack");
+            animator.SetBool("Run", false);
+            animator.SetBool("Walk", false);
+        }
+
+        if (enemyState == EnemyState.Idle)
+        {
+            animator.SetBool("Idle", true);
+            animator.SetBool("Run", false);
+            animator.SetBool("Walk", false);
+        }
+    }
+
+
+    public enum EnemyState
+    {
+        Idle,
+        Roam,
+        Charge,
+        Punch,
+        Stunned,
+        Staggered,
+        BossModeCharge,
+        BossModePunch
     }
 }
 

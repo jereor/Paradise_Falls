@@ -11,7 +11,7 @@ public class RiotShield : MonoBehaviour
     {
         drone = GetComponentInParent<RiotControlDrone>();
         shieldHealth = GetComponent<Health>();
-        shieldHealth.TakeDamage(2);
+        //shieldHealth.TakeDamage(2);
     }
 
     private void FixedUpdate()
