@@ -183,7 +183,7 @@ MonoBehaviour:
   punchChargeTime: 0.6
   punchCooldown: 0.4
   attackPower: 2
-  staggerTime: 0
+  staggerTime: 0.3
   stunTime: 1.5
   roamingRange: {x: 33.45, y: 5.01}
   roamingOffset: {x: 3, y: 1.3}
