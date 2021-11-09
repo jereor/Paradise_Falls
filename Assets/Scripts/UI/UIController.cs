@@ -60,7 +60,6 @@ public class UIController : MonoBehaviour
             // Fill value
             if (energySlider.value != Mathf.RoundToInt(energyScript.GetEnergy() / energyScript.getMaxEnergy() * 100f))
             {
-                Debug.Log("Update");
                 energySlider.value = Mathf.RoundToInt(energyScript.GetEnergy() / energyScript.getMaxEnergy() * 100f);
             }
         }
