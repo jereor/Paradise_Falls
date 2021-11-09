@@ -8,6 +8,7 @@ public class MeleeWeapon : MonoBehaviour
 {
     [Header("Variables from This script")]
     [SerializeField] private float weaponThrowDamage; // Damage dealt if hits enemy
+    [SerializeField] private float throwMaxChargeDmg;
     [SerializeField] private float powerBoostedDamage; // Damage dealt if hits enemy power boosted
     [SerializeField] private float weaponPullDamage;
     [SerializeField] private float weakPointMultiplier;
@@ -37,6 +38,7 @@ public class MeleeWeapon : MonoBehaviour
     public bool beingPulled;
     private bool attachedToGrapplePoint = false;
     public bool powerBoosted = false;
+    public bool maxCharged = false;
 
 
     private void Start()
@@ -339,6 +341,11 @@ public class MeleeWeapon : MonoBehaviour
                 col.gameObject.GetComponentInParent<Health>().TakeDamage(powerBoostedDamage * weakPointMultiplier);
             else if (beingPulled)
                 col.gameObject.GetComponentInParent<Health>().TakeDamage(weaponPullDamage * weakPointMultiplier);
+            else if (maxCharged)
+            {
+                col.gameObject.GetComponentInParent<Health>().TakeDamage(throwMaxChargeDmg * weakPointMultiplier);
+                maxCharged = false;
+            }
             else
                 col.gameObject.GetComponentInParent<Health>().TakeDamage(weaponThrowDamage * weakPointMultiplier);
         }
@@ -348,6 +355,11 @@ public class MeleeWeapon : MonoBehaviour
                 col.gameObject.GetComponentInParent<Health>().TakeDamage(powerBoostedDamage);
             else if (beingPulled)
                 col.gameObject.GetComponentInParent<Health>().TakeDamage(weaponPullDamage);
+            else if (maxCharged)
+            {
+                col.gameObject.GetComponentInParent<Health>().TakeDamage(throwMaxChargeDmg);
+                maxCharged = false;
+            }
             else
                 col.gameObject.GetComponentInParent<Health>().TakeDamage(weaponThrowDamage);
         }
@@ -403,6 +415,11 @@ public class MeleeWeapon : MonoBehaviour
         myRB.constraints = RigidbodyConstraints2D.None;
         GetComponentInChildren<SpriteRenderer>().color = Color.red;
         GetComponent<TrailRenderer>().enabled = false;
+    }
+
+    public void MaxCharged(bool b)
+    {
+        maxCharged = b;
     }
 
     public bool isPowerBoosted()
@@ -467,20 +484,19 @@ public class MeleeWeapon : MonoBehaviour
         return powerBoostedDamage;
     }
 
-    // ---- UPGRADES ----
-    // Called from PlayerCombat since it is only link to this prefab object
-    public void UpgradeThrowDamage(float dmg)
+    public void setMaxChargeDmg(float dmg)
     {
-        weaponThrowDamage += dmg;
+        throwMaxChargeDmg = dmg;
+    }
+    public float getMaxChargeDmg()
+    {
+        return throwMaxChargeDmg;
     }
 
-    public void UpgradePullDamage(float dmg)
-    {
-        weaponPullDamage += dmg;
-    }
 
-    public void UpgradePowerBoostedDamage(float dmg)
+    // Upgrade
+    public void UpgradeThrowMaxChargeDmg(float amount)
     {
-        powerBoostedDamage += dmg;
+        throwMaxChargeDmg += amount;
     }
 }
