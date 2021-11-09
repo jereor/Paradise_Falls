@@ -97,6 +97,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f66d33852a21134da80a49ed857fd66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  knockbackTrigger: {fileID: 3114469393039983843}
   boxRenderers:
   - {fileID: 2280556754333234935}
   - {fileID: 3997809468208047040}

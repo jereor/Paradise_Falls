@@ -7,6 +7,7 @@ public class StaticMovingBox : MonoBehaviour
 {
     private Rigidbody2D rb;
     private BoxCollider2D boxCollider;
+    public BoxCollider2D knockbackTrigger;
 
     [Header("Chain controller")]
     [SerializeField] private BoxChainController chainController;
@@ -58,6 +59,8 @@ public class StaticMovingBox : MonoBehaviour
         boxCollider = GetComponent<BoxCollider2D>();
         gizmoPositionChange = false;
         startPosition = transform.position;
+
+        knockbackTrigger.enabled = false;
 
         // Is the chain cuttable by melee weapon
         if (!cuttableChain)
@@ -169,6 +172,8 @@ public class StaticMovingBox : MonoBehaviour
             rb.constraints = RigidbodyConstraints2D.None;
             rb.constraints = RigidbodyConstraints2D.FreezePositionX;
             rb.freezeRotation = true;
+
+            knockbackTrigger.enabled = true;
 
             gameObject.tag = "Box";
             knockbackScript.setFalling(true);
