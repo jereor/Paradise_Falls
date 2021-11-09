@@ -596,19 +596,6 @@ public class PlayerCombat : MonoBehaviour
         // Heavy hit
         if (heavyHit)
         {
-            // If there is elements on hitEnemies array go through it
-            foreach (Collider2D enemy in hitEnemies)
-            {
-                // Error check if there isn't Health script attached don't do damage
-                if (enemy.TryGetComponent<Health>(out var healthScript))
-                {
-                    // Deal damage
-                    healthScript.TakeDamage(heavyDamage);
-                    // Knockback enemy
-                    Knockback(enemy.gameObject, gameObject, knockbackForceHeavy);
-                }
-            }
-
             // Dealing damage to enemies
             if (hitEnemies.Length != 0)
                 DealDamageTo(hitEnemies, heavyDamage, kbOnHeavy, knockbackForceHeavy, enemyLayer);

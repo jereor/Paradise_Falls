@@ -101,6 +101,6 @@ public class Interactable : MonoBehaviour
         {
             InteractedTextUpdate();
         }
-        Debug.Log("Interacted with: " + gameObject.transform.name);
+        //Debug.Log("Interacted with: " + gameObject.transform.name);
     }
 }
