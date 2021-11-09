@@ -19,6 +19,12 @@ public class DisappearingPlatform : MonoBehaviour
     private float counter;
     [SerializeField] private float timeBeforeTransition;
 
+    private void Awake()
+    {
+
+
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -26,15 +32,27 @@ public class DisappearingPlatform : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         transitionAnimator = GetComponent<Animator>();
 
-        if(enabledOnStart)
+        if (enabledOnStart)
         {
             boxCollider.enabled = true;
+            transitionAnimator.SetBool("AppearedOnStartBlock", true);
         }
         else
         {
             boxCollider.enabled = false;
-            //spriteRenderer.color = Color.grey;
+            transitionAnimator.SetBool("DisappearedOnStartBlock", true);
         }
+
+        //if(enabledOnStart)
+        //{
+        //    transitionAnimator.SetBool("Appear", true);
+        //    transitionAnimator.SetBool("Disappear", false);
+        //}
+        //else
+        //{
+        //    transitionAnimator.SetBool("Disappear", true);
+        //    transitionAnimator.SetBool("Appear", false);
+        //}
     }
 
     // Update is called once per frame
@@ -47,14 +65,21 @@ public class DisappearingPlatform : MonoBehaviour
 
         if(counter > timeBeforeTransition && onTimer)
         {
-            EnableDisableBoxCollider();
+            if(boxCollider.enabled)
+            {
+                transitionAnimator.SetBool("Disappear", true);
+                transitionAnimator.SetBool("Appear", false);
+            }
+            else
+            {
+                transitionAnimator.SetBool("Appear", true);
+                transitionAnimator.SetBool("Disappear", false);
+            }
 
-            transitionAnimator.Play("DisappearingPlatform");
-
-            if (boxCollider.enabled == true)
-                spriteRenderer.sprite = appearedBlock;
-            else if (boxCollider.enabled == false)
-                spriteRenderer.sprite = disappearedBlock;
+            //if (boxCollider.enabled == true)
+            //    spriteRenderer.sprite = appearedBlock;
+            //else if (boxCollider.enabled == false)
+            //    spriteRenderer.sprite = disappearedBlock;
 
             counter = 0;
         }
@@ -64,13 +89,19 @@ public class DisappearingPlatform : MonoBehaviour
     public void EnableDisableBoxCollider()
     {
         boxCollider.enabled = !boxCollider.enabled;
-        //if (boxCollider.enabled)
-        //{
-        //    gameObject.GetComponent<SpriteRenderer>().color = Color.white;
-        //}
-        //else
-        //{
-        //    gameObject.GetComponent<SpriteRenderer>().color = Color.grey;
-        //}
+    }
+
+    public void Work()
+    {
+        if (boxCollider.enabled)
+        {
+            transitionAnimator.SetBool("Disappear", true);
+            transitionAnimator.SetBool("Appear", false);
+        }
+        else
+        {
+            transitionAnimator.SetBool("Appear", true);
+            transitionAnimator.SetBool("Disappear", false);
+        }
     }
 }
