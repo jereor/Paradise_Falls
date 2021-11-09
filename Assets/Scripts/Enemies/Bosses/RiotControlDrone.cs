@@ -15,8 +15,10 @@ public class RiotControlDrone : MonoBehaviour
     [SerializeField] private Rigidbody2D playerRB;
     [SerializeField] private GameObject doorOne;
     [SerializeField] private GameObject[] bossEnemies;
-    [SerializeField] private Sprite taserShoot;
-    [SerializeField] private Sprite idleSprite;
+    //[SerializeField] private Sprite taserShoot;
+    //[SerializeField] private Sprite idleSprite;
+    [SerializeField] SpriteRenderer riotRenderer;
+    [SerializeField] Animator riotAnimator;
 
     [Header("Current State")]
     public RiotState state = RiotState.Idle;
@@ -123,6 +125,9 @@ public class RiotControlDrone : MonoBehaviour
         targetHealth = target.GetComponent<Health>();
         rb = GetComponent<Rigidbody2D>();
         health = GetComponent<Health>();
+
+        riotRenderer = transform.GetChild(0).GetComponent<SpriteRenderer>();
+        riotAnimator = transform.GetChild(0).GetComponent<Animator>();
 
         //health.TakeDamage(20);
         colliders = gameObject.GetComponentsInChildren<Transform>();
@@ -241,7 +246,7 @@ public class RiotControlDrone : MonoBehaviour
                 break;
         }
 
-
+        HandleAnimations();
     }
 
     // STATE HANDLING
@@ -799,13 +804,13 @@ public class RiotControlDrone : MonoBehaviour
     {
         taserOnCooldown = true;
         //gameObject.GetComponentsInChildren<SpriteRenderer>()[0].color = Color.yellow;
-        gameObject.GetComponentsInChildren<SpriteRenderer>()[0].sprite = taserShoot;
+        //gameObject.GetComponentsInChildren<SpriteRenderer>()[0].sprite = taserShoot;
         yield return new WaitForSeconds(taserCooldown);
         Instantiate(taserBeam, new Vector2(transform.position.x + (transform.localScale.x * 2), transform.position.y), Quaternion.identity);
         yield return new WaitForSeconds(taserCooldown);
         taserChanceRandomizer = UnityEngine.Random.Range(1, 101);
         //gameObject.GetComponentsInChildren<SpriteRenderer>()[0].color = Color.white;
-        gameObject.GetComponentsInChildren<SpriteRenderer>()[0].sprite = idleSprite;
+        //gameObject.GetComponentsInChildren<SpriteRenderer>()[0].sprite = idleSprite;
         state = RiotState.Moving;
         taserOnCooldown = false;
     }
@@ -963,6 +968,80 @@ public class RiotControlDrone : MonoBehaviour
         velocityPlayer = new Vector2(target.position.x - transform.position.x > 0 ? knockbackForce * 1 : knockbackForce * -1, 0);
         playerRB.MovePosition(playerRB.position + velocityPlayer * Time.deltaTime);
         StartCoroutine(KnockbackCooldown());
+    }
+
+    private void HandleAnimations()
+    {
+        if(state == RiotState.Idle)
+        {
+
+        }
+
+        if (state == RiotState.Moving)
+        {
+
+        }
+
+        if (state == RiotState.ShieldCharge)
+        {
+
+        }
+
+        if (state == RiotState.Attack)
+        {
+
+        }
+
+        if (state == RiotState.TaserShoot)
+        {
+
+        }
+
+        if (state == RiotState.Stunned)
+        {
+
+        }
+
+        if (state == RiotState.Backstepping)
+        {
+
+        }
+
+        // PHASE THREE
+        //-----------------------------------------------------
+
+        if (state == RiotState.PhaseTwoRun)
+        {
+
+        }
+
+        // PHASE THREE
+        //-----------------------------------------------------
+
+        if (state == RiotState.PhaseThreeStun)
+        {
+
+        }
+
+        if (state == RiotState.PhaseThreeMoving)
+        {
+
+        }
+
+        if (state == RiotState.PhaseThreeAttack)
+        {
+
+        }
+
+        if (state == RiotState.SeedShoot)
+        {
+
+        }
+
+        if (state == RiotState.DashAttack)
+        {
+
+        }
     }
 
 
