@@ -283,6 +283,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weaponThrowDamage: 1
+  throwMaxChargeDmg: 2
   powerBoostedDamage: 3
   weaponPullDamage: 1
   weakPointMultiplier: 2
@@ -299,6 +300,7 @@ MonoBehaviour:
   mySpriteRenderer: {fileID: 4707181778522028191}
   beingPulled: 0
   powerBoosted: 0
+  maxCharged: 0
 --- !u!96 &6049849153134103944
 TrailRenderer:
   serializedVersion: 2
@@ -319,8 +321,8 @@ TrailRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10301, guid: 0000000000000000f000000000000000, type: 0}
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: eb1cc777c90f5df43a5b70a919de2929, type: 2}
+  - {fileID: 2100000, guid: 5f0405ff1c3f4464ca1b1f092d0bfce6, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

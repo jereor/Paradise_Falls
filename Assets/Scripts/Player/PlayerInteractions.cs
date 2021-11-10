@@ -14,8 +14,8 @@ public class PlayerInteractions : MonoBehaviour
         // context.started = onButtonDown only event is invoked only once
         if (context.started && canInteract && objectToInteract != null)
         {
-            Debug.Log("Trying to interact");
-            Debug.Log(objectToInteract.GetComponent<Interactable>());
+            //Debug.Log("Trying to interact");
+            //Debug.Log(objectToInteract.GetComponent<Interactable>());
             objectToInteract.GetComponent<Interactable>().itemEvent.Invoke();   // Invoke virtual function event call this virtual function is modified in item scripts to do something 
         }
     }

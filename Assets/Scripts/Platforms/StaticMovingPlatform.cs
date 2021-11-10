@@ -11,6 +11,7 @@ public class StaticMovingPlatform : MonoBehaviour
     public SpriteRenderer[] platformRenderers;
 
     [Header("Speed and waypoint detection Radius")]
+    [SerializeField] private float waitTime;
     [SerializeField] private float speed;
     [SerializeField] private float circleSize = 0.15f;
 
@@ -34,6 +35,8 @@ public class StaticMovingPlatform : MonoBehaviour
     private bool canChangeCurrentStartPosition = true;
     private bool changeState = false;
     private bool gizmoPositionChange = true;
+
+    private bool isWaiting = false;
 
     private BoxCollider2D playerCollider;
     public float yOffset;
@@ -146,7 +149,8 @@ public class StaticMovingPlatform : MonoBehaviour
                 currentStartPosition = transform.position;
                 canChangeCurrentStartPosition = false;
             }
-            Move(); // Moves the object to the designated destination along the given path.
+            if(!isWaiting)
+                Move(); // Moves the object to the designated destination along the given path.
 
         }
         if (changeState && returningObject) // Is the game object meant to return to original position?
@@ -156,7 +160,8 @@ public class StaticMovingPlatform : MonoBehaviour
                 currentStartPosition = transform.position;
                 canChangeCurrentStartPosition = false;
             }
-            MoveBack(); // Uses the reverse List to return.
+            if(!isWaiting)
+                MoveBack(); // Uses the reverse List to return.
 
         }
         else if (changeState && loop && !destroyAfterPathComplete) // Looped route and not destroyable object?
@@ -184,6 +189,7 @@ public class StaticMovingPlatform : MonoBehaviour
                 changeState = true;
                 stepCounter = 0;
             }
+            StartCoroutine(Wait(waitTime));
         }
     }
 
@@ -202,7 +208,17 @@ public class StaticMovingPlatform : MonoBehaviour
                 changeState = false;
                 stepCounter = 0;
             }
+            StartCoroutine(Wait(waitTime));
         }
+    }
+
+    private IEnumerator Wait(float waitTime)
+    {
+        isWaiting = true;
+        rb.velocity = new Vector2(0, 0);
+        yield return new WaitForSeconds(waitTime);
+        canChangeCurrentStartPosition = true;
+        isWaiting = false;
     }
 
     // Enable or disable the collider.
