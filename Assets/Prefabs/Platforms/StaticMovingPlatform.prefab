@@ -154,6 +154,7 @@ GameObject:
   - component: {fileID: 7143010858897141042}
   - component: {fileID: 7143010858897141041}
   - component: {fileID: 1412436938605709646}
+  - component: {fileID: 3504101939570941019}
   m_Layer: 6
   m_Name: StaticMovingPlatform
   m_TagString: MovingPlatform
@@ -239,10 +240,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   platformRenderers: []
   waitTime: 1
-  speed: 100
+  speed: 150
   circleSize: 0.15
   moves:
-  - {x: 3, y: 0}
+  - {x: 0, y: 17}
   movesBack: []
   velocityPlayer: {x: 0, y: 0}
   knockbackForce: 40
@@ -253,6 +254,32 @@ MonoBehaviour:
   yOffset: 0
   leftSideClimbTransform: {fileID: 9145893087805758514}
   rightSideClimbTransform: {fileID: 1978294787471997382}
+--- !u!114 &3504101939570941019
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7143010858897141047}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7db70e0ea77f5ac47a8f4565a9406397, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ShadowGroup: 0
+  m_HasRenderer: 0
+  m_UseRendererSilhouette: 1
+  m_CastsShadows: 1
+  m_SelfShadows: 1
+  m_ApplyToSortingLayers: 000000008dd3b1c3677f6f181d388508c779de84f143de195d08d70597e0b4494b39ecf3
+  m_ShapePath:
+  - {x: -1.5, y: -0.5, z: 0}
+  - {x: 1.5, y: -0.5, z: 0}
+  - {x: 1.5, y: 0.5, z: 0}
+  - {x: -1.5, y: 0.5, z: 0}
+  m_ShapePathHash: 0
+  m_Mesh: {fileID: 0}
+  m_InstanceId: -78604
 --- !u!1 &7202397223329539780
 GameObject:
   m_ObjectHideFlags: 0
