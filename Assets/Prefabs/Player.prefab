@@ -10191,7 +10191,7 @@ MonoBehaviour:
   checkDistance: 0.7
   climbXOffset: 1
   climbYOffset: 1
-  climbYInsuranceValue: 0.1
+  climbYInsuranceValue: 0.01
   horizontal: 0
   horizontalBuffer: 0
   shockwaveJumping: 0
