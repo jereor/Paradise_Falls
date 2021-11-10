@@ -34,12 +34,12 @@ public class BackAndForthMovingBox : MonoBehaviour
 
     private Vector2 startPosition;
     private Vector2 currentStartPosition;
-    [SerializeField]private int stepCounter = 0;
+    private int stepCounter = 0;
 
     private bool canChangeCurrentStartPosition = true;
     private bool changeState = false;
     private bool canStep = true;
-    [SerializeField]private bool returning = false;
+    private bool returning = false;
     private bool shutScript = false;
     private bool isWaiting = false;
     private bool isChainCut = false;
@@ -322,13 +322,13 @@ public class BackAndForthMovingBox : MonoBehaviour
         return cuttableChain;
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.tag == "Boss" && rb.isKinematic == false)
-        {
-            Destroy(gameObject);
-        }
-    }
+    //private void OnCollisionEnter2D(Collision2D collision)
+    //{
+    //    if (collision.gameObject.tag == "Boss" && rb.isKinematic == false)
+    //    {
+    //        Destroy(gameObject);
+    //    }
+    //}
 
     // Handles all the steps the box takes during it's adventure.
     private void HandleStep()

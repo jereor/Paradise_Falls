@@ -47,5 +47,11 @@ public class RiotShield : MonoBehaviour
             shieldHealth.TakeDamage(1);
             drone.state = RiotControlDrone.RiotState.Stunned;
         }
+
+        if(drone.state == RiotControlDrone.RiotState.Moving && collision.gameObject.tag == "Box")
+        {
+            drone.state = RiotControlDrone.RiotState.Attack;
+            drone.setBoxInstance(collision.gameObject);
+        }
     }
 }
