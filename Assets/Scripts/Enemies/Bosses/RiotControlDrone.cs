@@ -1055,8 +1055,12 @@ public class RiotControlDrone : MonoBehaviour
         
         if(collision.gameObject.tag == "Box")
         {
-            if (state == RiotState.ShieldCharge)
+            if (state == RiotState.ShieldCharge || collision.gameObject.GetComponent<Rigidbody2D>().velocity.y < -0.5f)
+            {
+                Debug.Log("oof");
                 health.TakeDamage(5);
+                Destroy(collision.collider.gameObject);
+            }
         }
     }
 
