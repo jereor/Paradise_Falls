@@ -139,6 +139,7 @@ public class RiotControlDrone : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+        if (target == null) { return; }
         // Used to determine the direction where boss is going.
         vectorToTarget = (target.position - transform.position).normalized;
         velocity = rb.velocity;

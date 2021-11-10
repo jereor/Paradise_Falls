@@ -53,5 +53,18 @@ public class RiotShield : MonoBehaviour
             drone.state = RiotControlDrone.RiotState.Attack;
             drone.setBoxInstance(collision.gameObject);
         }
+
+        if(drone.state == RiotControlDrone.RiotState.PhaseTwoRun && collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
+        {
+            Destroy(collision.gameObject);
+        }
+    }
+
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        if (drone.state == RiotControlDrone.RiotState.PhaseTwoRun && collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
+        {
+            Destroy(collision.gameObject);
+        }
     }
 }

@@ -169,7 +169,7 @@ public class GroundEnemyAI : MonoBehaviour
 
 
         //If the target was not found, returns to the start of the update
-        if (path == null) { return; }
+        if (path == null || target == null) { return; }
 
         // If the target is too far from the enemy unit, it respawns in to the spawn point and stays there until target is close enough again.
         // Enemy stops all actions for the time being.

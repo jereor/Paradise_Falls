@@ -4,86 +4,150 @@ using UnityEngine;
 
 public class RiotPhaseTwoPlatformController : MonoBehaviour
 {
-    [SerializeField] private List<Transform> firstBoxSet;
-    [SerializeField] private List<Transform> secondBoxSet;
-    [SerializeField] private List<Transform> firstEnemySet;
-    [SerializeField] private List<Transform> secondEnemySet;
-    private Transform firstChild;
-    private Transform secondChild;
-    private Transform thirdChild;
-    private Transform fourthChild;
+    [SerializeField] private List<Transform> firstBoxes;
+    [SerializeField] private List<Transform> secondBoxes;
+    [SerializeField] private List<Transform> thirdBoxes;
+    [SerializeField] private List<Transform> firstEnemies;
+    [SerializeField] private List<Transform> secondEnemies;
+    [SerializeField] private List<Transform> thirdEnemies;
+    [SerializeField] private List<Transform> buttons;
+    private Transform boxSetOne;
+    private Transform boxSetTwo;
+    private Transform boxSetThree;
+    private Transform enemySetOne;
+    private Transform enemySetTwo;
+    private Transform enemySetThree;
+    private Transform buttonSet;
     // Start is called before the first frame update
     void Start()
     {
         // Get all child gameobjects for activation.
-        firstChild = gameObject.transform.GetChild(0).transform;
-        secondChild = gameObject.transform.GetChild(1).transform;
-        thirdChild = gameObject.transform.GetChild(2).transform;
-        fourthChild = gameObject.transform.GetChild(3).transform;
+        boxSetOne = gameObject.transform.GetChild(0).transform;
+        boxSetTwo = gameObject.transform.GetChild(1).transform;
+        boxSetThree = gameObject.transform.GetChild(2).transform;
+        enemySetOne = gameObject.transform.GetChild(3).transform;
+        enemySetTwo = gameObject.transform.GetChild(4).transform;
+        enemySetThree = gameObject.transform.GetChild(5).transform;
+        buttonSet = gameObject.transform.GetChild(6).transform;
 
         // Find the list of gameobjects that needs to be spawned/activated.
-        foreach(Transform platform in firstChild.GetComponentInChildren<Transform>())
+        foreach(Transform platform in boxSetOne.GetComponentInChildren<Transform>())
         {
-            firstBoxSet.Add(platform);
+            firstBoxes.Add(platform);
         }
 
-        foreach (Transform platform in secondChild.GetComponentInChildren<Transform>())
+        foreach (Transform platform in boxSetTwo.GetComponentInChildren<Transform>())
         {
-            secondBoxSet.Add(platform);
+            secondBoxes.Add(platform);
         }
 
-        foreach (Transform enemy in thirdChild.GetComponentInChildren<Transform>())
+        foreach (Transform platform in boxSetThree.GetComponentInChildren<Transform>())
         {
-            firstEnemySet.Add(enemy);
+            thirdBoxes.Add(platform);
         }
 
-        foreach (Transform enemy in fourthChild.GetComponentInChildren<Transform>())
+        foreach (Transform enemy in enemySetOne.GetComponentInChildren<Transform>())
         {
-            secondEnemySet.Add(enemy);
+            firstEnemies.Add(enemy);
         }
+
+        foreach (Transform enemy in enemySetTwo.GetComponentInChildren<Transform>())
+        {
+            secondEnemies.Add(enemy);
+        }
+
+        foreach (Transform enemy in enemySetThree.GetComponentInChildren<Transform>())
+        {
+            thirdEnemies.Add(enemy);
+        }
+
+        foreach(Transform button in buttonSet)
+        {
+            buttons.Add(button);
+        }
+
     }
 
-    // Update is called once per frame
-    void Update()
+    private void FixedUpdate()
     {
-        
+        if(GameObject.Find("RiotControlDrone") == null)
+        {
+            foreach(Transform enemy in firstEnemies)
+            {
+                if(enemy != null)
+                    Destroy(enemy.gameObject);
+            }
+            foreach (Transform enemy in secondEnemies)
+            {
+                if (enemy != null)
+                    Destroy(enemy.gameObject);
+            }
+            foreach (Transform enemy in thirdEnemies)
+            {
+                if (enemy != null)
+                    Destroy(enemy.gameObject);
+            }
+        }
     }
 
     public void ActivateFirstSet() // Activate first set of boxes and enemies.
     {
-        foreach(Transform platform in firstBoxSet)
+        foreach(Transform platform in firstBoxes)
         {
-            platform.GetComponent<DisappearingPlatform>().Work();
+            platform.GetComponent<DisappearingPlatform>().RiotRoomWork();
         }
 
-        foreach(Transform enemy in firstEnemySet)
+        foreach(Transform enemy in firstEnemies)
         {
             enemy.gameObject.SetActive(true);
         }
+
+        buttons[0].transform.gameObject.SetActive(true);
     }
 
     public void ActivateSecondSet() // Activate second set of boxes and enemies.
     {
-        foreach (Transform platform in firstBoxSet)
+        buttons[0].transform.gameObject.SetActive(false);
+        foreach (Transform platform in firstBoxes)
         {
-            platform.GetComponent<DisappearingPlatform>().Work();
+            platform.GetComponent<DisappearingPlatform>().RiotRoomWork();
         }
-        foreach (Transform platform in secondBoxSet)
+        foreach (Transform platform in secondBoxes)
         {
-            platform.GetComponent<DisappearingPlatform>().Work();
+            platform.GetComponent<DisappearingPlatform>().RiotRoomWork();
         }
-        foreach (Transform enemy in secondEnemySet)
+        foreach (Transform enemy in secondEnemies)
         {
             enemy.gameObject.SetActive(true);
         }
+        buttons[1].transform.gameObject.SetActive(true);
+    }
+
+    public void ActivateThirdSet() // Activate third set of boxes and enemies.
+    {
+        buttons[1].transform.gameObject.SetActive(false);
+        foreach (Transform platform in secondBoxes)
+        {
+            platform.GetComponent<DisappearingPlatform>().RiotRoomWork();
+        }
+        foreach (Transform platform in thirdBoxes)
+        {
+            platform.GetComponent<DisappearingPlatform>().RiotRoomWork();
+        }
+        foreach (Transform enemy in thirdEnemies)
+        {
+            enemy.gameObject.SetActive(true);
+        }
+        buttons[2].transform.gameObject.SetActive(true);
     }
 
     public void BeginThirdPhase() // Deactivate all boxes and set the phase 2 complete when the last button is pressed.
     {
-        foreach (Transform platform in secondBoxSet)
+        foreach (Transform platform in thirdBoxes)
         {
-            platform.GetComponent<DisappearingPlatform>().Work();
+            platform.GetComponent<DisappearingPlatform>().RiotRoomWork();
         }
+        buttons[2].transform.gameObject.SetActive(false);
         GameObject.Find("RiotControlDrone").GetComponent<RiotControlDrone>().setPhaseTwoComplete(true);
     }
 }
