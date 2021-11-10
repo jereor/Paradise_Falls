@@ -30,6 +30,13 @@ public class LedgeClimbScript : StateMachineBehaviour
     {
         PlayerMovement.Instance.LedgeClimb();
         animator.SetBool("isClimbing", false);
+
+        // If we should land and we end climb animation -> we REALLY shouldn't land aka play land animation after climb 
+        if (animator.GetBool("willLand"))
+        {
+            PlayerMovement.Instance.setWillLand(false);
+            animator.SetBool("willLand", false);
+        }
     }
 
     // OnStateMove is called right after Animator.OnAnimatorMove()

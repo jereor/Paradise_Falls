@@ -130,6 +130,15 @@ public class Player : MonoBehaviour
                         break;
                 }
             }
+
+            // Landing animation if we still have this bool true we didn't do landing animation on land (why? melee just before landing etc.)
+            if (animator.GetBool("willLand"))
+            {
+                movementScript.setWillLand(false);
+                animator.SetBool("willLand", false);
+            }
+
+
             // Heavy attack
             if (combatScript.meleeInputReceived && combatScript.heavyHold && !animator.GetBool("isClimbing") && !animator.GetBool("hCharging") && movementScript.IsGrounded())
             {
@@ -178,6 +187,13 @@ public class Player : MonoBehaviour
                         break;
                 }
             }
+
+            // Landing animation if we still have this bool true we didn't do landing animation on land (why? melee just before landing etc.)
+            if (animator.GetBool("willLand"))
+            {
+                movementScript.setWillLand(false);
+                animator.SetBool("willLand", false);
+            }
             // Heavy attack
             if (combatScript.meleeInputReceived && combatScript.heavyHold && !animator.GetBool("isClimbing") && !animator.GetBool("hCharging") && movementScript.IsGrounded())
             {
@@ -193,6 +209,8 @@ public class Player : MonoBehaviour
         // When current state is attack transition
         if(currentState == State.AttackTransition)
         {
+            if (animator.GetBool("willLand") && movementScript.IsGrounded())
+                animator.Play("Land");
             // Player starts moving
             if (PlayerMovement.Instance.horizontal != 0f)
             {
@@ -296,6 +314,12 @@ public class Player : MonoBehaviour
                 //    animator.Play("LAttack3");
             }
 
+            // Landing animation
+            if (movementScript.getWillLand())
+                animator.SetBool("willLand", true);
+            else if (!movementScript.getWillLand() && animator.GetBool("willLand"))
+                animator.SetBool("willLand", false);
+
             // Throw
             if (PlayerCombat.Instance.throwInputReceived)
             {
@@ -337,12 +361,6 @@ public class Player : MonoBehaviour
         // LedgeChecks return true
         if (movementScript.getClimbing() && !animator.GetBool("isAttacking") && !animator.GetBool("hCharging") && !animator.GetBool("isBlocking") && !animator.GetBool("isParrying"))
         {
-            if (animator.GetBool("willLand"))
-            {
-                animator.SetBool("willLand", false);
-                movementScript.setWillLand(false);
-            }
-
             animator.SetBool("isClimbing", true);
         }
 
@@ -379,7 +397,7 @@ public class Player : MonoBehaviour
         }
 
         // Aiming
-        if (combatScript.getThrowAiming() && combatScript.getWeaponWielded() && !animator.GetBool("isRunning") && !animator.GetBool("isClimbing") && !animator.GetBool("isBlocking") && !animator.GetBool("isParrying"))
+        if (combatScript.getThrowAiming() && combatScript.getWeaponWielded() && !animator.GetBool("isRunning") && !animator.GetBool("isClimbing") && !animator.GetBool("isBlocking") && !animator.GetBool("isParrying") && !animator.GetBool("willLand"))
         {
             animator.SetBool("isAiming", true);
         }
@@ -389,7 +407,7 @@ public class Player : MonoBehaviour
         }
 
         // Parry
-        if (shieldScript.Parrying && !animator.GetBool("isParrying") && !animator.GetBool("jump") && !animator.GetBool("isAttacking") && !animator.GetBool("isAiming") && !animator.GetBool("isThrowing"))
+        if (shieldScript.Parrying && !animator.GetBool("isParrying") && !animator.GetBool("jump") && !animator.GetBool("isAttacking") && !animator.GetBool("isAiming") && !animator.GetBool("isThrowing") && !animator.GetBool("willLand"))
         {
             float multiplier = GetClipAnimTime("Parry") / shieldScript.getParryTimeWindow();
             // parrySpeedMultiplier is used to scale Parry animation lenght with our set parry time window
@@ -403,7 +421,7 @@ public class Player : MonoBehaviour
         }
 
         // Blocking 
-        if (shieldScript.Blocking && !animator.GetBool("isAttacking") && !animator.GetBool("isAiming") && !animator.GetBool("isThrowing"))
+        if (shieldScript.Blocking && !animator.GetBool("isAttacking") && !animator.GetBool("isAiming") && !animator.GetBool("isThrowing") && !animator.GetBool("willLand"))
         {
             if (animator.GetBool("isRunning"))
             {
@@ -414,7 +432,7 @@ public class Player : MonoBehaviour
             if(!shieldScript.shield.activeInHierarchy && blockCoroutine == null)
                 blockCoroutine = StartCoroutine(ShowBlockObject(GetClipAnimTime("Block") * blockAnimTimeMultiplier));
         }
-        else if (!shieldScript.Blocking)
+        else if (!shieldScript.Blocking || animator.GetBool("willLand"))
         {
             animator.SetBool("isBlocking", false);
             blockCoroutine = null;
