@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 2648914181103027425}
   - component: {fileID: 2648914181103027424}
   m_Layer: 6
-  m_Name: DisappearingPlatform
+  m_Name: DisappearingPlatformTIlesx1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -100,7 +100,7 @@ MonoBehaviour:
   appearedBlock: {fileID: -2190364591503408880, guid: b7d67e077ccddd34ab53ade71f955e63, type: 3}
   disappearedBlock: {fileID: 6570887629839225309, guid: b7d67e077ccddd34ab53ade71f955e63, type: 3}
   transitionAnimator: {fileID: 2648914181103027424}
-  onTimer: 1
+  onTimer: 0
   enabledOnStart: 1
   timeBeforeTransition: 5
 --- !u!61 &2648914181103027425
