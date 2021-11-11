@@ -36,35 +36,22 @@ public class RiotShield : MonoBehaviour
         {
 
             drone.state = RiotControlDrone.RiotState.Stunned;
+            if(collision.collider.gameObject.tag == "Box")
+            {
+                shieldHealth.TakeDamage(1);
+                Destroy(collision.collider.gameObject);
+            }
         }
-        else if (drone.state == RiotControlDrone.RiotState.PhaseTwoRun && collision.gameObject.layer == LayerMask.NameToLayer("Ground") && drone.getIsEnraged())
+        if (drone.state == RiotControlDrone.RiotState.PhaseTwoRun && collision.gameObject.layer == LayerMask.NameToLayer("Ground") && drone.getIsEnraged())
         {
             drone.Flip();
             drone.state = RiotControlDrone.RiotState.PhaseThreeStun;
-        }
-        if (drone.state == RiotControlDrone.RiotState.ShieldCharge && collision.gameObject.tag == "Box" && !drone.getIsEnraged())
-        {
-            shieldHealth.TakeDamage(1);
-            drone.state = RiotControlDrone.RiotState.Stunned;
         }
 
         if(drone.state == RiotControlDrone.RiotState.Moving && collision.gameObject.tag == "Box")
         {
             drone.state = RiotControlDrone.RiotState.Attack;
             drone.setBoxInstance(collision.gameObject);
-        }
-
-        if(drone.state == RiotControlDrone.RiotState.PhaseTwoRun && collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
-        {
-            Destroy(collision.gameObject);
-        }
-    }
-
-    private void OnCollisionStay2D(Collision2D collision)
-    {
-        if (drone.state == RiotControlDrone.RiotState.PhaseTwoRun && collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
-        {
-            Destroy(collision.gameObject);
         }
     }
 }

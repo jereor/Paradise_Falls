@@ -75,6 +75,7 @@ public class RiotControlDrone : MonoBehaviour
     
     [SerializeField] private bool isFacingRight = false;
     private Vector2 vectorToTarget;
+    private Vector2 startPosition;
 
     private bool canStart = false;
     private bool canMove = true;
@@ -132,16 +133,25 @@ public class RiotControlDrone : MonoBehaviour
         taserChanceRandomizer = UnityEngine.Random.Range(1, 101);
         dashAttackCooldownRandomizer = UnityEngine.Random.Range(10, 21);
 
-
+        startPosition = transform.position;
         batonRotation = gameObject.transform.GetChild(4).rotation;
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (target == null) { return; }
+        if (target == null && state != RiotState.PlayerIsDead) 
+        {
+            canStart = false;
+            isWaiting = false;
+            canMove = true;
+            StopAllCoroutines();
+            state = RiotState.PlayerIsDead; 
+        }
         // Used to determine the direction where boss is going.
-        vectorToTarget = (target.position - transform.position).normalized;
+        if(target != null)
+            vectorToTarget = (target.position - transform.position).normalized;
+
         velocity = rb.velocity;
 
         // Flip the localscale of the boss to the moving direction.
@@ -233,6 +243,13 @@ public class RiotControlDrone : MonoBehaviour
 
             case RiotState.DashAttack:
                 HandleDashAttack();
+                break;
+
+            // PLAYER IS DEAD
+            //------------------------------------------------------
+
+            case RiotState.PlayerIsDead:
+                HandlePlayerIsDead();
                 break;
         }
 
@@ -528,6 +545,27 @@ public class RiotControlDrone : MonoBehaviour
 
     }
 
+    private void HandlePlayerIsDead()
+    {
+        if (!canStart && !isWaiting)
+        {
+            StartCoroutine(Wait(waitTime));
+            canStart = true;
+        }
+
+        if (!isWaiting && canStart && canMove)
+        {
+            Vector2 vectorToStart = new Vector2(startPosition.x - transform.position.x, 0);
+            rb.AddForce(new Vector2((vectorToStart.x > 0 ? 1 : -1) * walkingSpeed * Time.fixedDeltaTime, 0));
+            StartCoroutine(WalkCoolDown());
+            if(Vector2.Distance(transform.position, startPosition) < 0.5)
+            {
+                transform.localScale = new Vector2(-1, 1);
+                StartCoroutine(Wait(Mathf.Infinity));
+            }
+        }
+    }
+
     //-----------------------------------------------------------------------------------------------------------------------
 
     // LAYER CHANGES
@@ -656,7 +694,7 @@ public class RiotControlDrone : MonoBehaviour
         if(IsTargetInHitRange())
         {
             targetHealth.TakeDamage(lightAttackDamage);
-            //PlayerPushback();
+            PlayerPushback();
             //if(!isEnraged)
                 gameObject.transform.GetChild(5).rotation = batonRotation;
 
@@ -668,7 +706,6 @@ public class RiotControlDrone : MonoBehaviour
         else if(boxInstance != null)
         {
             Destroy(boxInstance);
-            Debug.Log("boxHit");
             boxInstance = null;
 
             //if (!isEnraged)
@@ -911,7 +948,7 @@ public class RiotControlDrone : MonoBehaviour
     // Pushbacks the player when hit with riot drone collider. Uses velocity for the knockback instead of force.
     public void PlayerPushback()
     {
-        velocityPlayer = new Vector2(target.position.x - transform.position.x > 0 ? knockbackForce * 1 : knockbackForce * -1, 0);
+        velocityPlayer = new Vector2(target.position.x - transform.position.x > 0 ? knockbackForce * 1 : knockbackForce * -1, knockbackForce / 3);
         playerRB.MovePosition(playerRB.position + velocityPlayer * Time.deltaTime);
         StartCoroutine(KnockbackCooldown());
     }
@@ -1048,16 +1085,17 @@ public class RiotControlDrone : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         // Pushes player back when collider is hit and knockback is not on cooldown.
-        if (collision.collider.tag == "Player" && !knockbackOnCooldown && !stunned && !isEnraged)
-        {
-            PlayerPushback();
-        }
+        //if (collision.collider.tag == "Player" && !knockbackOnCooldown && !stunned && !isEnraged)
+        //{
+        //    PlayerPushback();
+        //}
         
         if(collision.gameObject.tag == "Box")
         {
-            if (state == RiotState.ShieldCharge || collision.gameObject.GetComponent<Rigidbody2D>().velocity.y < -0.5f)
+            Debug.Log("Box velocity: " + collision.gameObject.GetComponent<Rigidbody2D>().velocity.y);
+            if (state == RiotState.ShieldCharge || collision.gameObject.GetComponent<Rigidbody2D>().velocity.y < 0)
             {
-                Debug.Log("oof");
+                Debug.Log("oof2");
                 health.TakeDamage(5);
                 Destroy(collision.collider.gameObject);
             }
@@ -1068,10 +1106,10 @@ public class RiotControlDrone : MonoBehaviour
     private void OnCollisionStay2D(Collision2D collision)
     {
         // If player stays in contact with the boss, knockback.
-        if (collision.collider.tag == "Player" && !knockbackOnCooldown && !stunned && !isEnraged)
-        {
-            PlayerPushback();
-        }
+        //if (collision.collider.tag == "Player" && !knockbackOnCooldown && !stunned && !isEnraged)
+        //{
+        //    PlayerPushback();
+        //}
     }
 
     // State names.
@@ -1089,7 +1127,8 @@ public class RiotControlDrone : MonoBehaviour
         PhaseThreeStun,
         PhaseThreeMoving,
         PhaseThreeAttack,
-        DashAttack
+        DashAttack,
+        PlayerIsDead
 
     }
 

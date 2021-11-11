@@ -113,63 +113,6 @@ Transform:
   m_Father: {fileID: 8410908677858590962}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 17.97}
---- !u!1 &1579293807
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1579293808}
-  - component: {fileID: 1579293809}
-  m_Layer: 0
-  m_Name: BoxCheck
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1579293808
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1579293807}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 8410908677858590962}
-  m_RootOrder: 6
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!61 &1579293809
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1579293807}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 1.25, y: -0.12}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 1.04, y: 2.8}
-  m_EdgeRadius: 0
 --- !u!1 &4346172592286270044
 GameObject:
   m_ObjectHideFlags: 0
@@ -310,7 +253,6 @@ Transform:
   - {fileID: 8410908679192793485}
   - {fileID: 6622000218174222055}
   - {fileID: 231934768}
-  - {fileID: 1579293808}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -349,10 +291,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   taserBeam: {fileID: 7094682758646093242, guid: 1956fd86456be4d41ae726c17406e383, type: 3}
   seed: {fileID: 2045461362968113728, guid: a719129ab0245494d8c274b7144ea610, type: 3}
+  boxInstance: {fileID: 0}
   bodyCollider: {fileID: 8410908678957537518}
   headCollider: {fileID: 8410908678676369678}
   phaseTwoKnockbackBox: {fileID: 3142315634059483558}
-  boxCheckCollider: {fileID: 0}
   colliders: []
   playerRB: {fileID: 0}
   doorOne: {fileID: 0}
@@ -402,7 +344,6 @@ MonoBehaviour:
   seedShootChanceRandomizer: 1
   isFacingRight: 0
   spawnEnemies: 0
-  chargeCooldownRandomizer: 3
 --- !u!114 &8410908677858590967
 MonoBehaviour:
   m_ObjectHideFlags: 0
