@@ -55,13 +55,13 @@ TagManager:
   - name: Near Background
     uniqueID: 409960295
     locked: 0
-  - name: Interior
-    uniqueID: 142948381
-    locked: 0
   - name: Objects
     uniqueID: 2229172679
     locked: 0
-  - name: Exterior
+  - name: Interior Objects
+    uniqueID: 142948381
+    locked: 0
+  - name: Exterior Objects
     uniqueID: 433996785
     locked: 0
   - name: Foreground
