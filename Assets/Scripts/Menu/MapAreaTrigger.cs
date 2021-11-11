@@ -7,15 +7,38 @@ public class MapAreaTrigger : MonoBehaviour
 {
     private bool found = false;
 
-    public GameObject areaObject;
+    [Header("Activate these objects on trigger enter")]
+    public GameObject[] areaObjectsToActivate;
+    [Header("Deactivate these objects on trigger enter")]
+    public GameObject[] areaObjectsToDeactivate;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Player") && !found)
         {
-            Debug.Log("New area");
-            areaObject.SetActive(true);
+            HandleActivations();
+
             found = true;
+        }
+    }
+
+    private void HandleActivations()
+    {
+        // Activate all objects in areaObjectsToActivate array
+        if (areaObjectsToActivate.Length > 0)
+        {
+            foreach (GameObject obj in areaObjectsToActivate)
+            {
+                obj.SetActive(true);
+            }
+        }
+        // Deactivate all objects in areaObjectsToActivate array
+        if (areaObjectsToActivate.Length > 0)
+        {
+            foreach (GameObject obj in areaObjectsToDeactivate)
+            {
+                obj.SetActive(false);
+            }
         }
     }
 
@@ -27,7 +50,9 @@ public class MapAreaTrigger : MonoBehaviour
     // For loading
     public void SetFound(bool b)
     {
-        areaObject.SetActive(b);
+        // If found unlock map parts if not leave it hidden default
+        if(b)
+            HandleActivations();
         found = b;
     }
 }
