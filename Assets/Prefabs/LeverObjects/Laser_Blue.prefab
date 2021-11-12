@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: 6596160278020989931}
   - component: {fileID: 6596160278020989930}
   - component: {fileID: 6596160278020989933}
+  - component: {fileID: 1095781358}
+  - component: {fileID: 1095781357}
   m_Layer: 0
   m_Name: Laser_Blue
   m_TagString: Untagged
@@ -26,7 +28,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6596160278020989929}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 107.40103, y: -9.019138, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -52,7 +54,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: 5f0405ff1c3f4464ca1b1f092d0bfce6, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -129,3 +131,63 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.6682358, y: 1.8724003}
   m_EdgeRadius: 0
+--- !u!114 &1095781358
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6596160278020989929}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_LightType: 1
+  m_BlendStyleIndex: 0
+  m_FalloffIntensity: 1
+  m_Color: {r: 0.5411765, g: 1, b: 0.98182976, a: 1}
+  m_Intensity: 0.4
+  m_LightVolumeOpacity: 0
+  m_ApplyToSortingLayers: 000000008dd3b1c3677f6f181d388508c779de84f143de195d08d70597e0b4494b39ecf3
+  m_LightCookieSprite: {fileID: 0}
+  m_UseNormalMap: 0
+  m_LightOrder: 0
+  m_AlphaBlendOnOverlap: 0
+  m_ShadowIntensity: 0.2
+  m_ShadowVolumeIntensity: 0
+  m_PointLightInnerAngle: 360
+  m_PointLightOuterAngle: 360
+  m_PointLightInnerRadius: 0
+  m_PointLightOuterRadius: 1
+  m_PointLightDistance: 3
+  m_PointLightQuality: 1
+  m_ShapeLightParametricSides: 5
+  m_ShapeLightParametricAngleOffset: 0
+  m_ShapeLightParametricRadius: 1
+  m_ShapeLightFalloffSize: 3
+  m_ShapeLightFalloffOffset: {x: 0, y: 0}
+  m_ShapePath:
+  - {x: -0.06414795, y: -0.93899536, z: 0}
+  - {x: 0.06820679, y: -0.9389963, z: 0}
+  - {x: 0.20245361, y: -0.24414921, z: 0}
+  - {x: 0.20245361, y: 0.42126846, z: 0}
+  - {x: 0.055145264, y: 0.9611654, z: 0}
+  - {x: -0.046081543, y: 0.9611645, z: 0}
+  - {x: -0.20419312, y: 0.42126846, z: 0}
+  - {x: -0.16723633, y: -0.24414921, z: 0}
+--- !u!114 &1095781357
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6596160278020989929}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e405ca74dfdcb0498a685f56bbbe30a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  flickerTime: 0
+  minIntensity: 0
+  maxIntensity: 0

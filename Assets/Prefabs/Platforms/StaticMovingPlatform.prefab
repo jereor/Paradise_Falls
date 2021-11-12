@@ -50,7 +50,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 5f0405ff1c3f4464ca1b1f092d0bfce6, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -68,7 +68,7 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -2065794617
+  m_SortingLayerID: 142948381
   m_SortingLayer: 4
   m_SortingOrder: -1
   m_Sprite: {fileID: 4267559125302215866, guid: b1c7aba9cdf256a42991529b267aadc3, type: 3}
@@ -279,7 +279,7 @@ MonoBehaviour:
   - {x: -1.5, y: 0.5, z: 0}
   m_ShapePathHash: 0
   m_Mesh: {fileID: 0}
-  m_InstanceId: -78604
+  m_InstanceId: 305584
 --- !u!1 &7202397223329539780
 GameObject:
   m_ObjectHideFlags: 0
@@ -330,7 +330,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 5f0405ff1c3f4464ca1b1f092d0bfce6, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -348,7 +348,7 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -2065794617
+  m_SortingLayerID: 142948381
   m_SortingLayer: 4
   m_SortingOrder: -1
   m_Sprite: {fileID: -5692151283660047582, guid: 860462c9cf2d1cc438bdede04109a365, type: 3}
@@ -445,7 +445,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 5f0405ff1c3f4464ca1b1f092d0bfce6, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -463,7 +463,7 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -2065794617
+  m_SortingLayerID: 142948381
   m_SortingLayer: 4
   m_SortingOrder: -1
   m_Sprite: {fileID: -4855985180144077024, guid: 860462c9cf2d1cc438bdede04109a365, type: 3}
