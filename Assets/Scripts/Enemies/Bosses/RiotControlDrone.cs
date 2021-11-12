@@ -1054,7 +1054,7 @@ public class RiotControlDrone : MonoBehaviour
 
         if (state == RiotState.PhaseThreeAttack)
         {
-            riotAnimator.SetBool("Attack", true); // Placeholder, change false when right animations
+            riotAnimator.SetBool("LightAttack", true); // Placeholder, change false when right animations
             riotAnimator.SetBool("Idle", false); 
             riotAnimator.SetBool("Stunned", false);
             riotAnimator.SetBool("ShieldCharge", false);
