@@ -188,6 +188,7 @@ public class MeleeWeapon : MonoBehaviour
         // Collision with GrapplePoint
         else if(collision.collider.gameObject.layer == LayerMask.NameToLayer("GrapplePoint"))
         {
+            gameObject.transform.parent = collision.gameObject.transform;
             // Makes the player and melee weapon to collide until it is pulled again. Weapon can be used as a platform during grapple.
             Physics2D.IgnoreLayerCollision(3, 13, false);
 
@@ -287,6 +288,9 @@ public class MeleeWeapon : MonoBehaviour
         // Weapon cannot deal damage aka hit enemy or ground
         if (landed)
         {
+            // If set to objects child (grapplepoint) -> unchild
+            gameObject.transform.parent = null;
+
             // Ignore layers that should't collide
             SetEnemyIgnoresOnPull();
 
