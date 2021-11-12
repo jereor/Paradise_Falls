@@ -21,6 +21,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Transform groundCheck; // GameObject attached to player that checks if touching ground
     [SerializeField] private float checkRadius; // Determines radius for ground checks
     [SerializeField] LayerMask groundLayer; // Chosen layer that is recognized as ground in ground checks
+    [SerializeField] LayerMask grapplePointLayer;
 
     [Header("Ledge and Wall Check")]
     [SerializeField] private bool allowLedgeClimb;
@@ -562,15 +563,15 @@ public class PlayerMovement : MonoBehaviour
     // Returns true if Raycast hits to something aka our body is so close to wall that it counts as touching
     public bool BodyIsTouchingWall()
     {
-        Debug.DrawRay(wallCheckBody.position, transform.right * checkDistance * transform.localScale.x, Color.red);
-        return Physics2D.Raycast(wallCheckBody.position, transform.right * transform.localScale.x, checkDistance, groundLayer); // Raycast from body
+        // return true if hit is on groundLayer or grapplePointLayer
+        return Physics2D.Raycast(wallCheckBody.position, transform.right * transform.localScale.x, checkDistance, groundLayer) || Physics2D.Raycast(wallCheckBody.position, transform.right * transform.localScale.x, checkDistance, grapplePointLayer) ? true : false; // Raycast from body
     }
 
     // Returns true if Raycast hits to something aka our feet are so close to wall that it counts as touching
     public bool FeetAreTouchingWall()
     {
-        Debug.DrawRay(wallCheckFeet.position, transform.right * checkDistance * transform.localScale.x, Color.red);
-        return Physics2D.Raycast(wallCheckFeet.position, transform.right * transform.localScale.x, checkDistance, groundLayer); // Raycast from feet
+        // return true if hit is on groundLayer or grapplePointLayer
+        return Physics2D.Raycast(wallCheckFeet.position, transform.right * transform.localScale.x, checkDistance, groundLayer) || Physics2D.Raycast(wallCheckFeet.position, transform.right * transform.localScale.x, checkDistance, grapplePointLayer) ? true : false; // Raycast from feet
     }
 
     // Returns true if Raycast hits to something or OverlapBox overlaps with groundLayer object aka there is something on top of the wall we might be climbing
@@ -582,11 +583,13 @@ public class PlayerMovement : MonoBehaviour
         // ledgeHitOffsetRayRay
         //Debug.DrawRay(ledgeCheck.position + new Vector3(transform.localScale.x * checkDistance, 0f, 0f), -transform.up * transform.localScale.x * (ledgeCheck.position - wallCheckBody.position).magnitude, Color.green);
 
-        if (!Physics2D.Raycast(ledgeCheck.position, transform.right * transform.localScale.x, checkDistance, groundLayer))
+        if (!Physics2D.Raycast(ledgeCheck.position, transform.right * transform.localScale.x, checkDistance, groundLayer) || !Physics2D.Raycast(ledgeCheck.position, transform.right * transform.localScale.x, checkDistance, grapplePointLayer))
         {
             // Ray FROM end of ledgeCheck ray above TO wallCheckBody ray end if groundLayer object is between ray distance is float between [0 , ~ 0.5]
             ledgeHitOffsetRay = Physics2D.Raycast(ledgeCheck.position + new Vector3(transform.localScale.x * checkDistance, 0f, 0f), -transform.up, (ledgeCheck.position - wallCheckBody.position).magnitude, groundLayer);
-
+            // If it didn't hit ground object it should hit grapplepoint since these two are only layers you can climb if it will not hit grapplePoint object god help us.
+            if(ledgeHitOffsetRay.distance == 0f)
+                ledgeHitOffsetRay = Physics2D.Raycast(ledgeCheck.position + new Vector3(transform.localScale.x * checkDistance, 0f, 0f), -transform.up, (ledgeCheck.position - wallCheckBody.position).magnitude, grapplePointLayer);
             // Draws a box in scene if objects from groundLayer are inside this box ledge is occupied use ledgeHitOffsetRay to lower box to jsut above object we are climbing
             Collider2D[] colliders = Physics2D.OverlapBoxAll(new Vector2(transform.position.x + climbXOffset * transform.localScale.x, transform.position.y + climbYOffset - ledgeHitOffsetRay.distance), new Vector2(GetComponent<BoxCollider2D>().size.x, GetComponent<BoxCollider2D>().size.y), 0f, groundLayer);
             // No objects in array aka no overlaps with groundLayer objects
@@ -605,13 +608,14 @@ public class PlayerMovement : MonoBehaviour
     // Returns true if ground check detects ground + stores information of moving platform gameobject if grounded on it
     public bool IsGrounded()
     {
-        Collider2D obj = Physics2D.OverlapCircle(groundCheck.position, checkRadius, groundLayer);
-        if (obj && obj.gameObject.CompareTag("MovingPlatform"))
-            movingPlatformRB = obj.GetComponent<Rigidbody2D>();
+        Collider2D objGround = Physics2D.OverlapCircle(groundCheck.position, checkRadius, groundLayer);
+        Collider2D objGrapplePoint = Physics2D.OverlapCircle(groundCheck.position, checkRadius, grapplePointLayer);
+        if (objGround && objGround.gameObject.CompareTag("MovingPlatform"))
+            movingPlatformRB = objGround.GetComponent<Rigidbody2D>();
         else if (!climbing)
             movingPlatformRB = null;
 
-        return obj;
+        return objGround || objGrapplePoint ? true : false;
     }
 
     // Flips player by changing localScale

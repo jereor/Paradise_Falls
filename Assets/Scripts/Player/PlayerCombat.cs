@@ -904,7 +904,7 @@ public class PlayerCombat : MonoBehaviour
         hitGrapplePoint = Physics2D.Raycast(transform.position, vectorToWeapon, vectorToWeapon.magnitude, LayerMask.GetMask("GrapplePoint"));
 
         //Sets the collision between the player and weapon false again. Magnet tether becomes active during the flight to the weapon.
-        if (hitGround && hitGround.collider.tag == "MeleeWeapon" && !hitGrapplePoint)
+        if (weaponInstanceScript.getAttachedToGrapplePoint() && hitGround && hitGround.collider.tag == "MeleeWeapon" && !hitGrapplePoint)
         {
             return true;
         }
@@ -915,9 +915,17 @@ public class PlayerCombat : MonoBehaviour
     {
         if (isPlayerBeingPulled)
         {
+            if(weaponInstance != null && weaponInstance.layer == LayerMask.NameToLayer("Ground"))
+            {
+                weaponInstance.layer = LayerMask.NameToLayer("MeleeWeapon");
+            }
             Vector3 vectorToTargetWeapon = weaponInstance.transform.position - transform.position;
             gameObject.GetComponent<Rigidbody2D>().gravityScale = 0f;
             gameObject.GetComponent<Rigidbody2D>().velocity = vectorToTargetWeapon.normalized * playerPullForce * Time.deltaTime;
+        }
+        else if (weaponInstance != null && weaponInstance.layer == LayerMask.NameToLayer("MeleeWeapon"))
+        {
+            weaponInstance.layer = LayerMask.NameToLayer("Ground");
         }
     }
 
