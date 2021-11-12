@@ -10183,6 +10183,9 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
+  grapplePointLayer:
+    serializedVersion: 2
+    m_Bits: 4096
   allowLedgeClimb: 1
   allowCoyoteWallJump: 1
   ledgeCheck: {fileID: 2838063052809471023}
