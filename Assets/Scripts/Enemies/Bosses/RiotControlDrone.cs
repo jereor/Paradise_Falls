@@ -679,15 +679,15 @@ public class RiotControlDrone : MonoBehaviour
 
         float collisionAngle = Vector2.SignedAngle(Vector2.right, Vector2.up);
         Quaternion q = Quaternion.AngleAxis(collisionAngle, Vector3.forward);
-        if (!isFacingRight /*&& !isEnraged*/)
+        if (!isFacingRight && !isEnraged)
             gameObject.transform.GetChild(5).DORotate(new Vector3(0, 0, -90), lightAttackCoolDown); // Simple visual effect for baton so player knows when to hit and not.
-        else if (isFacingRight /*&& !isEnraged*/)
+        else if (isFacingRight && !isEnraged)
             gameObject.transform.GetChild(5).DORotate(new Vector3(0, 0, 90), lightAttackCoolDown);
 
-        //if (!isFacingRight && isEnraged)
-        //    gameObject.transform.GetChild(4).DORotate(new Vector3(0, 0, -90), lightAttackCoolDown); // Simple visual effect for baton so player knows when to hit and not.
-        //else if (isFacingRight && isEnraged)
-        //    gameObject.transform.GetChild(4).DORotate(new Vector3(0, 0, 90), lightAttackCoolDown);
+        if (!isFacingRight && isEnraged)
+            gameObject.transform.GetChild(4).DORotate(new Vector3(0, 0, -90), lightAttackCoolDown); // Simple visual effect for baton so player knows when to hit and not.
+        else if (isFacingRight && isEnraged)
+            gameObject.transform.GetChild(4).DORotate(new Vector3(0, 0, 90), lightAttackCoolDown);
 
         yield return new WaitForSeconds(lightAttackCoolDown);
         // Deal damage to player if still in range.
@@ -695,11 +695,11 @@ public class RiotControlDrone : MonoBehaviour
         {
             targetHealth.TakeDamage(lightAttackDamage);
             PlayerPushback();
-            //if(!isEnraged)
+            if (!isEnraged)
                 gameObject.transform.GetChild(5).rotation = batonRotation;
 
-            //if(isEnraged)
-            //    gameObject.transform.GetChild(4).rotation = batonRotation;
+            if (isEnraged)
+                gameObject.transform.GetChild(4).rotation = batonRotation;
             yield return new WaitForSeconds(lightAttackCoolDown);
 
         }
@@ -708,11 +708,11 @@ public class RiotControlDrone : MonoBehaviour
             Destroy(boxInstance);
             boxInstance = null;
 
-            //if (!isEnraged)
+            if (!isEnraged)
                 gameObject.transform.GetChild(5).rotation = batonRotation;
 
-            //if (isEnraged)
-            //    gameObject.transform.GetChild(4).rotation = batonRotation;
+            if (isEnraged)
+                gameObject.transform.GetChild(4).rotation = batonRotation;
 
             yield return new WaitForSeconds(lightAttackCoolDown);
             if (!isEnraged)
@@ -724,12 +724,12 @@ public class RiotControlDrone : MonoBehaviour
         }
         else
         {
-            
-            //if (!isEnraged)
+
+            if (!isEnraged)
                 gameObject.transform.GetChild(5).rotation = batonRotation;
 
-            //if (isEnraged)
-            //    gameObject.transform.GetChild(4).rotation = batonRotation;
+            if (isEnraged)
+                gameObject.transform.GetChild(4).rotation = batonRotation;
 
             yield return new WaitForSeconds(lightAttackCoolDown);
             if (!isEnraged)
@@ -754,15 +754,15 @@ public class RiotControlDrone : MonoBehaviour
 
         float collisionAngle = Vector2.SignedAngle(Vector2.right, Vector2.up);
         Quaternion q = Quaternion.AngleAxis(collisionAngle, Vector3.forward);
-        if (!isFacingRight /*&& !isEnraged*/)
+        if (!isFacingRight && !isEnraged)
             gameObject.transform.GetChild(5).DORotate(new Vector3(0, 0, -90), heavyAttackChargeTime); // Simple visual effect for baton so player knows when to hit and not.
-        else if(isFacingRight /*&& !isEnraged*/)
+        else if(isFacingRight && !isEnraged)
             gameObject.transform.GetChild(5).DORotate(new Vector3(0, 0, 90), heavyAttackChargeTime);
 
-        //if (!isFacingRight && isEnraged)
-        //    gameObject.transform.GetChild(4).DORotate(new Vector3(0, 0, -90), heavyAttackChargeTime); // Simple visual effect for baton so player knows when to hit and not.
-        //else if (isFacingRight && isEnraged)
-        //    gameObject.transform.GetChild(4).DORotate(new Vector3(0, 0, 90), heavyAttackChargeTime);
+        if (!isFacingRight && isEnraged)
+            gameObject.transform.GetChild(4).DORotate(new Vector3(0, 0, -90), heavyAttackChargeTime); // Simple visual effect for baton so player knows when to hit and not.
+        else if (isFacingRight && isEnraged)
+            gameObject.transform.GetChild(4).DORotate(new Vector3(0, 0, 90), heavyAttackChargeTime);
 
         yield return new WaitForSeconds(heavyAttackChargeTime);
         // Deal damage to player if still in range.
@@ -770,22 +770,22 @@ public class RiotControlDrone : MonoBehaviour
         {
             targetHealth.TakeDamage(heavyAttackDamage);
             PlayerPushback();
-            //if (!isEnraged)
+            if (!isEnraged)
                 gameObject.transform.GetChild(5).rotation = batonRotation;
 
-            //if (isEnraged)
-            //    gameObject.transform.GetChild(4).rotation = batonRotation;
+            if (isEnraged)
+                gameObject.transform.GetChild(4).rotation = batonRotation;
             yield return new WaitForSeconds(heavyAttackCoolDown);
 
             
         }
         else
         {
-            //if (!isEnraged)
+            if (!isEnraged)
                 gameObject.transform.GetChild(5).rotation = batonRotation;
 
-            //if (isEnraged)
-            //    gameObject.transform.GetChild(4).rotation = batonRotation;
+            if (isEnraged)
+                gameObject.transform.GetChild(4).rotation = batonRotation;
             yield return new WaitForSeconds(heavyAttackCoolDown);
             if (!isEnraged)
             {
@@ -1048,6 +1048,8 @@ public class RiotControlDrone : MonoBehaviour
             riotAnimator.SetBool("Idle", true); // Placeholder, change false when right animations
             riotAnimator.SetBool("Stunned", false);
             riotAnimator.SetBool("ShieldCharge", false);
+            riotAnimator.SetBool("SeedShoot", false);
+            riotAnimator.SetBool("TaserShoot", false);
         }
 
         if (state == RiotState.PhaseThreeAttack)
@@ -1056,6 +1058,8 @@ public class RiotControlDrone : MonoBehaviour
             riotAnimator.SetBool("Idle", false); 
             riotAnimator.SetBool("Stunned", false);
             riotAnimator.SetBool("ShieldCharge", false);
+            riotAnimator.SetBool("SeedShoot", false);
+            riotAnimator.SetBool("TaserShoot", false);
         }
 
         if (state == RiotState.SeedShoot)
@@ -1074,8 +1078,12 @@ public class RiotControlDrone : MonoBehaviour
             gameObject.GetComponentsInChildren<SpriteRenderer>()[0].color = Color.black;
             riotAnimator.SetBool("Dash", true);
             riotAnimator.SetBool("ShieldCharge", true); // Placeholder, change false when right animations
-            riotAnimator.SetBool("LightAttack", false);
             riotAnimator.SetBool("Stunned", false);
+            riotAnimator.SetBool("Idle", false);
+            riotAnimator.SetBool("LightAttack", false);
+            riotAnimator.SetBool("HeavyAttack", false);
+            riotAnimator.SetBool("SeedShoot", false);
+            riotAnimator.SetBool("TaserShoot", false);
         }
     }
 

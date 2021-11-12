@@ -66,6 +66,22 @@ public class RiotPhaseTwoPlatformController : MonoBehaviour
             buttons.Add(button);
         }
 
+
+        //foreach (Transform platform in firstBoxes)
+        //{
+        //    platform.GetComponent<DisappearingPlatform>().RiotRoomWork();
+        //    platform.GetComponent<DisappearingPlatform>().RiotRoomWork();
+        //}
+        //foreach (Transform platform in secondBoxes)
+        //{
+        //    platform.GetComponent<DisappearingPlatform>().RiotRoomWork();
+        //    platform.GetComponent<DisappearingPlatform>().RiotRoomWork();
+        //}
+        //foreach (Transform platform in thirdBoxes)
+        //{
+        //    platform.GetComponent<DisappearingPlatform>().RiotRoomWork();
+        //    platform.GetComponent<DisappearingPlatform>().RiotRoomWork();
+        //}
     }
 
     private void FixedUpdate()

@@ -52,7 +52,7 @@ public class BoxChainController : MonoBehaviour
             }
         }
 
-        parentOfParts.transform.parent = parentOfParts.transform.parent.parent;
+        parentOfParts.transform.SetParent(null);
     }
 
     public List<GameObject> getChains()
