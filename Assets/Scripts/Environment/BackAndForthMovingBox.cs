@@ -181,7 +181,7 @@ public class BackAndForthMovingBox : MonoBehaviour
         if (chainController.getIfCut() && !isChainCut && cuttableChain)
         {
             isChainCut = true;
-
+            StopAllCoroutines();
             rb.isKinematic = false; // Change the rigidbody to dynamic and set the parameters.
             rb.velocity = new Vector2(0, 0);
             rb.useAutoMass = true;
