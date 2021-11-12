@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using DG.Tweening;
+using UnityEngine.Events;
 
 public class BasicButton : Interactable
 {
     [Header("Objects to interact with")]
     public GameObject[] objectsToInteractWith; // Objects the button interacts with.
+    public UnityEvent @event;
+    private bool isEventInvoked = false;
 
     [Header("Bools for interaction")]
     public bool isMultiUse = false; // If this button is used multiple times, tap this bool.
@@ -59,37 +62,47 @@ public class BasicButton : Interactable
         if (!isUsed)
         {
             gameObject.GetComponent<SpriteRenderer>().sprite = pressedSprite;
-            foreach (GameObject movingObject in objectsToInteractWith)
+            if(objectsToInteractWith != null)
             {
-                if (movingObject.tag == "Drawbridge")
-                {
-                    if (movingObject.GetComponent<DrawBridgeController>().getMoving()) { objectIsMoving = true; }
-                }
-                if (movingObject.tag == "Door")
-                {
-                    if (movingObject.GetComponent<DoorController>().getMoving()) { objectIsMoving = true; }
-                }
-            }
-            if (!objectIsMoving)
-            {
-                int i = 0;
                 foreach (GameObject movingObject in objectsToInteractWith)
                 {
                     if (movingObject.tag == "Drawbridge")
                     {
-                        movingObject.GetComponent<DrawBridgeController>().Work();
+                        if (movingObject.GetComponent<DrawBridgeController>().getMoving()) { objectIsMoving = true; }
                     }
                     if (movingObject.tag == "Door")
                     {
-                        movingObject.GetComponent<DoorController>().Work();
+                        if (movingObject.GetComponent<DoorController>().getMoving()) { objectIsMoving = true; }
                     }
-                    i++;
                 }
-
-                if (!isMultiUse)
+                if (!objectIsMoving)
                 {
-                    isUsed = true;
+                    int i = 0;
+                    foreach (GameObject movingObject in objectsToInteractWith)
+                    {
+                        if (movingObject.tag == "Drawbridge")
+                        {
+                            movingObject.GetComponent<DrawBridgeController>().Work();
+                        }
+                        if (movingObject.tag == "Door")
+                        {
+                            movingObject.GetComponent<DoorController>().Work();
+                        }
+                        i++;
+                    }
+
+
                 }
+            }
+
+            if(!isEventInvoked)
+            {
+                @event.Invoke();
+                isEventInvoked = true;
+            }
+            if (!isMultiUse)
+            {
+                isUsed = true;
             }
             objectIsMoving = false;
 

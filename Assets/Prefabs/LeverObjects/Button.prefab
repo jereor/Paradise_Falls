@@ -267,6 +267,9 @@ MonoBehaviour:
   textToShow: Press # to interact
   interactedText: Interacted
   objectsToInteractWith: []
+  event:
+    m_PersistentCalls:
+      m_Calls: []
   isMultiUse: 0
   pressedSprite: {fileID: 21300000, guid: 7b2b18363a052384880cd7b0ad3fff82, type: 3}
 --- !u!1 &3607895715702450345

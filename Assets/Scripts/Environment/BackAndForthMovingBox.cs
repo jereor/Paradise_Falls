@@ -181,7 +181,7 @@ public class BackAndForthMovingBox : MonoBehaviour
         if (chainController.getIfCut() && !isChainCut && cuttableChain)
         {
             isChainCut = true;
-
+            StopAllCoroutines();
             rb.isKinematic = false; // Change the rigidbody to dynamic and set the parameters.
             rb.velocity = new Vector2(0, 0);
             rb.useAutoMass = true;
@@ -326,13 +326,13 @@ public class BackAndForthMovingBox : MonoBehaviour
         return cuttableChain;
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.tag == "Boss" && rb.isKinematic == false)
-        {
-            Destroy(gameObject);
-        }
-    }
+    //private void OnCollisionEnter2D(Collision2D collision)
+    //{
+    //    if (collision.gameObject.tag == "Boss" && rb.isKinematic == false)
+    //    {
+    //        Destroy(gameObject);
+    //    }
+    //}
 
     // Handles all the steps the box takes during it's adventure.
     private void HandleStep()

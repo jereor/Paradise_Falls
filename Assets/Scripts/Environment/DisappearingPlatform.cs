@@ -104,4 +104,27 @@ public class DisappearingPlatform : MonoBehaviour
             transitionAnimator.SetBool("Disappear", false);
         }
     }
+
+    public void RiotRoomWork()
+    {
+        if (gameObject.activeInHierarchy)
+        {
+            transitionAnimator.SetBool("Disappear", true);
+            transitionAnimator.SetBool("Appear", false);
+            StartCoroutine(Transition(1));
+        }
+        else
+        {
+            gameObject.SetActive(true);
+            transitionAnimator.SetBool("Appear", true);
+            transitionAnimator.SetBool("Disappear", false);
+
+        }
+    }
+
+    private IEnumerator Transition(float waitT)
+    {
+        yield return new WaitForSeconds(waitT);
+        gameObject.SetActive(false);
+    }
 }
