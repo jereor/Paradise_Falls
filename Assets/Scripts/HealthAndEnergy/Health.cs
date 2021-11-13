@@ -59,7 +59,7 @@ public class Health : MonoBehaviour
     /// <see cref="TakingDamage"/> will be invoked on every successful call.
     /// </summary>
     /// <param name="amount">The amount of damage/heal applied.</param>
-    public void TakeDamage(float amount)
+    virtual public void TakeDamage(float amount)
     {
         if (IsDead()) return; // If the script is still active, don't invoke onDie more than once
 
