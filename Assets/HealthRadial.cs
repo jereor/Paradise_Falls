@@ -32,7 +32,8 @@ public class HealthRadial : MonoBehaviour
     // Keep UI updated when changes are made
     void Update()
     {
-        UpdateSegments();
+        if (!Application.IsPlaying(gameObject))
+            UpdateSegments();
     }
 
     public void RemoveSegments(float amount)

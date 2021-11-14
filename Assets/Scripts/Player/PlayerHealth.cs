@@ -10,9 +10,11 @@ public class PlayerHealth : Health
     [SerializeField] private Image healthNumberImage;
     [SerializeField] List<Sprite> numberSprites = new List<Sprite>();
 
+    // Keep UI updated when changes are made
     private void Update()
     {
-        UpdateHealthNumber();
+        if (!Application.IsPlaying(gameObject))
+            UpdateHealthNumber();
     }
 
     public override void TakeDamage(float amount)
