@@ -7,7 +7,7 @@ using UnityEngine.Events;
 public class Health : MonoBehaviour
 {
     [SerializeField] private float maxHealth;
-    public float debugHealth;
+    [SerializeField] private float debugHealth;
 
     private SpriteRenderer rndr;
     [SerializeField] private Color blockedColor = Color.blue; // Block indication color.
@@ -118,7 +118,7 @@ public class Health : MonoBehaviour
     }
 
     // --- UPGRADE ---
-    public void UpgradeMaxHealth(float amount)
+    virtual public void UpgradeMaxHealth(float amount)
     {
         maxHealth += amount;
     }

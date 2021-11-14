@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+[ExecuteAlways]
 public class HealthRadial : MonoBehaviour
 {
     public static HealthRadial Instance { get; private set; }
 
     // References
+    [SerializeField] private PlayerHealth playerHealth;
     private Material healthRadialMaterial;
 
     // Variables
@@ -16,20 +18,21 @@ public class HealthRadial : MonoBehaviour
     [SerializeField] private float removedSegments;
     [SerializeField] private Color radialColor;
 
-    // Use this for initialization
-    void Awake()
-    {
-        Instance = this;
-        healthRadialMaterial = GetComponent<Image>().material;
-        maxSegments = healthRadialMaterial.GetFloat("_SegmentCount");
-        currentSegments = maxSegments;
-        removedSegments = 0;
-    }
+    
 
     private void Start()
     {
+        Instance = this;
+        healthRadialMaterial = GetComponent<Image>().material;
+        healthRadialMaterial.SetFloat("_SegmentCount", maxSegments);
         healthRadialMaterial.SetFloat("_RemovedSegments", removedSegments);
         healthRadialMaterial.SetColor("_Color", radialColor);
+    }
+
+    // Keep UI updated when changes are made
+    void Update()
+    {
+        UpdateSegments();
     }
 
     public void RemoveSegments(float amount)
@@ -50,5 +53,32 @@ public class HealthRadial : MonoBehaviour
             healthRadialMaterial.SetFloat("_RemovedSegments", 0); // Restore segments to full
 
         removedSegments -= amount;
+    }
+
+    // Max Segments increasing function. Not needed when update with health is working correctly
+    public void AddMaxSegments(float amount)
+    {
+        maxSegments += amount;
+        healthRadialMaterial.SetFloat("_SegmentCount", maxSegments);
+        healthRadialMaterial.SetFloat("_RemovedSegments", removedSegments - amount);
+    }
+
+    public void UpdateSegments()
+    {
+        // Update variables
+        maxSegments = playerHealth.getMaxHealth();
+        currentSegments = playerHealth.GetHealth();
+        removedSegments = playerHealth.getMaxHealth() - playerHealth.GetHealth();
+        playerHealth.SetHealth(currentSegments);
+
+        // Update shader material properties
+        healthRadialMaterial.SetFloat("_SegmentCount", maxSegments);
+        healthRadialMaterial.SetFloat("_RemovedSegments", removedSegments);
+        healthRadialMaterial.SetColor("_Color", radialColor);
+    }
+
+    public int GetSegments()
+    {
+        return (int)healthRadialMaterial.GetFloat("_SegmentCount");
     }
 }
