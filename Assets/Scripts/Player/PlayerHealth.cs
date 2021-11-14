@@ -14,5 +14,7 @@ public class PlayerHealth : Health
         base.TakeDamage(amount);
         int newHealth = (int)base.CurrentHealth;
         healthNumberImage.sprite = numberSprites[newHealth];
+
+        HealthRadial.Instance.RemoveSegments(amount);
     }
 }
