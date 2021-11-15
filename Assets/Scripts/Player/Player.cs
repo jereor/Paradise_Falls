@@ -342,6 +342,18 @@ public class Player : MonoBehaviour
                 combatScript.DisableInputMelee();
         }
 
+        // Shockwave attack
+        if(shockwaveTool.ShockwaveAttackUsed && !animator.GetBool("isSHAttacking"))
+        {
+            animator.Play("SHAttack");
+            animator.SetBool("isSHAttacking", true);
+        }
+        // Set bool to false here so animations will play only once ShockwaveAttackUsed wont reset instantly stays true for one second after use
+        else if (!shockwaveTool.ShockwaveAttackUsed && animator.GetBool("isSHAttacking"))
+        {
+            animator.SetBool("isSHAttacking", false);
+        }
+
         // Dash
         if (shockwaveTool.ShockwaveDashUsed && !animator.GetBool("isDashing"))
         {
@@ -602,7 +614,7 @@ public class Player : MonoBehaviour
             // ---- DASHING ----
             case State.Dashing:
                 // Combat
-                combatScript.DisableInputMelee();
+                //combatScript.DisableInputMelee();
                 shieldScript.DisableInputBlock();
                 break;
 
