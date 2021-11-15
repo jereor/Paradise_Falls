@@ -68,7 +68,9 @@ public class Player : MonoBehaviour
         Aiming,
         Throwing,
         Blocking,
-        Parrying
+        Parrying,
+        Dashing,
+        SHAttacking
     }
     State currentState;
     State previousState;
@@ -287,7 +289,7 @@ public class Player : MonoBehaviour
         if (currentState == State.Ascending || currentState == State.Falling)
         {
             // From ascending or falling to Light attack
-            if (combatScript.meleeInputReceived && !combatScript.heavyHold && !animator.GetBool("isClimbing") && !combatScript.getComboOnCooldown())
+            if (combatScript.meleeInputReceived && !combatScript.heavyHold && !animator.GetBool("isClimbing") && !combatScript.getComboOnCooldown() && !animator.GetBool("isBlocking"))
             {
                 // Air attack only once in air time reseted when landed Player.cs
                 if (!hitInAir)
@@ -338,6 +340,13 @@ public class Player : MonoBehaviour
             // If me are not aiming disable melee inputs so we will not melee wall
             else
                 combatScript.DisableInputMelee();
+        }
+
+        // Dash
+        if (shockwaveTool.ShockwaveDashUsed && !animator.GetBool("isDashing"))
+        {
+            animator.Play("Dash");
+            animator.SetBool("isDashing", true);
         }
 
         // LedgeClimb animation
@@ -589,6 +598,25 @@ public class Player : MonoBehaviour
 
                 movementScript.EnableInputMove();
                 break;
+
+            // ---- DASHING ----
+            case State.Dashing:
+                // Combat
+                combatScript.DisableInputMelee();
+                shieldScript.DisableInputBlock();
+                break;
+
+            // ---- SH ATTACKING ----
+            case State.SHAttacking:
+                // Combat
+                combatScript.DisableInputMelee();
+                combatScript.DisableInputThrowAim();
+
+                shieldScript.DisableInputBlock();
+
+                movementScript.DisableInputJump();
+                break;
+
             default:
                 break;
         }
