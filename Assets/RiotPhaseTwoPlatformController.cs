@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Pathfinding;
 
 public class RiotPhaseTwoPlatformController : MonoBehaviour
 {
@@ -111,6 +112,10 @@ public class RiotPhaseTwoPlatformController : MonoBehaviour
         foreach(Transform platform in firstBoxes)
         {
             platform.GetComponent<DisappearingPlatform>().RiotRoomWork();
+            var guo = new GraphUpdateObject(platform.GetComponent<BoxCollider2D>().bounds);
+            // Set some settings
+            guo.updatePhysics = true;
+            AstarPath.active.UpdateGraphs(guo, 1);
         }
 
         foreach(Transform enemy in firstEnemies)
@@ -127,10 +132,18 @@ public class RiotPhaseTwoPlatformController : MonoBehaviour
         foreach (Transform platform in firstBoxes)
         {
             platform.GetComponent<DisappearingPlatform>().RiotRoomWork();
+            var guo = new GraphUpdateObject(platform.GetComponent<BoxCollider2D>().bounds);
+            // Set some settings
+            guo.updatePhysics = true;
+            AstarPath.active.UpdateGraphs(guo, 1);
         }
         foreach (Transform platform in secondBoxes)
         {
             platform.GetComponent<DisappearingPlatform>().RiotRoomWork();
+            var guo = new GraphUpdateObject(platform.GetComponent<BoxCollider2D>().bounds);
+            // Set some settings
+            guo.updatePhysics = true;
+            AstarPath.active.UpdateGraphs(guo, 1);
         }
         foreach (Transform enemy in secondEnemies)
         {
@@ -145,10 +158,18 @@ public class RiotPhaseTwoPlatformController : MonoBehaviour
         foreach (Transform platform in secondBoxes)
         {
             platform.GetComponent<DisappearingPlatform>().RiotRoomWork();
+            var guo = new GraphUpdateObject(platform.GetComponent<BoxCollider2D>().bounds);
+            // Set some settings
+            guo.updatePhysics = true;
+            AstarPath.active.UpdateGraphs(guo, 1);
         }
         foreach (Transform platform in thirdBoxes)
         {
             platform.GetComponent<DisappearingPlatform>().RiotRoomWork();
+            var guo = new GraphUpdateObject(platform.GetComponent<BoxCollider2D>().bounds);
+            // Set some settings
+            guo.updatePhysics = true;
+            AstarPath.active.UpdateGraphs(guo, 1);
         }
         foreach (Transform enemy in thirdEnemies)
         {
@@ -162,9 +183,22 @@ public class RiotPhaseTwoPlatformController : MonoBehaviour
         foreach (Transform platform in thirdBoxes)
         {
             platform.GetComponent<DisappearingPlatform>().RiotRoomWork();
+            var guo = new GraphUpdateObject(platform.GetComponent<BoxCollider2D>().bounds);
+            // Set some settings
+            guo.updatePhysics = true;
+            AstarPath.active.UpdateGraphs(guo, 1);
         }
         buttons[2].transform.gameObject.SetActive(false);
         GameObject.Find("RiotControlDrone").GetComponent<RiotControlDrone>().setPhaseTwoComplete(true);
+    }
+
+    private IEnumerator WaitBeforeUpdatingAStar()
+    {
+        yield return new WaitForSeconds(1);
+        foreach (Transform platform in firstBoxes)
+        {
+
+        }
     }
 }
 

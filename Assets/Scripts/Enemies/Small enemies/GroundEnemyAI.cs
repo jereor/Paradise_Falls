@@ -33,6 +33,7 @@ public class GroundEnemyAI : MonoBehaviour
 
     [Header ("Enemy State")]
     public EnemyState enemyState = EnemyState.Idle;
+    private EnemyState stateChangeIdentfier; // Used to determine right animations and so it doesn't loop the function for no reason in update.
 
     [Header("Mobility")]
     [SerializeField] private float speed = 10000f;
@@ -63,7 +64,7 @@ public class GroundEnemyAI : MonoBehaviour
     [Header("Health and Energy Spawn values")]
     [SerializeField] private float healthProbability; // Value between 1-100. Higher the better chance.
     [SerializeField] private float energyProbability;
-    [SerializeField] private float amountWhenHealthIsSpawnable; // MaxHealth value between 0-1. When your health sinks below a certain amount health becomes spawnable.
+    [SerializeField] private float amountWhenResourceIsSpawnable; // MaxHealth value between 0-1. When your health sinks below a certain amount health becomes spawnable.
 
     [Header("Pathfinding info")]
     [SerializeField] private float nextWaypointDistance = 1f;
@@ -108,6 +109,7 @@ public class GroundEnemyAI : MonoBehaviour
         seeker = GetComponent<Seeker>();
         rb = GetComponent<Rigidbody2D>();
         _targetHealth = target.GetComponent<Health>();
+        _targetEnergy = target.GetComponent<Energy>();
         health = GetComponent<Health>();
         spriteRndr = GetComponentInChildren<SpriteRenderer>();
         animator = GetComponentInChildren<Animator>();
@@ -285,7 +287,11 @@ public class GroundEnemyAI : MonoBehaviour
                     break;
             }
 
-            HandleAnimations();
+            if (enemyState != stateChangeIdentfier)
+            {
+                HandleAnimations();
+                stateChangeIdentfier = enemyState;
+            }
         }
     }
 
@@ -581,12 +587,12 @@ public class GroundEnemyAI : MonoBehaviour
     public void SpawnHealthOrEnergy()
     {
         int rand = UnityEngine.Random.Range(1, 101);
-        if (_targetHealth.GetHealth() <= _targetHealth.MaxHealth * amountWhenHealthIsSpawnable && rand <= healthProbability)
+        if (_targetHealth.GetHealth() <= _targetHealth.MaxHealth * amountWhenResourceIsSpawnable && rand <= healthProbability)
         {
             // Debug.Log(rand);
             Instantiate(healthItem, transform.position, Quaternion.identity);
         }
-        else if (rand <= energyProbability)
+        else if (_targetEnergy.GetEnergy() <= _targetEnergy.getMaxEnergy() * amountWhenResourceIsSpawnable && rand <= energyProbability)
         {
             // Debug.Log(rand);
             Instantiate(energyItem, transform.position, Quaternion.identity);
@@ -820,7 +826,6 @@ public class GroundEnemyAI : MonoBehaviour
 
         if (enemyState == EnemyState.Stunned)
         {
-            animator.StopPlayback();
             animator.SetBool("Stagger", true);
             animator.SetBool("Run", false);
             animator.SetBool("Walk", false);
@@ -829,7 +834,6 @@ public class GroundEnemyAI : MonoBehaviour
 
         if (enemyState == EnemyState.Staggered)
         {
-            animator.StopPlayback();
             animator.SetBool("Stagger", true);
             animator.SetBool("Run", false);
             animator.SetBool("Walk", false);

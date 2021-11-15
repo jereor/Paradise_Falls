@@ -98,9 +98,12 @@ public class Health : MonoBehaviour
 
     IEnumerator HitIndication(Color color)
     {
-        rndr.color = color;
-        yield return new WaitForSeconds(0.1f);
-        rndr.color = Color.white;
+        if(rndr != null)
+        {
+            rndr.color = color;
+            yield return new WaitForSeconds(0.1f);
+            rndr.color = Color.white;
+        }
     }
 
     // Setter for new CurrentHealth amount.
