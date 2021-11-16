@@ -12,6 +12,7 @@ TagManager:
   - Boss
   - MovingPlatform
   - Box
+  - NPC
   layers:
   - Default
   - TransparentFX
@@ -35,7 +36,7 @@ TagManager:
   - Map
   - Breakable
   - 
-  - 
+  - NPC
   - 
   - 
   - 
