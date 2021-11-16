@@ -10095,6 +10095,7 @@ GameObject:
   - component: {fileID: 1812080132}
   - component: {fileID: 7463911945564789779}
   - component: {fileID: 3265684260011797273}
+  - component: {fileID: -3476855551759064547}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -10285,6 +10286,18 @@ MonoBehaviour:
       - m_Target: {fileID: 2646993275326716549}
         m_TargetAssemblyTypeName: PlayerMovement, Assembly-CSharp
         m_MethodName: Jump
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: -3476855551759064547}
+        m_TargetAssemblyTypeName: ShieldGrind, Assembly-CSharp
+        m_MethodName: JumpInput
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -10665,6 +10678,30 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &-3476855551759064547
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2646993275326716545}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef14413b823ea5842913e268312756c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pipeCheckTransform: {fileID: 2646993277219195828}
+  checkRadius: 0.37
+  pipeLayer:
+    serializedVersion: 2
+    m_Bits: 2097152
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  speed: 5
+  shieldGrindUnlocked: 1
+  entered: 0
+  jumpButtonPressed: 0
 --- !u!1 &2646993277219195829
 GameObject:
   m_ObjectHideFlags: 0
