@@ -68,8 +68,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 142948381
+  m_SortingLayer: 4
   m_SortingOrder: 2
   m_Sprite: {fileID: 7482667652216324306, guid: 48e93eef0688c4a259cb0eddcd8661f7, type: 3}
   m_Color: {r: 0.254717, g: 0.254717, b: 0.254717, a: 1}
@@ -326,11 +326,11 @@ MonoBehaviour:
   velocity: {x: 0, y: 0}
   velocityPlayer: {x: 0, y: 0}
   lightAttackCoolDown: 0.5
-  lightAttackDamage: 2
+  lightAttackDamage: 1
   heavyAttackChargeTime: 2
   heavyAttackCoolDown: 1
-  heavyAttackDamage: 4
-  shieldSquishDamage: 10
+  heavyAttackDamage: 2
+  shieldSquishDamage: 3
   knockbackForce: 100
   dashForceCount: 20
   taserCooldown: 1
@@ -362,6 +362,18 @@ MonoBehaviour:
   onDie:
     m_PersistentCalls:
       m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: DoorController, Assembly-CSharp
+        m_MethodName: Work
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
       - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: DoorController, Assembly-CSharp
         m_MethodName: Work
@@ -513,8 +525,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 142948381
+  m_SortingLayer: 4
   m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: 06135342e0944614e93a428f071e316b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

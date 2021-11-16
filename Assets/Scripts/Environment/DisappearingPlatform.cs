@@ -107,7 +107,7 @@ public class DisappearingPlatform : MonoBehaviour
 
     public void RiotRoomWork()
     {
-        if (spriteRenderer.enabled)
+        if (gameObject.activeInHierarchy)
         {
             transitionAnimator.SetBool("Disappear", true);
             transitionAnimator.SetBool("Appear", false);
@@ -115,7 +115,8 @@ public class DisappearingPlatform : MonoBehaviour
         }
         else
         {
-            spriteRenderer.enabled = true;
+            //spriteRenderer.enabled = true;
+            gameObject.SetActive(true);
             transitionAnimator.SetBool("Appear", true);
             transitionAnimator.SetBool("Disappear", false);
 
@@ -125,6 +126,7 @@ public class DisappearingPlatform : MonoBehaviour
     private IEnumerator Transition(float waitT)
     {
         yield return new WaitForSeconds(waitT);
-        spriteRenderer.enabled = false;
+        gameObject.SetActive(false);
+        //spriteRenderer.enabled = false;
     }
 }
