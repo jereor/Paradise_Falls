@@ -25,6 +25,7 @@ public class Player : MonoBehaviour
     [SerializeField] private Health healthScript;
     [SerializeField] private Energy energyScript;
     [SerializeField] private Shield shieldScript;
+    [SerializeField] private ShieldGrind grindScript;
 
     // Unlocked abilities, false by default and unlocked by progressing in the game
     [Header("Player abilities")]
@@ -70,7 +71,8 @@ public class Player : MonoBehaviour
         Blocking,
         Parrying,
         Dashing,
-        SHAttacking
+        SHAttacking,
+        ShieldGrinding
     }
     State currentState;
     State previousState;
@@ -411,6 +413,15 @@ public class Player : MonoBehaviour
             animator.SetBool("isAiming", false);
         }
 
+        if(grindScript.getGrinding() && grindScript.PipeCheck())
+        {
+            animator.SetBool("isShieldGrinding", true);
+        }
+        else
+        {
+            animator.SetBool("isShieldGrinding", false);
+        }
+
         // Parry
         if (shieldScript.Parrying && !animator.GetBool("isParrying") && !animator.GetBool("jump") && !animator.GetBool("isAttacking") && !animator.GetBool("isAiming") && !animator.GetBool("isThrowing") && !animator.GetBool("willLand"))
         {
@@ -627,6 +638,17 @@ public class Player : MonoBehaviour
                 shieldScript.DisableInputBlock();
 
                 movementScript.DisableInputJump();
+                break;
+
+            // ---- SHIELD GRINDING ----
+            case State.ShieldGrinding:
+                // Combat
+                combatScript.DisableInputMelee();
+                combatScript.DisableInputThrowAim();
+
+                shieldScript.DisableInputBlock();
+
+                movementScript.DisableInputMove();
                 break;
 
             default:

@@ -10147,6 +10147,7 @@ MonoBehaviour:
   healthScript: {fileID: 127911568793665776}
   energyScript: {fileID: 8760275387346948364}
   shieldScript: {fileID: 1812080132}
+  grindScript: {fileID: -3476855551759064547}
   shieldUnlocked: 0
   multitoolUnlocked: 0
   walljumpUnlocked: 0
@@ -10700,8 +10701,8 @@ MonoBehaviour:
     m_Bits: 64
   speed: 5
   shieldGrindUnlocked: 1
-  entered: 0
   jumpButtonPressed: 0
+  rb: {fileID: 2646993275326716665}
 --- !u!1 &2646993277219195829
 GameObject:
   m_ObjectHideFlags: 0

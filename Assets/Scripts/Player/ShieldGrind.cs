@@ -5,6 +5,8 @@ using UnityEngine.InputSystem;
 
 public class ShieldGrind : MonoBehaviour
 {
+    public static ShieldGrind Instance;
+
     [SerializeField] private Transform pipeCheckTransform;
     [SerializeField] private float checkRadius;
     [SerializeField] LayerMask pipeLayer;
@@ -18,30 +20,33 @@ public class ShieldGrind : MonoBehaviour
     private bool grinding = false;
     public bool jumpButtonPressed = false;
 
+    public Rigidbody2D rb;
+
+    private float bufferScale = 0f;
+
+    private void Start()
+    {
+        Instance = this;
+    }
+
     void FixedUpdate()
     {
         if (shieldGrindUnlocked && PipeCheck())
         {
             PlayerMovement.Instance.DisableInputMove();
             if (!grinding)
+            {
                 grinding = true;
+                if (rb.velocity.x != 0f)
+                    rb.velocity = new Vector2(0f, rb.velocity.y);
+            }
+            if (bufferScale != transform.localScale.x)
+                bufferScale = transform.localScale.x;
         }
         if (grinding)
         {
-            if (Player.Instance.InputHorizontal > 0f && !PipeCheck())
-            {
-                PlayerMovement.Instance.setFacingRight(true);
-                //PlayerMovement.Instance.DisableInputMove();
-            }
-            else if (Player.Instance.InputHorizontal < 0f && !PipeCheck())
-            {
-                PlayerMovement.Instance.setFacingRight(false);
-               // PlayerMovement.Instance.DisableInputMove();
-            }
-
-
-            //PlayerMovement.Instance.DisableInputMove();
-            transform.Translate(new Vector2(speed, 0f) * transform.localScale.x * Time.deltaTime);
+            transform.Translate(new Vector2(speed, 0f) * bufferScale * Time.deltaTime);
+            // If our input is down + space + we are grinding we wish to go through the pipe disable colliders
             if(Player.Instance.InputVertical < 0f && jumpButtonPressed && PipeCheck())
             {
                 DisableColliders();
@@ -58,6 +63,7 @@ public class ShieldGrind : MonoBehaviour
             jumpButtonPressed = false;
     }
     
+
     private void DisableColliders()
     {
         Collider2D pipeCol = Physics2D.OverlapCircle(pipeCheckTransform.position, checkRadius, pipeLayer);
@@ -73,7 +79,6 @@ public class ShieldGrind : MonoBehaviour
         {
             col.enabled = false;
         }
-
     }
 
     // Check if we are on top of pipeLayerObject
@@ -85,14 +90,15 @@ public class ShieldGrind : MonoBehaviour
     // Called from ShieldGrindEndPointTrigegr.cs scripts that are positioned to the end points of pipes in scene
     public void PlayerLeavePipe()
     {
-        foreach (Collider2D col in disabledColliders)
+        if (disabledColliders.Count > 0f)
         {
-            col.enabled = true;
+            foreach (Collider2D col in disabledColliders)
+            {
+                col.enabled = true;
+            }
+            disabledColliders.Clear();
         }
-        disabledColliders.Clear();
-
         grinding = false;
-        //PlayerMovement.Instance.EnableInputMove();
     }
 
     public bool getGrinding()
