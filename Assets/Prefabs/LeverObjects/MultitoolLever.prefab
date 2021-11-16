@@ -251,6 +251,9 @@ MonoBehaviour:
   ifRequiresMultitoolText: Equip Multitool to interact.
   leverTurnTime: 1
   isMultiUseLever: 1
+  event:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &3607895715702450345
 GameObject:
   m_ObjectHideFlags: 0
@@ -422,7 +425,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: -1
-  m_Sprite: {fileID: 21300000, guid: 28cbcfbe114dfb04ea83060a2d14f2d8, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 72e8c069baa83ca4ca0662364cfd93f5, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 1

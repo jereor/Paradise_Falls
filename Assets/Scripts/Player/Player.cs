@@ -50,6 +50,7 @@ public class Player : MonoBehaviour
 
     private Coroutine blockCoroutine;
     [SerializeField] private float blockAnimTimeMultiplier; // this times block anim time = when to activate shield object, good values 1.1 - 1.5
+    private bool hitInAir = false;
 
     public enum State
     {
@@ -67,7 +68,9 @@ public class Player : MonoBehaviour
         Aiming,
         Throwing,
         Blocking,
-        Parrying
+        Parrying,
+        Dashing,
+        SHAttacking
     }
     State currentState;
     State previousState;
@@ -286,32 +289,14 @@ public class Player : MonoBehaviour
         if (currentState == State.Ascending || currentState == State.Falling)
         {
             // From ascending or falling to Light attack
-            if (combatScript.meleeInputReceived && !combatScript.heavyHold && !animator.GetBool("isClimbing") && !combatScript.getComboOnCooldown())
+            if (combatScript.meleeInputReceived && !combatScript.heavyHold && !animator.GetBool("isClimbing") && !combatScript.getComboOnCooldown() && !animator.GetBool("isBlocking"))
             {
-                if (!combatScript.getComboActive())
-                    combatScript.setComboActive(true);
-
-                switch (combatScript.getCurrentComboIndex())
+                // Air attack only once in air time reseted when landed Player.cs
+                if (!hitInAir)
                 {
-                    case 0:
-                        animator.Play("LAttack1");
-                        break;
-                    case 1:
-                        animator.Play("LAttack2");
-                        combatScript.StopComboTimer();
-                        break;
-                    case 2:
-                        animator.Play("LAttack3");
-                        combatScript.StopComboTimer();
-                        break;
-                    default:
-                        break;
+                    hitInAir = true;
+                    animator.Play("AirAttack");
                 }
-
-                //if (currentState == State.Ascending)
-                //    animator.Play("LAttack2");
-                //else if (currentState == State.Falling)
-                //    animator.Play("LAttack3");
             }
 
             // Landing animation
@@ -357,6 +342,25 @@ public class Player : MonoBehaviour
                 combatScript.DisableInputMelee();
         }
 
+        // Shockwave attack
+        if(shockwaveTool.ShockwaveAttackUsed && !animator.GetBool("isSHAttacking"))
+        {
+            animator.Play("SHAttack");
+            animator.SetBool("isSHAttacking", true);
+        }
+        // Set bool to false here so animations will play only once ShockwaveAttackUsed wont reset instantly stays true for one second after use
+        else if (!shockwaveTool.ShockwaveAttackUsed && animator.GetBool("isSHAttacking"))
+        {
+            animator.SetBool("isSHAttacking", false);
+        }
+
+        // Dash
+        if (shockwaveTool.ShockwaveDashUsed && !animator.GetBool("isDashing"))
+        {
+            animator.Play("Dash");
+            animator.SetBool("isDashing", true);
+        }
+
         // LedgeClimb animation
         // LedgeChecks return true
         if (movementScript.getClimbing() && !animator.GetBool("isAttacking") && !animator.GetBool("hCharging") && !animator.GetBool("isBlocking") && !animator.GetBool("isParrying"))
@@ -378,6 +382,7 @@ public class Player : MonoBehaviour
         // We are in air and we land with rb velocity downwards or zero OR we are on moving platform
         if (animator.GetBool("jump") && movementScript.IsGrounded() && rb.velocity.y >= -0.2f && rb.velocity.y <= 0.2f || movementScript.getIfOnMovingPlatform())
         {
+            hitInAir = false;
             animator.SetBool("jump", false);
             // Landing animation
             if (movementScript.getWillLand())
@@ -605,6 +610,25 @@ public class Player : MonoBehaviour
 
                 movementScript.EnableInputMove();
                 break;
+
+            // ---- DASHING ----
+            case State.Dashing:
+                // Combat
+                //combatScript.DisableInputMelee();
+                shieldScript.DisableInputBlock();
+                break;
+
+            // ---- SH ATTACKING ----
+            case State.SHAttacking:
+                // Combat
+                combatScript.DisableInputMelee();
+                combatScript.DisableInputThrowAim();
+
+                shieldScript.DisableInputBlock();
+
+                movementScript.DisableInputJump();
+                break;
+
             default:
                 break;
         }
