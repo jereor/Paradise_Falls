@@ -30,11 +30,10 @@ public class WarehouseBoxController : MonoBehaviour
         {
             if (boxInstance != null)
             {
-                Destroy(boxInstance);
-                gameObject.SetActive(false);
+                Destroy(boxInstance);               
             }
+            gameObject.SetActive(false);
 
-                
         }
     }
 }

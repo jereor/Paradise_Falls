@@ -12,11 +12,12 @@ public class FlyingEnemyAI : MonoBehaviour
     private Energy _targetEnergy;
     private Shield targetShield;
 
+    private Health health;
+
     public bool bossMode;
 
     [Header("Transforms")]
     [SerializeField] private Transform target;
-    [SerializeField] private Transform enemyGFX;
     [SerializeField] private Rigidbody2D playerRB;
     [SerializeField] private GameObject bullet;
     [SerializeField] private GameObject energyItem;
@@ -27,15 +28,17 @@ public class FlyingEnemyAI : MonoBehaviour
     [SerializeField] LayerMask playerLayer;
 
     public EnemyState enemyState = EnemyState.Roam;
+    private EnemyState stateChangeIdentfier; // Used to determine right animations and so it doesn't loop the function for no reason in update.
 
     [Header("Mobility")]
     [SerializeField] private float speed = 250f;
     [SerializeField] private float chargeSpeed = 400f;
     [SerializeField] private float roamSpeed = 250f;
+    [SerializeField] private float rotationThreshold = 1;
+    [SerializeField] private float rotateAmount = 15;
     [SerializeField] private float explosionPower = 2f; // Attack power for when the enemy is ramming into player and hits.
 
     [Header("State and Parameters")]
-    [SerializeField] private string state = "roam";
     [SerializeField] private Vector2 roamingRange = new Vector2(10, 10);
     [SerializeField] private Vector2 roamingOffset;
     [SerializeField] private float aggroDistance = 5f;
@@ -46,7 +49,7 @@ public class FlyingEnemyAI : MonoBehaviour
     [Header("Health and Energy Spawn values")]
     [SerializeField] private float healthProbability; // Value between 1-100. Higher the better chance.
     [SerializeField] private float energyProbability;
-    [SerializeField] private float amountWhenHealthIsSpawnable; // MaxHealth value between 0-1. When your health sinks below a certain amount health becomes spawnable.
+    [SerializeField] private float amountWhenResourceIsSpawnable; // MaxHealth value between 0-1. When your health sinks below a certain amount health becomes spawnable.
 
     [Header("Pathfinding info")]
     [SerializeField] private float nextWaypointDistance = 1f;
@@ -56,6 +59,7 @@ public class FlyingEnemyAI : MonoBehaviour
     private bool canShoot = true;
     private float shootCooldown = 1.5f;
     private bool isFacingRight = true;
+    private bool isWaiting = false;
     //private float vectorPathLength = 1;
     private bool isTargetInBehaviourRange = false;
     private Vector2 lastSeenTargetPosition;
@@ -68,8 +72,11 @@ public class FlyingEnemyAI : MonoBehaviour
     private int currentWaypoint = 0;
     private bool reachedEndOfPath = false;
 
+    private Animator animator;
     private Seeker seeker;
     private Rigidbody2D rb;
+
+    private Quaternion startRotation;
 
     // Start is called before the first frame update
     void Start()
@@ -83,10 +90,14 @@ public class FlyingEnemyAI : MonoBehaviour
 
         seeker = GetComponent<Seeker>();
         rb = GetComponent<Rigidbody2D>();
-        _targetHealth = GameObject.Find("Player").GetComponent<Health>();
+        _targetHealth = target.GetComponent<Health>();
+        _targetEnergy = target.GetComponent<Energy>();
+        health = GetComponent<Health>();
         targetShield = GameObject.Find("Player").GetComponent<Shield>();
+        animator = GetComponent<Animator>();
         _collider = GetComponent<Collider2D>();
         spawnPosition = transform.position;
+        startRotation = transform.rotation;
         gizmoPositionChange = false;
         Physics2D.IgnoreLayerCollision(3, 7);
         //Updates the path repeatedly with a chosen time interval
@@ -146,6 +157,8 @@ public class FlyingEnemyAI : MonoBehaviour
         //If the target was not found, returns to the start of the update
         if (path == null || target == null) { return;}
 
+        if (health.CurrentHealth <= 0) { enemyState = EnemyState.Die; }
+
         // If the target is too far from the enemy unit, it respawns in to the spawn point and stays there until target is close enough again.
         // Enemy stops all actions for the time being.
         if ((target.transform.position - transform.position).magnitude > 60 && !IsPlayerInRange())
@@ -183,6 +196,9 @@ public class FlyingEnemyAI : MonoBehaviour
 
             ObstacleCheck();
 
+            Rotate();
+            Debug.Log(transform.rotation.z);
+
             switch (enemyState)
             {
                 case EnemyState.Roam:
@@ -216,9 +232,16 @@ public class FlyingEnemyAI : MonoBehaviour
                 case EnemyState.BossModeRam:
                     HandleBossModeRam(force);
                     break;
+
+                case EnemyState.Die:
+                    break;
             }
 
-
+            if (enemyState != stateChangeIdentfier)
+            {
+                HandleAnimations();
+                stateChangeIdentfier = enemyState;
+            }
         }
     }
 
@@ -229,13 +252,20 @@ public class FlyingEnemyAI : MonoBehaviour
         canShoot = true;
     }
 
+    private IEnumerator Wait(float waitT)
+    {
+        isWaiting = true;
+        yield return new WaitForSeconds(waitT);
+        isWaiting = false;
+    }
+
     // Numerator for flashing red color when ramming into player, making it visible that enemy unit is dangerous.
     private IEnumerator FlashCoolDown()
     {
         isFlashingRed = false;
         gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.red;
         yield return new WaitForSeconds(0.3f);
-        gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.green;
+        gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.white;
         yield return new WaitForSeconds(0.3f);
         isFlashingRed = true;
     }
@@ -289,12 +319,12 @@ public class FlyingEnemyAI : MonoBehaviour
     public void SpawnHealthOrEnergy()
     {
         int rand = UnityEngine.Random.Range(1, 101);
-        if (_targetHealth.GetHealth() <= _targetHealth.MaxHealth * amountWhenHealthIsSpawnable && rand <= healthProbability)
+        if (_targetHealth.GetHealth() <= _targetHealth.MaxHealth * amountWhenResourceIsSpawnable && rand <= healthProbability)
         {
             // Debug.Log(rand);
             Instantiate(healthItem, transform.position, Quaternion.identity);
         }
-        else if (rand <= energyProbability)
+        else if (_targetEnergy.GetEnergy() <= _targetEnergy.getMaxEnergy() * amountWhenResourceIsSpawnable && rand <= energyProbability)
         {
             // Debug.Log(rand);
             Instantiate(energyItem, transform.position, Quaternion.identity);
@@ -341,6 +371,28 @@ public class FlyingEnemyAI : MonoBehaviour
             PlayerPushback();
         }
         
+    }
+
+    private void Rotate()
+    {
+        if (rb.velocity.x > rotationThreshold)
+        {
+            // Turns the enemy unit right.
+            Quaternion q = Quaternion.AngleAxis(-rotateAmount * transform.localScale.x, Vector3.forward);
+            transform.rotation = Quaternion.Slerp(startRotation, q, 1);
+        }
+        else if (rb.velocity.x < -rotationThreshold)
+        {
+            // Turns the enemy unit left.
+            transform.rotation = startRotation;
+            Quaternion q = Quaternion.AngleAxis(-rotateAmount * transform.localScale.x, Vector3.forward);
+            transform.rotation = Quaternion.Slerp(startRotation, q, 1);
+        }
+        if (rb.velocity.x <= rotationThreshold && rb.velocity.x >= -rotationThreshold)
+        {
+            // Straightens the enemy rotation.
+            transform.rotation = Quaternion.Slerp(startRotation, transform.rotation, 0);
+        }
     }
 
     private void HandleRoamState(Vector2 force)
@@ -460,7 +512,7 @@ public class FlyingEnemyAI : MonoBehaviour
     private void HandleShootState(Vector2 force)
     {
         // Bullets do the damage, this only checks if the bullet can hit the target from current angle.
-        gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.green;
+        gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.white;
         Debug.DrawRay(transform.position, target.transform.position - transform.position, Color.blue);
         if (targetShield.Blocking)
         {
@@ -604,7 +656,7 @@ public class FlyingEnemyAI : MonoBehaviour
     private void HandleBossModeShoot(Vector2 force)
     {
         // Bullets do the damage, this only checks if the bullet can hit the target from current angle.
-        gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.green;
+        gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.white;
         Debug.DrawRay(transform.position, target.transform.position - transform.position, Color.blue);
         if (targetShield.Blocking)
         {
@@ -676,6 +728,71 @@ public class FlyingEnemyAI : MonoBehaviour
         }
     }
 
+    public void HandleDie()
+    {
+        Destroy(gameObject);
+    }
+
+    private void HandleAnimations()
+    {
+        if(enemyState == EnemyState.Die)
+        {
+            animator.SetTrigger("Die");
+            animator.SetBool("Idle", false);
+            animator.SetBool("Attack", false);
+            animator.SetBool("Charge", false);
+        }
+        if(enemyState == EnemyState.Roam)
+        {
+            animator.SetBool("Idle", true);
+            animator.SetBool("Attack", false);
+            animator.SetBool("Charge", false);
+
+        }
+        if(enemyState == EnemyState.Charge)
+        {
+            animator.SetBool("Idle", false);
+            animator.SetBool("Attack", false);
+            animator.SetBool("Charge", true);
+        }
+        if (enemyState == EnemyState.Shoot)
+        {
+            animator.SetBool("Idle", false);
+            animator.SetBool("Attack", true);
+            animator.SetBool("Charge", false);
+        }
+        if (enemyState == EnemyState.Alert)
+        {
+            animator.SetBool("Idle", true);
+            animator.SetBool("Attack", false);
+            animator.SetBool("Charge", false);
+        }
+        if (enemyState == EnemyState.Ram)
+        {
+            animator.SetBool("Idle", true);
+            animator.SetBool("Attack", false);
+            animator.SetBool("Charge", false);
+        }
+        if (enemyState == EnemyState.BossModeCharge)
+        {
+            animator.SetBool("Idle", false);
+            animator.SetBool("Attack", false);
+            animator.SetBool("Charge", true);
+        }
+        if (enemyState == EnemyState.BossModeShoot)
+        {
+            animator.SetBool("Idle", false);
+            animator.SetBool("Attack", true);
+            animator.SetBool("Charge", false);
+        }
+        if (enemyState == EnemyState.BossModeRam)
+        {
+            animator.SetBool("Idle", true);
+            animator.SetBool("Attack", false);
+            animator.SetBool("Charge", false);
+        }
+    }
+
     public enum EnemyState
     {
         Roam,
@@ -685,6 +802,7 @@ public class FlyingEnemyAI : MonoBehaviour
         Alert,
         BossModeCharge,
         BossModeShoot,
-        BossModeRam
+        BossModeRam,
+        Die
     }
 }

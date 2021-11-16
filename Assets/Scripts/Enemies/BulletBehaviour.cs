@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class BulletBehaviour : MonoBehaviour
 {
+    [SerializeField] private Animation bulletAnimation;
     private Rigidbody2D rb;
     public GameObject shooter; // Set by the shooter
     private GameObject target;
@@ -17,6 +18,11 @@ public class BulletBehaviour : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         target = GameObject.Find("Player");
+
+        Vector3 vectorToTarget = target.transform.position - transform.position;
+        float angle = Mathf.Atan2(vectorToTarget.y, vectorToTarget.x) * Mathf.Rad2Deg;
+        Quaternion q = Quaternion.AngleAxis(angle, Vector3.forward);
+        transform.rotation = q;
         if (staticShot)
         {
             Vector2 force = shooter.transform.right.normalized * bulletSpeed;

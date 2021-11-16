@@ -115,6 +115,7 @@ public class DisappearingPlatform : MonoBehaviour
         }
         else
         {
+            //spriteRenderer.enabled = true;
             gameObject.SetActive(true);
             transitionAnimator.SetBool("Appear", true);
             transitionAnimator.SetBool("Disappear", false);
@@ -126,5 +127,6 @@ public class DisappearingPlatform : MonoBehaviour
     {
         yield return new WaitForSeconds(waitT);
         gameObject.SetActive(false);
+        //spriteRenderer.enabled = false;
     }
 }

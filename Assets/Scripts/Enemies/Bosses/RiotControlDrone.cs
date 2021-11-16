@@ -344,6 +344,16 @@ public class RiotControlDrone : MonoBehaviour
 
     private void HandleTaserShootState()
     {
+        if(target.transform.position.x - transform.position.x >= 0)
+        {
+            transform.localScale = new Vector2(1, 1);
+            isFacingRight = true;
+        }
+        else
+        {
+            transform.localScale = new Vector2(-1, 1);
+            isFacingRight = false;
+        }
         if(!taserOnCooldown)
         {
             StartCoroutine(TaserShoot());
@@ -423,6 +433,8 @@ public class RiotControlDrone : MonoBehaviour
             if(GameObject.Find("RiotShield").GetComponent<Health>().CurrentHealth == 0)
             {
                 Destroy(GameObject.Find("RiotShield"));
+                GameObject.Find("PhaseTwoKnockbackBox").GetComponent<BoxCollider2D>().size = new Vector2(1.2f, 0.46f);
+                GameObject.Find("PhaseTwoKnockbackBox").GetComponent<BoxCollider2D>().offset = new Vector2(0.03f, 0);
             }
             ChangeToBossLayer(); // Set the boss layer so player can hit it whenever and doesn't get knocked back when hitting the body.
             stunned = false;
@@ -525,6 +537,16 @@ public class RiotControlDrone : MonoBehaviour
     }
     private void HandleSeedShootState()
     {
+        if (target.transform.position.x - transform.position.x >= 0)
+        {
+            transform.localScale = new Vector2(1, 1);
+            isFacingRight = true;
+        }
+        else
+        {
+            transform.localScale = new Vector2(-1, 1);
+            isFacingRight = false;
+        }
         if (!seedShootOnCooldown)
         {
             StartCoroutine(SeedShoot());
@@ -1092,32 +1114,31 @@ public class RiotControlDrone : MonoBehaviour
     //---------------------------------------------------------------------------------------------------------------------------------
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        // Pushes player back when collider is hit and knockback is not on cooldown.
-        //if (collision.collider.tag == "Player" && !knockbackOnCooldown && !stunned && !isEnraged)
-        //{
-        //    PlayerPushback();
-        //}
         
         if(collision.gameObject.tag == "Box")
         {
-            Debug.Log("Box velocity: " + collision.gameObject.GetComponent<Rigidbody2D>().velocity.y);
+            //Debug.Log("Box velocity: " + collision.gameObject.GetComponent<Rigidbody2D>().velocity.y);
             if (state == RiotState.ShieldCharge || collision.gameObject.GetComponent<Rigidbody2D>().velocity.y < 0)
             {
-                Debug.Log("oof2");
                 health.TakeDamage(5);
                 Destroy(collision.collider.gameObject);
             }
+        }
+
+        if(collision.gameObject.tag == "MeleeWeapon" && state == RiotState.ShieldCharge)
+        {
+            Physics2D.IgnoreCollision(collision.collider, collision.otherCollider);
         }
     }
 
 
     private void OnCollisionStay2D(Collision2D collision)
     {
-        // If player stays in contact with the boss, knockback.
-        //if (collision.collider.tag == "Player" && !knockbackOnCooldown && !stunned && !isEnraged)
-        //{
-        //    PlayerPushback();
-        //}
+
+        if (collision.gameObject.tag == "MeleeWeapon" && state == RiotState.ShieldCharge)
+        {
+            Physics2D.IgnoreCollision(collision.collider, collision.otherCollider);
+        }
     }
 
     // State names.
