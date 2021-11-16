@@ -4,11 +4,15 @@ using UnityEngine;
 
 public class ParryScript : StateMachineBehaviour
 {
+    public AnimationClip transitionAnimation;
+
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         Player.Instance.SetCurrentState(Player.State.Parrying);
         animator.SetBool("isParrying", true);
+        //Debug.Log(transitionAnimation.length);
+        //PlayerCombat.Instance.UpdateCombo(PlayerCombat.Instance.getCurrentComboIndex(), transitionAnimation.length);
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
