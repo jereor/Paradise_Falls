@@ -34,6 +34,8 @@ public class FlyingEnemyAI : MonoBehaviour
     [SerializeField] private float speed = 250f;
     [SerializeField] private float chargeSpeed = 400f;
     [SerializeField] private float roamSpeed = 250f;
+    [SerializeField] private float rotationThreshold = 1;
+    [SerializeField] private float rotateAmount = 15;
     [SerializeField] private float explosionPower = 2f; // Attack power for when the enemy is ramming into player and hits.
 
     [Header("State and Parameters")]
@@ -168,25 +170,6 @@ public class FlyingEnemyAI : MonoBehaviour
         {
             isTargetInBehaviourRange = true;
         }
-        if (rb.velocity.x > 0.2)
-        {
-            Debug.Log("turning right");
-            Quaternion q = Quaternion.AngleAxis(-15 * transform.localScale.x, Vector3.forward);
-            transform.rotation = Quaternion.Slerp(startRotation, q, rb.velocity.x);
-        }
-        if (rb.velocity.x < -0.2)
-        {
-            Debug.Log("turning left");
-            transform.rotation = startRotation;
-            Quaternion q = Quaternion.AngleAxis(-15 * transform.localScale.x, Vector3.forward);
-            transform.rotation = Quaternion.Slerp(startRotation, q, rb.velocity.x);
-        }
-        if(rb.velocity.x <= 0.2 && rb.velocity.x >= -0.2)
-        {
-            Debug.Log("straight");
-            transform.rotation = Quaternion.Slerp(startRotation, transform.rotation, rb.velocity.x);
-        }
-
 
         if(isTargetInBehaviourRange)
         {
@@ -212,6 +195,9 @@ public class FlyingEnemyAI : MonoBehaviour
             if (distance < nextWaypointDistance) { currentWaypoint++; }
 
             ObstacleCheck();
+
+            Rotate();
+            Debug.Log(transform.rotation.z);
 
             switch (enemyState)
             {
@@ -385,6 +371,28 @@ public class FlyingEnemyAI : MonoBehaviour
             PlayerPushback();
         }
         
+    }
+
+    private void Rotate()
+    {
+        if (rb.velocity.x > rotationThreshold)
+        {
+            // Turns the enemy unit right.
+            Quaternion q = Quaternion.AngleAxis(-rotateAmount * transform.localScale.x, Vector3.forward);
+            transform.rotation = Quaternion.Slerp(startRotation, q, 1);
+        }
+        else if (rb.velocity.x < -rotationThreshold)
+        {
+            // Turns the enemy unit left.
+            transform.rotation = startRotation;
+            Quaternion q = Quaternion.AngleAxis(-rotateAmount * transform.localScale.x, Vector3.forward);
+            transform.rotation = Quaternion.Slerp(startRotation, q, 1);
+        }
+        if (rb.velocity.x <= rotationThreshold && rb.velocity.x >= -rotationThreshold)
+        {
+            // Straightens the enemy rotation.
+            transform.rotation = Quaternion.Slerp(startRotation, transform.rotation, 0);
+        }
     }
 
     private void HandleRoamState(Vector2 force)

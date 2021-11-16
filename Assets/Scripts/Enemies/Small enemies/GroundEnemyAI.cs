@@ -234,7 +234,7 @@ public class GroundEnemyAI : MonoBehaviour
                 StopAllCoroutines();
                 if (enemyState == EnemyState.Roam && !obstacleBetweenTarget)
                 {
-                    Debug.Log("It hurts...");
+                    //Debug.Log("It hurts...");
                     healthCount = health.CurrentHealth;
                     enemyState = EnemyState.Stunned;
 
