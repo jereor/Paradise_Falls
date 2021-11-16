@@ -4834,8 +4834,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 97978461
+  m_SortingLayer: 6
   m_SortingOrder: 0
   m_RenderMode: 1
   m_SortMode: 0
@@ -9799,8 +9799,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 97978461
+  m_SortingLayer: 6
   m_SortingOrder: 0
   m_RenderMode: 1
   m_SortMode: 0
@@ -9910,8 +9910,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 97978461
+  m_SortingLayer: 6
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 3af2c0d23ed25a14f8630a2212857b89, type: 3}
   m_Color: {r: 0, g: 0.84313726, b: 1, a: 1}
@@ -10087,7 +10087,6 @@ GameObject:
   - component: {fileID: 2646993275326716546}
   - component: {fileID: -4342889769223962116}
   - component: {fileID: 2646993275326716664}
-  - component: {fileID: 127911568793665776}
   - component: {fileID: 8760275387346948364}
   - component: {fileID: 2646993275326716547}
   - component: {fileID: 2646993275326716665}
@@ -10095,6 +10094,7 @@ GameObject:
   - component: {fileID: 1812080132}
   - component: {fileID: 7463911945564789779}
   - component: {fileID: 3265684260011797273}
+  - component: {fileID: 269594451}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -10143,14 +10143,14 @@ MonoBehaviour:
   interactionsScript: {fileID: -4342889769223962116}
   combatScript: {fileID: 7463911945564789779}
   shockwaveTool: {fileID: 1940316768}
-  healthScript: {fileID: 127911568793665776}
+  healthScript: {fileID: 127911568793665776, guid: 4154d57994558ff489a9180c3151e624, type: 3}
   energyScript: {fileID: 8760275387346948364}
   shieldScript: {fileID: 1812080132}
-  shieldUnlocked: 0
-  multitoolUnlocked: 0
-  walljumpUnlocked: 0
-  grapplingUnlocked: 0
-  dashUnlocked: 0
+  shieldUnlocked: 1
+  multitoolUnlocked: 1
+  walljumpUnlocked: 1
+  grapplingUnlocked: 1
+  dashUnlocked: 1
   shockwaveJumpAndDiveUnlocked: 0
   shockwaveAttackUnlocked: 0
   shieldGrindUnlocked: 0
@@ -10433,26 +10433,6 @@ MonoBehaviour:
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
---- !u!114 &127911568793665776
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2646993275326716545}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e85f99a78ea71c14bb56436ea514cc78, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxHealth: 100
-  debugHealth: 0
-  blockedColor: {r: 0, g: 0, b: 1, a: 1}
-  damageColor: {r: 1, g: 0, b: 0, a: 1}
-  destroyWhenDead: 1
-  onDie:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!114 &8760275387346948364
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10465,7 +10445,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb5d3b4f4e25e4a4bab9bbe76ca99bb0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxEnergy: 100
+  maxEnergy: 100000
   currentEnergy: 0
   thresholdPercent: 0.2
   energyRegenMultiplier: 10
@@ -10506,8 +10486,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -2065794617
+  m_SortingLayer: 3
   m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: 32e81b969f0cb264e9c5c166f9495551, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -10637,7 +10617,7 @@ MonoBehaviour:
   pointsShown: 7
   pointScaleRatio: 1.2
   meleeWeaponPrefab: {fileID: 3980506574090905470, guid: 3780bd19eaa15054a9ebdb884fa668ba, type: 3}
-  isWeaponWielded: 1
+  isWeaponWielded: 0
   pullCollisionCounter: 0
   magnetTether: {fileID: 5454362082765361711}
   timeBeforeRelease: 0.5
@@ -10665,6 +10645,38 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &269594451
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2646993275326716545}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a707d3ac3414914296bfde6e51c9e85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 9
+  debugHealth: 9
+  blockedColor: {r: 0, g: 0, b: 1, a: 1}
+  damageColor: {r: 1, g: 0, b: 0, a: 1}
+  destroyWhenDead: 1
+  onDie:
+    m_PersistentCalls:
+      m_Calls: []
+  healthNumberImage: {fileID: 0}
+  numberSprites:
+  - {fileID: 21300000, guid: 71c3a3237d478be479860bc9c966fac5, type: 3}
+  - {fileID: 21300000, guid: 7494d2190ba7bd747b80d61d6c5d1948, type: 3}
+  - {fileID: 21300000, guid: 8ea6b8743ad0d3c4396831bd22195f6f, type: 3}
+  - {fileID: 21300000, guid: 992860ea962bf034e86c8eb380d20b3c, type: 3}
+  - {fileID: 21300000, guid: e5c0c07a4a6c73b49815bc1bedc0ca26, type: 3}
+  - {fileID: 21300000, guid: bfc2455dc39d0c24c9d914c7d853c860, type: 3}
+  - {fileID: 21300000, guid: 1abf67a77632f5d468c9019c4d9dfa9d, type: 3}
+  - {fileID: 21300000, guid: 4ec6da84bc221564dbf43813cb782e9d, type: 3}
+  - {fileID: 21300000, guid: ed5db9600c014e045a73d0858ae297df, type: 3}
+  - {fileID: 21300000, guid: d28e74ef21fe8ac48aed32b076d466c4, type: 3}
 --- !u!1 &2646993277219195829
 GameObject:
   m_ObjectHideFlags: 0
