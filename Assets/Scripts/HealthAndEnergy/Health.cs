@@ -7,7 +7,7 @@ using UnityEngine.Events;
 public class Health : MonoBehaviour
 {
     [SerializeField] private float maxHealth;
-    public float debugHealth;
+    [SerializeField] private float debugHealth;
 
     private SpriteRenderer rndr;
     [SerializeField] private Color blockedColor = Color.blue; // Block indication color.
@@ -59,7 +59,7 @@ public class Health : MonoBehaviour
     /// <see cref="TakingDamage"/> will be invoked on every successful call.
     /// </summary>
     /// <param name="amount">The amount of damage/heal applied.</param>
-    public void TakeDamage(float amount)
+    virtual public void TakeDamage(float amount)
     {
         if (IsDead()) return; // If the script is still active, don't invoke onDie more than once
 
@@ -118,7 +118,7 @@ public class Health : MonoBehaviour
     }
 
     // --- UPGRADE ---
-    public void UpgradeMaxHealth(float amount)
+    virtual public void UpgradeMaxHealth(float amount)
     {
         maxHealth += amount;
     }
