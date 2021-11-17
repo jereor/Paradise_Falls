@@ -32,7 +32,7 @@ public class RiotShield : MonoBehaviour
         {
             drone.PlayerPushback();
         }
-        if (drone.state == RiotControlDrone.RiotState.ShieldCharge && collision.gameObject.layer == LayerMask.NameToLayer("Ground") && !drone.getIsEnraged())
+        if (drone.state == RiotControlDrone.RiotState.ShieldCharge && collision.gameObject.layer == LayerMask.NameToLayer("Ground") && collision.gameObject.tag != "MeleeWeapon" && !drone.getIsEnraged())
         {
 
             drone.state = RiotControlDrone.RiotState.Stunned;

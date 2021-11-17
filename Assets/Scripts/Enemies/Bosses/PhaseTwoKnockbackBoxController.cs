@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class PhaseTwoKnockbackBoxController : MonoBehaviour
 {
-    [SerializeField] private Vector2 velocityPlayer;
-    [SerializeField] private Rigidbody2D playerRB;
+    private Vector2 velocityPlayer;
+    private Rigidbody2D playerRB;
     [SerializeField] private float knockbackForce;
     [SerializeField] private float chargeReadyTime;
 
@@ -18,11 +18,7 @@ public class PhaseTwoKnockbackBoxController : MonoBehaviour
 
     void PlayerPushback()
     {
-        //float pushbackX = (target.position.x - transform.position.x > 0 ? 1 : -1);
-
-        //Vector2 knockbackDirection = new Vector2(pushbackX, 0);
-        //playerRB.AddForce(knockbackDirection * knockbackForce * Time.deltaTime);
-        velocityPlayer = new Vector2(playerRB.position.x - transform.position.x > 0 ? knockbackForce * 1 : knockbackForce * -1, 0);
+        velocityPlayer = new Vector2(playerRB.position.x - transform.position.x > 0 ? knockbackForce * 1 : knockbackForce * -1, knockbackForce / 3);
         playerRB.MovePosition(playerRB.position + velocityPlayer * Time.deltaTime);
         StartCoroutine(KnockbackCooldown());
     }
