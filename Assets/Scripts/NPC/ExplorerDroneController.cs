@@ -1,43 +1,53 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class ExplorerDroneController : Interactable
 {
-    [Header("Objects to interact with")]
-    public GameObject[] objectsToInteractWith; // Objects the lever interacts with.
-    [SerializeField] private string ifRequiresMultitoolText = "Wield Multitool to interact.";
-    [SerializeField] private float leverTurnTime;
+    [SerializeField] private RectTransform textBox;
 
-    [Header("Interaction")]
-    public bool isMultiUseLever = false; // If this lever is used multiple times, tap this bool.
+    private GameObject player;
+    private Player playerControl;
+    private GameObject hud;
+    [SerializeField] private List<GameObject> textToSay;
+    [SerializeField] private GameObject textObject;
+    [SerializeField] private int textCounter = 0;
 
-    private bool isLeverUsed = false;
-    private bool isTurnedToLeft = false;
-    private bool turning = false;
-    private bool objectIsMoving = false;
-    private bool isEventInvoked = false;
+    private void Awake()
+    {
+        textObject = gameObject.transform.GetChild(1).GetChild(0).gameObject;
+        player = GameObject.Find("Player");
+        playerControl = player.GetComponent<Player>();
+        hud = GameObject.Find("[HUD]");
+
+        for(int i = 0; i < textObject.transform.childCount; i++)
+        {
+            textToSay.Add(textObject.transform.GetChild(i).gameObject);
+        }
+            
+    }
 
     // Player is in the range of lever
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.name.Contains("Player") && !isLeverUsed)
+        if (collision.name.Contains("Player"))
         {
             collision.GetComponent<PlayerInteractions>().AllowInteract(true);
             collision.GetComponent<PlayerInteractions>().GiveGameObject(gameObject);
             ShowFloatingText();
         }
     }
-    private void OnTriggerStay2D(Collider2D collision)
-    {
-        if (collision.name.Contains("Player") && isLeverUsed)
-        {
-            collision.GetComponent<PlayerInteractions>().AllowInteract(false);
-            collision.GetComponent<PlayerInteractions>().GiveGameObject(null);
-            HideFloatingText();
-        }
+    //private void OnTriggerStay2D(Collider2D collision)
+    //{
+    //    if (collision.name.Contains("Player"))
+    //    {
+    //        collision.GetComponent<PlayerInteractions>().AllowInteract(true);
+    //        collision.GetComponent<PlayerInteractions>().GiveGameObject(gameObject);
+    //        ShowFloatingText();
+    //    }
 
-    }
+    //}
 
     // Player is out of range of lever.
     private void OnTriggerExit2D(Collider2D collision)
@@ -50,22 +60,48 @@ public class ExplorerDroneController : Interactable
         }
     }
 
-    public override void ShowFloatingText()
-    {
-        if (GameObject.Find("Player").GetComponent<PlayerCombat>().getWeaponWielded())
-            base.ShowFloatingText();
-        else
-            floatingText.text = ifRequiresMultitoolText;
+    //public override void ShowFloatingText()
+    //{
+    //        base.ShowFloatingText();
 
-    }
+
+    //}
 
     // Basic interaction function for levers. Action happens in the object lever is pointing at.
     public override void Interact()
     {
-        Debug.Log("Hello!");
+        textBox.DOAnchorPos(new Vector2(0, -300), .3f);
         HideFloatingText();
         // Disable player inputs
+        playerControl.HandleAllPlayerControlInputs(false);
+        player.GetComponent<PlayerInteractions>().AllowTextAdvance(true);
+        Debug.Log(textToSay.Count);
+        textToSay[textCounter].SetActive(true);
+        textCounter++;
+
+        // Disable UI
+        //hud.SetActive(false);
         // Enable created canvas
+
         // Only specific keys are usable
+    }
+
+    public void AdvanceText()
+    {
+        if(textCounter == textToSay.Count)
+        {
+            textToSay[textCounter - 1].SetActive(false);
+            playerControl.HandleAllPlayerControlInputs(true);
+            textBox.DOAnchorPos(new Vector2(0, -900), .3f);
+            //hud.SetActive(true);
+            textCounter = 0;
+        }
+        else
+        {
+            textToSay[textCounter].SetActive(true);
+            textToSay[textCounter - 1].SetActive(false);
+            textCounter++;
+        }
+
     }
 }

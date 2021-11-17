@@ -8,6 +8,7 @@ public class PlayerInteractions : MonoBehaviour
     // Updated true when player is close to object that is interactable
     [SerializeField] private bool canInteract;              // If object has given persmission to interact with
     [SerializeField] private GameObject objectToInteract;   // Object that we will interact with
+    [SerializeField] private bool isNPC = false;
 
     public void Interact(InputAction.CallbackContext context)
     {
@@ -31,5 +32,19 @@ public class PlayerInteractions : MonoBehaviour
     public void GiveGameObject(GameObject obj)
     {
         objectToInteract = obj;
+    }
+
+    public void AdvanceText(InputAction.CallbackContext context)
+    {
+        if(context.started && isNPC && objectToInteract != null)
+        {
+            Debug.Log("advancingtext");
+            objectToInteract.GetComponent<ExplorerDroneController>().AdvanceText();
+        }
+    }
+
+    public void AllowTextAdvance(bool b)
+    {
+        isNPC = b;
     }
 }
