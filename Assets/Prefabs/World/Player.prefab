@@ -10095,6 +10095,7 @@ GameObject:
   - component: {fileID: 7463911945564789779}
   - component: {fileID: 3265684260011797273}
   - component: {fileID: 269594451}
+  - component: {fileID: 7180285044104453406}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -10146,6 +10147,7 @@ MonoBehaviour:
   healthScript: {fileID: 127911568793665776, guid: 4154d57994558ff489a9180c3151e624, type: 3}
   energyScript: {fileID: 8760275387346948364}
   shieldScript: {fileID: 1812080132}
+  grindScript: {fileID: 7180285044104453406}
   shieldUnlocked: 1
   multitoolUnlocked: 1
   walljumpUnlocked: 1
@@ -10677,6 +10679,35 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 4ec6da84bc221564dbf43813cb782e9d, type: 3}
   - {fileID: 21300000, guid: ed5db9600c014e045a73d0858ae297df, type: 3}
   - {fileID: 21300000, guid: d28e74ef21fe8ac48aed32b076d466c4, type: 3}
+--- !u!114 &7180285044104453406
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2646993275326716545}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef14413b823ea5842913e268312756c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pipeCheckTransform: {fileID: 2646993277219195828}
+  checkRadius: 0.37
+  pipeLayer:
+    serializedVersion: 2
+    m_Bits: 2097152
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 2097216
+  speed: 0
+  acceleration: 15
+  accMultiplier: 2
+  maxSpeed: 15
+  minSpeed: 0
+  dashMaxSpeed: 20
+  jumpButtonPressed: 0
+  rb: {fileID: 2646993275326716665}
+  shScript: {fileID: 1940316768}
 --- !u!1 &2646993277219195829
 GameObject:
   m_ObjectHideFlags: 0
