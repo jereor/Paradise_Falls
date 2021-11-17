@@ -344,8 +344,18 @@ public class Player : MonoBehaviour
                 combatScript.DisableInputMelee();
         }
 
+        // When the current state is ShieldGrinding
+        if (currentState == State.ShieldGrinding)
+        {
+            if (combatScript.getThrowAiming())
+                combatScript.EnableInputMelee();
+            else
+                combatScript.DisableInputMelee();
+        }
+
+
         // Shockwave attack
-        if(shockwaveTool.ShockwaveAttackUsed && !animator.GetBool("isSHAttacking"))
+        if (shockwaveTool.ShockwaveAttackUsed && !animator.GetBool("isSHAttacking") && !animator.GetBool("isShieldGrinding"))
         {
             animator.Play("SHAttack");
             animator.SetBool("isSHAttacking", true);
@@ -357,7 +367,7 @@ public class Player : MonoBehaviour
         }
 
         // Dash
-        if (shockwaveTool.ShockwaveDashUsed && !animator.GetBool("isDashing"))
+        if (shockwaveTool.ShockwaveDashUsed && !animator.GetBool("isDashing") && !animator.GetBool("isShieldGrinding"))
         {
             animator.Play("Dash");
             animator.SetBool("isDashing", true);
@@ -437,7 +447,7 @@ public class Player : MonoBehaviour
         }
 
         // Blocking 
-        if (shieldScript.Blocking && !animator.GetBool("isAttacking") && !animator.GetBool("isAiming") && !animator.GetBool("isThrowing") && !animator.GetBool("willLand"))
+        if (shieldScript.Blocking && !animator.GetBool("isAttacking") && !animator.GetBool("isAiming") && !animator.GetBool("isThrowing") && !animator.GetBool("willLand") && !animator.GetBool("isShieldGrinding"))
         {
             if (animator.GetBool("isRunning"))
             {
@@ -448,11 +458,12 @@ public class Player : MonoBehaviour
             if(!shieldScript.shield.activeInHierarchy && blockCoroutine == null)
                 blockCoroutine = StartCoroutine(ShowBlockObject(GetClipAnimTime("Block") * blockAnimTimeMultiplier));
         }
-        else if (!shieldScript.Blocking || animator.GetBool("willLand"))
+        else if (!shieldScript.Blocking || animator.GetBool("willLand") || animator.GetBool("isShieldGrinding"))
         {
             animator.SetBool("isBlocking", false);
             blockCoroutine = null;
             shieldScript.shield.SetActive(false);
+            shieldScript.Blocking = false;
         }
     }
 
@@ -644,7 +655,7 @@ public class Player : MonoBehaviour
             case State.ShieldGrinding:
                 // Combat
                 combatScript.DisableInputMelee();
-                combatScript.DisableInputThrowAim();
+                combatScript.EnableInputThrowAim();
 
                 shieldScript.DisableInputBlock();
 
@@ -746,6 +757,11 @@ public class Player : MonoBehaviour
     public bool GetIsAiming()
     {
         return combatScript.getThrowAiming();
+    }
+
+    public bool GetIsDashing()
+    {
+        return animator.GetBool("isDashing");
     }
 
     public bool GetIsRunning()

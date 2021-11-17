@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class ShieldGrindEndPointTrigger : MonoBehaviour
 {
+    public bool horizontalTrigger;
     private void OnTriggerEnter2D(Collider2D collision)
     {
         // IF player enters this trigger check if he is grinding to stop grinding
@@ -9,7 +10,7 @@ public class ShieldGrindEndPointTrigger : MonoBehaviour
         {
             if (script.getGrinding())
             { 
-                script.PlayerLeavePipe();
+                script.PlayerLeavePipe(horizontalTrigger);
             }
         }
     }

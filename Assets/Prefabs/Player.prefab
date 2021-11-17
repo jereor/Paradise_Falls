@@ -10699,10 +10699,14 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
-  speed: 5
-  shieldGrindUnlocked: 1
+  speed: 0
+  acceleration: 5
+  maxSpeed: 15
+  minSpeed: 10
+  dashMaxSpeed: 20
   jumpButtonPressed: 0
   rb: {fileID: 2646993275326716665}
+  shScript: {fileID: 1940316768}
 --- !u!1 &2646993277219195829
 GameObject:
   m_ObjectHideFlags: 0

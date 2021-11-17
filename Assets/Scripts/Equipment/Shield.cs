@@ -5,8 +5,8 @@ using UnityEngine.InputSystem;
 
 public class Shield : MonoBehaviour
 {
-    public bool Blocking { get; private set; }
-    public bool Parrying { get; private set; }
+    public bool Blocking { get; set; }
+    public bool Parrying { get; set; }
     public float ProtectionAmount { get; private set; }
 
     [SerializeField] public GameObject shield;
