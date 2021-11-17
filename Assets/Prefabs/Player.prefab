@@ -10700,9 +10700,10 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   speed: 0
-  acceleration: 5
+  acceleration: 15
+  accMultiplier: 2
   maxSpeed: 15
-  minSpeed: 10
+  minSpeed: 0
   dashMaxSpeed: 20
   jumpButtonPressed: 0
   rb: {fileID: 2646993275326716665}

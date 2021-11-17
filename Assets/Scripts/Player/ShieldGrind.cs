@@ -13,7 +13,8 @@ public class ShieldGrind : MonoBehaviour
     [SerializeField] LayerMask groundLayer;
 
     [SerializeField] private float speed; // current speed
-    [SerializeField] private float acceleration; 
+    [SerializeField] private float acceleration;
+    [SerializeField] private float accMultiplier;
     [SerializeField] private float maxSpeed;
     [SerializeField] private float minSpeed;
     [SerializeField] private float dashMaxSpeed;
@@ -42,9 +43,10 @@ public class ShieldGrind : MonoBehaviour
     // Checks if player has unlocked ShieldGrind ability and applies velocity to player if he is on top of pipeLayer object
     private void Grind()
     {
-        if(PlayerMovement.Instance.IsGrounded() && !PipeCheck())
+        if((PlayerMovement.Instance.IsGrounded() || PlayerMovement.Instance.BodyIsTouchingWall()) && !PipeCheck())
         {
             grinding = false;
+            PlayerLeavePipe();
             return;
         }
         // Check if player has it unlocked and check our feet if there is objects
@@ -94,28 +96,31 @@ public class ShieldGrind : MonoBehaviour
                     dashed = true;
                 }
             }
-            // Normal grind
+            // Check if dash effects our grinding
             else if (PlayerMovement.Instance.IsGrounded())
             {
                 // Grind some time with dash speed
                 if(speed >= maxSpeed)
                 {
-                    speed -= acceleration * 2f * Time.deltaTime;
+                    speed -= acceleration * accMultiplier * Time.deltaTime;
                 }
-                // Normal
+                // Normal grind
                 else if (speed < maxSpeed)
                     speed += acceleration * Time.deltaTime;
 
                 rb.velocity = new Vector2(bufferScale * speed, rb.velocity.y);
             }
             // We are in air and we havent dashed decrease our speed (air resistance)
-            else if (PlayerMovement.Instance.IsGrounded() && !dashed)
+            else if (!PlayerMovement.Instance.IsGrounded())
             {
-                if (speed > minSpeed)
-                    speed -= acceleration * Time.deltaTime;
+                if (speed > minSpeed && speed < maxSpeed)
+                    speed -= acceleration / accMultiplier * Time.deltaTime;
+                else if(speed >= maxSpeed)
+                    speed -= acceleration * accMultiplier * Time.deltaTime;
 
                 rb.velocity = new Vector2(bufferScale * speed, rb.velocity.y);
             }
+
             // If our input is down + space + we are grinding we wish to go through the pipe disable colliders
             if (Player.Instance.InputVertical < 0f && jumpButtonPressed && PipeCheck())
             {
@@ -158,20 +163,16 @@ public class ShieldGrind : MonoBehaviour
     }
 
     // Called from ShieldGrindEndPointTrigegr.cs scripts that are positioned to the end points of pipes in scene
-    public void PlayerLeavePipe(bool horzontalTrigger)
+    public void PlayerLeavePipe()
     {
-        if (disabledColliders.Count > 0f && horzontalTrigger)
+        if (disabledColliders.Count > 0f)
         {
             foreach (Collider2D col in disabledColliders)
             {
                 col.enabled = true;
             }
             disabledColliders.Clear();
-
-            grinding = false;
         }
-        else if(!horzontalTrigger)
-            grinding = false;
     }
 
     public bool getGrinding()

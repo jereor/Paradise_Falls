@@ -10,7 +10,7 @@ public class ShieldGrindEndPointTrigger : MonoBehaviour
         {
             if (script.getGrinding())
             { 
-                script.PlayerLeavePipe(horizontalTrigger);
+                script.PlayerLeavePipe();
             }
         }
     }
