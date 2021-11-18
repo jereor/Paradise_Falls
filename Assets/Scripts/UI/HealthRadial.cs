@@ -29,11 +29,10 @@ public class HealthRadial : MonoBehaviour
         healthRadialMaterial.SetColor("_Color", radialColor);
     }
 
-    // Keep UI updated when changes are made
     void Update()
     {
         if (!Application.IsPlaying(gameObject))
-            UpdateSegments();
+            UpdateSegmentsInEdit();
     }
 
     public void RemoveSegments(float amount)
@@ -64,7 +63,8 @@ public class HealthRadial : MonoBehaviour
         healthRadialMaterial.SetFloat("_RemovedSegments", removedSegments - amount);
     }
 
-    public void UpdateSegments()
+    // Keep UI updated when changes are made in edit mode
+    public void UpdateSegmentsInEdit()
     {
         // Update variables
         maxSegments = playerHealth.getMaxHealth();

@@ -32,6 +32,8 @@ public class Energy : MonoBehaviour
         // Prevent energy from going above maxEnergy
         else if (currentEnergy >= maxEnergy)
             currentEnergy = maxEnergy;
+
+        EnergyRadial.Instance.UpdateSegments();
     }
 
     // This function uses the energy. If current energy amount tries to go below 0, function sets it to 0.
@@ -41,6 +43,8 @@ public class Energy : MonoBehaviour
             currentEnergy = 0;
         else
             currentEnergy -= amount;
+
+        EnergyRadial.Instance.UpdateSegments();
     }
 
     // Setter for CurrentEnergy
