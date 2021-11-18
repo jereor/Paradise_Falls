@@ -112,6 +112,10 @@ public class PlayerCombat : MonoBehaviour
 
     private bool isPlayerBeingPulled; // Is player being pulled
 
+    [Header("VFX")]
+    public ParticleSystem hitPSL;
+    public ParticleSystem hitPSR;
+
     private void Awake()
     {
         Instance = this;
@@ -486,8 +490,18 @@ public class PlayerCombat : MonoBehaviour
     // layer to identify to what kind of enemy we are dealing dmg
     private void DealDamageTo(Collider2D[] colliders, float dmg, bool kb, float kbForce, LayerMask layer)
     {
+        //// Instantiate effect on hit on top of the object
+        //Instantiate(hitPS, colliders[0].gameObject.transform.position, Quaternion.identity);
+        
         foreach (Collider2D collider in colliders)
         {
+            // Instantiate effect on hit on top of the object
+            if (gameObject.transform.position.x - collider.gameObject.transform.position.x <= 0f)
+            {
+                Instantiate(hitPSL, collider.gameObject.transform.position, Quaternion.identity);
+            }
+            else
+                Instantiate(hitPSR, collider.gameObject.transform.position, Quaternion.identity);
             //Debug.Log("wfea");
             if (layer == bossWeakPointLayer || layer == bossLayer)
             {

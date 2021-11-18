@@ -301,6 +301,9 @@ MonoBehaviour:
   beingPulled: 0
   powerBoosted: 0
   maxCharged: 0
+  hitThrowPullPS: {fileID: 2349214408752251806, guid: b7861fb56ec2f9c48a99b05b1bb351ba, type: 3}
+  hitBoostedPS: {fileID: 2349214408752251806, guid: 2b2b61fb5970bff4d980b6ed69f80a01, type: 3}
+  weakPointPS: {fileID: 2349214408752251806, guid: 4bc3bd066da884b44b437d1e6d0b6406, type: 3}
 --- !u!96 &6049849153134103944
 TrailRenderer:
   serializedVersion: 2

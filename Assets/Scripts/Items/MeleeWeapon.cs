@@ -40,6 +40,10 @@ public class MeleeWeapon : MonoBehaviour
     public bool powerBoosted = false;
     public bool maxCharged = false;
 
+    [Header("VFX")]
+    public ParticleSystem hitThrowPullPS;
+    public ParticleSystem hitBoostedPS;
+    public ParticleSystem weakPointPS;
 
     private void Start()
     {
@@ -342,30 +346,50 @@ public class MeleeWeapon : MonoBehaviour
         if (col.gameObject.layer == LayerMask.NameToLayer("BossWeakPoint"))
         {
             if (powerBoosted)
+            {
                 col.gameObject.GetComponentInParent<Health>().TakeDamage(powerBoostedDamage * weakPointMultiplier);
+                Instantiate(hitBoostedPS, col.gameObject.transform.position, Quaternion.identity);
+            }
             else if (beingPulled)
+            {
                 col.gameObject.GetComponentInParent<Health>().TakeDamage(weaponPullDamage * weakPointMultiplier);
+                Instantiate(weakPointPS, col.gameObject.transform.position, Quaternion.identity);
+            }
             else if (maxCharged)
             {
                 col.gameObject.GetComponentInParent<Health>().TakeDamage(throwMaxChargeDmg * weakPointMultiplier);
                 maxCharged = false;
+                Instantiate(weakPointPS, col.gameObject.transform.position, Quaternion.identity);
             }
             else
+            {
                 col.gameObject.GetComponentInParent<Health>().TakeDamage(weaponThrowDamage * weakPointMultiplier);
+                Instantiate(weakPointPS, col.gameObject.transform.position, Quaternion.identity);
+            }
         }
         else
         {
             if (powerBoosted)
+            {
                 col.gameObject.GetComponentInParent<Health>().TakeDamage(powerBoostedDamage);
+                Instantiate(hitBoostedPS, col.gameObject.transform.position, Quaternion.identity);
+            }
             else if (beingPulled)
+            {
                 col.gameObject.GetComponentInParent<Health>().TakeDamage(weaponPullDamage);
+                Instantiate(hitThrowPullPS, col.gameObject.transform.position, Quaternion.identity);
+            }
             else if (maxCharged)
             {
                 col.gameObject.GetComponentInParent<Health>().TakeDamage(throwMaxChargeDmg);
                 maxCharged = false;
+                Instantiate(weakPointPS, col.gameObject.transform.position, Quaternion.identity);
             }
             else
+            {
                 col.gameObject.GetComponentInParent<Health>().TakeDamage(weaponThrowDamage);
+                Instantiate(hitThrowPullPS, col.gameObject.transform.position, Quaternion.identity);
+            }
         }
     }
 
