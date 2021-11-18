@@ -34,15 +34,17 @@ public class PlayerInteractions : MonoBehaviour
         objectToInteract = obj;
     }
 
+    // Same keybind with melee attack currently but does not go into function execution unless talking to NPC.
+    // Calls the NPC function AdvanceText() to go through the NPC text.
     public void AdvanceText(InputAction.CallbackContext context)
     {
         if(context.started && isNPC && objectToInteract != null)
         {
-            Debug.Log("advancingtext");
             objectToInteract.GetComponent<ExplorerDroneController>().AdvanceText();
         }
     }
 
+    // Allows the text advancing while talking to an NPC.
     public void AllowTextAdvance(bool b)
     {
         isNPC = b;
