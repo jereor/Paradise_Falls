@@ -7282,6 +7282,14 @@ PrefabInstance:
       propertyPath: hitPSR
       value: 
       objectReference: {fileID: 2349214408752251806, guid: b7861fb56ec2f9c48a99b05b1bb351ba, type: 3}
+    - target: {fileID: 7463911945564789779, guid: 4154d57994558ff489a9180c3151e624, type: 3}
+      propertyPath: slowDuration
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7463911945564789779, guid: 4154d57994558ff489a9180c3151e624, type: 3}
+      propertyPath: timeScaleWhenSlowed
+      value: 0.5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4154d57994558ff489a9180c3151e624, type: 3}
 --- !u!114 &712998903 stripped

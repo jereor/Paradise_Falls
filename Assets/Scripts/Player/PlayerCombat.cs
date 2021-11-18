@@ -112,9 +112,13 @@ public class PlayerCombat : MonoBehaviour
 
     private bool isPlayerBeingPulled; // Is player being pulled
 
-    [Header("VFX")]
+    [Header("Particles")]
     public ParticleSystem hitPSL;
     public ParticleSystem hitPSR;
+
+    [Header("Time slow on hit")]
+    [SerializeField] private float slowDuration;
+    [SerializeField] private float timeScaleWhenSlowed;
 
     private void Awake()
     {
@@ -484,6 +488,14 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
+    private IEnumerator HitSlowTime(float duration)
+    {
+        Time.timeScale = timeScaleWhenSlowed;
+        yield return new WaitForSeconds(duration);
+
+        Time.timeScale = 1f;
+    }
+
     // Made to own function less copy pasta 
     // colliders to what collider array we are going to be deal dmg
     // kb bool from kbOnLight or kbOnLightLast aka if we wish to knockback
@@ -492,7 +504,7 @@ public class PlayerCombat : MonoBehaviour
     {
         //// Instantiate effect on hit on top of the object
         //Instantiate(hitPS, colliders[0].gameObject.transform.position, Quaternion.identity);
-        
+        StartCoroutine(HitSlowTime(slowDuration));
         foreach (Collider2D collider in colliders)
         {
             // Instantiate effect on hit on top of the object
