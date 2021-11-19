@@ -52,7 +52,7 @@ Material:
     - _LineWidth: 0.03
     - _Radius: 0.44
     - _RemovedSegments: 0
-    - _Rotation: 0
+    - _Rotation: 180
     - _SegmentCount: 2
     - _SegmentSpacing: 0.005
     m_Colors:
