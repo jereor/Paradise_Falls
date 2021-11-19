@@ -162,6 +162,12 @@ public class ExplorerDroneController : MonoBehaviour
     {
         //isOnWalkCoolDown = true;
         //StopAllCoroutines();
+
+        // HANDLE HERE: Close MAP if open, disable inputs for GAME PAUSING and MAP OPENING
+        //--------------------------------------------------------------------------------
+        Debug.Log("You should disable pausing and map opening while interacting with NPCs.");
+        //---------------------------------------------------------------------------------
+
         transform.localScale = new Vector2(player.transform.position.x - transform.position.x > 0 ? 1 : -1, 0.75f);
         if (player.transform.position.x - transform.position.x > 0)
             isFacingRight = true;
