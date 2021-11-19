@@ -182,7 +182,6 @@ public class ExplorerDroneController : MonoBehaviour
             }
             else
             {
-                Debug.Log("talk");
                 textBox.GetComponent<RectTransform>().DOAnchorPos(new Vector2(0, 200), .3f);
                 StartCoroutine(TypeWhenTalkedBefore());
             }
