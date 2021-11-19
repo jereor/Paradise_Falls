@@ -9,6 +9,7 @@ public class PlayerInteractions : MonoBehaviour
     [SerializeField] private bool canInteract;              // If object has given persmission to interact with
     [SerializeField] private GameObject objectToInteract;   // Object that we will interact with
     [SerializeField] private bool isNPC = false;
+    [SerializeField] private bool allowTextAdvance = false;
 
     public void Interact(InputAction.CallbackContext context)
     {
@@ -18,6 +19,10 @@ public class PlayerInteractions : MonoBehaviour
             //Debug.Log("Trying to interact");
             //Debug.Log(objectToInteract.GetComponent<Interactable>());
             objectToInteract.GetComponent<Interactable>().itemEvent.Invoke();   // Invoke virtual function event call this virtual function is modified in item scripts to do something 
+        }
+        else if(context.started && isNPC && objectToInteract != null)
+        {
+            objectToInteract.GetComponent<ExplorerDroneController>().Interact();
         }
     }
 
@@ -38,7 +43,7 @@ public class PlayerInteractions : MonoBehaviour
     // Calls the NPC function AdvanceText() to go through the NPC text.
     public void AdvanceText(InputAction.CallbackContext context)
     {
-        if(context.started && isNPC && objectToInteract != null)
+        if(context.started && allowTextAdvance && objectToInteract != null)
         {
             objectToInteract.GetComponent<ExplorerDroneController>().AdvanceText();
         }
@@ -46,6 +51,11 @@ public class PlayerInteractions : MonoBehaviour
 
     // Allows the text advancing while talking to an NPC.
     public void AllowTextAdvance(bool b)
+    {
+        allowTextAdvance = b;
+    }
+
+    public void IsNPC(bool b)
     {
         isNPC = b;
     }
