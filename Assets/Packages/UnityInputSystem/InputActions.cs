@@ -89,6 +89,14 @@ public class @InputActions : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""AdvanceText"",
+                    ""type"": ""Button"",
+                    ""id"": ""de2c38ef-f5a0-4216-a7cf-c5c1787e7d18"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -366,6 +374,28 @@ public class @InputActions : IInputActionCollection, IDisposable
                     ""action"": ""Dash"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d313c016-4e0c-4161-9d2b-be0b667db074"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""AdvanceText"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e22b2e81-34b6-47b9-8a68-4a4019df4b87"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""AdvanceText"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -574,6 +604,7 @@ public class @InputActions : IInputActionCollection, IDisposable
         m_Player_HeavyMelee = m_Player.FindAction("HeavyMelee", throwIfNotFound: true);
         m_Player_ShockwaveAttack = m_Player.FindAction("ShockwaveAttack", throwIfNotFound: true);
         m_Player_Dash = m_Player.FindAction("Dash", throwIfNotFound: true);
+        m_Player_AdvanceText = m_Player.FindAction("AdvanceText", throwIfNotFound: true);
         // GameUI
         m_GameUI = asset.FindActionMap("GameUI", throwIfNotFound: true);
         m_GameUI_Pause = m_GameUI.FindAction("Pause", throwIfNotFound: true);
@@ -639,6 +670,7 @@ public class @InputActions : IInputActionCollection, IDisposable
     private readonly InputAction m_Player_HeavyMelee;
     private readonly InputAction m_Player_ShockwaveAttack;
     private readonly InputAction m_Player_Dash;
+    private readonly InputAction m_Player_AdvanceText;
     public struct PlayerActions
     {
         private @InputActions m_Wrapper;
@@ -652,6 +684,7 @@ public class @InputActions : IInputActionCollection, IDisposable
         public InputAction @HeavyMelee => m_Wrapper.m_Player_HeavyMelee;
         public InputAction @ShockwaveAttack => m_Wrapper.m_Player_ShockwaveAttack;
         public InputAction @Dash => m_Wrapper.m_Player_Dash;
+        public InputAction @AdvanceText => m_Wrapper.m_Player_AdvanceText;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -688,6 +721,9 @@ public class @InputActions : IInputActionCollection, IDisposable
                 @Dash.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDash;
                 @Dash.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDash;
                 @Dash.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDash;
+                @AdvanceText.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAdvanceText;
+                @AdvanceText.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAdvanceText;
+                @AdvanceText.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAdvanceText;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -719,6 +755,9 @@ public class @InputActions : IInputActionCollection, IDisposable
                 @Dash.started += instance.OnDash;
                 @Dash.performed += instance.OnDash;
                 @Dash.canceled += instance.OnDash;
+                @AdvanceText.started += instance.OnAdvanceText;
+                @AdvanceText.performed += instance.OnAdvanceText;
+                @AdvanceText.canceled += instance.OnAdvanceText;
             }
         }
     }
@@ -799,6 +838,7 @@ public class @InputActions : IInputActionCollection, IDisposable
         void OnHeavyMelee(InputAction.CallbackContext context);
         void OnShockwaveAttack(InputAction.CallbackContext context);
         void OnDash(InputAction.CallbackContext context);
+        void OnAdvanceText(InputAction.CallbackContext context);
     }
     public interface IGameUIActions
     {
