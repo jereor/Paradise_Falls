@@ -12,7 +12,6 @@ TagManager:
   - Boss
   - MovingPlatform
   - Box
-  - NPC
   layers:
   - Default
   - TransparentFX
@@ -35,8 +34,8 @@ TagManager:
   - ShockwaveAttack
   - Map
   - Breakable
+  - ShieldGrindPipe
   - 
-  - NPC
   - 
   - 
   - 
