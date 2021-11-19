@@ -25,6 +25,7 @@ public class Player : MonoBehaviour
     [SerializeField] private Health healthScript;
     [SerializeField] private Energy energyScript;
     [SerializeField] private Shield shieldScript;
+    [SerializeField] private ShieldGrind grindScript;
 
     // Unlocked abilities, false by default and unlocked by progressing in the game
     [Header("Player abilities")]
@@ -70,7 +71,8 @@ public class Player : MonoBehaviour
         Blocking,
         Parrying,
         Dashing,
-        SHAttacking
+        SHAttacking,
+        ShieldGrinding
     }
     State currentState;
     State previousState;
@@ -342,8 +344,18 @@ public class Player : MonoBehaviour
                 combatScript.DisableInputMelee();
         }
 
+        // When the current state is ShieldGrinding
+        if (currentState == State.ShieldGrinding)
+        {
+            if (combatScript.getThrowAiming())
+                combatScript.EnableInputMelee();
+            else
+                combatScript.DisableInputMelee();
+        }
+
+
         // Shockwave attack
-        if(shockwaveTool.ShockwaveAttackUsed && !animator.GetBool("isSHAttacking"))
+        if (shockwaveTool.ShockwaveAttackUsed && !animator.GetBool("isSHAttacking") && !animator.GetBool("isShieldGrinding"))
         {
             animator.Play("SHAttack");
             animator.SetBool("isSHAttacking", true);
@@ -355,7 +367,7 @@ public class Player : MonoBehaviour
         }
 
         // Dash
-        if (shockwaveTool.ShockwaveDashUsed && !animator.GetBool("isDashing"))
+        if (shockwaveTool.ShockwaveDashUsed && !animator.GetBool("isDashing") && !animator.GetBool("isShieldGrinding"))
         {
             animator.Play("Dash");
             animator.SetBool("isDashing", true);
@@ -411,6 +423,15 @@ public class Player : MonoBehaviour
             animator.SetBool("isAiming", false);
         }
 
+        if(grindScript.getGrinding() && grindScript.PipeCheck())
+        {
+            animator.SetBool("isShieldGrinding", true);
+        }
+        else
+        {
+            animator.SetBool("isShieldGrinding", false);
+        }
+
         // Parry
         if (shieldScript.Parrying && !animator.GetBool("isParrying") && !animator.GetBool("jump") && !animator.GetBool("isAttacking") && !animator.GetBool("isAiming") && !animator.GetBool("isThrowing") && !animator.GetBool("willLand"))
         {
@@ -426,7 +447,7 @@ public class Player : MonoBehaviour
         }
 
         // Blocking 
-        if (shieldScript.Blocking && !animator.GetBool("isAttacking") && !animator.GetBool("isAiming") && !animator.GetBool("isThrowing") && !animator.GetBool("willLand"))
+        if (shieldScript.Blocking && !animator.GetBool("isAttacking") && !animator.GetBool("isAiming") && !animator.GetBool("isThrowing") && !animator.GetBool("willLand") && !animator.GetBool("isShieldGrinding"))
         {
             if (animator.GetBool("isRunning"))
             {
@@ -437,11 +458,12 @@ public class Player : MonoBehaviour
             if(!shieldScript.shield.activeInHierarchy && blockCoroutine == null)
                 blockCoroutine = StartCoroutine(ShowBlockObject(GetClipAnimTime("Block") * blockAnimTimeMultiplier));
         }
-        else if (!shieldScript.Blocking || animator.GetBool("willLand"))
+        else if (!shieldScript.Blocking || animator.GetBool("willLand") || animator.GetBool("isShieldGrinding"))
         {
             animator.SetBool("isBlocking", false);
             blockCoroutine = null;
             shieldScript.shield.SetActive(false);
+            shieldScript.Blocking = false;
         }
     }
 
@@ -629,6 +651,17 @@ public class Player : MonoBehaviour
                 movementScript.DisableInputJump();
                 break;
 
+            // ---- SHIELD GRINDING ----
+            case State.ShieldGrinding:
+                // Combat
+                combatScript.DisableInputMelee();
+                combatScript.EnableInputThrowAim();
+
+                shieldScript.DisableInputBlock();
+
+                movementScript.DisableInputMove();
+                break;
+
             default:
                 break;
         }
@@ -724,6 +757,11 @@ public class Player : MonoBehaviour
     public bool GetIsAiming()
     {
         return combatScript.getThrowAiming();
+    }
+
+    public bool GetIsDashing()
+    {
+        return animator.GetBool("isDashing");
     }
 
     public bool GetIsRunning()

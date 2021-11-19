@@ -122,7 +122,7 @@ public class PlayerMovement : MonoBehaviour
   
         // Basic movement
         // PlatformMovement() modifies rv.velcity and returns true if player is on platform
-        if(!MovingPlatformMovement() && !shockwaveTool.ShockwaveDashUsed && !PlayerCombat.Instance.getIsPlayerBeingPulled())
+        if(!MovingPlatformMovement() && !shockwaveTool.ShockwaveDashUsed && !PlayerCombat.Instance.getIsPlayerBeingPulled() && !ShieldGrind.Instance.getGrinding())
         {
             rb.velocity = new Vector2(horizontal * movementVelocity, rb.velocity.y); // Moves the player by horizontal input
         }

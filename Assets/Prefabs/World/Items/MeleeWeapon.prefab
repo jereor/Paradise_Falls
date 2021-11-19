@@ -295,12 +295,17 @@ MonoBehaviour:
   powerBoostForce: 30
   maxDistance: 7
   meleeWeaponGrapplingDistance: 1.2
+  slowDuration: 0.02
+  timeScaleWhenSlowed: 0.1
   worldPickUp: 0
   knockbackForce: 500
   mySpriteRenderer: {fileID: 4707181778522028191}
   beingPulled: 0
   powerBoosted: 0
   maxCharged: 0
+  hitThrowPullPS: {fileID: 2349214408752251806, guid: d52e6745b22dbd9418325f89e3873a53, type: 3}
+  hitBoostedPS: {fileID: 2349214408752251806, guid: 2b2b61fb5970bff4d980b6ed69f80a01, type: 3}
+  weakPointPS: {fileID: 2349214408752251806, guid: 4bc3bd066da884b44b437d1e6d0b6406, type: 3}
 --- !u!96 &6049849153134103944
 TrailRenderer:
   serializedVersion: 2
