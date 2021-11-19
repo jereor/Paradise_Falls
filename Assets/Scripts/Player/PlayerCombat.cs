@@ -113,8 +113,7 @@ public class PlayerCombat : MonoBehaviour
     private bool isPlayerBeingPulled; // Is player being pulled
 
     [Header("Particles")]
-    public ParticleSystem hitPSL;
-    public ParticleSystem hitPSR;
+    public ParticleSystem hitPS;
     public ParticleSystem heavyHitPS;
 
     [Header("Time slow on hit")]
@@ -518,13 +517,17 @@ public class PlayerCombat : MonoBehaviour
             }
             else if (comboHit < 3 && !heavy)
             {
-                // Instantiate effect on hit on top of the object
+                // Instantiate effect on hit on top of the object amd rotate it correctly
                 if (gameObject.transform.position.x - col.gameObject.transform.position.x <= 0f)
                 {
-                    Instantiate(hitPSL, col.gameObject.transform.position + (attackPoint.position - col.gameObject.transform.position) / 2, Quaternion.identity);
+                    ParticleSystem tmpPS = Instantiate(hitPS, col.gameObject.transform.position + (attackPoint.position - col.gameObject.transform.position) / 2, Quaternion.identity);
+                    tmpPS.gameObject.transform.Rotate(new Vector3(0f, 0f, 1f), 70f);
                 }
-                else
-                    Instantiate(hitPSR, col.gameObject.transform.position + (attackPoint.position - col.gameObject.transform.position) / 2, Quaternion.identity);
+                else 
+                { 
+                    ParticleSystem tmpPS = Instantiate(hitPS, col.gameObject.transform.position + (attackPoint.position - col.gameObject.transform.position) / 2, Quaternion.identity);
+                    tmpPS.gameObject.transform.Rotate(new Vector3(0f, 0f, 1f), -70f);
+                }
             }
         }
     }

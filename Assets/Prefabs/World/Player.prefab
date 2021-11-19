@@ -10628,9 +10628,8 @@ MonoBehaviour:
   canReceiveInputThrow: 0
   meleeInputReceived: 0
   throwInputReceived: 0
-  hitPSL: {fileID: 2349214408752251806, guid: c8ed0368ca7236f479fbc90600d8f484, type: 3}
-  hitPSR: {fileID: 2349214408752251806, guid: b7861fb56ec2f9c48a99b05b1bb351ba, type: 3}
-  heavyHitPS: {fileID: 2349214408752251806, guid: 4bc3bd066da884b44b437d1e6d0b6406, type: 3}
+  hitPS: {fileID: 2349214408752251806, guid: c8ed0368ca7236f479fbc90600d8f484, type: 3}
+  heavyHitPS: {fileID: 2349214408752251806, guid: 59a51efd3354e52458bdcd9b3912da5e, type: 3}
   slowDuration: 0.01
   heavySlowDuration: 0.03
   timeScaleWhenSlowed: 0.2
