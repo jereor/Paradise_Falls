@@ -116,7 +116,7 @@ public class MeleeWeapon : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         // Ground
-        Debug.Log(collision.collider.gameObject.name);
+        //Debug.Log(collision.collider.gameObject.name);
         if (collision.collider.gameObject.layer == LayerMask.NameToLayer("Ground"))
         {
             if (!landed)
@@ -131,7 +131,7 @@ public class MeleeWeapon : MonoBehaviour
         // Enemy
         else if (collision.collider.gameObject.layer == LayerMask.NameToLayer("Enemy"))
         {
-            Debug.Log("Enemy hit");
+            //Debug.Log("Enemy hit");
             // Hits enemy when can deal damage
             if (!landed)
             {
@@ -154,7 +154,7 @@ public class MeleeWeapon : MonoBehaviour
         // Boss
         else if (collision.collider.gameObject.layer == LayerMask.NameToLayer("Boss"))
         {
-            Debug.Log("Boss");
+            //Debug.Log("Boss");
             // Hits enemy when can deal damage
             if (!landed)
             {
@@ -175,7 +175,7 @@ public class MeleeWeapon : MonoBehaviour
         //// WeakPoint
         else if (collision.collider.gameObject.layer == LayerMask.NameToLayer("BossWeakPoint"))
         {
-            Debug.Log("WeakPoint");
+            //Debug.Log("WeakPoint");
             // Hits enemy when can deal damage
             if (!landed)
             {
@@ -346,7 +346,7 @@ public class MeleeWeapon : MonoBehaviour
 
     private IEnumerator HitSlowTime(float duration)
     {
-        Time.timeScale = Mathf.Lerp(timeScaleWhenSlowed, Time.time, Time.deltaTime);
+        Time.timeScale = timeScaleWhenSlowed;
 
         yield return new WaitForSeconds(duration);
 

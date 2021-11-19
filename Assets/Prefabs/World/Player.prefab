@@ -10633,7 +10633,7 @@ MonoBehaviour:
   heavyHitPS: {fileID: 2349214408752251806, guid: 4bc3bd066da884b44b437d1e6d0b6406, type: 3}
   slowDuration: 0.01
   heavySlowDuration: 0.03
-  timeScaleWhenSlowed: 0.06
+  timeScaleWhenSlowed: 0.2
 --- !u!95 &3265684260011797273
 Animator:
   serializedVersion: 3

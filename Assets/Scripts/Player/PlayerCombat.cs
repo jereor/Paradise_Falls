@@ -121,7 +121,6 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private float slowDuration;
     [SerializeField] private float heavySlowDuration;
     [SerializeField] private float timeScaleWhenSlowed;
-    
 
     private void Awake()
     {
@@ -494,7 +493,7 @@ public class PlayerCombat : MonoBehaviour
 
     private IEnumerator HitSlowTime(float duration)
     {
-        Time.timeScale = Mathf.Lerp(timeScaleWhenSlowed, Time.time, Time.deltaTime);
+        Time.timeScale = timeScaleWhenSlowed;
 
         yield return new WaitForSeconds(duration);
 
@@ -715,7 +714,7 @@ public class PlayerCombat : MonoBehaviour
     private void Knockback(GameObject target, GameObject from, float knockbackForce)
     {
         float pushbackX = target.transform.position.x - from.transform.position.x;
-        Vector2 knockbackDirection = new Vector2(pushbackX, Mathf.Abs(pushbackX / 4)).normalized;
+        Vector2 knockbackDirection = new Vector2(pushbackX, Mathf.Abs(pushbackX/2)).normalized;
         target.GetComponent<Rigidbody2D>().AddForce(knockbackDirection * knockbackForce);
     }
 
@@ -994,7 +993,7 @@ public class PlayerCombat : MonoBehaviour
             gameObject.GetComponent<Rigidbody2D>().gravityScale = 0f;
             gameObject.GetComponent<Rigidbody2D>().velocity = vectorToTargetWeapon.normalized * playerPullForce * Time.deltaTime;
         }
-        else if (weaponInstance != null && weaponInstance.layer == LayerMask.NameToLayer("MeleeWeapon"))
+        else if (weaponInstance != null && weaponInstanceScript.getAttachedToGrapplePoint())
         {
             weaponInstance.layer = LayerMask.NameToLayer("Ground");
         }
