@@ -115,10 +115,13 @@ public class PlayerCombat : MonoBehaviour
     [Header("Particles")]
     public ParticleSystem hitPSL;
     public ParticleSystem hitPSR;
+    public ParticleSystem heavyHitPS;
 
     [Header("Time slow on hit")]
     [SerializeField] private float slowDuration;
+    [SerializeField] private float heavySlowDuration;
     [SerializeField] private float timeScaleWhenSlowed;
+    
 
     private void Awake()
     {
@@ -487,13 +490,44 @@ public class PlayerCombat : MonoBehaviour
                 heavyBeingCharged = false;
         }
     }
+    // ---- Effects ----
 
     private IEnumerator HitSlowTime(float duration)
     {
-        Time.timeScale = timeScaleWhenSlowed;
+        Time.timeScale = Mathf.Lerp(timeScaleWhenSlowed, Time.time, Time.deltaTime);
+
         yield return new WaitForSeconds(duration);
 
         Time.timeScale = 1f;
+    }
+    
+    private void PlayParticleEffect(int comboHit, bool heavy, Collider2D[] colliders, LayerMask layer)
+    {
+        // Go through all hits and instantiate PS on all enemy/boss hits
+        foreach (Collider2D col in colliders)
+        {
+            if (layer == bossWeakPointLayer || comboHit == 3 || heavy)
+            {
+                // Instantiate effect on hit on top of the object
+                if (gameObject.transform.position.x - col.gameObject.transform.position.x <= 0f)
+                {
+                    // Position is hit objects transform + vector to our attackPoint.position / 2
+                    Instantiate(heavyHitPS, col.gameObject.transform.position + (attackPoint.position - col.gameObject.transform.position) / 2, Quaternion.identity);
+                }
+                else
+                    Instantiate(heavyHitPS, col.gameObject.transform.position + (attackPoint.position - col.gameObject.transform.position) / 2, Quaternion.identity);
+            }
+            else if (comboHit < 3 && !heavy)
+            {
+                // Instantiate effect on hit on top of the object
+                if (gameObject.transform.position.x - col.gameObject.transform.position.x <= 0f)
+                {
+                    Instantiate(hitPSL, col.gameObject.transform.position + (attackPoint.position - col.gameObject.transform.position) / 2, Quaternion.identity);
+                }
+                else
+                    Instantiate(hitPSR, col.gameObject.transform.position + (attackPoint.position - col.gameObject.transform.position) / 2, Quaternion.identity);
+            }
+        }
     }
 
     // Made to own function less copy pasta 
@@ -502,19 +536,8 @@ public class PlayerCombat : MonoBehaviour
     // layer to identify to what kind of enemy we are dealing dmg
     private void DealDamageTo(Collider2D[] colliders, float dmg, bool kb, float kbForce, LayerMask layer)
     {
-        //// Instantiate effect on hit on top of the object
-        //Instantiate(hitPS, colliders[0].gameObject.transform.position, Quaternion.identity);
-        StartCoroutine(HitSlowTime(slowDuration));
         foreach (Collider2D collider in colliders)
         {
-            // Instantiate effect on hit on top of the object
-            if (gameObject.transform.position.x - collider.gameObject.transform.position.x <= 0f)
-            {
-                Instantiate(hitPSL, collider.gameObject.transform.position, Quaternion.identity);
-            }
-            else
-                Instantiate(hitPSR, collider.gameObject.transform.position, Quaternion.identity);
-            //Debug.Log("wfea");
             if (layer == bossWeakPointLayer || layer == bossLayer)
             {
                 // Error check if there isn't Health script attached don't do damage
@@ -564,12 +587,18 @@ public class PlayerCombat : MonoBehaviour
         {
             // Dealing damage to enemies
             if (hitEnemies.Length != 0)
+            {
+                StartCoroutine(HitSlowTime(slowDuration));
+                PlayParticleEffect(comboIndex, heavyHit, hitEnemies, enemyLayer);
                 DealDamageTo(hitEnemies, lightDamage, kbOnLight, knockbackForceLight, enemyLayer);
+            }
 
             // Dealing damage to bosses 
             // If we hit weakpoint we deal only the amount from weakpoint hit and "skip" checkin hitBosses colliders (prevent from dealing weakpoint + normal damage on one hit)
             if (hitBossesWeakPoint.Length != 0)
             {
+                StartCoroutine(HitSlowTime(slowDuration));
+                PlayParticleEffect(comboIndex, heavyHit, hitEnemies, bossWeakPointLayer);
                 // Deal damage
                 // Ceil since example: weakPointMultiplier = 1.5 lightDamage = 1 without rounding dmg = 1.5 with Floor dmg 1 with Ceil dmg = 2
                 // most likely not needed since weakPointMult 2x is standard in games 
@@ -577,6 +606,8 @@ public class PlayerCombat : MonoBehaviour
             }
             else if (hitBosses.Length != 0)
             {
+                StartCoroutine(HitSlowTime(slowDuration));
+                PlayParticleEffect(comboIndex, heavyHit, hitEnemies, bossLayer);
                 DealDamageTo(hitBosses, lightDamage, kbOnLight, knockbackForceLight, bossLayer);
             }
 
@@ -597,17 +628,23 @@ public class PlayerCombat : MonoBehaviour
         {
             if (hitEnemies.Length != 0)
             {
+                StartCoroutine(HitSlowTime(heavySlowDuration));
+                PlayParticleEffect(comboIndex, heavyHit, hitEnemies, enemyLayer);
                 DealDamageTo(hitEnemies, Mathf.Ceil(lightDamage * lastHitMultiplier), kbOnLightLast, knockbackForceLightLast, enemyLayer);
             }
 
             if (hitBossesWeakPoint.Length != 0)
             {
+                StartCoroutine(HitSlowTime(heavySlowDuration));
+                PlayParticleEffect(comboIndex, heavyHit, hitEnemies, bossWeakPointLayer);
                 // Deal damage
                 DealDamageTo(hitBossesWeakPoint, Mathf.Ceil(lightDamage * weakPointMultiplier * lastHitMultiplier), kbOnLightLast, knockbackForceLightLast, bossWeakPointLayer);
             }
             else if (hitBosses.Length != 0)
             {
-                 DealDamageTo(hitBosses, Mathf.Ceil(lightDamage * lastHitMultiplier), kbOnLightLast, knockbackForceLightLast, bossLayer);
+                StartCoroutine(HitSlowTime(heavySlowDuration));
+                PlayParticleEffect(comboIndex, heavyHit, hitEnemies, bossLayer);
+                DealDamageTo(hitBosses, Mathf.Ceil(lightDamage * lastHitMultiplier), kbOnLightLast, knockbackForceLightLast, bossLayer);
             }
 
             // Breaking breakables
@@ -629,12 +666,18 @@ public class PlayerCombat : MonoBehaviour
         {
             // Dealing damage to enemies
             if (hitEnemies.Length != 0)
+            {
+                StartCoroutine(HitSlowTime(heavySlowDuration));
+                PlayParticleEffect(comboIndex, heavyHit, hitEnemies, enemyLayer);
                 DealDamageTo(hitEnemies, heavyDamage, kbOnHeavy, knockbackForceHeavy, enemyLayer);
+            }
 
             // Dealing damage to bosses 
             // If we hit weakpoint we deal only the amount from weakpoint hit and "skip" checkin hitBosses colliders (prevent from dealing weakpoint + normal damage on one hit)
             if (hitBossesWeakPoint.Length != 0)
             {
+                StartCoroutine(HitSlowTime(heavySlowDuration));
+                PlayParticleEffect(comboIndex, heavyHit, hitEnemies, bossWeakPointLayer);
                 // Deal damage
                 // Ceil since example: weakPointMultiplier = 1.5 lightDamage = 1 without rounding dmg = 1.5 with Floor dmg 1 with Ceil dmg = 2
                 // most likely not needed since weakPointMult 2x is standard in games 
@@ -642,6 +685,8 @@ public class PlayerCombat : MonoBehaviour
             }
             else if (hitBosses.Length != 0)
             {
+                StartCoroutine(HitSlowTime(heavySlowDuration));
+                PlayParticleEffect(comboIndex, heavyHit, hitEnemies, bossLayer);
                 DealDamageTo(hitBosses, heavyDamage, kbOnHeavy, knockbackForceHeavy, bossLayer);
             }
 

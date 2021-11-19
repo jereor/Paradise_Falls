@@ -21,6 +21,10 @@ public class MeleeWeapon : MonoBehaviour
     [SerializeField] private float maxDistance; // Max distance to travel with gravityscale 0
     [SerializeField] private float meleeWeaponGrapplingDistance;
 
+    [Header("Time slowing when hit")]
+    public float slowDuration = 0f;
+    public float timeScaleWhenSlowed = 0;
+
     [SerializeField] private bool worldPickUp;
 
     public float knockbackForce;
@@ -40,7 +44,7 @@ public class MeleeWeapon : MonoBehaviour
     public bool powerBoosted = false;
     public bool maxCharged = false;
 
-    [Header("VFX")]
+    [Header("Hit Effects")]
     public ParticleSystem hitThrowPullPS;
     public ParticleSystem hitBoostedPS;
     public ParticleSystem weakPointPS;
@@ -340,9 +344,19 @@ public class MeleeWeapon : MonoBehaviour
             Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("BossWeakPoint"), LayerMask.NameToLayer("MeleeWeapon"), true);
     }
 
+    private IEnumerator HitSlowTime(float duration)
+    {
+        Time.timeScale = Mathf.Lerp(timeScaleWhenSlowed, Time.time, Time.deltaTime);
+
+        yield return new WaitForSeconds(duration);
+
+        Time.timeScale = 1f;
+    }
+
     // Deal damage to given Collider2D
     public void DealDamage(Collider2D col)
     {
+        StartCoroutine(HitSlowTime(slowDuration));
         if (col.gameObject.layer == LayerMask.NameToLayer("BossWeakPoint"))
         {
             if (powerBoosted)
