@@ -826,6 +826,7 @@ public class PlayerCombat : MonoBehaviour
         {
             points[i].SetActive(false);
         }
+        throwButtonPressedTime = null;
         // Show minDistance amount of projections when aiming
         pointsShown = 0;
     }

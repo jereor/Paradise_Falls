@@ -417,7 +417,8 @@ public class MeleeWeapon : MonoBehaviour
     // Called as event from player if interacted or when weapon is pulled and hits player
     public void Interact(GameObject objectWhoPicksUp)
     {
-        Debug.Log("Pick up");
+        if (Time.timeScale != 1f)
+            Time.timeScale = 1f;
         // Set collision detection back if this was set to ignore
         Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Ground"), LayerMask.NameToLayer("MeleeWeapon"), false);
         Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Enemy"), LayerMask.NameToLayer("MeleeWeapon"), false);
