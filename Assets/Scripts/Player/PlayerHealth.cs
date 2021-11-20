@@ -24,11 +24,18 @@ public class PlayerHealth : Health
         UpdateHealthNumber();
     }
 
+    public override void SetHealth(float amount)
+    {
+        base.SetHealth(amount);
+        HealthRadial.Instance.AddSegments(amount);
+        UpdateHealthNumber();
+    }
+
     public override void UpgradeMaxHealth(float amount)
     {
         base.UpgradeMaxHealth(amount);
-        UpdateHealthNumber();
         HealthRadial.Instance.AddMaxSegments(amount);
+        UpdateHealthNumber();
     }
 
     private void UpdateHealthNumber()

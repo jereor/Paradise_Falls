@@ -7,7 +7,6 @@ using UnityEngine.Events;
 public class Health : MonoBehaviour
 {
     [SerializeField] private float maxHealth;
-    [SerializeField] private float debugHealth;
 
     private SpriteRenderer rndr;
     [SerializeField] private Color blockedColor = Color.blue; // Block indication color.
@@ -42,7 +41,6 @@ public class Health : MonoBehaviour
         damageColor = Color.red;
         CurrentHealth = (maxHealth > 0 ? maxHealth : 1);
         MaxHealth = CurrentHealth;
-        debugHealth = CurrentHealth; // DEBUG: For tracking health in inspector
         rndr = GetComponent<SpriteRenderer>();
         if(rndr == null) // If gameobject has not SpriteRenderer, search from childs.
         {
@@ -83,7 +81,6 @@ public class Health : MonoBehaviour
         }
 
         CurrentHealth -= amount;
-        debugHealth = CurrentHealth; // DEBUG: For tracking health in inspector
 
         TakingDamage?.Invoke(this, EventArgs.Empty);
 
@@ -107,7 +104,7 @@ public class Health : MonoBehaviour
     }
 
     // Setter for new CurrentHealth amount.
-    public void SetHealth(float amount)
+    virtual public void SetHealth(float amount)
     {
         if (CurrentHealth + amount >= MaxHealth)
             CurrentHealth = MaxHealth;

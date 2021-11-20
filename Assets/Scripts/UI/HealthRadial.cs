@@ -47,7 +47,7 @@ public class HealthRadial : MonoBehaviour
 
     public void AddSegments(float amount)
     {
-        if (currentSegments + amount <= maxSegments) // Check that segments don't go over maximum
+        if (currentSegments + amount >= maxSegments) // Check that segments don't go over maximum
             healthRadialMaterial.SetFloat("_RemovedSegments", removedSegments - amount); // Restore the amount
         else
             healthRadialMaterial.SetFloat("_RemovedSegments", 0); // Restore segments to full
@@ -70,7 +70,6 @@ public class HealthRadial : MonoBehaviour
         maxSegments = playerHealth.getMaxHealth();
         currentSegments = playerHealth.GetHealth();
         removedSegments = playerHealth.getMaxHealth() - playerHealth.GetHealth();
-        playerHealth.SetHealth(currentSegments);
 
         // Update shader material properties
         healthRadialMaterial.SetFloat("_SegmentCount", maxSegments);
