@@ -113,7 +113,7 @@ public class GroundEnemyAI : MonoBehaviour
         health = GetComponent<Health>();
         spriteRndr = GetComponentInChildren<SpriteRenderer>();
         animator = GetComponentInChildren<Animator>();
-        healthCount = health.CurrentHealth;
+        healthCount = health.GetHealth();
         spawnPosition = transform.position;
         gizmoPositionChange = false;
         //animator.SetFloat("AttackTime", punchCooldown + punchChargeTime);
@@ -225,17 +225,17 @@ public class GroundEnemyAI : MonoBehaviour
             Debug.DrawRay(transform.position, target.transform.position - transform.position, Color.blue);
 
             // Has enemy unit taken damage after last update without noticing it itself.
-            if (health.CurrentHealth < healthCount)
+            if (health.GetHealth() < healthCount)
             {
                 // If there's damage taken and enemy isn't aggroed, force the aggro on enemy towards the target.
                 // This means that player has done a surprise attack. Stun the enemy briefly by given parameter.
-                healthCount = health.CurrentHealth;
+                healthCount = health.GetHealth();
                 hurtCounter = 0;
                 StopAllCoroutines();
                 if (enemyState == EnemyState.Roam && !obstacleBetweenTarget)
                 {
                     //Debug.Log("It hurts...");
-                    healthCount = health.CurrentHealth;
+                    healthCount = health.GetHealth();
                     enemyState = EnemyState.Stunned;
 
                 }
@@ -587,7 +587,7 @@ public class GroundEnemyAI : MonoBehaviour
     public void SpawnHealthOrEnergy()
     {
         int rand = UnityEngine.Random.Range(1, 101);
-        if (_targetHealth.GetHealth() <= _targetHealth.MaxHealth * amountWhenResourceIsSpawnable && rand <= healthProbability)
+        if (_targetHealth.GetHealth() <= _targetHealth.GetMaxHealth() * amountWhenResourceIsSpawnable && rand <= healthProbability)
         {
             // Debug.Log(rand);
             Instantiate(healthItem, transform.position, Quaternion.identity);

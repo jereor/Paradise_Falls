@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+[ExecuteAlways]
 public class UIController : MonoBehaviour
 {
     // Scripts
     private Energy energyScript;
-    private Health healthScript;
+    private PlayerHealth healthScript;
+    private HealthRadial healthRadialScript;
     private PlayerCombat combatScript;
 
     [Header("UI Elements")]
@@ -25,7 +27,7 @@ public class UIController : MonoBehaviour
     {
         player = GameObject.FindGameObjectWithTag("Player");
         energyScript = player.GetComponent<Energy>();
-        healthScript = player.GetComponent<Health>();
+        healthScript = player.GetComponent<PlayerHealth>();
         combatScript = player.GetComponent<PlayerCombat>();
     }
 
@@ -69,7 +71,7 @@ public class UIController : MonoBehaviour
     private void UpdateHealthIcons()
     {
         // Set healthIconsToShow ( x = ratio * y ) rounded
-        healthIconsToShow = Mathf.RoundToInt(healthScript.GetHealth() / healthScript.getMaxHealth() * healthIcons.Count);
+        healthIconsToShow = Mathf.RoundToInt(healthScript.GetHealth() / healthScript.GetMaxHealth() * healthIcons.Count);
 
         if(healthIconsToShow != healthIconsCurrentlyShowed)
         {
