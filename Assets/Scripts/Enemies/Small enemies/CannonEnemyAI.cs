@@ -200,7 +200,7 @@ public class CannonEnemyAI : MonoBehaviour
     public void SpawnHealthOrEnergy()
     {
         int rand = UnityEngine.Random.Range(1, 101);
-        if (_targetHealth.GetHealth() <= _targetHealth.MaxHealth * amountWhenHealthIsSpawnable && rand <= healthProbability)
+        if (_targetHealth.GetHealth() <= _targetHealth.GetMaxHealth() * amountWhenHealthIsSpawnable && rand <= healthProbability)
         {
             Instantiate(healthItem, transform.position, Quaternion.identity);
         }

@@ -14,13 +14,11 @@ public class HealthRadial : MonoBehaviour
 
     // Variables
     [SerializeField] private float maxSegments;
-    [SerializeField] private float currentSegments;
     [SerializeField] private float removedSegments;
     [SerializeField] private Color radialColor;
+    private float currentSegments;
 
-    
-
-    private void Start()
+    private void Awake()
     {
         Instance = this;
         healthRadialMaterial = GetComponent<Image>().material;
@@ -29,47 +27,47 @@ public class HealthRadial : MonoBehaviour
         healthRadialMaterial.SetColor("_Color", radialColor);
     }
 
-    void Update()
-    {
-        if (!Application.IsPlaying(gameObject))
-            UpdateSegmentsInEdit();
-    }
-
     public void RemoveSegments(float amount)
     {
-        if (currentSegments - amount >= 0) // Check that segments don't go under 0
+        if (currentSegments - amount >= 0 && removedSegments + amount <= maxSegments) // Check that segments don't go negative
             healthRadialMaterial.SetFloat("_RemovedSegments", removedSegments + amount); // Remove the amount
         else
             healthRadialMaterial.SetFloat("_RemovedSegments", maxSegments); // Remove all segments
 
-        removedSegments += amount;
+        UpdateRadial();
     }
 
     public void AddSegments(float amount)
     {
-        if (currentSegments + amount >= maxSegments) // Check that segments don't go over maximum
+        if (currentSegments + amount <= maxSegments && removedSegments - amount >= 0) // Check that segments don't go over maximum
             healthRadialMaterial.SetFloat("_RemovedSegments", removedSegments - amount); // Restore the amount
         else
             healthRadialMaterial.SetFloat("_RemovedSegments", 0); // Restore segments to full
 
-        removedSegments -= amount;
+        UpdateRadial();
     }
 
-    // Max Segments increasing function. Not needed when update with health is working correctly
+    // Max Segments increasing function
     public void AddMaxSegments(float amount)
     {
-        maxSegments += amount;
-        healthRadialMaterial.SetFloat("_SegmentCount", maxSegments);
-        healthRadialMaterial.SetFloat("_RemovedSegments", removedSegments - amount);
+        if (currentSegments == maxSegments)
+        {
+            maxSegments += amount;
+            currentSegments = maxSegments;
+        }
+        else
+            maxSegments += amount;
+
+        UpdateRadial();
     }
 
-    // Keep UI updated when changes are made in edit mode
-    public void UpdateSegmentsInEdit()
+    // Keep UI updated when changes to health happen. Called from HUDController.cs
+    public void UpdateRadial()
     {
         // Update variables
-        maxSegments = playerHealth.getMaxHealth();
+        maxSegments = playerHealth.GetMaxHealth();
         currentSegments = playerHealth.GetHealth();
-        removedSegments = playerHealth.getMaxHealth() - playerHealth.GetHealth();
+        removedSegments = playerHealth.GetMaxHealth() - playerHealth.GetHealth();
 
         // Update shader material properties
         healthRadialMaterial.SetFloat("_SegmentCount", maxSegments);

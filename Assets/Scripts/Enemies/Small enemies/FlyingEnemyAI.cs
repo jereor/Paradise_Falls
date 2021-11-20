@@ -157,7 +157,7 @@ public class FlyingEnemyAI : MonoBehaviour
         //If the target was not found, returns to the start of the update
         if (path == null || target == null) { return;}
 
-        if (health.CurrentHealth <= 0) { enemyState = EnemyState.Die; }
+        if (health.GetHealth() <= 0) { enemyState = EnemyState.Die; }
 
         // If the target is too far from the enemy unit, it respawns in to the spawn point and stays there until target is close enough again.
         // Enemy stops all actions for the time being.
@@ -319,7 +319,7 @@ public class FlyingEnemyAI : MonoBehaviour
     public void SpawnHealthOrEnergy()
     {
         int rand = UnityEngine.Random.Range(1, 101);
-        if (_targetHealth.GetHealth() <= _targetHealth.MaxHealth * amountWhenResourceIsSpawnable && rand <= healthProbability)
+        if (_targetHealth.GetHealth() <= _targetHealth.GetMaxHealth() * amountWhenResourceIsSpawnable && rand <= healthProbability)
         {
             // Debug.Log(rand);
             Instantiate(healthItem, transform.position, Quaternion.identity);
