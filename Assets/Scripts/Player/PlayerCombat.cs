@@ -157,12 +157,12 @@ public class PlayerCombat : MonoBehaviour
         if (Player.Instance.MultitoolUnlocked())
         {
             multitoolUnlocked = true;
-            isWeaponWielded = true;
+            setWeaponWielded(true);
         }
         else
         {
             multitoolUnlocked = false;
-            isWeaponWielded = false;
+            setWeaponWielded(false);
         }
         // Grappling
         if (Player.Instance.GrapplingUnlocked())
@@ -178,7 +178,7 @@ public class PlayerCombat : MonoBehaviour
         if (!multitoolUnlocked && Player.Instance.MultitoolUnlocked() != multitoolUnlocked)
         {
             multitoolUnlocked = Player.Instance.MultitoolUnlocked();
-            isWeaponWielded = Player.Instance.MultitoolUnlocked();
+            setWeaponWielded(Player.Instance.MultitoolUnlocked());
         }
 
         // Grappling
@@ -284,7 +284,7 @@ public class PlayerCombat : MonoBehaviour
             ThrowWeapon();
 
             // We don't have weapon anymore
-            isWeaponWielded = false;
+            setWeaponWielded(false);
             throwButtonPressedTime = null;
 
             // Weapon is thrown hide points
@@ -904,8 +904,7 @@ public class PlayerCombat : MonoBehaviour
     // Called from Weapon script if pulled or we Interact with weapon
     public void PickUpWeapon()
     {
-        //Debug.Log("Picked weapon");
-        isWeaponWielded = true;
+        setWeaponWielded(true);
 
         //Deactivate the tether. Weapon reached.
         magnetTether.SetActive(false);
@@ -1070,9 +1069,10 @@ public class PlayerCombat : MonoBehaviour
     {
         return isWeaponWielded;
     }
-    public void setWeaponWielded(bool wield)
+    public void setWeaponWielded(bool wielded)
     {
-        isWeaponWielded = wield;
+        isWeaponWielded = wielded;
+        HUDController.Instance.SetMultitoolImage(wielded);
     }
 
     public GameObject getWeaponInstance()

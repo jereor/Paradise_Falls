@@ -394,6 +394,7 @@ MonoBehaviour:
   healthScript: {fileID: 0}
   healthRadialScript: {fileID: 1865926951}
   energyRadialScript: {fileID: 1959287138}
+  multitoolImage: {fileID: 7474937869308449711}
 --- !u!1 &17223034149677121
 GameObject:
   m_ObjectHideFlags: 0
@@ -709,7 +710,7 @@ GameObject:
   - component: {fileID: 5109482895196527711}
   - component: {fileID: 7474937869308449711}
   m_Layer: 5
-  m_Name: Multitool
+  m_Name: MultitoolImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
