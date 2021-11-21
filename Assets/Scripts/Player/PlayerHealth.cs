@@ -34,8 +34,10 @@ public class PlayerHealth : Health
     public override void ResetHealthToMax()
     {
         base.ResetHealthToMax();
-        HealthRadial.Instance.UpdateRadial();
         UpdateHealthNumber();
+
+        if (HealthRadial.Instance != null)
+            HealthRadial.Instance.UpdateRadial();
     }
 
     // Keep UI updated when changes are made in edit mode. Called from HUDController.cs
