@@ -20,11 +20,16 @@ public class PlayerSFX : MonoBehaviour
     [Header("Jump")]
     public AudioClip doubleJump;
 
+    [Header("Dash")]
+    public AudioClip dash;
+
     private void Update()
     {
         // Sound effects that dont have own animation or are part of bigger animation
-        if (shScript.getSFXJump())
+        if (shScript.getPlaySoundJump())
             playerAudioSource.PlayOneShot(doubleJump);
+        if (shScript.getPlaySoundDash())
+            playerAudioSource.PlayOneShot(dash);
 
     }
 
@@ -36,7 +41,7 @@ public class PlayerSFX : MonoBehaviour
 
     public void PlayPlayerLanding()
     {
-        if (shScript.getSFXDive())
+        if (shScript.getPlaySoundDive())
             playerAudioSource.PlayOneShot(groundPound);
         else
             playerAudioSource.PlayOneShot(land);

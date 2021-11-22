@@ -39,8 +39,10 @@ public class ShockwaveTool : MonoBehaviour
     private float nextDash = -1;
     private float timeDashed = -1;
 
-    public bool sfxDive = false;
-    public bool sfxJump = false;
+    // Booleans for PlayerPlaySound.cs
+    public bool playSoundDive = false;
+    public bool playSoundJump = false;
+    public bool playSoundDash = false;
 
     private void Start()
     {
@@ -60,7 +62,7 @@ public class ShockwaveTool : MonoBehaviour
     {
         ShockwaveJumpUsed = true;
         shockwaveJumpEffect.Play();
-        sfxJump = true;
+        playSoundJump = true;
     }
 
     public void ResetShockwaveJump()
@@ -73,8 +75,7 @@ public class ShockwaveTool : MonoBehaviour
     {
         ShockwaveDiveUsed = true;
         shockwaveDiveGraphics.SetActive(true);
-        sfxDive = true;
-        //SFXController.Instance.PlayPlayerAirDiveSound();
+        playSoundDive = true;
     }
 
     // Cancel Shockwave Dive: Triggered from PlayerMovement when deactivating dive
@@ -121,6 +122,8 @@ public class ShockwaveTool : MonoBehaviour
                 ShockwaveDashUsed = true;
                 posBeforeDash = transform.position;
                 horizontal = playerMovementScript.horizontal;
+
+                playSoundDash = true;
             }
             else
                 Debug.Log("Not enough energy!");
@@ -161,23 +164,34 @@ public class ShockwaveTool : MonoBehaviour
         ShockwaveAttackUsed = false;
     }
 
-    // For PlayerSFX to track these states
-    public bool getSFXDive()
+    // For PlayerPlaySound to track these states
+    public bool getPlaySoundDive()
     {
-        if (sfxDive)
+        if (playSoundDive)
         {
-            sfxDive = false;
+            playSoundDive = false;
             return true;
         }
         else
             return false;
     }
 
-    public bool getSFXJump()
+    public bool getPlaySoundJump()
     {
-        if (sfxJump)
+        if (playSoundJump)
         {
-            sfxJump = false;
+            playSoundJump = false;
+            return true;
+        }
+        else
+            return false;
+    }
+
+    public bool getPlaySoundDash()
+    {
+        if (playSoundDash)
+        {
+            playSoundDash = false;
             return true;
         }
         else
