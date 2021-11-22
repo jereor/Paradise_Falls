@@ -7,6 +7,8 @@ using UnityEngine.InputSystem;
 
 public class ExplorerDroneController : MonoBehaviour
 {
+    public MapController mapController;
+
     [Header("Text Boxes")]
     [SerializeField] private GameObject textBox;
     [SerializeField] private TextMeshProUGUI textDisplay;
@@ -160,6 +162,12 @@ public class ExplorerDroneController : MonoBehaviour
     // When interacted with an NPC, disable player inputs, hide floating text, hide HUD, bring the textbox to the screen.
     public void Interact()
     {
+        // Deactivates the map if active during the interaction.
+        //if (mapController.mapPanel.activeInHierarchy)
+        //{
+        //    mapController.HandleMapState();
+        //}
+
         //isOnWalkCoolDown = true;
         //StopAllCoroutines();
 
@@ -405,4 +413,9 @@ public class ExplorerDroneController : MonoBehaviour
     //    else
     //        Gizmos.DrawWireCube(new Vector2(spawnPosition.x + offset.x, spawnPosition.y + offset.y), range);
     //}
+
+    public bool GetIsInteracting()
+    {
+        return isInteracting;
+    }
 }

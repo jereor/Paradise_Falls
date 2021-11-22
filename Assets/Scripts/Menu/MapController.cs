@@ -12,6 +12,7 @@ public class MapController : MonoBehaviour
     public Camera mapCamera; // Camera that captures map
     public RawImage mapImage; // RawImage where camera view is projected
     public PauseMenuController pauseController;
+    public ExplorerDroneController explorerDroneController;
     public GameObject[] areaTriggers; // game objects of these triggers
 
     [Header("Variables scale/zoom")]
@@ -141,7 +142,7 @@ public class MapController : MonoBehaviour
     // Called from input map button (or pause map button)
     public void OpenMap(InputAction.CallbackContext context)
     {
-        if (context.started)
+        if (context.started && !explorerDroneController.GetIsInteracting())
         {
             // Game is currently paused map button is pressed Resume() and open map
             if (PauseMenuController.GameIsPaused)
