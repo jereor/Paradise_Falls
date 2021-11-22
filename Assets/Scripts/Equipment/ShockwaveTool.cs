@@ -57,7 +57,7 @@ public class ShockwaveTool : MonoBehaviour
     {
         ShockwaveJumpUsed = true;
         shockwaveJumpEffect.Play();
-        SFXController.Instance.PlayJumpSound();
+        SFXController.Instance.PlayAirJumpSound();
     }
 
     public void ResetShockwaveJump()

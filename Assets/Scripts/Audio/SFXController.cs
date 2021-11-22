@@ -91,4 +91,9 @@ public class SFXController : MonoBehaviour
     {
         playerJump.Play();
     }
+
+    internal void PlayAirJumpSound()
+    {
+        playerAirJump.Play();
+    }
 }
