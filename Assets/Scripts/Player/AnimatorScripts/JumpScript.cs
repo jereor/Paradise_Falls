@@ -9,6 +9,7 @@ public class JumpScript : StateMachineBehaviour
     {
         // Usually we are firstly jumping so we can set our state to Jumping if we are Falling OnStateUpdate() will update it instantly 
         Player.Instance.SetCurrentState(Player.State.Ascending);
+        SFXController.Instance.PlayJumpSound();
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks

@@ -86,4 +86,9 @@ public class SFXController : MonoBehaviour
         int random = Random.Range(0, 5);
         playerSteps[random].Play();
     }
+
+    internal void PlayJumpSound()
+    {
+        playerJump.Play();
+    }
 }
