@@ -73,7 +73,7 @@ AnimationClip:
   m_HasMotionFloatCurves: 0
   m_Events:
   - time: 0
-    functionName: PlayPlayerLanding
+    functionName: PlayPlayerLandingSound
     data: 
     objectReferenceParameter: {fileID: 2646993275326716545, guid: 4154d57994558ff489a9180c3151e624, type: 3}
     floatParameter: 0

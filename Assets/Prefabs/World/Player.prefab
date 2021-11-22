@@ -10757,6 +10757,12 @@ MonoBehaviour:
   groundPound: {fileID: 8300000, guid: b04ea6f725111d74eb0ee5ae4f0055b2, type: 3}
   doubleJump: {fileID: 8300000, guid: c8889ca06b802bd4aba44541a5eaba20, type: 3}
   dash: {fileID: 8300000, guid: da7fe22cbb121b44784b939ee8b2bfc1, type: 3}
+  throwWeapon: {fileID: 8300000, guid: a952aedf55b93c84a921cee7c8a27201, type: 3}
+  throwHitEnemy: {fileID: 8300000, guid: 16b19b7e31ff5874488cccdff2c897af, type: 3}
+  throwHitWeakpoint: {fileID: 8300000, guid: 16b19b7e31ff5874488cccdff2c897af, type: 3}
+  throwHitEnvironment: {fileID: 8300000, guid: 6d1a52e01dc65424b9bacb874e5b58b5, type: 3}
+  meleeSwing: {fileID: 8300000, guid: a952aedf55b93c84a921cee7c8a27201, type: 3}
+  meleeHit: {fileID: 8300000, guid: 16b19b7e31ff5874488cccdff2c897af, type: 3}
 --- !u!82 &7360434912787077742
 AudioSource:
   m_ObjectHideFlags: 0

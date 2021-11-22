@@ -23,6 +23,16 @@ public class PlayerSFX : MonoBehaviour
     [Header("Dash")]
     public AudioClip dash;
 
+    [Header("Throwing")]
+    public AudioClip throwWeapon;
+    public AudioClip throwHitEnemy;
+    public AudioClip throwHitWeakpoint;
+    public AudioClip throwHitEnvironment;
+
+    [Header("Melee")]
+    public AudioClip meleeSwing;
+    public AudioClip meleeHit;
+
     private void Update()
     {
         // Sound effects that dont have own animation or are part of bigger animation
@@ -39,11 +49,26 @@ public class PlayerSFX : MonoBehaviour
         playerAudioSource.PlayOneShot(playerSteps[random]);
     }
 
-    public void PlayPlayerLanding()
+    public void PlayPlayerLandingSound()
     {
         if (shScript.getPlaySoundDive())
             playerAudioSource.PlayOneShot(groundPound);
         else
             playerAudioSource.PlayOneShot(land);
+    }
+
+    public void PlayPlayerThrowSound()
+    {
+        playerAudioSource.PlayOneShot(throwWeapon);
+    }
+
+    public void PlayPlayerHitSound()
+    {
+        playerAudioSource.PlayOneShot(meleeHit);
+    }
+
+    public void PlayPlayerSwingSound()
+    {
+        playerAudioSource.PlayOneShot(meleeSwing);
     }
 }
