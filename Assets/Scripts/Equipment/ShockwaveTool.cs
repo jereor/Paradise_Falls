@@ -39,6 +39,9 @@ public class ShockwaveTool : MonoBehaviour
     private float nextDash = -1;
     private float timeDashed = -1;
 
+    public bool sfxDive = false;
+    public bool sfxJump = false;
+
     private void Start()
     {
         playerScript = gameObject.transform.parent.GetComponent<Player>();
@@ -57,7 +60,7 @@ public class ShockwaveTool : MonoBehaviour
     {
         ShockwaveJumpUsed = true;
         shockwaveJumpEffect.Play();
-        SFXController.Instance.PlayPlayerAirJumpSound();
+        sfxJump = true;
     }
 
     public void ResetShockwaveJump()
@@ -70,7 +73,8 @@ public class ShockwaveTool : MonoBehaviour
     {
         ShockwaveDiveUsed = true;
         shockwaveDiveGraphics.SetActive(true);
-        SFXController.Instance.PlayPlayerAirDiveSound();
+        sfxDive = true;
+        //SFXController.Instance.PlayPlayerAirDiveSound();
     }
 
     // Cancel Shockwave Dive: Triggered from PlayerMovement when deactivating dive
@@ -155,5 +159,28 @@ public class ShockwaveTool : MonoBehaviour
         }
 
         ShockwaveAttackUsed = false;
+    }
+
+    // For PlayerSFX to track these states
+    public bool getSFXDive()
+    {
+        if (sfxDive)
+        {
+            sfxDive = false;
+            return true;
+        }
+        else
+            return false;
+    }
+
+    public bool getSFXJump()
+    {
+        if (sfxJump)
+        {
+            sfxJump = false;
+            return true;
+        }
+        else
+            return false;
     }
 }
