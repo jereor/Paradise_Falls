@@ -398,7 +398,10 @@ public class Player : MonoBehaviour
             animator.SetBool("jump", false);
             // Landing animation
             if (movementScript.getWillLand())
+            {
                 animator.SetBool("willLand", true);
+                SFXController.Instance.PlayPlayerLanding_Hard();
+            }
             else if (!movementScript.getWillLand() && animator.GetBool("willLand"))
                 animator.SetBool("willLand", false);
         }

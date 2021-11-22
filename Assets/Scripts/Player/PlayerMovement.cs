@@ -220,11 +220,11 @@ public class PlayerMovement : MonoBehaviour
         // Air dive while in the air
         else if (context.started && !IsGrounded() && playerScript.ShockwaveJumpAndDiveUnlocked() // Grounded and shockwave tool is unlocked
             && playerScript.InputVertical == -1 // Pressing downwards
-            && (Time.time - lastLaunchTime > 0.2f || lastLaunchTime == null)
-            && energyScript.CheckForEnergy(jumpAndDiveCost)) // Not just launched
+            && (Time.time - lastLaunchTime > 0.2f || lastLaunchTime == null) // Not just launched
+            && energyScript.CheckForEnergy(jumpAndDiveCost)) // Have enough energy
         {
             energyScript.UseEnergy(jumpAndDiveCost);
-            shockwaveTool.DoShockwaveDive(); // Activate VFX
+            shockwaveTool.DoShockwaveDive(); // Activate VFX and SFX
             rb.gravityScale = shockwaveDiveGravityScale;
             diving = true;
             lastDiveTime = Time.time;
