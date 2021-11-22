@@ -87,13 +87,18 @@ public class SFXController : MonoBehaviour
         playerSteps[random].Play();
     }
 
-    internal void PlayJumpSound()
+    public void PlayJumpSound()
     {
         playerJump.Play();
     }
 
-    internal void PlayAirJumpSound()
+    public void PlayAirJumpSound()
     {
         playerAirJump.Play();
+    }
+
+    public void PlayAirDiveSound()
+    {
+        playerAirDive.Play();
     }
 }

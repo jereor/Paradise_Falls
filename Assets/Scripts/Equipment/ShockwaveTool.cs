@@ -70,6 +70,7 @@ public class ShockwaveTool : MonoBehaviour
     {
         ShockwaveDiveUsed = true;
         shockwaveDiveGraphics.SetActive(true);
+        SFXController.Instance.PlayAirDiveSound();
     }
 
     // Cancel Shockwave Dive: Triggered from PlayerMovement when deactivating dive
