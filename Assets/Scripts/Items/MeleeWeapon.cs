@@ -32,6 +32,7 @@ public class MeleeWeapon : MonoBehaviour
     // Other variables
     private Rigidbody2D myRB;
     private float defaultGravityScale;
+    private Rigidbody2D grapplePointRB; // rigidbody of moving grapple point so weapon will follow its movements
 
     public SpriteRenderer mySpriteRenderer;
 
@@ -73,6 +74,8 @@ public class MeleeWeapon : MonoBehaviour
         ItemPull();
         WeaponThrow();
         //PlayerPull();
+
+        MoveWithGrapplePoint();
     }
 
     private void WeaponThrow()
@@ -110,6 +113,17 @@ public class MeleeWeapon : MonoBehaviour
             // Moving object to player
             myRB.velocity = vectorToTarget.normalized * pullForce * Time.deltaTime;
             attachedToGrapplePoint = false;
+        }
+    }
+
+    private void MoveWithGrapplePoint()
+    {
+        if (grapplePointRB != null)
+        {
+            if (myRB.gravityScale != 0f)
+                myRB.gravityScale = 0f;
+
+            myRB.velocity = grapplePointRB.velocity;
         }
     }
 
@@ -260,6 +274,18 @@ public class MeleeWeapon : MonoBehaviour
                 myRB.constraints = RigidbodyConstraints2D.FreezePosition;
                 myRB.freezeRotation = true;
             }
+            // We hit moving grapplePoint object
+            if (collision.gameObject.CompareTag("MovingPlatform"))
+            {
+                grapplePointRB = collision.gameObject.GetComponent<Rigidbody2D>();
+                // Unfreeze all positions
+                myRB.constraints = ~RigidbodyConstraints2D.FreezePosition;
+                // Set rigidbodys mass to big number so player will not press it to the grapple point if he jump on to it
+                myRB.mass = 1000f;
+
+                // Freeze rotations so player will not make weapon spin on collisions
+                myRB.freezeRotation = true;
+            }
         }
     }
 
@@ -298,11 +324,13 @@ public class MeleeWeapon : MonoBehaviour
         {
             // If set to objects child (grapplepoint) -> unchild
             gameObject.transform.parent = null;
+            grapplePointRB = null;
 
             // Ignore layers that should't collide
             SetEnemyIgnoresOnPull();
 
             myRB.velocity = Vector2.zero; // Stop moving at the start of pulling physics bugs
+            myRB.mass = 1f; // If we set it to something else somewhere (Moving grapple point movements)
 
             //Layer to PulledWeapon.
             gameObject.layer = 15;
