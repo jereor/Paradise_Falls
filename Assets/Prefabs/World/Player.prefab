@@ -10144,7 +10144,7 @@ MonoBehaviour:
   interactionsScript: {fileID: -4342889769223962116}
   combatScript: {fileID: 7463911945564789779}
   shockwaveTool: {fileID: 1940316768}
-  healthScript: {fileID: 127911568793665776, guid: 4154d57994558ff489a9180c3151e624, type: 3}
+  healthScript: {fileID: 0}
   energyScript: {fileID: 8760275387346948364}
   shieldScript: {fileID: 1812080132}
   grindScript: {fileID: 7180285044104453406}
@@ -10229,6 +10229,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   canInteract: 0
   objectToInteract: {fileID: 0}
+  isNPC: 0
+  allowTextAdvance: 0
 --- !u!114 &2646993275326716664
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10287,6 +10289,18 @@ MonoBehaviour:
       - m_Target: {fileID: 2646993275326716549}
         m_TargetAssemblyTypeName: PlayerMovement, Assembly-CSharp
         m_MethodName: Jump
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 7180285044104453406}
+        m_TargetAssemblyTypeName: ShieldGrind, Assembly-CSharp
+        m_MethodName: JumpInput
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -10430,6 +10444,10 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 83bd5f33-bc2d-4d93-bce7-256c464c19ae
     m_ActionName: Player/Dash[/Keyboard/leftShift]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: de2c38ef-f5a0-4216-a7cf-c5c1787e7d18
+    m_ActionName: Player/AdvanceText[/Mouse/leftButton]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -10628,6 +10646,11 @@ MonoBehaviour:
   canReceiveInputThrow: 0
   meleeInputReceived: 0
   throwInputReceived: 0
+  hitPS: {fileID: 2349214408752251806, guid: c8ed0368ca7236f479fbc90600d8f484, type: 3}
+  heavyHitPS: {fileID: 2349214408752251806, guid: 59a51efd3354e52458bdcd9b3912da5e, type: 3}
+  slowDuration: 0.01
+  heavySlowDuration: 0.03
+  timeScaleWhenSlowed: 0.2
 --- !u!95 &3265684260011797273
 Animator:
   serializedVersion: 3
@@ -10698,7 +10721,7 @@ MonoBehaviour:
     m_Bits: 2097152
   groundLayer:
     serializedVersion: 2
-    m_Bits: 2097216
+    m_Bits: 64
   speed: 0
   acceleration: 15
   accMultiplier: 2

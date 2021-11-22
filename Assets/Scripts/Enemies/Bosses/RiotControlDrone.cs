@@ -173,7 +173,7 @@ public class RiotControlDrone : MonoBehaviour
         }
 
         // If bosses health goes down more that 50%, change phase. The way of handling the state variation changes most likely in the future.
-        if (health.CurrentHealth <= health.MaxHealth * 0.5f && changePhase)
+        if (health.GetHealth() <= health.GetMaxHealth() * 0.5f && changePhase)
         {
 
             changePhase = false;
@@ -430,7 +430,7 @@ public class RiotControlDrone : MonoBehaviour
         stunned = true;
         if (phaseTwoComplete)
         {
-            if(GameObject.Find("RiotShield").GetComponent<Health>().CurrentHealth == 0)
+            if(GameObject.Find("RiotShield").GetComponent<Health>().GetHealth() == 0)
             {
                 Destroy(GameObject.Find("RiotShield"));
                 GameObject.Find("PhaseTwoKnockbackBox").GetComponent<BoxCollider2D>().size = new Vector2(1.2f, 0.46f);

@@ -6,8 +6,8 @@ using UnityEngine.Events;
 
 public class Health : MonoBehaviour
 {
-    [SerializeField] private float maxHealth;
-    [SerializeField] private float debugHealth;
+    [SerializeField] private float maxHealth; // Initializes max health at game start
+    [SerializeField] private float currentHealth;
 
     private SpriteRenderer rndr;
     [SerializeField] private Color blockedColor = Color.blue; // Block indication color.
@@ -24,15 +24,11 @@ public class Health : MonoBehaviour
     /// </summary>
     public event EventHandler TakingDamage;
 
-    public float MaxHealth { get; private set; }
-
-    public float CurrentHealth { get; private set; }
-
     /// <summary>
     /// Returns true if the current health is above zero.
     /// This can be used if onDie invokes are not enough or the object isn't destroyed after health reaches zero.
     /// </summary>
-    public bool IsDead() => CurrentHealth <= 0;
+    public bool IsDead() => currentHealth <= 0;
 
     // Start is called before the first frame update
     // Prevent assigning health at or below zero at the start
@@ -40,9 +36,8 @@ public class Health : MonoBehaviour
     {
         blockedColor = Color.blue;
         damageColor = Color.red;
-        CurrentHealth = (maxHealth > 0 ? maxHealth : 1);
-        MaxHealth = CurrentHealth;
-        debugHealth = CurrentHealth; // DEBUG: For tracking health in inspector
+        currentHealth = (maxHealth > 0 ? maxHealth : 1);
+        maxHealth = currentHealth;
         rndr = GetComponent<SpriteRenderer>();
         if(rndr == null) // If gameobject has not SpriteRenderer, search from childs.
         {
@@ -82,12 +77,11 @@ public class Health : MonoBehaviour
             StartCoroutine(HitIndication(damageColor)); // Enemy got hit.
         }
 
-        CurrentHealth -= amount;
-        debugHealth = CurrentHealth; // DEBUG: For tracking health in inspector
+        currentHealth -= amount;
 
         TakingDamage?.Invoke(this, EventArgs.Empty);
 
-        if (CurrentHealth <= 0)
+        if (currentHealth <= 0)
         {
             onDie.Invoke();
 
@@ -107,33 +101,40 @@ public class Health : MonoBehaviour
     }
 
     // Setter for new CurrentHealth amount.
-    public void SetHealth(float amount)
+    virtual public void SetHealth(float amount)
     {
-        if (CurrentHealth + amount >= MaxHealth)
-            CurrentHealth = MaxHealth;
+        Debug.Log("Health increased by " + amount);
+        if (currentHealth + amount >= maxHealth)
+            currentHealth = maxHealth;
         else
-            CurrentHealth += amount;
+            currentHealth += amount;
     }
 
     public float GetHealth()
     {
-        return CurrentHealth;
+        return currentHealth;
+    }
+
+    virtual public void ResetHealthToMax()
+    {
+        currentHealth = maxHealth;
     }
 
     // --- UPGRADE ---
     virtual public void UpgradeMaxHealth(float amount)
     {
         maxHealth += amount;
+        SetHealth(amount);
     }
 
 
     // --- SAVING / LOADING ---
-    public float getMaxHealth()
+    public float GetMaxHealth()
     {
         return maxHealth;
     }
 
-    public void setMaxHealth(float health)
+    public void SetMaxHealth(float health)
     {
         maxHealth = health;
         // Load game set our current health to max

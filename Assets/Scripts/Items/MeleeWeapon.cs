@@ -21,6 +21,10 @@ public class MeleeWeapon : MonoBehaviour
     [SerializeField] private float maxDistance; // Max distance to travel with gravityscale 0
     [SerializeField] private float meleeWeaponGrapplingDistance;
 
+    [Header("Time slowing when hit")]
+    public float slowDuration = 0f;
+    public float timeScaleWhenSlowed = 0;
+
     [SerializeField] private bool worldPickUp;
 
     public float knockbackForce;
@@ -40,6 +44,10 @@ public class MeleeWeapon : MonoBehaviour
     public bool powerBoosted = false;
     public bool maxCharged = false;
 
+    [Header("Hit Effects")]
+    public ParticleSystem hitThrowPullPS;
+    public ParticleSystem hitBoostedPS;
+    public ParticleSystem weakPointPS;
 
     private void Start()
     {
@@ -108,7 +116,7 @@ public class MeleeWeapon : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         // Ground
-        Debug.Log(collision.collider.gameObject.name);
+        //Debug.Log(collision.collider.gameObject.name);
         if (collision.collider.gameObject.layer == LayerMask.NameToLayer("Ground"))
         {
             if (!landed)
@@ -123,7 +131,7 @@ public class MeleeWeapon : MonoBehaviour
         // Enemy
         else if (collision.collider.gameObject.layer == LayerMask.NameToLayer("Enemy"))
         {
-            Debug.Log("Enemy hit");
+            //Debug.Log("Enemy hit");
             // Hits enemy when can deal damage
             if (!landed)
             {
@@ -146,7 +154,7 @@ public class MeleeWeapon : MonoBehaviour
         // Boss
         else if (collision.collider.gameObject.layer == LayerMask.NameToLayer("Boss"))
         {
-            Debug.Log("Boss");
+            //Debug.Log("Boss");
             // Hits enemy when can deal damage
             if (!landed)
             {
@@ -167,7 +175,7 @@ public class MeleeWeapon : MonoBehaviour
         //// WeakPoint
         else if (collision.collider.gameObject.layer == LayerMask.NameToLayer("BossWeakPoint"))
         {
-            Debug.Log("WeakPoint");
+            //Debug.Log("WeakPoint");
             // Hits enemy when can deal damage
             if (!landed)
             {
@@ -336,36 +344,66 @@ public class MeleeWeapon : MonoBehaviour
             Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("BossWeakPoint"), LayerMask.NameToLayer("MeleeWeapon"), true);
     }
 
+    private IEnumerator HitSlowTime(float duration)
+    {
+        Time.timeScale = timeScaleWhenSlowed;
+
+        yield return new WaitForSeconds(duration);
+
+        Time.timeScale = 1f;
+    }
+
     // Deal damage to given Collider2D
     public void DealDamage(Collider2D col)
     {
+        StartCoroutine(HitSlowTime(slowDuration));
         if (col.gameObject.layer == LayerMask.NameToLayer("BossWeakPoint"))
         {
             if (powerBoosted)
+            {
                 col.gameObject.GetComponentInParent<Health>().TakeDamage(powerBoostedDamage * weakPointMultiplier);
+                Instantiate(hitBoostedPS, col.gameObject.transform.position, Quaternion.identity);
+            }
             else if (beingPulled)
+            {
                 col.gameObject.GetComponentInParent<Health>().TakeDamage(weaponPullDamage * weakPointMultiplier);
+                Instantiate(weakPointPS, col.gameObject.transform.position, Quaternion.identity);
+            }
             else if (maxCharged)
             {
                 col.gameObject.GetComponentInParent<Health>().TakeDamage(throwMaxChargeDmg * weakPointMultiplier);
                 maxCharged = false;
+                Instantiate(weakPointPS, col.gameObject.transform.position, Quaternion.identity);
             }
             else
+            {
                 col.gameObject.GetComponentInParent<Health>().TakeDamage(weaponThrowDamage * weakPointMultiplier);
+                Instantiate(weakPointPS, col.gameObject.transform.position, Quaternion.identity);
+            }
         }
         else
         {
             if (powerBoosted)
+            {
                 col.gameObject.GetComponentInParent<Health>().TakeDamage(powerBoostedDamage);
+                Instantiate(hitBoostedPS, col.gameObject.transform.position, Quaternion.identity);
+            }
             else if (beingPulled)
+            {
                 col.gameObject.GetComponentInParent<Health>().TakeDamage(weaponPullDamage);
+                Instantiate(hitThrowPullPS, col.gameObject.transform.position, Quaternion.identity);
+            }
             else if (maxCharged)
             {
                 col.gameObject.GetComponentInParent<Health>().TakeDamage(throwMaxChargeDmg);
                 maxCharged = false;
+                Instantiate(weakPointPS, col.gameObject.transform.position, Quaternion.identity);
             }
             else
+            {
                 col.gameObject.GetComponentInParent<Health>().TakeDamage(weaponThrowDamage);
+                Instantiate(hitThrowPullPS, col.gameObject.transform.position, Quaternion.identity);
+            }
         }
     }
 
@@ -379,7 +417,8 @@ public class MeleeWeapon : MonoBehaviour
     // Called as event from player if interacted or when weapon is pulled and hits player
     public void Interact(GameObject objectWhoPicksUp)
     {
-        Debug.Log("Pick up");
+        if (Time.timeScale != 1f)
+            Time.timeScale = 1f;
         // Set collision detection back if this was set to ignore
         Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Ground"), LayerMask.NameToLayer("MeleeWeapon"), false);
         Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Enemy"), LayerMask.NameToLayer("MeleeWeapon"), false);

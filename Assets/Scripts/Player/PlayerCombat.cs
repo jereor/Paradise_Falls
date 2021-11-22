@@ -112,6 +112,15 @@ public class PlayerCombat : MonoBehaviour
 
     private bool isPlayerBeingPulled; // Is player being pulled
 
+    [Header("Particles")]
+    public ParticleSystem hitPS;
+    public ParticleSystem heavyHitPS;
+
+    [Header("Time slow on hit")]
+    [SerializeField] private float slowDuration;
+    [SerializeField] private float heavySlowDuration;
+    [SerializeField] private float timeScaleWhenSlowed;
+
     private void Awake()
     {
         Instance = this;
@@ -148,12 +157,12 @@ public class PlayerCombat : MonoBehaviour
         if (Player.Instance.MultitoolUnlocked())
         {
             multitoolUnlocked = true;
-            isWeaponWielded = true;
+            setWeaponWielded(true);
         }
         else
         {
             multitoolUnlocked = false;
-            isWeaponWielded = false;
+            setWeaponWielded(false);
         }
         // Grappling
         if (Player.Instance.GrapplingUnlocked())
@@ -169,7 +178,7 @@ public class PlayerCombat : MonoBehaviour
         if (!multitoolUnlocked && Player.Instance.MultitoolUnlocked() != multitoolUnlocked)
         {
             multitoolUnlocked = Player.Instance.MultitoolUnlocked();
-            isWeaponWielded = Player.Instance.MultitoolUnlocked();
+            setWeaponWielded(Player.Instance.MultitoolUnlocked());
         }
 
         // Grappling
@@ -275,7 +284,7 @@ public class PlayerCombat : MonoBehaviour
             ThrowWeapon();
 
             // We don't have weapon anymore
-            isWeaponWielded = false;
+            setWeaponWielded(false);
             throwButtonPressedTime = null;
 
             // Weapon is thrown hide points
@@ -479,6 +488,49 @@ public class PlayerCombat : MonoBehaviour
                 heavyBeingCharged = false;
         }
     }
+    // ---- Effects ----
+
+    private IEnumerator HitSlowTime(float duration)
+    {
+        Time.timeScale = timeScaleWhenSlowed;
+
+        yield return new WaitForSeconds(duration);
+
+        Time.timeScale = 1f;
+    }
+    
+    private void PlayParticleEffect(int comboHit, bool heavy, Collider2D[] colliders, LayerMask layer)
+    {
+        // Go through all hits and instantiate PS on all enemy/boss hits
+        foreach (Collider2D col in colliders)
+        {
+            if (layer == bossWeakPointLayer || comboHit == 3 || heavy)
+            {
+                // Instantiate effect on hit on top of the object
+                if (gameObject.transform.position.x - col.gameObject.transform.position.x <= 0f)
+                {
+                    // Position is hit objects transform + vector to our attackPoint.position / 2
+                    Instantiate(heavyHitPS, col.gameObject.transform.position + (attackPoint.position - col.gameObject.transform.position) / 2, Quaternion.identity);
+                }
+                else
+                    Instantiate(heavyHitPS, col.gameObject.transform.position + (attackPoint.position - col.gameObject.transform.position) / 2, Quaternion.identity);
+            }
+            else if (comboHit < 3 && !heavy)
+            {
+                // Instantiate effect on hit on top of the object amd rotate it correctly
+                if (gameObject.transform.position.x - col.gameObject.transform.position.x <= 0f)
+                {
+                    ParticleSystem tmpPS = Instantiate(hitPS, col.gameObject.transform.position + (attackPoint.position - col.gameObject.transform.position) / 2, Quaternion.identity);
+                    tmpPS.gameObject.transform.Rotate(new Vector3(0f, 0f, 1f), 70f);
+                }
+                else 
+                { 
+                    ParticleSystem tmpPS = Instantiate(hitPS, col.gameObject.transform.position + (attackPoint.position - col.gameObject.transform.position) / 2, Quaternion.identity);
+                    tmpPS.gameObject.transform.Rotate(new Vector3(0f, 0f, 1f), -70f);
+                }
+            }
+        }
+    }
 
     // Made to own function less copy pasta 
     // colliders to what collider array we are going to be deal dmg
@@ -488,7 +540,6 @@ public class PlayerCombat : MonoBehaviour
     {
         foreach (Collider2D collider in colliders)
         {
-            //Debug.Log("wfea");
             if (layer == bossWeakPointLayer || layer == bossLayer)
             {
                 // Error check if there isn't Health script attached don't do damage
@@ -538,12 +589,18 @@ public class PlayerCombat : MonoBehaviour
         {
             // Dealing damage to enemies
             if (hitEnemies.Length != 0)
+            {
+                StartCoroutine(HitSlowTime(slowDuration));
+                PlayParticleEffect(comboIndex, heavyHit, hitEnemies, enemyLayer);
                 DealDamageTo(hitEnemies, lightDamage, kbOnLight, knockbackForceLight, enemyLayer);
+            }
 
             // Dealing damage to bosses 
             // If we hit weakpoint we deal only the amount from weakpoint hit and "skip" checkin hitBosses colliders (prevent from dealing weakpoint + normal damage on one hit)
             if (hitBossesWeakPoint.Length != 0)
             {
+                StartCoroutine(HitSlowTime(slowDuration));
+                PlayParticleEffect(comboIndex, heavyHit, hitEnemies, bossWeakPointLayer);
                 // Deal damage
                 // Ceil since example: weakPointMultiplier = 1.5 lightDamage = 1 without rounding dmg = 1.5 with Floor dmg 1 with Ceil dmg = 2
                 // most likely not needed since weakPointMult 2x is standard in games 
@@ -551,6 +608,8 @@ public class PlayerCombat : MonoBehaviour
             }
             else if (hitBosses.Length != 0)
             {
+                StartCoroutine(HitSlowTime(slowDuration));
+                PlayParticleEffect(comboIndex, heavyHit, hitEnemies, bossLayer);
                 DealDamageTo(hitBosses, lightDamage, kbOnLight, knockbackForceLight, bossLayer);
             }
 
@@ -571,17 +630,23 @@ public class PlayerCombat : MonoBehaviour
         {
             if (hitEnemies.Length != 0)
             {
+                StartCoroutine(HitSlowTime(heavySlowDuration));
+                PlayParticleEffect(comboIndex, heavyHit, hitEnemies, enemyLayer);
                 DealDamageTo(hitEnemies, Mathf.Ceil(lightDamage * lastHitMultiplier), kbOnLightLast, knockbackForceLightLast, enemyLayer);
             }
 
             if (hitBossesWeakPoint.Length != 0)
             {
+                StartCoroutine(HitSlowTime(heavySlowDuration));
+                PlayParticleEffect(comboIndex, heavyHit, hitEnemies, bossWeakPointLayer);
                 // Deal damage
                 DealDamageTo(hitBossesWeakPoint, Mathf.Ceil(lightDamage * weakPointMultiplier * lastHitMultiplier), kbOnLightLast, knockbackForceLightLast, bossWeakPointLayer);
             }
             else if (hitBosses.Length != 0)
             {
-                 DealDamageTo(hitBosses, Mathf.Ceil(lightDamage * lastHitMultiplier), kbOnLightLast, knockbackForceLightLast, bossLayer);
+                StartCoroutine(HitSlowTime(heavySlowDuration));
+                PlayParticleEffect(comboIndex, heavyHit, hitEnemies, bossLayer);
+                DealDamageTo(hitBosses, Mathf.Ceil(lightDamage * lastHitMultiplier), kbOnLightLast, knockbackForceLightLast, bossLayer);
             }
 
             // Breaking breakables
@@ -603,12 +668,18 @@ public class PlayerCombat : MonoBehaviour
         {
             // Dealing damage to enemies
             if (hitEnemies.Length != 0)
+            {
+                StartCoroutine(HitSlowTime(heavySlowDuration));
+                PlayParticleEffect(comboIndex, heavyHit, hitEnemies, enemyLayer);
                 DealDamageTo(hitEnemies, heavyDamage, kbOnHeavy, knockbackForceHeavy, enemyLayer);
+            }
 
             // Dealing damage to bosses 
             // If we hit weakpoint we deal only the amount from weakpoint hit and "skip" checkin hitBosses colliders (prevent from dealing weakpoint + normal damage on one hit)
             if (hitBossesWeakPoint.Length != 0)
             {
+                StartCoroutine(HitSlowTime(heavySlowDuration));
+                PlayParticleEffect(comboIndex, heavyHit, hitEnemies, bossWeakPointLayer);
                 // Deal damage
                 // Ceil since example: weakPointMultiplier = 1.5 lightDamage = 1 without rounding dmg = 1.5 with Floor dmg 1 with Ceil dmg = 2
                 // most likely not needed since weakPointMult 2x is standard in games 
@@ -616,6 +687,8 @@ public class PlayerCombat : MonoBehaviour
             }
             else if (hitBosses.Length != 0)
             {
+                StartCoroutine(HitSlowTime(heavySlowDuration));
+                PlayParticleEffect(comboIndex, heavyHit, hitEnemies, bossLayer);
                 DealDamageTo(hitBosses, heavyDamage, kbOnHeavy, knockbackForceHeavy, bossLayer);
             }
 
@@ -644,7 +717,7 @@ public class PlayerCombat : MonoBehaviour
     private void Knockback(GameObject target, GameObject from, float knockbackForce)
     {
         float pushbackX = target.transform.position.x - from.transform.position.x;
-        Vector2 knockbackDirection = new Vector2(pushbackX, Mathf.Abs(pushbackX / 4)).normalized;
+        Vector2 knockbackDirection = new Vector2(pushbackX, Mathf.Abs(pushbackX/2)).normalized;
         target.GetComponent<Rigidbody2D>().AddForce(knockbackDirection * knockbackForce);
     }
 
@@ -753,6 +826,7 @@ public class PlayerCombat : MonoBehaviour
         {
             points[i].SetActive(false);
         }
+        throwButtonPressedTime = null;
         // Show minDistance amount of projections when aiming
         pointsShown = 0;
     }
@@ -830,8 +904,7 @@ public class PlayerCombat : MonoBehaviour
     // Called from Weapon script if pulled or we Interact with weapon
     public void PickUpWeapon()
     {
-        //Debug.Log("Picked weapon");
-        isWeaponWielded = true;
+        setWeaponWielded(true);
 
         //Deactivate the tether. Weapon reached.
         magnetTether.SetActive(false);
@@ -923,7 +996,7 @@ public class PlayerCombat : MonoBehaviour
             gameObject.GetComponent<Rigidbody2D>().gravityScale = 0f;
             gameObject.GetComponent<Rigidbody2D>().velocity = vectorToTargetWeapon.normalized * playerPullForce * Time.deltaTime;
         }
-        else if (weaponInstance != null && weaponInstance.layer == LayerMask.NameToLayer("MeleeWeapon"))
+        else if (weaponInstance != null && weaponInstanceScript.getAttachedToGrapplePoint())
         {
             weaponInstance.layer = LayerMask.NameToLayer("Ground");
         }
@@ -996,9 +1069,10 @@ public class PlayerCombat : MonoBehaviour
     {
         return isWeaponWielded;
     }
-    public void setWeaponWielded(bool wield)
+    public void setWeaponWielded(bool wielded)
     {
-        isWeaponWielded = wield;
+        isWeaponWielded = wielded;
+        HUDController.Instance.SetMultitoolImage(wielded);
     }
 
     public GameObject getWeaponInstance()
