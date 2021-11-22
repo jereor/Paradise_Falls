@@ -220,11 +220,11 @@ public class PlayerMovement : MonoBehaviour
         // Air dive while in the air
         else if (context.started && !IsGrounded() && playerScript.ShockwaveJumpAndDiveUnlocked() // Grounded and shockwave tool is unlocked
             && playerScript.InputVertical == -1 // Pressing downwards
-            && (Time.time - lastLaunchTime > 0.2f || lastLaunchTime == null)
-            && energyScript.CheckForEnergy(jumpAndDiveCost)) // Not just launched
+            && (Time.time - lastLaunchTime > 0.2f || lastLaunchTime == null) // Not just launched
+            && energyScript.CheckForEnergy(jumpAndDiveCost)) // Have enough energy
         {
             energyScript.UseEnergy(jumpAndDiveCost);
-            shockwaveTool.DoShockwaveDive(); // Activate VFX
+            shockwaveTool.DoShockwaveDive(); // Activate VFX and SFX
             rb.gravityScale = shockwaveDiveGravityScale;
             diving = true;
             lastDiveTime = Time.time;
@@ -425,7 +425,7 @@ public class PlayerMovement : MonoBehaviour
         // Check if player fits on top of the moving platform
         if (movingPlatformRaycastHit && movingPlatformRaycastHit.transform.gameObject.CompareTag("MovingPlatform"))
         {
-            // 3 different scripts, if script is found check from correct script if not return false
+            // 4 different scripts, if script is found check from correct script if not return false
             if(movingPlatformRaycastHit.transform.gameObject.TryGetComponent(out StaticMovingBox staticScript))
             {
                 return staticScript.getWillPlayerFit();
@@ -441,6 +441,13 @@ public class PlayerMovement : MonoBehaviour
             // Did not find these components we don't really know what we are climbing
             return false;
         }
+        // Check grapple point if these before didn't pass
+        movingPlatformRaycastHit = Physics2D.Raycast(wallCheckBody.position, transform.right * transform.localScale.x, checkDistance + 1f, grapplePointLayer);
+
+        if (movingPlatformRaycastHit && movingPlatformRaycastHit.transform.gameObject.TryGetComponent(out MovingGrapplePoint grapplePointScript))
+        {
+            return grapplePointScript.getWillPlayerFit();
+        }
         // We are climbing normal ground object we return true
         return true;
     }
@@ -455,24 +462,28 @@ public class PlayerMovement : MonoBehaviour
             // Climbing to left side of platform
             if (isFacingRight)
             {
-                // 3 different scripts, if script is found check from correct script if not return false
+                // 4 different scripts, if script is found check from correct script if not return false
                 if (movingPlatformRaycastHit.transform.gameObject.TryGetComponent(out StaticMovingBox staticScript))
                     transform.position = staticScript.getLeftClimbPos();
                 else if (movingPlatformRaycastHit.transform.gameObject.TryGetComponent(out BackAndForthMovingBox movingScript))
                     transform.position = movingScript.getLeftClimbPos();
                 else if (movingPlatformRaycastHit.transform.gameObject.TryGetComponent(out StaticMovingPlatform platformScript))
                     transform.position = platformScript.getLeftClimbPos();
+                else if (movingPlatformRaycastHit.transform.gameObject.TryGetComponent(out MovingGrapplePoint grapplePointScript))
+                    transform.position = grapplePointScript.getLeftClimbPos();
             }
             // Right
             else
             {
-                // 2 different scripts, if script is found check from correct script if not return false
+                // 4 different scripts, if script is found check from correct script if not return false
                 if (movingPlatformRaycastHit.transform.gameObject.TryGetComponent(out StaticMovingBox staticScript))
                     transform.position = staticScript.getRightClimbPos();
                 else if (movingPlatformRaycastHit.transform.gameObject.TryGetComponent(out BackAndForthMovingBox movingScript))
                     transform.position = movingScript.getRightClimbPos();
                 else if (movingPlatformRaycastHit.transform.gameObject.TryGetComponent(out StaticMovingPlatform platformScript))
                     transform.position = platformScript.getRightClimbPos();
+                else if (movingPlatformRaycastHit.transform.gameObject.TryGetComponent(out MovingGrapplePoint grapplePointScript))
+                    transform.position = grapplePointScript.getRightClimbPos();
             }
             // Reset so we know next time if we are climbin moving platform (set again in CheckPlayerFitPlatform())
             movingPlatformRaycastHit = new RaycastHit2D();
@@ -612,6 +623,8 @@ public class PlayerMovement : MonoBehaviour
         Collider2D objGrapplePoint = Physics2D.OverlapCircle(groundCheck.position, checkRadius, grapplePointLayer);
         if (objGround && objGround.gameObject.CompareTag("MovingPlatform"))
             movingPlatformRB = objGround.GetComponent<Rigidbody2D>();
+        else if (objGrapplePoint && objGrapplePoint.gameObject.CompareTag("MovingPlatform"))
+            movingPlatformRB = objGrapplePoint.GetComponent<Rigidbody2D>();
         else if (!climbing)
             movingPlatformRB = null;
 
