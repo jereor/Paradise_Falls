@@ -20,29 +20,29 @@ AnimationClip:
   m_PPtrCurves:
   - curve:
     - time: 0
-      value: {fileID: 3570313373047417576, guid: 7cca8ea80e601784191e7ed445714f24, type: 3}
-    - time: 0.083333336
-      value: {fileID: -357705616343030286, guid: 7cca8ea80e601784191e7ed445714f24, type: 3}
-    - time: 0.16666667
-      value: {fileID: 1094395113755122887, guid: 7cca8ea80e601784191e7ed445714f24, type: 3}
-    - time: 0.25
-      value: {fileID: -8295403508864846934, guid: 7cca8ea80e601784191e7ed445714f24, type: 3}
-    - time: 0.33333334
-      value: {fileID: 5940649723117693550, guid: 7cca8ea80e601784191e7ed445714f24, type: 3}
-    - time: 0.41666666
-      value: {fileID: 7892416597174367820, guid: 7cca8ea80e601784191e7ed445714f24, type: 3}
-    - time: 0.5
-      value: {fileID: 6977088059308647112, guid: 7cca8ea80e601784191e7ed445714f24, type: 3}
-    - time: 0.5833333
-      value: {fileID: 2847766982461123554, guid: 7cca8ea80e601784191e7ed445714f24, type: 3}
-    - time: 0.6666667
-      value: {fileID: -3066061705514903463, guid: 7cca8ea80e601784191e7ed445714f24, type: 3}
-    - time: 0.75
       value: {fileID: 2082309046043919088, guid: 7cca8ea80e601784191e7ed445714f24, type: 3}
-    - time: 0.8333333
+    - time: 0.083333336
       value: {fileID: 2748061825087016267, guid: 7cca8ea80e601784191e7ed445714f24, type: 3}
-    - time: 0.9166667
+    - time: 0.16666667
       value: {fileID: 1626094348881730357, guid: 7cca8ea80e601784191e7ed445714f24, type: 3}
+    - time: 0.25
+      value: {fileID: 3570313373047417576, guid: 7cca8ea80e601784191e7ed445714f24, type: 3}
+    - time: 0.33333334
+      value: {fileID: -357705616343030286, guid: 7cca8ea80e601784191e7ed445714f24, type: 3}
+    - time: 0.41666666
+      value: {fileID: 1094395113755122887, guid: 7cca8ea80e601784191e7ed445714f24, type: 3}
+    - time: 0.5
+      value: {fileID: -8295403508864846934, guid: 7cca8ea80e601784191e7ed445714f24, type: 3}
+    - time: 0.5833333
+      value: {fileID: 5940649723117693550, guid: 7cca8ea80e601784191e7ed445714f24, type: 3}
+    - time: 0.6666667
+      value: {fileID: 7892416597174367820, guid: 7cca8ea80e601784191e7ed445714f24, type: 3}
+    - time: 0.75
+      value: {fileID: 6977088059308647112, guid: 7cca8ea80e601784191e7ed445714f24, type: 3}
+    - time: 0.8333333
+      value: {fileID: 2847766982461123554, guid: 7cca8ea80e601784191e7ed445714f24, type: 3}
+    - time: 0.9166667
+      value: {fileID: -3066061705514903463, guid: 7cca8ea80e601784191e7ed445714f24, type: 3}
     attribute: m_Sprite
     path: 
     classID: 212
@@ -62,6 +62,9 @@ AnimationClip:
       customType: 23
       isPPtrCurve: 1
     pptrCurveMapping:
+    - {fileID: 2082309046043919088, guid: 7cca8ea80e601784191e7ed445714f24, type: 3}
+    - {fileID: 2748061825087016267, guid: 7cca8ea80e601784191e7ed445714f24, type: 3}
+    - {fileID: 1626094348881730357, guid: 7cca8ea80e601784191e7ed445714f24, type: 3}
     - {fileID: 3570313373047417576, guid: 7cca8ea80e601784191e7ed445714f24, type: 3}
     - {fileID: -357705616343030286, guid: 7cca8ea80e601784191e7ed445714f24, type: 3}
     - {fileID: 1094395113755122887, guid: 7cca8ea80e601784191e7ed445714f24, type: 3}
@@ -71,9 +74,6 @@ AnimationClip:
     - {fileID: 6977088059308647112, guid: 7cca8ea80e601784191e7ed445714f24, type: 3}
     - {fileID: 2847766982461123554, guid: 7cca8ea80e601784191e7ed445714f24, type: 3}
     - {fileID: -3066061705514903463, guid: 7cca8ea80e601784191e7ed445714f24, type: 3}
-    - {fileID: 2082309046043919088, guid: 7cca8ea80e601784191e7ed445714f24, type: 3}
-    - {fileID: 2748061825087016267, guid: 7cca8ea80e601784191e7ed445714f24, type: 3}
-    - {fileID: 1626094348881730357, guid: 7cca8ea80e601784191e7ed445714f24, type: 3}
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}
@@ -98,4 +98,18 @@ AnimationClip:
   m_EulerEditorCurves: []
   m_HasGenericRootTransform: 0
   m_HasMotionFloatCurves: 0
-  m_Events: []
+  m_Events:
+  - time: 0.25
+    functionName: PlayRandomPlayerStepSound
+    data: 
+    objectReferenceParameter: {fileID: 2646993275326716545, guid: 4154d57994558ff489a9180c3151e624, type: 3}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 0.75
+    functionName: PlayRandomPlayerStepSound
+    data: 
+    objectReferenceParameter: {fileID: 2646993275326716545, guid: 4154d57994558ff489a9180c3151e624, type: 3}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
