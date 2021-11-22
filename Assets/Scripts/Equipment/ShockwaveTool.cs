@@ -57,7 +57,7 @@ public class ShockwaveTool : MonoBehaviour
     {
         ShockwaveJumpUsed = true;
         shockwaveJumpEffect.Play();
-        SFXController.Instance.PlayAirJumpSound();
+        SFXController.Instance.PlayPlayerAirJumpSound();
     }
 
     public void ResetShockwaveJump()
@@ -70,7 +70,7 @@ public class ShockwaveTool : MonoBehaviour
     {
         ShockwaveDiveUsed = true;
         shockwaveDiveGraphics.SetActive(true);
-        SFXController.Instance.PlayAirDiveSound();
+        SFXController.Instance.PlayPlayerAirDiveSound();
     }
 
     // Cancel Shockwave Dive: Triggered from PlayerMovement when deactivating dive
