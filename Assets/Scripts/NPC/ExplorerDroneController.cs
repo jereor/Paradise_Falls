@@ -163,10 +163,10 @@ public class ExplorerDroneController : MonoBehaviour
     public void Interact()
     {
         // Deactivates the map if active during the interaction.
-        //if (mapController.mapPanel.activeInHierarchy)
-        //{
-        //    mapController.HandleMapState();
-        //}
+        if (MapController.MapOpen)
+        {
+            mapController.HandleMapState();
+        }
 
         //isOnWalkCoolDown = true;
         //StopAllCoroutines();
@@ -241,6 +241,7 @@ public class ExplorerDroneController : MonoBehaviour
                 //hud.SetActive(true);
                 index = 0;
                 isInteracting = false;
+                GameObject.Find("Player").GetComponent<PlayerInteractions>().SetIsInteractingWithNPC(false);
                 //isOnWalkCoolDown = false;
             }
             else
@@ -259,6 +260,7 @@ public class ExplorerDroneController : MonoBehaviour
                 //hud.SetActive(true);
                 index = 0;
                 isInteracting = false;
+                GameObject.Find("Player").GetComponent<PlayerInteractions>().SetIsInteractingWithNPC(false);
                 //isOnWalkCoolDown = false;
             }
             else

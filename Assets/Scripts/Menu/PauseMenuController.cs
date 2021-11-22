@@ -15,7 +15,8 @@ public class PauseMenuController : MonoBehaviour
     public CanvasGroup fader, buttons, popUp;
     public GameObject pauseMenuUI;
     public MapController mapControllerScript;
-    public ExplorerDroneController explorerDroneController;
+    public InventoryPanelController inventoryPanelController;
+    public PlayerInteractions playerInteractions;
 
     public Button continueButton;
     public Button warningNoButton;
@@ -37,7 +38,7 @@ public class PauseMenuController : MonoBehaviour
     public void PauseInput(InputAction.CallbackContext context)
     {
         // started since we only want to pause when button is pressed down
-        if (context.started && !explorerDroneController.GetIsInteracting())
+        if (context.started && !playerInteractions.GetisInteractingWithNPC())
         {
             // Map is currently open -> close map and pause panel comes visible
             if (MapController.MapOpen)
@@ -80,6 +81,9 @@ public class PauseMenuController : MonoBehaviour
     private void Pause()
     {
         pauseMenuUI.SetActive(true);
+
+        if (InventoryPanelController.InventoryIsActive)
+            inventoryPanelController.HandleInventoryState();
 
         continueButton.Select();
 

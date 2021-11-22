@@ -442,6 +442,14 @@ public class @InputActions : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""Inventory"",
+                    ""type"": ""Button"",
+                    ""id"": ""df4f2461-098e-4030-9049-d9791f89dee9"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -587,6 +595,28 @@ public class @InputActions : IInputActionCollection, IDisposable
                     ""action"": ""MapNavigation"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""19106b99-f0ed-4f82-a444-4406e71c071b"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Inventory"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1f323e97-b04d-4531-91ac-2b0568a26618"",
+                    ""path"": ""<Gamepad>/dpad/up"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Inventory"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -612,6 +642,7 @@ public class @InputActions : IInputActionCollection, IDisposable
         m_GameUI_Navigation = m_GameUI.FindAction("Navigation", throwIfNotFound: true);
         m_GameUI_Zoom = m_GameUI.FindAction("Zoom", throwIfNotFound: true);
         m_GameUI_MapNavigation = m_GameUI.FindAction("MapNavigation", throwIfNotFound: true);
+        m_GameUI_Inventory = m_GameUI.FindAction("Inventory", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -771,6 +802,7 @@ public class @InputActions : IInputActionCollection, IDisposable
     private readonly InputAction m_GameUI_Navigation;
     private readonly InputAction m_GameUI_Zoom;
     private readonly InputAction m_GameUI_MapNavigation;
+    private readonly InputAction m_GameUI_Inventory;
     public struct GameUIActions
     {
         private @InputActions m_Wrapper;
@@ -780,6 +812,7 @@ public class @InputActions : IInputActionCollection, IDisposable
         public InputAction @Navigation => m_Wrapper.m_GameUI_Navigation;
         public InputAction @Zoom => m_Wrapper.m_GameUI_Zoom;
         public InputAction @MapNavigation => m_Wrapper.m_GameUI_MapNavigation;
+        public InputAction @Inventory => m_Wrapper.m_GameUI_Inventory;
         public InputActionMap Get() { return m_Wrapper.m_GameUI; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -804,6 +837,9 @@ public class @InputActions : IInputActionCollection, IDisposable
                 @MapNavigation.started -= m_Wrapper.m_GameUIActionsCallbackInterface.OnMapNavigation;
                 @MapNavigation.performed -= m_Wrapper.m_GameUIActionsCallbackInterface.OnMapNavigation;
                 @MapNavigation.canceled -= m_Wrapper.m_GameUIActionsCallbackInterface.OnMapNavigation;
+                @Inventory.started -= m_Wrapper.m_GameUIActionsCallbackInterface.OnInventory;
+                @Inventory.performed -= m_Wrapper.m_GameUIActionsCallbackInterface.OnInventory;
+                @Inventory.canceled -= m_Wrapper.m_GameUIActionsCallbackInterface.OnInventory;
             }
             m_Wrapper.m_GameUIActionsCallbackInterface = instance;
             if (instance != null)
@@ -823,6 +859,9 @@ public class @InputActions : IInputActionCollection, IDisposable
                 @MapNavigation.started += instance.OnMapNavigation;
                 @MapNavigation.performed += instance.OnMapNavigation;
                 @MapNavigation.canceled += instance.OnMapNavigation;
+                @Inventory.started += instance.OnInventory;
+                @Inventory.performed += instance.OnInventory;
+                @Inventory.canceled += instance.OnInventory;
             }
         }
     }
@@ -847,5 +886,6 @@ public class @InputActions : IInputActionCollection, IDisposable
         void OnNavigation(InputAction.CallbackContext context);
         void OnZoom(InputAction.CallbackContext context);
         void OnMapNavigation(InputAction.CallbackContext context);
+        void OnInventory(InputAction.CallbackContext context);
     }
 }

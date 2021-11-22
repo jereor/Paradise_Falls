@@ -9,20 +9,22 @@ public class PlayerInteractions : MonoBehaviour
     [SerializeField] private bool canInteract;              // If object has given persmission to interact with
     [SerializeField] private GameObject objectToInteract;   // Object that we will interact with
     [SerializeField] private bool isNPC = false;
+    [SerializeField] private bool isInteractingWithNPC = false;
     [SerializeField] private bool allowTextAdvance = false;
 
     public void Interact(InputAction.CallbackContext context)
     {
         // context.started = onButtonDown only event is invoked only once
-        if (context.started && canInteract && objectToInteract != null)
+        if (context.started && canInteract && objectToInteract != null && !PauseMenuController.GameIsPaused && !InventoryPanelController.InventoryIsActive)
         {
             //Debug.Log("Trying to interact");
             //Debug.Log(objectToInteract.GetComponent<Interactable>());
             objectToInteract.GetComponent<Interactable>().itemEvent.Invoke();   // Invoke virtual function event call this virtual function is modified in item scripts to do something 
         }
-        else if(context.started && isNPC && objectToInteract != null)
+        else if(context.started && isNPC && objectToInteract != null && !PauseMenuController.GameIsPaused && !InventoryPanelController.InventoryIsActive)
         {
             objectToInteract.GetComponent<ExplorerDroneController>().Interact();
+            isInteractingWithNPC = true;
         }
     }
 
@@ -58,5 +60,15 @@ public class PlayerInteractions : MonoBehaviour
     public void IsNPC(bool b)
     {
         isNPC = b;
+    }
+
+    public void SetIsInteractingWithNPC(bool b)
+    {
+        isInteractingWithNPC = b;
+    }
+
+    public bool GetisInteractingWithNPC()
+    {
+        return isInteractingWithNPC;
     }
 }
