@@ -37,7 +37,7 @@ public class ExplorerDroneController : MonoBehaviour
 
     private GameObject player;
     private Player playerControl;
-    private GameObject hud;
+    private GameObject hudUI;
     //private Rigidbody2D rb;
 
     private Vector2 scale;
@@ -69,7 +69,7 @@ public class ExplorerDroneController : MonoBehaviour
     {
         player = GameObject.Find("Player");
         playerControl = player.GetComponent<Player>();
-        hud = GameObject.Find("[HUD]");
+        hudUI = GameObject.Find("[HUD]");
         scale = new Vector2(-1, 1);
         //spawnPosition = transform.position;
         //rb = GetComponent<Rigidbody2D>();
@@ -202,7 +202,7 @@ public class ExplorerDroneController : MonoBehaviour
             isInteracting = true;
 
             // Disable UI
-            //hud.SetActive(false);
+            hudUI.SetActive(false);
         }
 
     }
@@ -238,7 +238,7 @@ public class ExplorerDroneController : MonoBehaviour
                 textBox.GetComponent<RectTransform>().DOAnchorPos(new Vector2(0, -200), .3f);
                 player.GetComponent<PlayerInteractions>().AllowTextAdvance(false);
                 textDisplay.text = "";
-                //hud.SetActive(true);
+                hudUI.SetActive(true);
                 index = 0;
                 isInteracting = false;
                 GameObject.Find("Player").GetComponent<PlayerInteractions>().SetIsInteractingWithNPC(false);
@@ -257,7 +257,7 @@ public class ExplorerDroneController : MonoBehaviour
                 textBox.GetComponent<RectTransform>().DOAnchorPos(new Vector2(0, -200), .3f);
                 player.GetComponent<PlayerInteractions>().AllowTextAdvance(false);
                 textDisplay.text = "";
-                //hud.SetActive(true);
+                hudUI.SetActive(true);
                 index = 0;
                 isInteracting = false;
                 GameObject.Find("Player").GetComponent<PlayerInteractions>().SetIsInteractingWithNPC(false);
@@ -419,5 +419,15 @@ public class ExplorerDroneController : MonoBehaviour
     public bool GetIsInteracting()
     {
         return isInteracting;
+    }
+
+    public bool GetHasBeenTalkedBefore()
+    {
+        return hasBeenTalkedToBefore;
+    }
+
+    public void SetHasBeenTalkedBefore(bool b)
+    {
+        hasBeenTalkedToBefore = b;
     }
 }

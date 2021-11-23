@@ -3,11 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class SkillInformationDisplayController : MonoBehaviour
 {
+    public string skillNameInfo;
+    public TMP_Text skillNameDisplayAsset;
+
     [Header("Image to Show")]
     public Sprite animationToDisplay;
+    public Image animationToDisplayAsset;
 
     [Header("Information")]
     public string informationToDisplay;
@@ -34,6 +39,9 @@ public class SkillInformationDisplayController : MonoBehaviour
         // Get the input key for interact action
         if(buttonToUseDisplay.Contains("¤"))
             buttonToUseDisplay = buttonToUseDisplay.Replace("¤", inputActions.FindAction(skillName[1]).controls.ToArray()[0].name);
+
+        if (buttonToUseDisplay.Contains("%"))
+            buttonToUseDisplay = buttonToUseDisplay.Replace("%", inputActions.FindAction(skillName[2]).controls.ToArray()[0].name);
     }
 
     public void UpdateInformation()
@@ -46,4 +54,13 @@ public class SkillInformationDisplayController : MonoBehaviour
         buttonToUseDisplayAsset.text = buttonToUseDisplay;
     }
 
+    public void UpdateAnimationDisplay()
+    {
+        animationToDisplayAsset.sprite = animationToDisplay;
+    }
+
+    public void UpdateSkillNameDisplay()
+    {
+        skillNameDisplayAsset.text = skillNameInfo;
+    }
 }
