@@ -10770,6 +10770,10 @@ MonoBehaviour:
   parry: {fileID: 8300000, guid: b40889937dbf1634c90ba9d0c8d180ce, type: 3}
   blockDamaged: {fileID: 8300000, guid: 1bd9a50139c025244b71be21a0f11c3e, type: 3}
   playerPulled: {fileID: 8300000, guid: 7093bedea0c58414e8e66b70b5e8a94d, type: 3}
+  takingDamage:
+  - {fileID: 8300000, guid: 059221175de17a447867811b20c33948, type: 3}
+  - {fileID: 8300000, guid: ef03b91d18f1fe642a290012488fbd1d, type: 3}
+  - {fileID: 8300000, guid: b239ba8705df8134e837c0e9a3d603f6, type: 3}
 --- !u!82 &7360434912787077742
 AudioSource:
   m_ObjectHideFlags: 0

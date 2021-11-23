@@ -49,6 +49,9 @@ public class PlayerSFX : MonoBehaviour
     [Header("Grappling point")]
     public AudioClip playerPulled;
 
+    [Header("Player take damage")]
+    public AudioClip[] takingDamage;
+
     private void Update()
     {
         // Sound effects that dont have own animation or are part of bigger event
@@ -118,9 +121,20 @@ public class PlayerSFX : MonoBehaviour
 
     public void PlayRandomPlayerStepSound()
     {
-        int random = Random.Range(0, 1);
+        int random = Random.Range(0, playerSteps.Length - 1);
         playerAudioSource.PlayOneShot(playerSteps[random]);
     }
+
+    public void PlayRandomPlayerDamagepSound()
+    {
+        int random = Random.Range(0, takingDamage.Length - 1);
+        playerAudioSource.PlayOneShot(takingDamage[random]);
+    }
+
+    public void PlayPlayerBlockSound()
+    {
+        playerAudioSource.PlayOneShot(blockDamaged);
+    } 
 
     public void PlayPlayerLandingSound()
     {
