@@ -10765,6 +10765,7 @@ MonoBehaviour:
   throwHitEnvironment: {fileID: 8300000, guid: 6d1a52e01dc65424b9bacb874e5b58b5, type: 3}
   meleeSwing: {fileID: 8300000, guid: a952aedf55b93c84a921cee7c8a27201, type: 3}
   meleeHit: {fileID: 8300000, guid: 16b19b7e31ff5874488cccdff2c897af, type: 3}
+  meleeWPHit: {fileID: 8300000, guid: 6e8b7d45025260a4ca17f5009450cb41, type: 3}
   blockActivation: {fileID: 8300000, guid: 5cf3db7522dff264c80369c9cdaae7dd, type: 3}
   block: {fileID: 8300000, guid: 1c17d72deae0fd04ea2ffe60fb98f106, type: 3}
   parry: {fileID: 8300000, guid: b40889937dbf1634c90ba9d0c8d180ce, type: 3}

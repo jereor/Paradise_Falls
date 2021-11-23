@@ -39,6 +39,7 @@ public class PlayerSFX : MonoBehaviour
     [Header("Melee")]
     public AudioClip meleeSwing;
     public AudioClip meleeHit;
+    public AudioClip meleeWPHit;
 
     [Header("Shield")]
     public AudioClip blockActivation;
@@ -105,7 +106,11 @@ public class PlayerSFX : MonoBehaviour
             playerAudioSource.clip = null;
             playGPPullSound = false;
         }
-
+        // Melee
+        if (PlayerCombat.Instance.getPlaySoundHit())
+            playerAudioSource.PlayOneShot(meleeHit);
+        if (PlayerCombat.Instance.getPlaySoundWPHit())
+            playerAudioSource.PlayOneShot(meleeWPHit);
     }
 
     // Plays given AudioClip with delay and looped if we desire

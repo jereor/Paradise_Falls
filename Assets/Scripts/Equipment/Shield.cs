@@ -24,6 +24,7 @@ public class Shield : MonoBehaviour
     // References
     private Player playerScript;
 
+    // Booleans for PlayerPlaySound.cs
     private bool playBlockActivation = false;
     private bool playParry = false;
 
