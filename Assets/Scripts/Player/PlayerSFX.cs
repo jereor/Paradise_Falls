@@ -9,11 +9,14 @@ public class PlayerSFX : MonoBehaviour
     public AudioSource playerAudioSource;
     public ShockwaveTool shScript;
     public Shield shieldScript;
+    public ShieldGrind grindScript;
 
     public Coroutine blockCoroutine;
+    public Coroutine grindCoroutine;
 
     private bool playLandingSound = false;
     private bool playGPPullSound = false;
+    private bool playShieldGrindSound = false;
 
     // Audio clips
     [Header("Footsteps")]
@@ -50,6 +53,11 @@ public class PlayerSFX : MonoBehaviour
     [Header("Player take damage")]
     public AudioClip[] takingDamage;
 
+    [Header("Shield grind")]
+    public AudioClip shieldGrind;
+    [SerializeField] private float defaultPitch = 1f;
+    [SerializeField] private float maxPitch = 2f;
+
     private void Update()
     {
         // Sound effects that dont have own animation or are part of bigger event
@@ -59,13 +67,15 @@ public class PlayerSFX : MonoBehaviour
             playerAudioSource.PlayOneShot(doubleJump);
         // Dash
         if (shScript.getPlaySoundDash())
+        {
             playerAudioSource.PlayOneShot(dash);
+        }
         // Block activation
         if (shieldScript.getPlaySoundBlockActivate())
         {
             playerAudioSource.PlayOneShot(blockActivation);
             if (blockCoroutine == null)
-                blockCoroutine = StartCoroutine(PlayClipDelayed(block, blockActivation.length, true));
+                blockCoroutine = StartCoroutine(PlayClipDelayed(block, blockActivation.length/2, true));
         }
         // Parry
         if (shieldScript.getPlaySoundParry())
@@ -108,6 +118,48 @@ public class PlayerSFX : MonoBehaviour
             playerAudioSource.PlayOneShot(meleeHit);
         if (PlayerCombat.Instance.getPlaySoundWPHit())
             playerAudioSource.PlayOneShot(meleeWPHit);
+        // Shield Grind
+        if (grindScript.PipeCheck() && PlayerMovement.Instance.IsGrounded() && !playShieldGrindSound)
+        {
+            playerAudioSource.clip = shieldGrind;
+            playerAudioSource.loop = true;
+            playerAudioSource.Play();
+            playShieldGrindSound = true;
+            grindCoroutine = StartCoroutine(LerpPitch());
+        }
+        else if((!grindScript.PipeCheck() || !PlayerMovement.Instance.IsGrounded()) && playShieldGrindSound)
+        {
+            playerAudioSource.loop = false;
+            playerAudioSource.Stop();
+            playerAudioSource.clip = null;
+            playShieldGrindSound = false;
+            StopCoroutine(grindCoroutine);
+            grindCoroutine = null;
+            playerAudioSource.pitch = 1f;
+        }
+        // 
+        //if (playShieldGrindSound)
+        //{
+        //    playerAudioSource.pitch = Mathf.Lerp(2f, playerAudioSource.pitch, grindScript.getSpeed() / grindScript.getMaxSpeed() * Time.deltaTime);
+        //}
+
+    }
+
+    private IEnumerator LerpPitch()
+    {
+        float start = playerAudioSource.pitch;
+        while (playerAudioSource.pitch < maxPitch)
+        {
+            if (shScript.getPlaySoundDash())
+            {
+                playerAudioSource.pitch = 2f;
+            }
+            else
+                playerAudioSource.pitch = Mathf.Lerp(start, maxPitch, grindScript.getSpeed() / grindScript.getMaxSpeed());
+            yield return null;
+        }
+
+        yield break;
     }
 
     // Plays given AudioClip with delay and looped if we desire

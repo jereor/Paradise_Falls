@@ -10752,6 +10752,7 @@ MonoBehaviour:
   playerAudioSource: {fileID: 7360434912787077742}
   shScript: {fileID: 1940316768}
   shieldScript: {fileID: 1812080132}
+  grindScript: {fileID: 7180285044104453406}
   playerSteps:
   - {fileID: 8300000, guid: e90e2bd2730bfd84ea6a7c89d2a92333, type: 3}
   - {fileID: 8300000, guid: 764cd567c6e0cb4488420b91d21a41a5, type: 3}
@@ -10773,6 +10774,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 059221175de17a447867811b20c33948, type: 3}
   - {fileID: 8300000, guid: ef03b91d18f1fe642a290012488fbd1d, type: 3}
   - {fileID: 8300000, guid: b239ba8705df8134e837c0e9a3d603f6, type: 3}
+  shieldGrind: {fileID: 8300000, guid: 1c17d72deae0fd04ea2ffe60fb98f106, type: 3}
 --- !u!82 &7360434912787077742
 AudioSource:
   m_ObjectHideFlags: 0
