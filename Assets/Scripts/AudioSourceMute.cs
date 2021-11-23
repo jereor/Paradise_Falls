@@ -23,14 +23,19 @@ public class AudioSourceMute : MonoBehaviour
     {
         distanceFromPlayer = Vector3.Distance(transform.position, audioListener.transform.position);
 
-        if (distanceFromPlayer <= audioSource.maxDistance)
-        {
+        // Game is paused and we are still playing!? No >:(
+        if (PauseMenuController.GameIsPaused && audioSource.isPlaying)
+            audioSource.Pause();
+        // Game is not paused and we aren't playing!? No >:(
+        else if (!PauseMenuController.GameIsPaused && !audioSource.isPlaying)
+            audioSource.Play();
+        // Player is close enough to hear my sound :)
+        else if (distanceFromPlayer <= audioSource.maxDistance)
             ToggleAudioSource(true);
-        }
+        // Player is too far away to hear my sound >:.(
         else
-        {
             ToggleAudioSource(false);
-        }
+
         // If audio source is emitting lerp volume with distance
         if (audioSource.isPlaying && fadeCoroutine == null)
             audioSource.volume = Mathf.Lerp(1f, minVolume, distanceFromPlayer / audioSource.maxDistance);
