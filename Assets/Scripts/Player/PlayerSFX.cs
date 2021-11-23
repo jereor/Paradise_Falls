@@ -32,9 +32,6 @@ public class PlayerSFX : MonoBehaviour
 
     [Header("Throwing")]
     public AudioClip throwWeapon;
-    public AudioClip throwHitEnemy;
-    public AudioClip throwHitWeakpoint;
-    public AudioClip throwHitEnvironment;
 
     [Header("Melee")]
     public AudioClip meleeSwing;

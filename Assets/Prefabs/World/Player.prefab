@@ -10101,6 +10101,7 @@ GameObject:
   - component: {fileID: 7180285044104453406}
   - component: {fileID: 5375587909310265316}
   - component: {fileID: 7360434912787077742}
+  - component: {fileID: -5707742253447819200}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -10760,9 +10761,6 @@ MonoBehaviour:
   doubleJump: {fileID: 8300000, guid: c8889ca06b802bd4aba44541a5eaba20, type: 3}
   dash: {fileID: 8300000, guid: da7fe22cbb121b44784b939ee8b2bfc1, type: 3}
   throwWeapon: {fileID: 8300000, guid: a952aedf55b93c84a921cee7c8a27201, type: 3}
-  throwHitEnemy: {fileID: 8300000, guid: 16b19b7e31ff5874488cccdff2c897af, type: 3}
-  throwHitWeakpoint: {fileID: 8300000, guid: 16b19b7e31ff5874488cccdff2c897af, type: 3}
-  throwHitEnvironment: {fileID: 8300000, guid: 6d1a52e01dc65424b9bacb874e5b58b5, type: 3}
   meleeSwing: {fileID: 8300000, guid: a952aedf55b93c84a921cee7c8a27201, type: 3}
   meleeHit: {fileID: 8300000, guid: 16b19b7e31ff5874488cccdff2c897af, type: 3}
   meleeWPHit: {fileID: 8300000, guid: 6e8b7d45025260a4ca17f5009450cb41, type: 3}
@@ -10871,6 +10869,14 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!81 &-5707742253447819200
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2646993275326716545}
+  m_Enabled: 1
 --- !u!1 &2646993277219195829
 GameObject:
   m_ObjectHideFlags: 0
