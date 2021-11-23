@@ -7,6 +7,8 @@ using UnityEngine.UI;
 
 public class SkillInformationDisplayController : MonoBehaviour
 {
+    public InventoryPanelController inventoryController;
+
     public string skillNameInfo;
     public TMP_Text skillNameDisplayAsset;
 
@@ -26,6 +28,8 @@ public class SkillInformationDisplayController : MonoBehaviour
     [SerializeField] private InputActionAsset inputActions;
     [SerializeField] private string[] skillName;
 
+    private bool isUsingController;
+
     private void Start()
     {
         UpdateTextBinding();
@@ -34,14 +38,32 @@ public class SkillInformationDisplayController : MonoBehaviour
     // Updates # to correct key
     private void UpdateTextBinding()
     {
-        if(buttonToUseDisplay.Contains("#"))
-            buttonToUseDisplay = buttonToUseDisplay.Replace("#", inputActions.FindAction(skillName[0]).controls.ToArray()[0].name);
-        // Get the input key for interact action
-        if(buttonToUseDisplay.Contains("¤"))
-            buttonToUseDisplay = buttonToUseDisplay.Replace("¤", inputActions.FindAction(skillName[1]).controls.ToArray()[0].name);
+        if(!isUsingController)
+        {
+            if (buttonToUseDisplay.Contains("#"))
+                buttonToUseDisplay = buttonToUseDisplay.Replace("#", InputActionRebindingExtensions.GetBindingDisplayString(inputActions.FindAction(skillName[0]), 0));
 
-        if (buttonToUseDisplay.Contains("%"))
-            buttonToUseDisplay = buttonToUseDisplay.Replace("%", inputActions.FindAction(skillName[2]).controls.ToArray()[0].name);
+
+            // Get the input key for interact action
+            if (buttonToUseDisplay.Contains("¤"))
+                buttonToUseDisplay = buttonToUseDisplay.Replace("¤", InputActionRebindingExtensions.GetBindingDisplayString(inputActions.FindAction(skillName[1]), 0));
+
+            if (buttonToUseDisplay.Contains("%"))
+                buttonToUseDisplay = buttonToUseDisplay.Replace("%", InputActionRebindingExtensions.GetBindingDisplayString(inputActions.FindAction(skillName[2]), 0));
+        }
+        else if(isUsingController)
+        {
+            if (buttonToUseDisplay.Contains("#"))
+                buttonToUseDisplay = buttonToUseDisplay.Replace("#", InputActionRebindingExtensions.GetBindingDisplayString(inputActions.FindAction(skillName[0]), 1));
+
+
+            // Get the input key for interact action
+            if (buttonToUseDisplay.Contains("¤"))
+                buttonToUseDisplay = buttonToUseDisplay.Replace("¤", InputActionRebindingExtensions.GetBindingDisplayString(inputActions.FindAction(skillName[1]), 1));
+
+            if (buttonToUseDisplay.Contains("%"))
+                buttonToUseDisplay = buttonToUseDisplay.Replace("%", InputActionRebindingExtensions.GetBindingDisplayString(inputActions.FindAction(skillName[2]), 1));
+        }
     }
 
     public void UpdateInformation()
@@ -63,4 +85,16 @@ public class SkillInformationDisplayController : MonoBehaviour
     {
         skillNameDisplayAsset.text = skillNameInfo;
     }
+
+    public void SetIsUsingController(bool b)
+    {
+        isUsingController = b;
+    }
+
+    public bool GetisUsingController()
+    {
+        return isUsingController;
+    }
+
+
 }
