@@ -23,7 +23,10 @@ public class Shield : MonoBehaviour
 
     // References
     private Player playerScript;
-    
+
+    private bool playBlockActivation = false;
+    private bool playParry = false;
+
     private void Start()
     {
         playerScript = gameObject.GetComponent<Player>();
@@ -43,6 +46,7 @@ public class Shield : MonoBehaviour
             nextParry = Time.time + parryCooldown; // Sets a time when parry can be used again
             hitParried = false; // Reset hitParried state
 
+            playBlockActivation = true;
             //shield.SetActive(true); // Activate shield graphics EDIT: JereT replaced to be activated from Player.cs
             Blocking = true;
         }
@@ -67,6 +71,8 @@ public class Shield : MonoBehaviour
     {
         Parrying = true;
 
+        playParry = true;
+
         float parryTimer = 0;
         while (parryTimer <= parryTimeWindow)
         {
@@ -90,4 +96,29 @@ public class Shield : MonoBehaviour
     {
         canReceiveInputBlock = false;
     }
+
+
+    // For PlayerPlaySound to track these states
+    public bool getPlaySoundBlockActivate()
+    {
+        if (playBlockActivation)
+        {
+            playBlockActivation = false;
+            return true;
+        }
+        else
+            return false;
+    }
+
+    public bool getPlaySoundParry()
+    {
+        if (playParry)
+        {
+            playParry = false;
+            return true;
+        }
+        else
+            return false;
+    }
+
 }
