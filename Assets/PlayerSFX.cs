@@ -12,12 +12,16 @@ public class PlayerSFX : MonoBehaviour
 
     public Coroutine blockCoroutine;
 
+    private bool playLandingSound = false;
+    private bool playGPPullSound = false;
+
     // Audio clips
     [Header("Footsteps")]
     public AudioClip[] playerSteps;
 
     [Header("Landing")]
-    public AudioClip land;
+    public AudioClip landSoftly;
+    public AudioClip landHard;
     public AudioClip groundPound;
 
     [Header("Jump")]
@@ -40,11 +44,15 @@ public class PlayerSFX : MonoBehaviour
     public AudioClip blockActivation;
     public AudioClip block;
     public AudioClip parry;
-    public AudioClip blockDamaged;
+    public AudioClip blockDamaged; // Not implemented yet
+
+    [Header("Grappling point")]
+    public AudioClip playerPulled;
 
     private void Update()
     {
-        // Sound effects that dont have own animation or are part of bigger animation
+        // Sound effects that dont have own animation or are part of bigger event
+
         // Double jump
         if (shScript.getPlaySoundJump())
             playerAudioSource.PlayOneShot(doubleJump);
@@ -56,7 +64,7 @@ public class PlayerSFX : MonoBehaviour
         {
             playerAudioSource.PlayOneShot(blockActivation);
             if (blockCoroutine == null)
-                blockCoroutine = StartCoroutine(PlayeClipDelayed(block, blockActivation.length));
+                blockCoroutine = StartCoroutine(PlayClipDelayed(block, blockActivation.length, true));
         }
         // Parry
         if (shieldScript.getPlaySoundParry())
@@ -72,13 +80,36 @@ public class PlayerSFX : MonoBehaviour
             }
             playerAudioSource.PlayOneShot(parry);
         }
+        // Landing sound
+        if (!PlayerMovement.Instance.IsGrounded() && !playLandingSound && !PlayerMovement.Instance.getClimbing())
+            playLandingSound = true;
+        else if (PlayerMovement.Instance.getClimbing() && playLandingSound)
+            playLandingSound = false;
+        else if (PlayerMovement.Instance.IsGrounded() && playLandingSound)
+            PlayPlayerLandingSound();
+        // Grappling pull
+        if (PlayerCombat.Instance.getIsPlayerBeingPulled() && !playGPPullSound) 
+        {
+            playerAudioSource.loop = true;
+            playerAudioSource.clip = playerPulled;
+            playerAudioSource.Play();
+            playGPPullSound = true;
+        }
+        else if(!PlayerCombat.Instance.getIsPlayerBeingPulled() && playGPPullSound)
+        {
+            playerAudioSource.loop = false;
+            playerAudioSource.Stop();
+            playerAudioSource.clip = null;
+            playGPPullSound = false;
+        }
 
     }
 
-    private IEnumerator PlayeClipDelayed(AudioClip clip, float delay)
+    // Plays given AudioClip with delay and looped if we desire
+    private IEnumerator PlayClipDelayed(AudioClip clip, float delay, bool loop)
     {
         yield return new WaitForSeconds(delay);
-        playerAudioSource.loop = true;
+        playerAudioSource.loop = loop;
         playerAudioSource.clip = clip;
         playerAudioSource.Play();
 
@@ -95,8 +126,12 @@ public class PlayerSFX : MonoBehaviour
     {
         if (shScript.getPlaySoundDive())
             playerAudioSource.PlayOneShot(groundPound);
-        else
-            playerAudioSource.PlayOneShot(land);
+        else if (Player.Instance.GetWillLand())
+            playerAudioSource.PlayOneShot(landHard);
+        else if (playLandingSound)
+            playerAudioSource.PlayOneShot(landSoftly);
+
+        playLandingSound = false;
     }
 
     public void PlayPlayerThrowSound()

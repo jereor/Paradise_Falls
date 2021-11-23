@@ -10754,7 +10754,8 @@ MonoBehaviour:
   playerSteps:
   - {fileID: 8300000, guid: e90e2bd2730bfd84ea6a7c89d2a92333, type: 3}
   - {fileID: 8300000, guid: 764cd567c6e0cb4488420b91d21a41a5, type: 3}
-  land: {fileID: 8300000, guid: 58b56ceb831208c4ba823f3e8657b68a, type: 3}
+  landSoftly: {fileID: 8300000, guid: 7399fc9f6416d7847833ed4916aefedd, type: 3}
+  landHard: {fileID: 8300000, guid: 58b56ceb831208c4ba823f3e8657b68a, type: 3}
   groundPound: {fileID: 8300000, guid: b04ea6f725111d74eb0ee5ae4f0055b2, type: 3}
   doubleJump: {fileID: 8300000, guid: c8889ca06b802bd4aba44541a5eaba20, type: 3}
   dash: {fileID: 8300000, guid: da7fe22cbb121b44784b939ee8b2bfc1, type: 3}
@@ -10768,6 +10769,7 @@ MonoBehaviour:
   block: {fileID: 8300000, guid: 1c17d72deae0fd04ea2ffe60fb98f106, type: 3}
   parry: {fileID: 8300000, guid: b40889937dbf1634c90ba9d0c8d180ce, type: 3}
   blockDamaged: {fileID: 8300000, guid: 1bd9a50139c025244b71be21a0f11c3e, type: 3}
+  playerPulled: {fileID: 8300000, guid: 7093bedea0c58414e8e66b70b5e8a94d, type: 3}
 --- !u!82 &7360434912787077742
 AudioSource:
   m_ObjectHideFlags: 0
