@@ -13,6 +13,13 @@ public class BoxKnockback : MonoBehaviour
     [SerializeField] private float knockbackForce;
     [SerializeField] private float dmgToPlayer;
 
+    private BoxSFX boxSFX;
+
+    private void Start()
+    {
+        boxSFX = gameObject.GetComponentInParent<BoxSFX>();
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if(collision.gameObject.CompareTag("Player") && !dealtDmg && falling)
@@ -24,6 +31,7 @@ public class BoxKnockback : MonoBehaviour
         }
         else if(collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
         {
+            boxSFX.PlayHitGroundSound();
             falling = false;
         }
     }

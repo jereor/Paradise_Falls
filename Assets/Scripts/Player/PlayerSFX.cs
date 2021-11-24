@@ -10,9 +10,11 @@ public class PlayerSFX : MonoBehaviour
     public ShockwaveTool shScript;
     public Shield shieldScript;
     public ShieldGrind grindScript;
+    public PlayerHealth playerHealthScript;
 
     public Coroutine blockCoroutine;
     public Coroutine grindCoroutine;
+    public Coroutine fadeCoroutine;
 
     private bool playLandingSound = false;
     private bool playGPPullSound = false;
@@ -58,8 +60,14 @@ public class PlayerSFX : MonoBehaviour
     [SerializeField] private float defaultPitch = 1f;
     [SerializeField] private float maxPitch = 2f;
 
-    private void Update()
+    private void FixedUpdate()
     {
+        if (PauseMenuController.GameIsPaused && !playerAudioSource.mute)
+            playerAudioSource.mute = true;
+        else if (!PauseMenuController.GameIsPaused && playerAudioSource.mute)
+            playerAudioSource.mute = false;
+        else if (playerAudioSource.mute)
+            return;
         // Sound effects that dont have own animation or are part of bigger event
 
         // Double jump
@@ -96,7 +104,7 @@ public class PlayerSFX : MonoBehaviour
             playLandingSound = true;
         else if (PlayerMovement.Instance.getClimbing() && playLandingSound)
             playLandingSound = false;
-        else if (PlayerMovement.Instance.IsGrounded() && playLandingSound)
+        else if (PlayerMovement.Instance.IsGrounded() && playLandingSound && !PlayerMovement.Instance.getIfClimbingMovingPlatform())
             PlayPlayerLandingSound();
         // Grappling pull
         if (PlayerCombat.Instance.getIsPlayerBeingPulled() && !playGPPullSound) 
@@ -118,15 +126,19 @@ public class PlayerSFX : MonoBehaviour
             playerAudioSource.PlayOneShot(meleeHit);
         if (PlayerCombat.Instance.getPlaySoundWPHit())
             playerAudioSource.PlayOneShot(meleeWPHit);
-        // Shield Grind
+        // Shield Grind start
         if (grindScript.PipeCheck() && PlayerMovement.Instance.IsGrounded() && !playShieldGrindSound)
         {
+            if (fadeCoroutine != null)
+                StopCoroutine(fadeCoroutine);
+            fadeCoroutine = StartCoroutine(FadeVolume(0f, 1f, 0.1f, false));
             playerAudioSource.clip = shieldGrind;
             playerAudioSource.loop = true;
             playerAudioSource.Play();
             playShieldGrindSound = true;
             grindCoroutine = StartCoroutine(LerpPitch());
         }
+        // Shield Grind end
         else if((!grindScript.PipeCheck() || !PlayerMovement.Instance.IsGrounded()) && playShieldGrindSound)
         {
             playerAudioSource.loop = false;
@@ -137,12 +149,37 @@ public class PlayerSFX : MonoBehaviour
             grindCoroutine = null;
             playerAudioSource.pitch = 1f;
         }
-        // 
-        //if (playShieldGrindSound)
-        //{
-        //    playerAudioSource.pitch = Mathf.Lerp(2f, playerAudioSource.pitch, grindScript.getSpeed() / grindScript.getMaxSpeed() * Time.deltaTime);
-        //}
 
+        // Taking damage
+        if (playerHealthScript.getPlaySoundHurt())
+            playerAudioSource.PlayOneShot(takingDamage[(int)Random.Range(0, takingDamage.Length - 1)]);
+        if (playerHealthScript.getPlaySoundHurtShielded())
+        {
+            //playerAudioSource.loop = false;
+            //playerAudioSource.Stop();
+            //playerAudioSource.clip = null;
+            playerAudioSource.PlayOneShot(blockDamaged);
+           // blockCoroutine = StartCoroutine(PlayClipDelayed(block, block.length / 2, true));
+        }
+    }
+
+    private IEnumerator FadeVolume(float from, float to, float duration, bool setItToFrom)
+    {
+        float currentTime = 0;
+        playerAudioSource.volume = from;
+        float start = playerAudioSource.volume;
+
+        while (currentTime < duration)
+        {
+            currentTime += Time.deltaTime;
+            playerAudioSource.volume = Mathf.Lerp(start, to, currentTime / duration);
+            yield return null;
+        }
+        if (setItToFrom)
+            playerAudioSource.volume = from;
+
+        fadeCoroutine = null;
+        yield break;
     }
 
     private IEnumerator LerpPitch()

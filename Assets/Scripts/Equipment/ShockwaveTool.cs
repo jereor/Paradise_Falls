@@ -40,9 +40,9 @@ public class ShockwaveTool : MonoBehaviour
     private float timeDashed = -1;
 
     // Booleans for PlayerPlaySound.cs
-    public bool playSoundDive = false;
-    public bool playSoundJump = false;
-    public bool playSoundDash = false;
+    private bool playSoundDive = false;
+    private bool playSoundJump = false;
+    private bool playSoundDash = false;
 
     private void Start()
     {
