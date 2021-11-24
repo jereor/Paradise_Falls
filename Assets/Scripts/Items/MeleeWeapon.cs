@@ -143,19 +143,8 @@ public class MeleeWeapon : MonoBehaviour
         //Debug.Log(collision.collider.gameObject.name);
         if (collision.collider.gameObject.layer == LayerMask.NameToLayer("Ground"))
         {
-            // 15f is 
-            //sfxScript.PlayHitEnvironmentSound();
-            //if (highestYpos == 0f)
-            //{
-            //    sfxScript.PlayHitEnvironmentSound();
-
-            //    highestYpos = gameObject.transform.position.y;
-            //}
-            ////Debug.Log(((Vector2)transform.position - lastPos).magnitude);
-            //else
             if (!landed || Mathf.Abs(Mathf.Abs(gameObject.transform.position.y) - Mathf.Abs(highestYpos)) > 0.5f || Mathf.Abs(Mathf.Abs(gameObject.transform.position.x) - Mathf.Abs(highestXpos)) > 0.5f)
             {
-                Debug.Log(transform.position.y - highestYpos);
                 sfxScript.PlayHitEnvironmentSound();
                 highestYpos = gameObject.transform.position.y;
                 highestXpos = gameObject.transform.position.x;
@@ -349,25 +338,23 @@ public class MeleeWeapon : MonoBehaviour
     public void PullWeapon(GameObject objectThatPulls)
     {
         // Weapon cannot deal damage aka hit enemy or ground
-        if (landed)
-        {
-            // If set to objects child (grapplepoint) -> unchild
-            gameObject.transform.parent = null;
-            grapplePointRB = null;
 
-            // Ignore layers that should't collide
-            SetEnemyIgnoresOnPull();
+        // If set to objects child (grapplepoint) -> unchild
+        gameObject.transform.parent = null;
+        grapplePointRB = null;
 
-            myRB.velocity = Vector2.zero; // Stop moving at the start of pulling physics bugs
-            myRB.mass = 1f; // If we set it to something else somewhere (Moving grapple point movements)
+        // Ignore layers that should't collide
+        SetEnemyIgnoresOnPull();
 
-            //Layer to PulledWeapon.
-            gameObject.layer = 15;
+        myRB.velocity = Vector2.zero; // Stop moving at the start of pulling physics bugs
+        myRB.mass = 1f; // If we set it to something else somewhere (Moving grapple point movements)
+
+        //Layer to PulledWeapon.
+        gameObject.layer = 15;
 
 
-            pullingObject = objectThatPulls;
-            beingPulled = true;           
-        }
+        pullingObject = objectThatPulls;
+        beingPulled = true;           
     }
 
     private void SetEnemyIgnoresOnPull()
