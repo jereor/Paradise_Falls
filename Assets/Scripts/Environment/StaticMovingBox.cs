@@ -7,6 +7,7 @@ public class StaticMovingBox : MonoBehaviour
 {
     private Rigidbody2D rb;
     private BoxCollider2D boxCollider;
+    private BoxSFX myBoxSFXScript;
     public BoxCollider2D knockbackTrigger;
 
     [Header("Chain controller")]
@@ -59,6 +60,8 @@ public class StaticMovingBox : MonoBehaviour
         boxCollider = GetComponent<BoxCollider2D>();
         gizmoPositionChange = false;
         startPosition = transform.position;
+
+        myBoxSFXScript = GetComponent<BoxSFX>();
 
         knockbackTrigger.enabled = false;
 
@@ -161,6 +164,14 @@ public class StaticMovingBox : MonoBehaviour
         // Everything related to chain control. Comment this if-case if not needed.
         if (chainController.getIfCut() && !isChainCut && cuttableChain)
         {
+            myBoxSFXScript.PlayChainCutSound();
+            // If chain is cut idle sound should not play anymore
+            if(TryGetComponent(out AudioSourceMute script))
+            {
+                script.playIdleSound = false;
+                script.ToggleLoop(false);
+            }
+
             isChainCut = true;
             DOTween.Kill(rb); // Stops all Tweenings so the object doesn't move after the chain is cut.
             StopAllCoroutines();

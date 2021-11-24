@@ -9982,9 +9982,6 @@ MonoBehaviour:
   shockwaveDashEffect: {fileID: 5702174841178822961}
   shockwaveDiveGraphics: {fileID: 1851797149}
   energyScript: {fileID: 8760275387346948364}
-  playSoundDive: 0
-  playSoundJump: 0
-  playSoundDash: 0
 --- !u!1 &221694810971202532
 GameObject:
   m_ObjectHideFlags: 0
@@ -10236,6 +10233,7 @@ MonoBehaviour:
   canInteract: 0
   objectToInteract: {fileID: 0}
   isNPC: 0
+  isInteractingWithNPC: 0
   allowTextAdvance: 0
 --- !u!114 &2646993275326716664
 MonoBehaviour:
@@ -10753,6 +10751,7 @@ MonoBehaviour:
   shScript: {fileID: 1940316768}
   shieldScript: {fileID: 1812080132}
   grindScript: {fileID: 7180285044104453406}
+  playerHealthScript: {fileID: 269594451}
   playerSteps:
   - {fileID: 8300000, guid: e90e2bd2730bfd84ea6a7c89d2a92333, type: 3}
   - {fileID: 8300000, guid: 764cd567c6e0cb4488420b91d21a41a5, type: 3}
@@ -10771,10 +10770,11 @@ MonoBehaviour:
   blockDamaged: {fileID: 8300000, guid: 1bd9a50139c025244b71be21a0f11c3e, type: 3}
   playerPulled: {fileID: 8300000, guid: 7093bedea0c58414e8e66b70b5e8a94d, type: 3}
   takingDamage:
-  - {fileID: 8300000, guid: 059221175de17a447867811b20c33948, type: 3}
   - {fileID: 8300000, guid: ef03b91d18f1fe642a290012488fbd1d, type: 3}
   - {fileID: 8300000, guid: b239ba8705df8134e837c0e9a3d603f6, type: 3}
   shieldGrind: {fileID: 8300000, guid: 1c17d72deae0fd04ea2ffe60fb98f106, type: 3}
+  defaultPitch: 1
+  maxPitch: 2
 --- !u!82 &7360434912787077742
 AudioSource:
   m_ObjectHideFlags: 0
@@ -15817,7 +15817,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &3787360598379495436
 Transform:
   m_ObjectHideFlags: 0
@@ -15826,8 +15826,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3787360598379495437}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5, z: 0}
-  m_LocalScale: {x: 3, y: 3, z: 1}
+  m_LocalPosition: {x: 0, y: 2, z: 0}
+  m_LocalScale: {x: 10, y: 10, z: 1}
   m_Children: []
   m_Father: {fileID: 2646993275326716544}
   m_RootOrder: 9

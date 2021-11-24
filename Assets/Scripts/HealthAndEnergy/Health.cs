@@ -19,6 +19,10 @@ public class Health : MonoBehaviour
     [Tooltip("Functions that are executed when health reaches zero. There can be multiple.")]
     public UnityEvent onDie;
 
+    // Booleans for PlayerPlaySound.cs
+    private bool playSoundHurt = false;
+    private bool playSoundHurtShielded = false;
+
     /// <summary>
     /// Invoked when <see cref="TakeDamage"/> is called successfully.
     /// </summary>
@@ -65,10 +69,14 @@ public class Health : MonoBehaviour
             else if (shield.Blocking)
             {
                 amount -= shield.ProtectionAmount;
+                playSoundHurtShielded = true;
                 StartCoroutine(HitIndication(blockedColor)); // Player blocked the attack.
             }
             else
+            {
+                playSoundHurt = true;
                 StartCoroutine(HitIndication(damageColor)); // Player got hit.
+            }
 
             if (amount < 0) amount = 0;
         }
@@ -118,6 +126,28 @@ public class Health : MonoBehaviour
     virtual public void ResetHealthToMax()
     {
         currentHealth = maxHealth;
+    }
+
+    // For PlayerPlaySound to track these states
+    public bool getPlaySoundHurt()
+    {
+        if (playSoundHurt)
+        {
+            playSoundHurt = false;
+            return true;
+        }
+        else
+            return false;
+    }
+    public bool getPlaySoundHurtShielded()
+    {
+        if (playSoundHurtShielded)
+        {
+            playSoundHurtShielded = false;
+            return true;
+        }
+        else
+            return false;
     }
 
     // --- UPGRADE ---

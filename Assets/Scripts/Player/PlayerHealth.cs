@@ -5,16 +5,19 @@ using UnityEngine.UI;
 
 [ExecuteAlways]
 public class PlayerHealth : Health
-{ 
+{
     // References
     [SerializeField] private Image healthNumberImage;
     [SerializeField] List<Sprite> numberSprites = new List<Sprite>();
+
 
     public override void TakeDamage(float amount)
     {
         base.TakeDamage(amount);
         HealthRadial.Instance.RemoveSegments(amount);
         UpdateHealthNumber();
+
+        PlayerCamera.Instance.CameraShake(2, .2f);
     }
 
     public override void SetHealth(float amount)
