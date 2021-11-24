@@ -10,6 +10,7 @@ public class PlayerSFX : MonoBehaviour
     public ShockwaveTool shScript;
     public Shield shieldScript;
     public ShieldGrind grindScript;
+    public PlayerHealth playerHealthScript;
 
     public Coroutine blockCoroutine;
     public Coroutine grindCoroutine;
@@ -147,6 +148,18 @@ public class PlayerSFX : MonoBehaviour
             StopCoroutine(grindCoroutine);
             grindCoroutine = null;
             playerAudioSource.pitch = 1f;
+        }
+
+        // Taking damage
+        if (playerHealthScript.getPlaySoundHurt())
+            playerAudioSource.PlayOneShot(takingDamage[(int)Random.Range(0, takingDamage.Length - 1)]);
+        if (playerHealthScript.getPlaySoundHurtShielded())
+        {
+            //playerAudioSource.loop = false;
+            //playerAudioSource.Stop();
+            //playerAudioSource.clip = null;
+            playerAudioSource.PlayOneShot(blockDamaged);
+           // blockCoroutine = StartCoroutine(PlayClipDelayed(block, block.length / 2, true));
         }
     }
 

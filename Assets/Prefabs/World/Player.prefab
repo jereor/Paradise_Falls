@@ -9982,9 +9982,6 @@ MonoBehaviour:
   shockwaveDashEffect: {fileID: 5702174841178822961}
   shockwaveDiveGraphics: {fileID: 1851797149}
   energyScript: {fileID: 8760275387346948364}
-  playSoundDive: 0
-  playSoundJump: 0
-  playSoundDash: 0
 --- !u!1 &221694810971202532
 GameObject:
   m_ObjectHideFlags: 0
@@ -10754,6 +10751,7 @@ MonoBehaviour:
   shScript: {fileID: 1940316768}
   shieldScript: {fileID: 1812080132}
   grindScript: {fileID: 7180285044104453406}
+  playerHealthScript: {fileID: 269594451}
   playerSteps:
   - {fileID: 8300000, guid: e90e2bd2730bfd84ea6a7c89d2a92333, type: 3}
   - {fileID: 8300000, guid: 764cd567c6e0cb4488420b91d21a41a5, type: 3}
