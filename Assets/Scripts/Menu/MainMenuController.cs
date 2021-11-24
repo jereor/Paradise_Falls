@@ -12,15 +12,25 @@ public class MainMenuController : MonoBehaviour
     public CanvasGroup fader, buttons, popUp;
     public Button newGameButton;
     public Button continueButton;
-
     public Button creditsButton;
-
     public Button creditsBackButton;
     public Button warningNoButton;
 
     public GameObject settingsMenu;
     
     public GameObject warningPopUp;
+
+    public GameObject flyingTitleEnemyOne;
+    public GameObject flyingTitleEnemyTwo;
+    public GameObject flyingTitleEnemyThree;
+    public GameObject flyingTitleEnemyFour;
+    private GameObject flyingTitleEnemyOneInstance;
+    private GameObject flyingTitleEnemyTwoInstance;
+    private GameObject flyingTitleEnemyThreeInstance;
+    private GameObject flyingTitleEnemyFourInstance;
+
+    private bool firstCanBeInstantiated = false;
+    private bool secondCanBeInstantiated = false;
 
     private bool creditsOpen; // If these are true and ControllerInput is called with current selected EventSystem == null select creditsBackButton
     private bool warningOpen;
@@ -43,12 +53,43 @@ public class MainMenuController : MonoBehaviour
         }
         //fader.alpha = 1;
         //fader.DOFade(0, 1).SetUpdate(true);
+        StartCoroutine(InstantiateFirstSetFlyingDrones());
+        StartCoroutine(InstantiateSecondSetFlyingDrones());
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (firstCanBeInstantiated)
+        {
+            flyingTitleEnemyOneInstance = Instantiate(flyingTitleEnemyOne);
+            flyingTitleEnemyTwoInstance = Instantiate(flyingTitleEnemyTwo);
+            flyingTitleEnemyOneInstance.transform.SetParent(gameObject.transform.GetChild(0));
+            flyingTitleEnemyTwoInstance.transform.SetParent(gameObject.transform.GetChild(0));
+            firstCanBeInstantiated = false;
+        }
+        if (secondCanBeInstantiated)
+        {
+            flyingTitleEnemyThreeInstance = Instantiate(flyingTitleEnemyThree);
+            flyingTitleEnemyFourInstance = Instantiate(flyingTitleEnemyFour);
+            flyingTitleEnemyThreeInstance.transform.SetParent(gameObject.transform.GetChild(0));
+            flyingTitleEnemyFourInstance.transform.SetParent(gameObject.transform.GetChild(0));
+            secondCanBeInstantiated = false;
+        }
+    }
 
+    private IEnumerator InstantiateFirstSetFlyingDrones()
+    {
+        firstCanBeInstantiated = false;
+        yield return new WaitForSeconds(8);
+        firstCanBeInstantiated = true;
+    }
+
+    private IEnumerator InstantiateSecondSetFlyingDrones()
+    {
+        secondCanBeInstantiated = false;
+        yield return new WaitForSeconds(15);
+        secondCanBeInstantiated = true;
     }
 
     //Starts new game file while asking to delete the old one if it exists.
@@ -109,6 +150,8 @@ public class MainMenuController : MonoBehaviour
             .DOFade(0, .2f)
             .SetUpdate(true);
 
+        warningPopUp.SetActive(false);
+        warningOpen = false;
         StartGame();
     }
 
@@ -130,7 +173,7 @@ public class MainMenuController : MonoBehaviour
             .DOFade(0, .3f)
             .SetUpdate(true);
         credits
-            .DOAnchorPos(Vector2.zero, .3f)
+            .DOAnchorPos(new Vector2(0, -50), .3f)
             .SetUpdate(true);
 
         creditsOpen = true;
