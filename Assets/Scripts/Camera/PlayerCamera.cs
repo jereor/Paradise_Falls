@@ -90,7 +90,6 @@ public class PlayerCamera : MonoBehaviour
 
     public void CameraShake(float intensity, float time)
     {
-        Debug.Log("GG");
         StartCoroutine(Shake(intensity, time));
     }
 
