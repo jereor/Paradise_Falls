@@ -36,6 +36,10 @@ public class SaveData
 
     public string camera;
 
+    public float masterVolume;
+    public float effectsVolume;
+    public float musicVolume;
+
     /*
      *  Constructor for creating SaveData from given object.
      *  Personalize data when needed. 

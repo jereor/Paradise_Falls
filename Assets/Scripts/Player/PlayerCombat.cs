@@ -121,6 +121,10 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private float heavySlowDuration;
     [SerializeField] private float timeScaleWhenSlowed;
 
+    // Booleans for PlayerPlaySound.cs
+    private bool playSoundHit = false;
+    private bool playSoundWeakPointHit = false;
+
     private void Awake()
     {
         Instance = this;
@@ -583,13 +587,15 @@ public class PlayerCombat : MonoBehaviour
 
         Collider2D[] hitBreakables = Physics2D.OverlapBoxAll(attackPoint.position, new Vector2(attackRangeX, attackRangeY), 0f, breakableLayer);
 
-        Debug.Log("DEALING DMG!! combo hit: " + comboIndex + " Heavy?: " + heavyHit);
+        //Debug.Log("DEALING DMG!! combo hit: " + comboIndex + " Heavy?: " + heavyHit);
         // Normal combo hits 1 and 2
         if (comboIndex < 3 && !heavyHit)
         {
             // Dealing damage to enemies
             if (hitEnemies.Length != 0)
             {
+                playSoundHit = true;
+
                 StartCoroutine(HitSlowTime(slowDuration));
                 PlayParticleEffect(comboIndex, heavyHit, hitEnemies, enemyLayer);
                 DealDamageTo(hitEnemies, lightDamage, kbOnLight, knockbackForceLight, enemyLayer);
@@ -599,6 +605,8 @@ public class PlayerCombat : MonoBehaviour
             // If we hit weakpoint we deal only the amount from weakpoint hit and "skip" checkin hitBosses colliders (prevent from dealing weakpoint + normal damage on one hit)
             if (hitBossesWeakPoint.Length != 0)
             {
+                playSoundWeakPointHit = true;
+
                 StartCoroutine(HitSlowTime(slowDuration));
                 PlayParticleEffect(comboIndex, heavyHit, hitEnemies, bossWeakPointLayer);
                 // Deal damage
@@ -608,6 +616,8 @@ public class PlayerCombat : MonoBehaviour
             }
             else if (hitBosses.Length != 0)
             {
+                playSoundHit = true;
+
                 StartCoroutine(HitSlowTime(slowDuration));
                 PlayParticleEffect(comboIndex, heavyHit, hitEnemies, bossLayer);
                 DealDamageTo(hitBosses, lightDamage, kbOnLight, knockbackForceLight, bossLayer);
@@ -628,6 +638,8 @@ public class PlayerCombat : MonoBehaviour
         // Normal combo hit 3 aka last hit of combo
         else if (comboIndex == 3 && !heavyHit)
         {
+            playSoundWeakPointHit = true;
+
             if (hitEnemies.Length != 0)
             {
                 StartCoroutine(HitSlowTime(heavySlowDuration));
@@ -666,6 +678,7 @@ public class PlayerCombat : MonoBehaviour
         // Heavy hit
         if (heavyHit)
         {
+            playSoundWeakPointHit = true;
             // Dealing damage to enemies
             if (hitEnemies.Length != 0)
             {
@@ -1132,5 +1145,28 @@ public class PlayerCombat : MonoBehaviour
     public void UpgradeThrowMaxChargeTime(float time)
     {
         maxChargeTime -= time;
+    }
+
+    // For PlayerPlaySound to track these states
+    public bool getPlaySoundHit()
+    {
+        if (playSoundHit)
+        {
+            playSoundHit = false;
+            return true;
+        }
+        else
+            return false;
+    }
+
+    public bool getPlaySoundWPHit()
+    {
+        if (playSoundWeakPointHit)
+        {
+            playSoundWeakPointHit = false;
+            return true;
+        }
+        else
+            return false;
     }
 }

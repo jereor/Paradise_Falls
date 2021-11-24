@@ -56,7 +56,7 @@ Material:
     - _Radius: 0.08
     - _RemovedSegments: 0
     - _Rotation: 0
-    - _SegmentCount: 5
+    - _SegmentCount: 9
     - _SegmentSpacing: 0.003
     m_Colors:
     - _Color: {r: 1, g: 0.7664156, b: 0, a: 0}

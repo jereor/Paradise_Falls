@@ -81,6 +81,11 @@ public class SFXController : MonoBehaviour
         Instance = this;
     }
 
+    public void Test()
+    {
+        Debug.Log("This is Test");
+    }
+
     public void PlayRandomPlayerStepSound()
     {
         int random = Random.Range(0, 5);

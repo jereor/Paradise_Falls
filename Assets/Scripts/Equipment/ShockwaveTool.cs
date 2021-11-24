@@ -39,6 +39,11 @@ public class ShockwaveTool : MonoBehaviour
     private float nextDash = -1;
     private float timeDashed = -1;
 
+    // Booleans for PlayerPlaySound.cs
+    public bool playSoundDive = false;
+    public bool playSoundJump = false;
+    public bool playSoundDash = false;
+
     private void Start()
     {
         playerScript = gameObject.transform.parent.GetComponent<Player>();
@@ -57,7 +62,7 @@ public class ShockwaveTool : MonoBehaviour
     {
         ShockwaveJumpUsed = true;
         shockwaveJumpEffect.Play();
-        SFXController.Instance.PlayPlayerAirJumpSound();
+        playSoundJump = true;
     }
 
     public void ResetShockwaveJump()
@@ -70,7 +75,7 @@ public class ShockwaveTool : MonoBehaviour
     {
         ShockwaveDiveUsed = true;
         shockwaveDiveGraphics.SetActive(true);
-        SFXController.Instance.PlayPlayerAirDiveSound();
+        playSoundDive = true;
     }
 
     // Cancel Shockwave Dive: Triggered from PlayerMovement when deactivating dive
@@ -117,6 +122,8 @@ public class ShockwaveTool : MonoBehaviour
                 ShockwaveDashUsed = true;
                 posBeforeDash = transform.position;
                 horizontal = playerMovementScript.horizontal;
+
+                playSoundDash = true;
             }
             else
                 Debug.Log("Not enough energy!");
@@ -155,5 +162,39 @@ public class ShockwaveTool : MonoBehaviour
         }
 
         ShockwaveAttackUsed = false;
+    }
+
+    // For PlayerPlaySound to track these states
+    public bool getPlaySoundDive()
+    {
+        if (playSoundDive)
+        {
+            playSoundDive = false;
+            return true;
+        }
+        else
+            return false;
+    }
+
+    public bool getPlaySoundJump()
+    {
+        if (playSoundJump)
+        {
+            playSoundJump = false;
+            return true;
+        }
+        else
+            return false;
+    }
+
+    public bool getPlaySoundDash()
+    {
+        if (playSoundDash)
+        {
+            playSoundDash = false;
+            return true;
+        }
+        else
+            return false;
     }
 }

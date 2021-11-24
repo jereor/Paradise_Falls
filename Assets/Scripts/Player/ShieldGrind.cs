@@ -12,7 +12,7 @@ public class ShieldGrind : MonoBehaviour
     [SerializeField] LayerMask pipeLayer;
     [SerializeField] LayerMask groundLayer;
 
-    [SerializeField] private float speed; // current speed
+    [SerializeField] private float speed;// current speed
     [SerializeField] private float acceleration;
     [SerializeField] private float accMultiplier;
     [SerializeField] private float maxSpeed;
@@ -178,5 +178,15 @@ public class ShieldGrind : MonoBehaviour
     public bool getGrinding()
     {
         return grinding;
+    }
+
+    public float getSpeed()
+    {
+        return speed;
+    }
+
+    public float getMaxSpeed()
+    {
+        return maxSpeed;
     }
 }
