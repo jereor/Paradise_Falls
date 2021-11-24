@@ -54,7 +54,7 @@ public class SettingsController : MonoBehaviour
             .DOFade(0, .3f)
             .SetUpdate(true);
         _options
-            .DOAnchorPos(Vector2.zero, .3f)
+            .DOAnchorPos(new Vector2(0, -50), .3f)
             .SetUpdate(true);
 
         settingsOpen = true;

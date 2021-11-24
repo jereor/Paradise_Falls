@@ -13211,14 +13211,6 @@ PrefabInstance:
       propertyPath: playerEnergy
       value: 
       objectReference: {fileID: 761326263}
-    - target: {fileID: 546072369506551021, guid: a655144b432639548a8f6b7175f6390a, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 546072369506551021, guid: a655144b432639548a8f6b7175f6390a, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 1052055042152382324, guid: a655144b432639548a8f6b7175f6390a, type: 3}
       propertyPath: playerInteractions
       value: 
@@ -13226,62 +13218,6 @@ PrefabInstance:
     - target: {fileID: 1052055042152382327, guid: a655144b432639548a8f6b7175f6390a, type: 3}
       propertyPath: m_Name
       value: '[Canvas]'
-      objectReference: {fileID: 0}
-    - target: {fileID: 1649529642514847930, guid: a655144b432639548a8f6b7175f6390a, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1649529642514847930, guid: a655144b432639548a8f6b7175f6390a, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1649529642514847930, guid: a655144b432639548a8f6b7175f6390a, type: 3}
-      propertyPath: m_AnchorMin.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1919087006143150412, guid: a655144b432639548a8f6b7175f6390a, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1919087006143150412, guid: a655144b432639548a8f6b7175f6390a, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3146875983170945625, guid: a655144b432639548a8f6b7175f6390a, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0.77
-      objectReference: {fileID: 0}
-    - target: {fileID: 3146875983170945625, guid: a655144b432639548a8f6b7175f6390a, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3543512945631351337, guid: a655144b432639548a8f6b7175f6390a, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4216089554014856299, guid: a655144b432639548a8f6b7175f6390a, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4216089554014856299, guid: a655144b432639548a8f6b7175f6390a, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4216089554014856299, guid: a655144b432639548a8f6b7175f6390a, type: 3}
-      propertyPath: m_AnchorMin.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6096916873181771368, guid: a655144b432639548a8f6b7175f6390a, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0.77
-      objectReference: {fileID: 0}
-    - target: {fileID: 6096916873181771368, guid: a655144b432639548a8f6b7175f6390a, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6096916873181771368, guid: a655144b432639548a8f6b7175f6390a, type: 3}
-      propertyPath: m_AnchorMin.x
-      value: 0.77
       objectReference: {fileID: 0}
     - target: {fileID: 6490484963523106038, guid: a655144b432639548a8f6b7175f6390a, type: 3}
       propertyPath: playerInteractions
