@@ -18,6 +18,7 @@ public class PlayerCamera : MonoBehaviour
 
     // Main camera
     private GameObject mainCam;
+    private CinemachineVirtualCamera virtualCam;
 
     // Cinemachine Components
     private CinemachineFramingTransposer transposer;
@@ -26,12 +27,13 @@ public class PlayerCamera : MonoBehaviour
     {
         Instance = this;
         mainCam = GameObject.Find("Main Camera");
-        transposer = GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachineFramingTransposer>();
+        virtualCam = GetComponent<CinemachineVirtualCamera>();
+        transposer = virtualCam.GetCinemachineComponent<CinemachineFramingTransposer>();
     }
 
     private void OnEnable()
     {
-        GetComponent<CinemachineVirtualCamera>().m_Lens.OrthographicSize = zoomOutLevel;
+        virtualCam.m_Lens.OrthographicSize = zoomOutLevel;
     }
 
     public void ChangeCameraOffset(float timer, bool falling, float x)
@@ -39,20 +41,6 @@ public class PlayerCamera : MonoBehaviour
         // Check if the camera is currently active so we don't try to access a deactivated camera
         if (gameObject.activeInHierarchy)
             StartCoroutine(Offset(timer, transposer.m_TrackedObjectOffset.x, x, falling));
-    }
-
-    public void ChangeBlendSpeed(float value)
-    {
-        var brain = mainCam.GetComponent<CinemachineBrain>();
-        brain.m_DefaultBlend.m_Time = value;
-    }
-
-    // Smooth camera follow: Activated when climbing to dampen camera follow speed
-    public void SmoothFollow(float smoothTime)
-    {
-        // Check if the camera is currently active so we don't try to access a deactivated camera
-        if (gameObject.activeInHierarchy)
-            StartCoroutine(Smooth(smoothTime)); // Set smoothing for the required time
     }
 
     private IEnumerator Offset(float timer, float start, float end, bool falling)
@@ -74,10 +62,40 @@ public class PlayerCamera : MonoBehaviour
         }
     }
 
+    public void ChangeBlendSpeed(float value)
+    {
+        if (gameObject.activeInHierarchy)
+        {
+            var brain = mainCam.GetComponent<CinemachineBrain>();
+            brain.m_DefaultBlend.m_Time = value;
+        }
+    }
+
+    // Smooth camera follow: Activated when climbing to dampen camera follow speed
+    public void SmoothFollow(float smoothTime)
+    {
+        // Check if the camera is currently active so we don't try to access a deactivated camera
+        if (gameObject.activeInHierarchy)
+            StartCoroutine(Smooth(smoothTime)); // Set smoothing for the required time
+    }
+
     private IEnumerator Smooth(float smoothTime)
     {
         transposer.m_UnlimitedSoftZone = true;
         yield return new WaitForSeconds(smoothTime);
         transposer.m_UnlimitedSoftZone = false;
+    }
+
+    public void CameraShake(float intensity, float time)
+    {
+        StartCoroutine(Shake(intensity, time));
+    }
+
+    private IEnumerator Shake(float intensity, float time)
+    {
+        var perlin = virtualCam.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+        perlin.m_AmplitudeGain = intensity;
+        yield return new WaitForSeconds(time);
+        perlin.m_AmplitudeGain = 0f;
     }
 }
