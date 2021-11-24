@@ -12,11 +12,25 @@ public class AudioSourceMute : MonoBehaviour
     public float fadeDuration = 0.2f;
     private Coroutine fadeCoroutine = null;
 
+    [Header("Plays random sound from these (variation)")]
+    public AudioClip[] clipsToChoose;
+
     void Start()
     {
         // Finds the Audio Listener and the Audio Source on the object
         audioListener = GameObject.FindGameObjectWithTag("Player").GetComponent<AudioListener>();
         audioSource = gameObject.GetComponent<AudioSource>();
+
+        if (clipsToChoose.Length > 0)
+        {
+            audioSource.clip = clipsToChoose[(int)Random.Range(0, clipsToChoose.Length - 1)];
+        }
+        distanceFromPlayer = Vector3.Distance(transform.position, audioListener.transform.position);
+        if (distanceFromPlayer > audioSource.maxDistance)
+        {
+            audioSource.Pause();
+            audioSource.volume = 0f;
+        }
     }
 
     void Update()
@@ -27,13 +41,13 @@ public class AudioSourceMute : MonoBehaviour
         if (PauseMenuController.GameIsPaused && audioSource.isPlaying)
             audioSource.Pause();
         // Game is not paused and we aren't playing!? No >:(
-        else if (!PauseMenuController.GameIsPaused && !audioSource.isPlaying)
+        else if (!PauseMenuController.GameIsPaused && distanceFromPlayer <= audioSource.maxDistance && !audioSource.isPlaying)
             audioSource.Play();
         // Player is close enough to hear my sound :)
-        else if (distanceFromPlayer <= audioSource.maxDistance)
+        else if (distanceFromPlayer <= audioSource.maxDistance && !audioSource.isPlaying)
             ToggleAudioSource(true);
         // Player is too far away to hear my sound >:.(
-        else
+        else if (distanceFromPlayer > audioSource.maxDistance && audioSource.isPlaying)
             ToggleAudioSource(false);
 
         // If audio source is emitting lerp volume with distance
