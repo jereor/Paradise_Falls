@@ -403,7 +403,7 @@ public class Player : MonoBehaviour
             if (movementScript.getWillLand())
             {
                 animator.SetBool("willLand", true);
-                PlayerCamera.Instance.CameraShake(.5f, .3f);
+                PlayerCamera.Instance.CameraShake(.8f, .3f);
             }
             else if (!movementScript.getWillLand() && animator.GetBool("willLand"))
                 animator.SetBool("willLand", false);

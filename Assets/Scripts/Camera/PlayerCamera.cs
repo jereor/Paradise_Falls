@@ -76,7 +76,9 @@ public class PlayerCamera : MonoBehaviour
     {
         // Check if the camera is currently active so we don't try to access a deactivated camera
         if (gameObject.activeInHierarchy)
+        {
             StartCoroutine(Smooth(smoothTime)); // Set smoothing for the required time
+        }
     }
 
     private IEnumerator Smooth(float smoothTime)
@@ -88,6 +90,7 @@ public class PlayerCamera : MonoBehaviour
 
     public void CameraShake(float intensity, float time)
     {
+        Debug.Log("GG");
         StartCoroutine(Shake(intensity, time));
     }
 
