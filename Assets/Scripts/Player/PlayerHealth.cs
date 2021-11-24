@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class PlayerHealth : Health
 {
     // References
+    [SerializeField] private bool usesHealthNumber;
     [SerializeField] private Image healthNumberImage;
     [SerializeField] List<Sprite> numberSprites = new List<Sprite>();
 
@@ -52,7 +53,17 @@ public class PlayerHealth : Health
 
     public void UpdateHealthNumber()
     {
-        int newHealth = (int)GetHealth();
-        healthNumberImage.sprite = numberSprites[newHealth];
+        if (usesHealthNumber && GetHealth() < 10)
+        {
+            if (!healthNumberImage.gameObject.activeInHierarchy)
+                healthNumberImage.gameObject.SetActive(true);
+
+            int newHealth = (int)GetHealth();
+            healthNumberImage.sprite = numberSprites[newHealth];
+        }
+        else
+        {
+            healthNumberImage.gameObject.SetActive(false);
+        }
     }
 }

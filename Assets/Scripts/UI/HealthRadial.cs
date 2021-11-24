@@ -73,6 +73,12 @@ public class HealthRadial : MonoBehaviour
         healthRadialMaterial.SetFloat("_SegmentCount", maxSegments);
         healthRadialMaterial.SetFloat("_RemovedSegments", removedSegments);
         healthRadialMaterial.SetColor("_Color", radialColor);
+
+        // Make sure radial looks clean on higher health numbers by removing spacing
+        if (playerHealth.GetMaxHealth() > 20)
+            healthRadialMaterial.SetFloat("_SegmentSpacing", -0.01f);
+        else
+            healthRadialMaterial.SetFloat("_SegmentSpacing", 0.002f);
     }
 
     public int GetSegments()
