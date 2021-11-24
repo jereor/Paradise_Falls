@@ -16,6 +16,8 @@ public class PlayerHealth : Health
         base.TakeDamage(amount);
         HealthRadial.Instance.RemoveSegments(amount);
         UpdateHealthNumber();
+
+        PlayerCamera.Instance.CameraShake(2, .2f);
     }
 
     public override void SetHealth(float amount)
