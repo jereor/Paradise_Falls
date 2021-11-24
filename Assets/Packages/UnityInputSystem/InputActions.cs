@@ -101,17 +101,6 @@ public class @InputActions : IInputActionCollection, IDisposable
             ],
             ""bindings"": [
                 {
-                    ""name"": """",
-                    ""id"": ""a887d257-62dc-4a14-ab9a-ae3b5f78c9de"",
-                    ""path"": ""<Gamepad>/leftStick"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Move"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
                     ""name"": ""WASD"",
                     ""id"": ""fef811f2-fb98-4394-a75d-1aa10bc03ea9"",
                     ""path"": ""2DVector"",
@@ -212,8 +201,8 @@ public class @InputActions : IInputActionCollection, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""5474105a-729c-4026-a7ba-8383f0573886"",
-                    ""path"": ""<Joystick>/stick"",
+                    ""id"": ""a887d257-62dc-4a14-ab9a-ae3b5f78c9de"",
+                    ""path"": ""<Gamepad>/leftStick"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -223,12 +212,12 @@ public class @InputActions : IInputActionCollection, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""ada6ed52-5afa-4220-8e0d-5fb2c4d77e61"",
-                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""id"": ""5474105a-729c-4026-a7ba-8383f0573886"",
+                    ""path"": ""<Joystick>/stick"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Jump"",
+                    ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -344,6 +333,17 @@ public class @InputActions : IInputActionCollection, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""c88d6764-57a3-483e-bdc7-22f49828ed92"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""HeavyMelee"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""cbc4b4ff-7e2e-412e-9eaf-512e943381b3"",
                     ""path"": ""<Keyboard>/q"",
                     ""interactions"": """",
@@ -377,6 +377,17 @@ public class @InputActions : IInputActionCollection, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""b43ad399-185f-4d78-a1ee-904a9eee6766"",
+                    ""path"": ""<Gamepad>/rightTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Dash"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""d313c016-4e0c-4161-9d2b-be0b667db074"",
                     ""path"": ""<Mouse>/leftButton"",
                     ""interactions"": """",
@@ -394,6 +405,17 @@ public class @InputActions : IInputActionCollection, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""AdvanceText"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ada6ed52-5afa-4220-8e0d-5fb2c4d77e61"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Jump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -440,6 +462,14 @@ public class @InputActions : IInputActionCollection, IDisposable
                     ""type"": ""PassThrough"",
                     ""id"": ""00d15c47-64f9-4726-a50d-932cab1c05df"",
                     ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""Inventory"",
+                    ""type"": ""Button"",
+                    ""id"": ""df4f2461-098e-4030-9049-d9791f89dee9"",
+                    ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
                 }
@@ -587,6 +617,28 @@ public class @InputActions : IInputActionCollection, IDisposable
                     ""action"": ""MapNavigation"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""19106b99-f0ed-4f82-a444-4406e71c071b"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Inventory"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1f323e97-b04d-4531-91ac-2b0568a26618"",
+                    ""path"": ""<Gamepad>/dpad/up"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Inventory"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -612,6 +664,7 @@ public class @InputActions : IInputActionCollection, IDisposable
         m_GameUI_Navigation = m_GameUI.FindAction("Navigation", throwIfNotFound: true);
         m_GameUI_Zoom = m_GameUI.FindAction("Zoom", throwIfNotFound: true);
         m_GameUI_MapNavigation = m_GameUI.FindAction("MapNavigation", throwIfNotFound: true);
+        m_GameUI_Inventory = m_GameUI.FindAction("Inventory", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -771,6 +824,7 @@ public class @InputActions : IInputActionCollection, IDisposable
     private readonly InputAction m_GameUI_Navigation;
     private readonly InputAction m_GameUI_Zoom;
     private readonly InputAction m_GameUI_MapNavigation;
+    private readonly InputAction m_GameUI_Inventory;
     public struct GameUIActions
     {
         private @InputActions m_Wrapper;
@@ -780,6 +834,7 @@ public class @InputActions : IInputActionCollection, IDisposable
         public InputAction @Navigation => m_Wrapper.m_GameUI_Navigation;
         public InputAction @Zoom => m_Wrapper.m_GameUI_Zoom;
         public InputAction @MapNavigation => m_Wrapper.m_GameUI_MapNavigation;
+        public InputAction @Inventory => m_Wrapper.m_GameUI_Inventory;
         public InputActionMap Get() { return m_Wrapper.m_GameUI; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -804,6 +859,9 @@ public class @InputActions : IInputActionCollection, IDisposable
                 @MapNavigation.started -= m_Wrapper.m_GameUIActionsCallbackInterface.OnMapNavigation;
                 @MapNavigation.performed -= m_Wrapper.m_GameUIActionsCallbackInterface.OnMapNavigation;
                 @MapNavigation.canceled -= m_Wrapper.m_GameUIActionsCallbackInterface.OnMapNavigation;
+                @Inventory.started -= m_Wrapper.m_GameUIActionsCallbackInterface.OnInventory;
+                @Inventory.performed -= m_Wrapper.m_GameUIActionsCallbackInterface.OnInventory;
+                @Inventory.canceled -= m_Wrapper.m_GameUIActionsCallbackInterface.OnInventory;
             }
             m_Wrapper.m_GameUIActionsCallbackInterface = instance;
             if (instance != null)
@@ -823,6 +881,9 @@ public class @InputActions : IInputActionCollection, IDisposable
                 @MapNavigation.started += instance.OnMapNavigation;
                 @MapNavigation.performed += instance.OnMapNavigation;
                 @MapNavigation.canceled += instance.OnMapNavigation;
+                @Inventory.started += instance.OnInventory;
+                @Inventory.performed += instance.OnInventory;
+                @Inventory.canceled += instance.OnInventory;
             }
         }
     }
@@ -847,5 +908,6 @@ public class @InputActions : IInputActionCollection, IDisposable
         void OnNavigation(InputAction.CallbackContext context);
         void OnZoom(InputAction.CallbackContext context);
         void OnMapNavigation(InputAction.CallbackContext context);
+        void OnInventory(InputAction.CallbackContext context);
     }
 }

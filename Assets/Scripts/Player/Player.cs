@@ -38,6 +38,8 @@ public class Player : MonoBehaviour
     [SerializeField] private bool shockwaveAttackUnlocked = false;
     [SerializeField] private bool shieldGrindUnlocked = false;
 
+    private InventoryPanelController inventoryController;
+
     // Component references
     public Animator animator;
     public Rigidbody2D rb;
@@ -87,6 +89,7 @@ public class Player : MonoBehaviour
         currentState = State.Idle;
         rb = gameObject.GetComponent<Rigidbody2D>();
         animator = gameObject.GetComponent<Animator>();
+        inventoryController = GameObject.Find("[Canvas]").GetComponent<InventoryPanelController>();
 
         TextStyleHealth.normal.textColor = Color.green;
         TextStyleEnergy.fontSize = 30;
@@ -838,6 +841,7 @@ public class Player : MonoBehaviour
     public void UnlockShield()
     {
         shieldUnlocked = true;
+        inventoryController.UpdateSkillView();
     }
 
     public bool MultitoolUnlocked()
@@ -847,6 +851,7 @@ public class Player : MonoBehaviour
     public void UnlockMultitool()
     {
         multitoolUnlocked = true;
+        inventoryController.UpdateSkillView();
     }
 
     public bool WalljumpUnlocked()
@@ -856,6 +861,7 @@ public class Player : MonoBehaviour
     public void UnlockWalljump()
     {
         walljumpUnlocked = true;
+        inventoryController.UpdateSkillView();
     }
 
     public bool GrapplingUnlocked()
@@ -865,6 +871,7 @@ public class Player : MonoBehaviour
     public void UnlockGrappling()
     {
         grapplingUnlocked = true;
+        inventoryController.UpdateSkillView();
     }
 
     public bool DashUnlocked()
@@ -874,6 +881,7 @@ public class Player : MonoBehaviour
     public void UnlockDash()
     {
         dashUnlocked = true;
+        inventoryController.UpdateSkillView();
     }
 
     public bool ShockwaveJumpAndDiveUnlocked()
@@ -883,6 +891,7 @@ public class Player : MonoBehaviour
     public void UnlockJumpAndDive()
     {
         shockwaveJumpAndDiveUnlocked = true;
+        inventoryController.UpdateSkillView();
     }
 
     public bool ShockwaveAttackUnlocked()
@@ -892,6 +901,7 @@ public class Player : MonoBehaviour
     public void UnlockShockwaveAttack()
     {
         shockwaveAttackUnlocked = true;
+        inventoryController.UpdateSkillView();
     }
     public bool ShieldGrindUnlocked()
     {
@@ -900,5 +910,6 @@ public class Player : MonoBehaviour
     public void UnlockShieldGrind()
     {
         shieldGrindUnlocked = true;
+        inventoryController.UpdateSkillView();
     }
 }
