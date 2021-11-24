@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Audio;
 
 public class GameStatus : MonoBehaviour
 {
@@ -135,5 +136,18 @@ public class GameStatus : MonoBehaviour
     public void UpdateCamera(string currentCamera)
     {
         dataToSave.camera = currentCamera;
+    }
+
+    public void UpdateMasterVolume(float volume)
+    {
+        dataToSave.masterVolume = volume;
+    }
+    public void UpdateEffectVolume(float volume)
+    {
+        dataToSave.effectsVolume = volume;
+    }
+    public void UpdateMusicVolume(float volume)
+    {
+        dataToSave.musicVolume = volume;
     }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
-
+using UnityEngine.Audio;
 public class SettingsController : MonoBehaviour
 {
     public CanvasGroup buttons;
@@ -11,10 +11,27 @@ public class SettingsController : MonoBehaviour
     public bool settingsOpen;
     public Button settingsBackButton;
     public Button settingsButton;
+
+    // Sliders
+    public Slider masterVolumeSlider;
+    public Slider effectVolumeSlider;
+    public Slider musicVolumeSlider;
+
+    public AudioMixer mainMixer;
+
     // Start is called before the first frame update
     void Start()
     {
         _options = GetComponent<RectTransform>();
+
+        // Set sliders to correct volumes
+        if (mainMixer.GetFloat("MasterVolume", out float masterValue))
+            masterVolumeSlider.value = masterValue;
+        if (mainMixer.GetFloat("EffectVolume", out float effectValue))
+            effectVolumeSlider.value = effectValue;
+        if (mainMixer.GetFloat("MusicVolume", out float musicValue))
+            musicVolumeSlider.value = musicValue;
+
     }
 
     // Update is called once per frame
@@ -56,5 +73,24 @@ public class SettingsController : MonoBehaviour
 
         settingsOpen = false;
         settingsButton.Select();
+    }
+
+    public void SubmitMasterSliderValue(Slider slider)
+    {
+        mainMixer.SetFloat("MasterVolume", slider.value);
+        if(GameStatus.status != null)
+            GameStatus.status.UpdateMasterVolume(slider.value);
+    }
+    public void SubmitEffectliderValue(Slider slider)
+    {
+        mainMixer.SetFloat("EffectVolume", slider.value);
+        if (GameStatus.status != null)
+            GameStatus.status.UpdateEffectVolume(slider.value);
+    }
+    public void SubmitMusicSliderValue(Slider slider)
+    {
+        mainMixer.SetFloat("MusicVolume", slider.value);
+        if (GameStatus.status != null)
+            GameStatus.status.UpdateMusicVolume(slider.value);
     }
 }

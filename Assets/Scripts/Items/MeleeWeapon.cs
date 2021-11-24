@@ -50,10 +50,13 @@ public class MeleeWeapon : MonoBehaviour
     public ParticleSystem hitBoostedPS;
     public ParticleSystem weakPointPS;
 
+    // SFX script that plays melee weapons sounds
+    public MeleeWeaponSFX sfxScript;
+
     private void Start()
     {
         myRB = GetComponent<Rigidbody2D>();
-
+        sfxScript = gameObject.GetComponent<MeleeWeaponSFX>();
         defaultGravityScale = myRB.gravityScale;
         // Feels better to set gravity scale to 0 when throwing in 2D Game
         myRB.gravityScale = 0f;
@@ -76,6 +79,11 @@ public class MeleeWeapon : MonoBehaviour
         //PlayerPull();
 
         MoveWithGrapplePoint();
+
+        if (gameObject.transform.position.y > highestYpos)
+            highestYpos = gameObject.transform.position.y;
+        if (gameObject.transform.position.x > highestXpos)
+            highestXpos = gameObject.transform.position.x;
     }
 
     private void WeaponThrow()
@@ -127,12 +135,31 @@ public class MeleeWeapon : MonoBehaviour
         }
     }
 
+    private float highestYpos = 0f;
+    private float highestXpos = 0f;
     private void OnCollisionEnter2D(Collision2D collision)
     {
         // Ground
         //Debug.Log(collision.collider.gameObject.name);
         if (collision.collider.gameObject.layer == LayerMask.NameToLayer("Ground"))
         {
+            // 15f is 
+            //sfxScript.PlayHitEnvironmentSound();
+            //if (highestYpos == 0f)
+            //{
+            //    sfxScript.PlayHitEnvironmentSound();
+
+            //    highestYpos = gameObject.transform.position.y;
+            //}
+            ////Debug.Log(((Vector2)transform.position - lastPos).magnitude);
+            //else
+            if (!landed || Mathf.Abs(Mathf.Abs(gameObject.transform.position.y) - Mathf.Abs(highestYpos)) > 0.5f || Mathf.Abs(Mathf.Abs(gameObject.transform.position.x) - Mathf.Abs(highestXpos)) > 0.5f)
+            {
+                Debug.Log(transform.position.y - highestYpos);
+                sfxScript.PlayHitEnvironmentSound();
+                highestYpos = gameObject.transform.position.y;
+                highestXpos = gameObject.transform.position.x;
+            }
             if (!landed)
             {
                 myRB.gravityScale = defaultGravityScale;
@@ -210,6 +237,8 @@ public class MeleeWeapon : MonoBehaviour
         // Collision with GrapplePoint
         else if(collision.collider.gameObject.layer == LayerMask.NameToLayer("GrapplePoint"))
         {
+            sfxScript.PlayHitEnemySound();
+
             gameObject.transform.parent = collision.gameObject.transform;
             // Makes the player and melee weapon to collide until it is pulled again. Weapon can be used as a platform during grapple.
             Physics2D.IgnoreLayerCollision(3, 13, false);
@@ -387,6 +416,7 @@ public class MeleeWeapon : MonoBehaviour
         StartCoroutine(HitSlowTime(slowDuration));
         if (col.gameObject.layer == LayerMask.NameToLayer("BossWeakPoint"))
         {
+            sfxScript.PlayWPHitEnemySound();
             if (powerBoosted)
             {
                 col.gameObject.GetComponentInParent<Health>().TakeDamage(powerBoostedDamage * weakPointMultiplier);
@@ -413,22 +443,26 @@ public class MeleeWeapon : MonoBehaviour
         {
             if (powerBoosted)
             {
+                sfxScript.PlayWPHitEnemySound();
                 col.gameObject.GetComponentInParent<Health>().TakeDamage(powerBoostedDamage);
                 Instantiate(hitBoostedPS, col.gameObject.transform.position, Quaternion.identity);
             }
             else if (beingPulled)
             {
+                sfxScript.PlayHitEnemySound();
                 col.gameObject.GetComponentInParent<Health>().TakeDamage(weaponPullDamage);
                 Instantiate(hitThrowPullPS, col.gameObject.transform.position, Quaternion.identity);
             }
             else if (maxCharged)
             {
+                sfxScript.PlayWPHitEnemySound();
                 col.gameObject.GetComponentInParent<Health>().TakeDamage(throwMaxChargeDmg);
                 maxCharged = false;
                 Instantiate(weakPointPS, col.gameObject.transform.position, Quaternion.identity);
             }
             else
             {
+                sfxScript.PlayHitEnemySound();
                 col.gameObject.GetComponentInParent<Health>().TakeDamage(weaponThrowDamage);
                 Instantiate(hitThrowPullPS, col.gameObject.transform.position, Quaternion.identity);
             }
@@ -447,6 +481,9 @@ public class MeleeWeapon : MonoBehaviour
     {
         if (Time.timeScale != 1f)
             Time.timeScale = 1f;
+
+        highestYpos = 0f;
+        highestXpos = 0f;
         // Set collision detection back if this was set to ignore
         Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Ground"), LayerMask.NameToLayer("MeleeWeapon"), false);
         Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Enemy"), LayerMask.NameToLayer("MeleeWeapon"), false);
