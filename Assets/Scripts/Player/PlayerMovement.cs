@@ -203,6 +203,7 @@ public class PlayerMovement : MonoBehaviour
             rb.velocity = new Vector2(jumpForce, jumpForce);
             // Set tracking float here that we jumped from some wall
             wallJumpDir = Mathf.Sign(transform.localScale.x);
+            shockwaveTool.ResetDash();
         }
         // Coyotetime wall jump 
         else if (context.started && allowCoyoteWallJump
@@ -213,6 +214,7 @@ public class PlayerMovement : MonoBehaviour
             rb.velocity = new Vector2(jumpForce, jumpForce);
             // wallJumpDir here is opposite of opposite :)
             wallJumpDir = Mathf.Sign(-transform.localScale.x);
+            shockwaveTool.ResetDash();
         }
 
         // -AIR DIVE-
