@@ -1959,7 +1959,7 @@ MonoBehaviour:
     m_Mode: 4
     m_WrapAround: 0
     m_SelectOnUp: {fileID: 2389140454322793775}
-    m_SelectOnDown: {fileID: 5825409322836733958}
+    m_SelectOnDown: {fileID: 4709342434777703073}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
@@ -2389,7 +2389,7 @@ RectTransform:
   - {fileID: 2040937953217317064}
   - {fileID: 2046587251492584589}
   m_Father: {fileID: 5773312798665319363}
-  m_RootOrder: 5
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -2596,9 +2596,9 @@ RectTransform:
   - {fileID: 3085091633135540401}
   - {fileID: 2558157593614025918}
   - {fileID: 2930769257234257638}
-  - {fileID: 3808072294208925329}
-  - {fileID: 785059105282086225}
   - {fileID: 6881680873796848759}
+  - {fileID: 785059105282086225}
+  - {fileID: 3808072294208925329}
   m_Father: {fileID: 6091765807480102254}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3292,7 +3292,7 @@ Transform:
   - {fileID: 7779828849669981302}
   - {fileID: 6895781934952125541}
   m_Father: {fileID: 5773312798665319363}
-  m_RootOrder: 3
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4692828504380291973
 GameObject:
@@ -4073,7 +4073,7 @@ MonoBehaviour:
   m_Navigation:
     m_Mode: 4
     m_WrapAround: 0
-    m_SelectOnUp: {fileID: 2389140454322793775}
+    m_SelectOnUp: {fileID: 5486640606327182392}
     m_SelectOnDown: {fileID: 5825409322836733958}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
@@ -4409,9 +4409,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Music Volume
-
-'
+  m_text: Music
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 8b29aaa3eec7468097ff07adfcf29ac9, type: 2}
