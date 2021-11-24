@@ -6,11 +6,13 @@ public class WeaponInteraction : MonoBehaviour
 {
     public MeleeWeapon weaponScript;
 
+    private bool leftPlayersCollider = false;
+
     //private List<Collider2D> collidedAlreadyOnPull = new List<Collider2D>();
     private void OnTriggerEnter2D(Collider2D collision)
     {
         // If Weapon has landed and Collided with Player
-        if (collision.gameObject.layer == LayerMask.NameToLayer("Player") && weaponScript.getLanded())
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Player") && leftPlayersCollider)
         {
             weaponScript.Interact(collision.gameObject);
         }
@@ -30,5 +32,11 @@ public class WeaponInteraction : MonoBehaviour
         {
             weaponScript.Interact(collision.gameObject);
         }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Player") && !leftPlayersCollider)
+            leftPlayersCollider = true;
     }
 }

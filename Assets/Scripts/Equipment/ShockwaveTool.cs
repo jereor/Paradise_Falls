@@ -164,6 +164,13 @@ public class ShockwaveTool : MonoBehaviour
         ShockwaveAttackUsed = false;
     }
 
+    public void ResetDash()
+    {
+        ShockwaveDashUsed = false;
+        nextDash = Time.time;
+    }
+
+
     // For PlayerPlaySound to track these states
     public bool getPlaySoundDive()
     {

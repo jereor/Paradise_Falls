@@ -74,4 +74,9 @@ public class ConveyorBelt : MonoBehaviour
             rightEndPointCollider.gameObject.layer = LayerMask.NameToLayer("Default");
         }
     }
+
+    public void ChangeDirection()
+    {
+        gameObject.transform.parent.localScale = new Vector3(gameObject.transform.parent.localScale.x * -1, 1, 1);
+    }
 }
