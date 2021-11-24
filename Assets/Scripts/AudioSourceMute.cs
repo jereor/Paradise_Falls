@@ -11,6 +11,7 @@ public class AudioSourceMute : MonoBehaviour
     public float minVolume = 0.3f;
     public float fadeDuration = 0.2f;
     private Coroutine fadeCoroutine = null;
+    private Collider2D myCollider;
 
     [Header("Plays random sound from these (variation)")]
     public bool playIdleSound = true;
@@ -21,7 +22,8 @@ public class AudioSourceMute : MonoBehaviour
         // Finds the Audio Listener and the Audio Source on the object
         audioListener = GameObject.FindGameObjectWithTag("Player").GetComponent<AudioListener>();
         audioSource = gameObject.GetComponent<AudioSource>();
-
+        if (TryGetComponent(out Collider2D col))
+            myCollider = col;
         if (clipsToChoose.Length > 0)
         {
             audioSource.clip = clipsToChoose[(int)Random.Range(0, clipsToChoose.Length - 1)];
@@ -36,7 +38,7 @@ public class AudioSourceMute : MonoBehaviour
 
     void Update()
     {
-        if (playIdleSound)
+        if (playIdleSound && audioSource.loop)
         {
             distanceFromPlayer = Vector3.Distance(transform.position, audioListener.transform.position);
 
@@ -56,6 +58,11 @@ public class AudioSourceMute : MonoBehaviour
             // If audio source is emitting lerp volume with distance
             if (audioSource.isPlaying && fadeCoroutine == null)
                 audioSource.volume = Mathf.Lerp(1f, minVolume, distanceFromPlayer / audioSource.maxDistance);
+        }
+        if (!myCollider.enabled && audioSource.loop)
+        {
+            audioSource.Stop();
+            audioSource.loop = false;
         }
     }
     // Fades volume to targetVolume if pause is true set audiosource to pause mode when fade is done
