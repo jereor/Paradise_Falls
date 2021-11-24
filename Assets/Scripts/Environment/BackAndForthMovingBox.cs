@@ -180,6 +180,13 @@ public class BackAndForthMovingBox : MonoBehaviour
     {
         if (chainController.getIfCut() && !isChainCut && cuttableChain)
         {
+            // If chain is cut idle sound should not play anymore
+            if (TryGetComponent(out AudioSourceMute script))
+            {
+                script.playIdleSound = false;
+                script.ToggleLoop(false);
+            }
+
             isChainCut = true;
             StopAllCoroutines();
             rb.isKinematic = false; // Change the rigidbody to dynamic and set the parameters.
