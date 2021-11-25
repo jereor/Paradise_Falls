@@ -17,6 +17,10 @@ public class AudioSourceMute : MonoBehaviour
     public bool playIdleSound = true;
     public AudioClip[] clipsToChoose;
 
+    [Header("Sound to be played if do event")]
+    public AudioClip[] shutdownSound;
+    public bool destroyAfterShutdown = true;
+
     void Start()
     {
         // Finds the Audio Listener and the Audio Source on the object
@@ -105,5 +109,36 @@ public class AudioSourceMute : MonoBehaviour
     public void ToggleLoop(bool b)
     {
         audioSource.loop = b;
+    }
+
+    //Toggles audio playing (conveyor belt)
+    public void TogglePause()
+    {
+        if (audioSource.loop)
+        {
+            ToggleLoop(false);
+            ToggleAudioSource(false);
+        }
+        else
+        {
+            ToggleLoop(true);
+            ToggleAudioSource(true);
+        }
+    }
+
+    public void PlayShutdownSound()
+    {
+        // Play sound
+        audioSource.Stop();
+        AudioClip soundToPlay = shutdownSound[(int)Random.Range(0, shutdownSound.Length - 1)];
+        audioSource.PlayOneShot(soundToPlay);
+        if (destroyAfterShutdown)
+            StartCoroutine(DestroyAfterSound(soundToPlay.length));
+    }
+    // Destroys object after playing sound (fences)
+    private IEnumerator DestroyAfterSound(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        Destroy(gameObject);
     }
 }
