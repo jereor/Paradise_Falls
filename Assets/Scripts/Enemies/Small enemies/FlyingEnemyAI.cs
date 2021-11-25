@@ -45,6 +45,8 @@ public class FlyingEnemyAI : MonoBehaviour
     [SerializeField] private float shootingDistance = 10f;
     [SerializeField] private float wallCheckDistance = 2f; // How far of a wall the enemy truns around.
     [SerializeField] private float knockbackForce = 5f;
+    [SerializeField] private float shakeFrequency;
+    [SerializeField] private float shakeAmount;
 
     [Header("Health and Energy Spawn values")]
     [SerializeField] private float healthProbability; // Value between 1-100. Higher the better chance.
@@ -64,6 +66,7 @@ public class FlyingEnemyAI : MonoBehaviour
     private bool isTargetInBehaviourRange = false;
     private Vector2 lastSeenTargetPosition;
     private bool isFlashingRed = true;
+    private bool shaking = false;
 
     private Collider2D _collider;
     private Vector2 spawnPosition;
@@ -184,6 +187,8 @@ public class FlyingEnemyAI : MonoBehaviour
                 reachedEndOfPath = false;
             }
 
+
+
             //Calculates the next path point and the amount of force applied
             Vector2 direction = ((Vector2)path.vectorPath[currentWaypoint] - rb.position).normalized;
             Vector2 force = direction * speed * Time.deltaTime;
@@ -197,7 +202,9 @@ public class FlyingEnemyAI : MonoBehaviour
             ObstacleCheck();
 
             Rotate();
-            Debug.Log(transform.rotation.z);
+
+            if(!shaking && !health.IsDead())
+                StartCoroutine(Shake());
 
             switch (enemyState)
             {
@@ -393,6 +400,17 @@ public class FlyingEnemyAI : MonoBehaviour
             // Straightens the enemy rotation.
             transform.rotation = Quaternion.Slerp(startRotation, transform.rotation, 0);
         }
+    }
+
+    private IEnumerator Shake()
+    {
+        shaking = true;
+        yield return new WaitForSeconds(shakeFrequency);
+        float randX = UnityEngine.Random.Range(-shakeAmount, shakeAmount);
+        float randY = UnityEngine.Random.Range(-shakeAmount, shakeAmount);
+
+        transform.position = Vector2.MoveTowards(transform.position, new Vector2(transform.position.x + randX, transform.position.y + randY), Time.deltaTime);
+        shaking = false;
     }
 
     private void HandleRoamState(Vector2 force)
