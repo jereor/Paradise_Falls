@@ -29,6 +29,8 @@ public class MainMenuController : MonoBehaviour
     private GameObject flyingTitleEnemyThreeInstance;
     private GameObject flyingTitleEnemyFourInstance;
 
+    private float counter = 0;
+
     private bool firstCanBeInstantiated = false;
     private bool secondCanBeInstantiated = false;
 
@@ -60,6 +62,14 @@ public class MainMenuController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        counter += Time.deltaTime;
+        if(counter > 30)
+        {
+            StartCoroutine(InstantiateFirstSetFlyingDrones());
+            StartCoroutine(InstantiateSecondSetFlyingDrones());
+            counter = 0;
+        }
+
         if (firstCanBeInstantiated)
         {
             flyingTitleEnemyOneInstance = Instantiate(flyingTitleEnemyOne);
