@@ -74,3 +74,6 @@ TagManager:
   - name: Hidden
     uniqueID: 4092344651
     locked: 0
+  - name: New Layer
+    uniqueID: 3440358287
+    locked: 0
