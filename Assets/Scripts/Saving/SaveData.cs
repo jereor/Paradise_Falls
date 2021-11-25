@@ -24,21 +24,29 @@ public class SaveData
 
     public bool[] bossesDefeated;             // true = defeated , false = not defeated
 
-    public bool[] enemiesDefeated;
-
     public bool shield;
     public bool multitool;
     public bool wallJump;
+    public bool dash;
     public bool grappling;
-    public bool shockwave;
+    public bool shJump;
+    public bool shieldGrind;
+    public bool shAttack;
 
-    public bool levers;
+    public bool[] levers;
+
+    public bool[] meleePickups;
+    public bool[] throwPickups;
+    public bool[] energyPickups;
+    public bool[] healthPickups;
 
     public string camera;
 
     public float masterVolume;
     public float effectsVolume;
     public float musicVolume;
+
+    public bool[] mapTriggers;
 
     /*
      *  Constructor for creating SaveData from given object.
@@ -50,8 +58,6 @@ public class SaveData
         position = new float[2];
 
         bossesDefeated = new bool[1];
-
-        enemiesDefeated = new bool[4];
 
         camera = "";
     }
