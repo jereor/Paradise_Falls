@@ -307,7 +307,9 @@ MonoBehaviour:
   playIdleSound: 1
   clipsToChoose:
   - {fileID: 8300000, guid: 2fc10ed7c723bdc4284262faea1f1c4d, type: 3}
-  shutdownSound: {fileID: 8300000, guid: a6323439abbb4e44a84aa0b1f6674421, type: 3}
+  shutdownSound:
+  - {fileID: 8300000, guid: a6323439abbb4e44a84aa0b1f6674421, type: 3}
+  destroyAfterShutdown: 1
 --- !u!1 &8491049302000229919
 GameObject:
   m_ObjectHideFlags: 0

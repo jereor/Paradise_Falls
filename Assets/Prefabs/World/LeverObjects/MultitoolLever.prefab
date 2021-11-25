@@ -380,7 +380,8 @@ MonoBehaviour:
   fadeDuration: 0.2
   playIdleSound: 0
   clipsToChoose: []
-  shutdownSound: {fileID: 8300000, guid: 597a622a79bd774439d2e331791b0096, type: 3}
+  shutdownSound:
+  - {fileID: 8300000, guid: 597a622a79bd774439d2e331791b0096, type: 3}
   destroyAfterShutdown: 0
 --- !u!1 &3607895715702450345
 GameObject:

@@ -18,7 +18,7 @@ public class AudioSourceMute : MonoBehaviour
     public AudioClip[] clipsToChoose;
 
     [Header("Sound to be played if do event")]
-    public AudioClip shutdownSound;
+    public AudioClip[] shutdownSound;
     public bool destroyAfterShutdown = true;
 
     void Start()
@@ -130,9 +130,10 @@ public class AudioSourceMute : MonoBehaviour
     {
         // Play sound
         audioSource.Stop();
-        audioSource.PlayOneShot(shutdownSound);
+        AudioClip soundToPlay = shutdownSound[(int)Random.Range(0, shutdownSound.Length - 1)];
+        audioSource.PlayOneShot(soundToPlay);
         if (destroyAfterShutdown)
-            StartCoroutine(DestroyAfterSound(shutdownSound.length));
+            StartCoroutine(DestroyAfterSound(soundToPlay.length));
     }
     // Destroys object after playing sound (fences)
     private IEnumerator DestroyAfterSound(float duration)
