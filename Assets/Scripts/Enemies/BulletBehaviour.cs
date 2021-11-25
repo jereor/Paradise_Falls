@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class BulletBehaviour : MonoBehaviour
 {
-    [SerializeField] private Animation bulletAnimation;
     private Rigidbody2D rb;
     public GameObject shooter; // Set by the shooter
     private GameObject target;
@@ -19,17 +18,21 @@ public class BulletBehaviour : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         target = GameObject.Find("Player");
 
-        Vector3 vectorToTarget = target.transform.position - transform.position;
-        float angle = Mathf.Atan2(vectorToTarget.y, vectorToTarget.x) * Mathf.Rad2Deg;
-        Quaternion q = Quaternion.AngleAxis(angle, Vector3.forward);
-        transform.rotation = q;
         if (staticShot)
         {
+            Vector3 vectorToTarget = shooter.transform.position - shooter.transform.parent.position;
+            float angle = Mathf.Atan2(vectorToTarget.y, vectorToTarget.x) * Mathf.Rad2Deg;
+            Quaternion q = Quaternion.AngleAxis(angle, Vector3.forward);
+            transform.rotation = q;
             Vector2 force = shooter.transform.right.normalized * bulletSpeed;
             rb.AddForce(force, ForceMode2D.Impulse);
         }
         else
         {
+            Vector3 vectorToTarget = target.transform.position - transform.position;
+            float angle = Mathf.Atan2(vectorToTarget.y, vectorToTarget.x) * Mathf.Rad2Deg;
+            Quaternion q = Quaternion.AngleAxis(angle, Vector3.forward);
+            transform.rotation = q;
             Vector2 force = (target.transform.position - transform.position).normalized * bulletSpeed;
             rb.AddForce(force, ForceMode2D.Impulse);
         }
@@ -60,6 +63,7 @@ public class BulletBehaviour : MonoBehaviour
             }
             else
             {
+                Debug.Log("player hit");
                 target.GetComponent<Health>().TakeDamage(bulletDamage); // Player takes damage
                 Destroy(gameObject);
             }
