@@ -19,10 +19,14 @@ public class PlayerSFX : MonoBehaviour
     private bool playLandingSound = false;
     private bool playGPPullSound = false;
     private bool playShieldGrindSound = false;
+    private bool playWallSlideSound = false;
 
     // Audio clips
     [Header("Footsteps")]
     public AudioClip[] playerSteps;
+
+    [Header("Wallslide")]
+    public AudioClip wallSlide;
 
     [Header("Landing")]
     public AudioClip landSoftly;
@@ -141,7 +145,7 @@ public class PlayerSFX : MonoBehaviour
             playerAudioSource.loop = true;
             playerAudioSource.Play();
             playShieldGrindSound = true;
-            grindCoroutine = StartCoroutine(LerpPitch());
+            grindCoroutine = StartCoroutine(LerpGrindPitch());
         }
         // Shield Grind end
         else if((!grindScript.PipeCheck() || !PlayerMovement.Instance.IsGrounded()) && playShieldGrindSound)
@@ -160,11 +164,25 @@ public class PlayerSFX : MonoBehaviour
             playerAudioSource.PlayOneShot(takingDamage[(int)Random.Range(0, takingDamage.Length - 1)]);
         if (playerHealthScript.getPlaySoundHurtShielded())
         {
-            //playerAudioSource.loop = false;
-            //playerAudioSource.Stop();
-            //playerAudioSource.clip = null;
             playerAudioSource.PlayOneShot(blockDamaged);
-           // blockCoroutine = StartCoroutine(PlayClipDelayed(block, block.length / 2, true));
+        }
+
+        // Wallslide
+        if (PlayerMovement.Instance.getWallSliding() && !playWallSlideSound)
+        {
+            fadeCoroutine = StartCoroutine(FadeVolume(0f, 1f, 0.1f, false));
+            playerAudioSource.clip = wallSlide;
+            playerAudioSource.loop = true;
+            playerAudioSource.Play();
+            playWallSlideSound = true;
+            //grindCoroutine = StartCoroutine(LerpGrindPitch());
+        }
+        else if(!PlayerMovement.Instance.getWallSliding() && playWallSlideSound)
+        {
+            playerAudioSource.loop = false;
+            playerAudioSource.Stop();
+            playerAudioSource.clip = null;
+            playWallSlideSound = false;
         }
     }
 
@@ -187,7 +205,7 @@ public class PlayerSFX : MonoBehaviour
         yield break;
     }
 
-    private IEnumerator LerpPitch()
+    private IEnumerator LerpGrindPitch()
     {
         float start = playerAudioSource.pitch;
         while (playerAudioSource.pitch < maxPitch)
