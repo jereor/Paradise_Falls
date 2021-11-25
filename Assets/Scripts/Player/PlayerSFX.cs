@@ -30,6 +30,7 @@ public class PlayerSFX : MonoBehaviour
     public AudioClip groundPound;
 
     [Header("Jump")]
+    public AudioClip jump;
     public AudioClip doubleJump;
 
     [Header("Dash")]
@@ -69,6 +70,10 @@ public class PlayerSFX : MonoBehaviour
         else if (playerAudioSource.mute)
             return;
         // Sound effects that dont have own animation or are part of bigger event
+
+        // Jump from the ground
+        if (PlayerMovement.Instance.getPlaySoundJump())
+            playerAudioSource.PlayOneShot(jump);
 
         // Double jump
         if (shScript.getPlaySoundJump())
