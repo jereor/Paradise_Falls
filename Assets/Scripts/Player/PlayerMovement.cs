@@ -86,6 +86,9 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody2D movingPlatformRB;
     private RaycastHit2D movingPlatformRaycastHit = new RaycastHit2D();
 
+    // Booleans for PlayerPlaySound.cs
+    private bool playSoundJump = false;
+
     private void Start()
     {
         Instance = this;
@@ -200,6 +203,7 @@ public class PlayerMovement : MonoBehaviour
         // If button is pressed and we are in allowed walljump position
         if (context.started && canWallJump)
         {
+            playSoundJump = true;
             rb.velocity = new Vector2(jumpForce, jumpForce);
             // Set tracking float here that we jumped from some wall
             wallJumpDir = Mathf.Sign(transform.localScale.x);
@@ -210,6 +214,7 @@ public class PlayerMovement : MonoBehaviour
             && (Time.time - lastWallTouchTime <= coyoteTime / 2) // With full coyoteTime handling feels weird
             && !LedgeIsOccupied()) // This Check prevents jumping from wall when there is no ground after the wall object and we slide past wall, Coyote time causes unwanted double jump without
         {
+            playSoundJump = true;
             // Replace or figure this out if else if is used above
             rb.velocity = new Vector2(jumpForce, jumpForce);
             // wallJumpDir here is opposite of opposite :)
@@ -268,6 +273,7 @@ public class PlayerMovement : MonoBehaviour
             && (Time.time - jumpButtonPressedTime <= coyoteTime) && !climbing // Check if jump has been buffered
             && (playerScript.InputVertical != -1 || !playerScript.ShockwaveJumpAndDiveUnlocked())) // Not diving or not able to dive
         {
+            playSoundJump = true;
             rb.velocity = new Vector2(rb.velocity.x, jumpForce); // Jump!
         }
 
@@ -781,5 +787,16 @@ public class PlayerMovement : MonoBehaviour
     public RaycastHit2D getLedgeHitOffsetRay()
     {
         return ledgeHitOffsetRay;
+    }
+
+    public bool getPlaySoundJump()
+    {
+        if (playSoundJump)
+        {
+            playSoundJump = false;
+            return true;
+        }
+        else
+            return false;
     }
 }
