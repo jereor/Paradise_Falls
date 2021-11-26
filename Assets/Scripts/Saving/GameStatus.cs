@@ -111,68 +111,55 @@ public class GameStatus : MonoBehaviour
     {
         dataToSave.position[0] = x;
         dataToSave.position[1] = y;
-    }
-    
+    }  
     public void UpdateBossKilled(int index, bool defeated)
     {
         dataToSave.bossesDefeated[index] = defeated;
     }
-
     public void UpdateShield(bool b)
     {
         dataToSave.shield = b;
     }
-
     public void UpdateMultitool(bool b)
     {
         dataToSave.multitool = b;
     }
-
     public void UpdateWallJump(bool b)
     {
         dataToSave.wallJump = b;
     }
-
     public void UpdateDash(bool b)
     {
         dataToSave.dash = b;
     }
-
     public void UpdateGrappling(bool b)
     {
         dataToSave.grappling = b;
     }
-
     public void UpdateSHJump(bool b)
     {
         dataToSave.shJump = b;
     }
-
     public void UpdateShieldGrind(bool b)
     {
         dataToSave.shieldGrind = b;
     }
-
     public void UpdateSHAttack(bool b)
     {
         dataToSave.shAttack = b;
     }
-
     public void UpdateCamera(string currentCamera)
     {
         dataToSave.camera = currentCamera;
     }
-
     public void UpdateMapTriggers(int i, bool b)
     {
         dataToSave.mapTriggers[i] = b;
     }
-
     public void UpdateLevers(int i, bool b)
     {
         dataToSave.levers[i] = b;
     }
-
     public void UpdateMasterVolume(float volume)
     {
         dataToSave.masterVolume = volume;

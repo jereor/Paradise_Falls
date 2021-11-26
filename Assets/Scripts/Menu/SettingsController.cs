@@ -25,19 +25,25 @@ public class SettingsController : MonoBehaviour
         _options = GetComponent<RectTransform>();
 
         // Set sliders to correct volumes
-        if (mainMixer.GetFloat("MasterVolume", out float masterValue))
-            masterVolumeSlider.value = masterValue;
-        if (mainMixer.GetFloat("EffectVolume", out float effectValue))
-            effectVolumeSlider.value = effectValue;
-        if (mainMixer.GetFloat("MusicVolume", out float musicValue))
-            musicVolumeSlider.value = musicValue;
+        //if (mainMixer.GetFloat("MasterVolume", out float masterValue))
+        //    masterVolumeSlider.value = masterValue;
+        //if (mainMixer.GetFloat("EffectVolume", out float effectValue))
+        //    effectVolumeSlider.value = effectValue;
+        //if (mainMixer.GetFloat("MusicVolume", out float musicValue))
+        //    musicVolumeSlider.value = musicValue;
 
     }
 
-    // Update is called once per frame
     void Update()
     {
-
+        if(mainMixer.GetFloat("MasterVolume", out float masterValue) && masterValue != masterVolumeSlider.value)
+        {
+            masterVolumeSlider.value = masterValue;
+            if (mainMixer.GetFloat("EffectVolume", out float effectValue))
+                effectVolumeSlider.value = effectValue;
+            if (mainMixer.GetFloat("MusicVolume", out float musicValue))
+                musicVolumeSlider.value = musicValue;
+        }
     }
 
     //Opens the settings menu as a popup window while disabling the main menu buttons.
@@ -70,6 +76,8 @@ public class SettingsController : MonoBehaviour
         _options
             .DOAnchorPos(new Vector2(0, -500), .3f)
             .SetUpdate(true);
+
+        GameStatus.status.Save();
 
         settingsOpen = false;
         settingsButton.Select();
