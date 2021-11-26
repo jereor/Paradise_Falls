@@ -796,6 +796,18 @@ PrefabInstance:
       propertyPath: playerRB
       value: 
       objectReference: {fileID: 1859845175}
+    - target: {fileID: 208985480462589908, guid: 41c2fc79220733a4abc856ee861da9f2, type: 3}
+      propertyPath: roamingOffset.x
+      value: 6.54
+      objectReference: {fileID: 0}
+    - target: {fileID: 208985480462589908, guid: 41c2fc79220733a4abc856ee861da9f2, type: 3}
+      propertyPath: roamingOffset.y
+      value: -4.49
+      objectReference: {fileID: 0}
+    - target: {fileID: 208985480462589908, guid: 41c2fc79220733a4abc856ee861da9f2, type: 3}
+      propertyPath: rotationThreshold
+      value: 1.5
+      objectReference: {fileID: 0}
     - target: {fileID: 674690728015036898, guid: 41c2fc79220733a4abc856ee861da9f2, type: 3}
       propertyPath: m_Name
       value: FlyingEnemyOne (1)

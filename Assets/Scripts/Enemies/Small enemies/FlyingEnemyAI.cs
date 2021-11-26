@@ -66,7 +66,7 @@ public class FlyingEnemyAI : MonoBehaviour
     private bool isTargetInBehaviourRange = false;
     private Vector2 lastSeenTargetPosition;
     private bool isFlashingRed = true;
-    private bool shaking = false;
+    [SerializeField]private bool shaking = false;
 
     private Collider2D _collider;
     private Vector2 spawnPosition;
@@ -395,7 +395,7 @@ public class FlyingEnemyAI : MonoBehaviour
             Quaternion q = Quaternion.AngleAxis(-rotateAmount * transform.localScale.x, Vector3.forward);
             transform.rotation = Quaternion.Slerp(startRotation, q, 1);
         }
-        if (rb.velocity.x <= rotationThreshold && rb.velocity.x >= -rotationThreshold)
+        else if (rb.velocity.x <= rotationThreshold && rb.velocity.x >= -rotationThreshold)
         {
             // Straightens the enemy rotation.
             transform.rotation = Quaternion.Slerp(startRotation, transform.rotation, 0);
@@ -418,8 +418,8 @@ public class FlyingEnemyAI : MonoBehaviour
         // Checks if enemy unit has given up a chase and is returning to spawn point. If target comes too close to the enemy, it begins to chase again.
         if (returningFromChase && (!IsPlayerInAggroRange() || !IsPlayerInRange()))
         {
-            FlipLocalScaleWithForce(force);
             rb.AddForce(force);
+            FlipLocalScaleWithForce(force);
             if (_collider.bounds.Contains(spawnPosition))
             {
                 returningFromChase = false;
@@ -464,7 +464,7 @@ public class FlyingEnemyAI : MonoBehaviour
                 Debug.DrawRay(transform.position, Vector2.right, Color.red);
                 if (hit.collider != null)
                 {
-                    transform.localScale = new Vector3(-1, 1f, 1f);
+                    Flip();
                 }
             }
             else
@@ -473,7 +473,7 @@ public class FlyingEnemyAI : MonoBehaviour
                 Debug.DrawRay(transform.position, Vector2.left, Color.red);
                 if (hit.collider != null)
                 {
-                    transform.localScale = new Vector3(1, 1f, 1f);
+                    Flip();
                 }
             }
 
