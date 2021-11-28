@@ -83,6 +83,9 @@ TagManager:
   - name: Hidden
     uniqueID: 4092344651
     locked: 0
+  - name: Effects
+    uniqueID: 1670176555
+    locked: 0
   - name: Gradient
     uniqueID: 4230758539
     locked: 0
