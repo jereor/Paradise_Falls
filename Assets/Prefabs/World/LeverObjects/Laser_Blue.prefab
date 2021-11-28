@@ -191,9 +191,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e405ca74dfdcb0498a685f56bbbe30a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  flickerTime: 0
-  minIntensity: 0
-  maxIntensity: 0
+  flickerTime: 0.01
+  minIntensity: 0.5
+  maxIntensity: 0.8
 --- !u!82 &4981109468379947632
 AudioSource:
   m_ObjectHideFlags: 0
