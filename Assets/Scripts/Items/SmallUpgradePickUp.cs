@@ -25,6 +25,8 @@ public class SmallUpgradePickUp : Interactable
     [SerializeField] private float maxHealthAmount;
     [SerializeField] private float energyRegenMultiplier;
 
+    private bool saveBuffer = false;
+
     void Start()
     {
         UpdateTextBinding();
@@ -32,6 +34,12 @@ public class SmallUpgradePickUp : Interactable
         HideFloatingText();
 
         itemEvent.AddListener(Interact);
+    }
+
+    private void Update()
+    {
+        if (saveBuffer && Player.Instance != null)
+            UpgradeEnum();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -75,27 +83,37 @@ public class SmallUpgradePickUp : Interactable
         }
     }
 
-    private void UpgradeEnum()
+    public void UpgradeEnum()
     {
         switch (myEnum)
         {
             case Upgrade.LightDmg:
                 playerObject.GetComponent<PlayerCombat>().UpgradeMeleeDamage(lightDamage, heavyDamage);
+                Player.Instance.UpdateMeleePickUps();
                 break;
             case Upgrade.Throw:
                 playerObject.GetComponent<PlayerCombat>().UpgradeThrowDamage(throwMaxChargeDamage);
                 playerObject.GetComponent<PlayerCombat>().UpgradeThrowMaxChargeTime(throwChargeTime);
+                Player.Instance.UpdateThrowPickUps();
                 break;
             case Upgrade.MaxHealth:
                 playerObject.GetComponent<PlayerHealth>().UpgradeMaxHealth(maxHealthAmount);
                 playerObject.GetComponent<PlayerHealth>().ResetHealthToMax();
+                Player.Instance.UpdateHealthPickUps();
                 break;
             case Upgrade.EnergyRegen:
                 playerObject.GetComponent<Energy>().UpgradeEnergyRegen(energyRegenMultiplier);
+                Player.Instance.UpdateEnergyPickUps();
                 break;
             default:
                 break;
         }
+        Destroy(gameObject);
     }
 
+    public void SetSaveBuffer(bool b, GameObject player)
+    {
+        saveBuffer = b;
+        playerObject = player;
+    }
 }

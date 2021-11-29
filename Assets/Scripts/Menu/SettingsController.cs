@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 using UnityEngine.Audio;
+using TMPro;
 public class SettingsController : MonoBehaviour
 {
     public CanvasGroup buttons;
@@ -11,6 +12,8 @@ public class SettingsController : MonoBehaviour
     public bool settingsOpen;
     public Button settingsBackButton;
     public Button settingsButton;
+    public TMP_Dropdown resolutionDropdown;
+    public Toggle fullscreenToggle;
 
     // Sliders
     public Slider masterVolumeSlider;
@@ -19,19 +22,34 @@ public class SettingsController : MonoBehaviour
 
     public AudioMixer mainMixer;
 
+    Resolution[] resolutions;
+    private int currentResolutionIndex;
+
+    private bool resoLoadBuffer = true;
+    private bool fullscreenLoadBuffer = true;
+
     // Start is called before the first frame update
     void Start()
     {
+        // Gets computers usable resolutions and adds them to dropdown
+        // Checks our current resolution and chooses it from dropdown
+        resolutions = Screen.resolutions;
+        resolutionDropdown.ClearOptions();
+        List<string> resolutionScrings = new List<string>();
+        currentResolutionIndex = 0;
+        for (int i = 0; i < resolutions.Length; i++)
+        {
+            string option = resolutions[i].width + " x " + resolutions[i].height;
+            resolutionScrings.Add(option);
+            if (resolutions[i].width == Screen.currentResolution.width &&
+                resolutions[i].height == Screen.currentResolution.height)
+                currentResolutionIndex = i;
+        }
+        resolutionDropdown.AddOptions(resolutionScrings);
+        resolutionDropdown.value = currentResolutionIndex;
+        resolutionDropdown.RefreshShownValue();
+
         _options = GetComponent<RectTransform>();
-
-        // Set sliders to correct volumes
-        //if (mainMixer.GetFloat("MasterVolume", out float masterValue))
-        //    masterVolumeSlider.value = masterValue;
-        //if (mainMixer.GetFloat("EffectVolume", out float effectValue))
-        //    effectVolumeSlider.value = effectValue;
-        //if (mainMixer.GetFloat("MusicVolume", out float musicValue))
-        //    musicVolumeSlider.value = musicValue;
-
     }
 
     void Update()
@@ -43,6 +61,23 @@ public class SettingsController : MonoBehaviour
                 effectVolumeSlider.value = effectValue;
             if (mainMixer.GetFloat("MusicVolume", out float musicValue))
                 musicVolumeSlider.value = musicValue;
+        }
+        // No need to save resolution since coded that it takes default resolution from the system
+        //if (GameStatus.status != null && GameStatus.status.getLoadedData().resolutionIndex != currentResolutionIndex && resoLoadBuffer)
+        //{
+        //    Resolution resolution = resolutions[GameStatus.status.getLoadedData().resolutionIndex];
+        //    Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreen);
+        //    currentResolutionIndex = GameStatus.status.getLoadedData().resolutionIndex;
+        //    resolutionDropdown.value = currentResolutionIndex;
+        //    resolutionDropdown.RefreshShownValue();
+        //    resoLoadBuffer = false;
+        //}
+        if (fullscreenToggle.gameObject.activeInHierarchy && GameStatus.status != null && GameStatus.status.getLoadedData().fullscreen != Screen.fullScreen && fullscreenLoadBuffer)
+        {
+            Screen.fullScreen = GameStatus.status.getLoadedData().fullscreen;
+            if (fullscreenToggle.isOn != GameStatus.status.getLoadedData().fullscreen)
+                fullscreenToggle.isOn = GameStatus.status.getLoadedData().fullscreen;
+            fullscreenLoadBuffer = false;
         }
     }
 
@@ -100,5 +135,21 @@ public class SettingsController : MonoBehaviour
         mainMixer.SetFloat("MusicVolume", slider.value);
         if (GameStatus.status != null)
             GameStatus.status.UpdateMusicVolume(slider.value);
+    }
+
+    public void SetFullscreen(bool isFullscreen)
+    {
+        Screen.fullScreen = isFullscreen;
+        if (GameStatus.status != null)
+            GameStatus.status.UpdateFullScreen(isFullscreen);
+    }
+
+    public void SetResolution(int resolutionIndex)
+    {
+        Resolution resolution = resolutions[resolutionIndex];
+        Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreen);
+        currentResolutionIndex = resolutionIndex;
+        if (GameStatus.status != null)
+            GameStatus.status.UpdateResolution(currentResolutionIndex);
     }
 }

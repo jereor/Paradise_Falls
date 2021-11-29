@@ -24,6 +24,8 @@ public class SaveData
 
     public bool[] bossesDefeated;             // true = defeated , false = not defeated
 
+    public bool[] firstBossDoors;
+
     public bool shield;
     public bool multitool;
     public bool wallJump;
@@ -35,6 +37,8 @@ public class SaveData
 
     public bool[] levers;
 
+    public bool[] doors;
+
     public bool[] meleePickups;
     public bool[] throwPickups;
     public bool[] energyPickups;
@@ -45,6 +49,9 @@ public class SaveData
     public float masterVolume;
     public float effectsVolume;
     public float musicVolume;
+
+    public bool fullscreen;
+    public int resolutionIndex = 0;
 
     public bool[] mapTriggers;
 
@@ -59,7 +66,19 @@ public class SaveData
 
         bossesDefeated = new bool[1];
 
+        firstBossDoors = new bool[4];
+
         camera = "";
+
+        levers = new bool[2];
+        doors = new bool[2];
+
+        meleePickups = new bool[2];
+        throwPickups = new bool[2];
+        healthPickups = new bool[5];
+        energyPickups = new bool[2];
+
+        mapTriggers = new bool[2];
     }
 
     /*

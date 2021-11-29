@@ -13,7 +13,9 @@ public class SceneLoader : MonoBehaviour
 
     [Header("Boss Objects")]
     public GameObject firstBossObject;
-    public bool firstBossKilled;
+    public DoorController[] bossDoors;
+    public GameObject[] bossTriggers;
+
 
     public GameObject secondBossObject;
     public bool secondBossKilled;
@@ -23,11 +25,11 @@ public class SceneLoader : MonoBehaviour
     public GameObject multitoolUpgrade;
 
     [Header("Npc")]
-    public GameObject npc;
+    public GameObject[] npcObjects;
     // Npc gives commented upgrades
     //public GameObject wallJumpUpgrade; // Used in start to check if have acquired wallJump ability before last save
     //public GameObject dashUpgrade;
-    public GameObject grapplingUpgrade;
+    //public GameObject grapplingUpgrade;
     //public GameObject shJumpUpgrade;
     //public GameObject shieldGrindUpgrade;
     //public GameObject shAttackUpgrade;
@@ -38,8 +40,8 @@ public class SceneLoader : MonoBehaviour
     public GameObject[] energyPickups;
     public GameObject[] healthPickups;
 
-    [Header("Levers / buttons")]
-    public GameObject[] levers;
+    [Header("Doors (that will be opened via buttons)")]
+    public GameObject[] doors;
 
     [Header("Savepoints")]
     public GameObject savePointsParent;
@@ -93,6 +95,44 @@ public class SceneLoader : MonoBehaviour
                     mapTriggers[i].GetComponent<MapAreaTrigger>().SetFound(GameStatus.status.getLoadedData().mapTriggers[i]);
                 }
 
+                // Pick ups
+                for (int i = 0; i < GameStatus.status.getLoadedData().meleePickups.Length; i++)
+                {
+                    if (GameStatus.status.getLoadedData().meleePickups[i] && meleePickups[i].TryGetComponent(out SmallUpgradePickUp script))
+                        script.SetSaveBuffer(true, playerObject);
+                }
+                for (int i = 0; i < GameStatus.status.getLoadedData().throwPickups.Length; i++)
+                {
+                    if (GameStatus.status.getLoadedData().throwPickups[i])
+                    {
+                        if (GameStatus.status.getLoadedData().throwPickups[i] && throwPickups[i].TryGetComponent(out SmallUpgradePickUp script))
+                            script.SetSaveBuffer(true, playerObject);
+                    }
+                }
+                for (int i = 0; i < GameStatus.status.getLoadedData().healthPickups.Length; i++)
+                {
+                    if (GameStatus.status.getLoadedData().healthPickups[i])
+                    {
+                        if (GameStatus.status.getLoadedData().healthPickups[i] && healthPickups[i].TryGetComponent(out SmallUpgradePickUp script))
+                            script.SetSaveBuffer(true, playerObject);
+                    }
+                }
+                for (int i = 0; i < GameStatus.status.getLoadedData().energyPickups.Length; i++)
+                {
+                    if (GameStatus.status.getLoadedData().energyPickups[i])
+                    {
+                        if (GameStatus.status.getLoadedData().energyPickups[i] && energyPickups[i].TryGetComponent(out SmallUpgradePickUp script))
+                            script.SetSaveBuffer(true, playerObject);
+                    }
+                }
+
+                // Doors
+                for (int i = 0; i < GameStatus.status.getLoadedData().doors.Length; i++)
+                {
+                    if(GameStatus.status.getLoadedData().doors[i] == true)
+                        Destroy(doors[i]);
+                }
+
                 // Camera
                 // Check if there is saved camera string
                 if (GameStatus.status.getLoadedData().camera.Length > 1)
@@ -118,13 +158,20 @@ public class SceneLoader : MonoBehaviour
             }
 
             // Boss
-            if (firstBossObject != null && GameStatus.status.getLoadedData().bossesDefeated[0] == true)
+            if (GameStatus.status.getLoadedData().bossesDefeated[0] == true)
             {
-                // Do something to not show boss
-
-                Destroy(firstBossObject);
-                firstBossKilled = GameStatus.status.getLoadedData().bossesDefeated[0];
+                foreach (GameObject trigger in bossTriggers)
+                {
+                    Destroy(trigger);
+                }
+                Destroy(firstBossObject);   
             }
+            // Boss doors
+            for (int i = 0; i < bossDoors.Length; i++)
+            {
+                bossDoors[i].GetComponent<DoorController>().SetIsDoorOpen(GameStatus.status.getLoadedData().firstBossDoors[i]);
+            }
+
             if (secondBossObject != null && GameStatus.status.getLoadedData().bossesDefeated[0] == true)
             {
                 // Do something to not show boss
@@ -132,11 +179,13 @@ public class SceneLoader : MonoBehaviour
                 Destroy(secondBossObject);
                 secondBossKilled = GameStatus.status.getLoadedData().bossesDefeated[0];
             }
-
-            // Make list of savePoints
-            for (int i = 0; i < savePointsParent.transform.childCount; i++)
+            if (savePointsParent != null)
             {
-                savePoints.Add(savePointsParent.transform.GetChild(i).gameObject);
+                // Make list of savePoints
+                for (int i = 0; i < savePointsParent.transform.childCount; i++)
+                {
+                    savePoints.Add(savePointsParent.transform.GetChild(i).gameObject);
+                }
             }
         }
         else
@@ -175,42 +224,119 @@ public class SceneLoader : MonoBehaviour
             Player.Instance.UnlockMultitool();
             Destroy(multitoolUpgrade);
         }
+
+        // Rest are from NPC
         // WallJump
         if (GameStatus.status.getLoadedData().wallJump)
         {
             Player.Instance.UnlockWalljump();
-            // NPC juttuja !!------
+            foreach (GameObject npc in npcObjects)
+            {
+                // If returns true we found correct npc no need to check rest npc
+                if (CheckNPCUnlock(npc))
+                    break;
+            }
         }
         // Dash
         if (GameStatus.status.getLoadedData().dash)
         {
             Player.Instance.UnlockDash();
-            // NPC juttuja !!------
+            foreach (GameObject npc in npcObjects)
+            {
+                // If returns true we found correct npc no need to check rest npc
+                if (CheckNPCUnlock(npc))
+                    break;
+            }
         }
         // Grappling
         if (GameStatus.status.getLoadedData().grappling)
         {
             Player.Instance.UnlockGrappling();
-            Destroy(grapplingUpgrade);
+            foreach (GameObject npc in npcObjects)
+            {
+                // If returns true we found correct npc no need to check rest npc
+                if (CheckNPCUnlock(npc))
+                    break;
+            }
         }
-        // Shockwave Jump and Dive
+        //SH Jump
         if (GameStatus.status.getLoadedData().shJump)
         {
             Player.Instance.UnlockJumpAndDive();
-            // NPC juttuja !!------
+            foreach (GameObject npc in npcObjects)
+            {
+                // If returns true we found correct npc no need to check rest npc
+                if (CheckNPCUnlock(npc))
+                    break;
+            }
         }
-        // Shield Grind
+        // Shield grind
         if (GameStatus.status.getLoadedData().shieldGrind)
         {
             Player.Instance.UnlockShieldGrind();
-            // NPC juttuja !!------
+            foreach (GameObject npc in npcObjects)
+            {
+                // If returns true we found correct npc no need to check rest npc
+                if (CheckNPCUnlock(npc))
+                    break;
+            }
         }
-        // Shockwave attack
+        // SH attack
         if (GameStatus.status.getLoadedData().shAttack)
         {
             Player.Instance.UnlockShockwaveAttack();
-            // NPC juttuja !!------
+            foreach (GameObject npc in npcObjects)
+            {
+                // If returns true we found correct npc no need to check rest npc
+                if (CheckNPCUnlock(npc))
+                    break;
+            }
         }
+    }
+
+    private bool CheckNPCUnlock(GameObject npc)
+    {
+        if (npc.TryGetComponent(out ExplorerDroneController script))
+        {
+            // Walljump
+            if (script.GetWhatNPCUnlocks() == 1)
+            { 
+                script.SetHasBeenTalkedBefore(true);
+                return true;
+            }
+            // Dash
+            else if (script.GetWhatNPCUnlocks() == 2)
+            {
+                script.SetHasBeenTalkedBefore(true);
+                return true;
+            }
+            // Grappling
+            else if (script.GetWhatNPCUnlocks() == 3)
+            {
+                script.SetHasBeenTalkedBefore(true);
+                return true;
+            }
+            // SH jump 
+            else if (script.GetWhatNPCUnlocks() == 4)
+            {
+                script.SetHasBeenTalkedBefore(true);
+                return true;
+            }
+            // Shield grind
+            else if (script.GetWhatNPCUnlocks() == 5)
+            {
+                script.SetHasBeenTalkedBefore(true);
+                return true;
+            }
+            // SH attack
+            else if (script.GetWhatNPCUnlocks() == 6)
+            {
+                script.SetHasBeenTalkedBefore(true);
+                return true;
+            }
+        }
+        // Did not find correct unlock
+        return false;
     }
 
     private void CheckPickups()
@@ -261,12 +387,20 @@ public class SceneLoader : MonoBehaviour
             GameStatus.status.UpdatePlayerPosition(respawnPoint.x, respawnPoint.y);
 
             // Boss
-            GameStatus.status.UpdateBossKilled(0, firstBossKilled);
+            if (firstBossObject != null)
+                GameStatus.status.UpdateBossKilled(0, false);
+            else
+                GameStatus.status.UpdateBossKilled(0, true);
+            // First boss doors
+            for (int i = 0; i < bossDoors.Length; i++)
+            {
+                GameStatus.status.UpdateFirstBossDoors(i, bossDoors[i].GetComponent<DoorController>().GetIsDoorOpen());
+            }
 
-            GameStatus.status.UpdateBossKilled(1, secondBossKilled);
+            //GameStatus.status.UpdateBossKilled(1, secondBossKilled);
 
             // Shield
-            GameStatus.status.UpdateWallJump(Player.Instance.ShieldUnlocked());
+            GameStatus.status.UpdateShield(Player.Instance.ShieldUnlocked());
 
             // Multitool
             GameStatus.status.UpdateMultitool(Player.Instance.MultitoolUnlocked());
@@ -289,6 +423,38 @@ public class SceneLoader : MonoBehaviour
             // SH attack
             GameStatus.status.UpdateSHAttack(Player.Instance.ShockwaveAttackUnlocked());
 
+            for (int i = 0; i < meleePickups.Length; i++)
+            {
+                if (meleePickups[i] != null)
+                    GameStatus.status.UpdateMeleePickups(i, false);
+                else
+                    GameStatus.status.UpdateMeleePickups(i, true);
+            }
+
+            for (int i = 0; i < throwPickups.Length; i++)
+            {
+                if (throwPickups[i] != null)
+                    GameStatus.status.UpdateThrowPickups(i, false);
+                else
+                    GameStatus.status.UpdateThrowPickups(i, true);
+            }
+
+            for (int i = 0; i < healthPickups.Length; i++)
+            {
+                if (healthPickups[i] != null)
+                    GameStatus.status.UpdateHealthPickups(i, false);
+                else
+                    GameStatus.status.UpdateHealthPickups(i, true);
+            }
+
+            for (int i = 0; i < energyPickups.Length; i++)
+            {
+                if (energyPickups[i] != null)
+                    GameStatus.status.UpdateEnergyPickups(i, false);
+                else
+                    GameStatus.status.UpdateEnergyPickups(i, true);
+            }
+
             // Map triggers
             for (int i = 0; i < mapTriggers.Length; i++)
             {
@@ -296,18 +462,19 @@ public class SceneLoader : MonoBehaviour
                     GameStatus.status.UpdateMapTriggers(i, script.GetFound());
             }
 
-            // Levers
-            for (int i = 0; i < levers.Length; i++)
+            // Doors
+            for (int i = 0; i < doors.Length; i++)
             {
-                //if (levers[i].TryGetComponent(out BasicButton buttonScript))
-                //    GameStatus.status.UpdateLevers(i, buttonScript);
-                //else if (levers[i].TryGetComponent(out Lever leverScript))
-                //    GameStatus.status.UpdateLevers(i, leverScript);
+                if (doors[i] != null)
+                    GameStatus.status.UpdateDoors(i, false);
+                else
+                    GameStatus.status.UpdateDoors(i, true);
             }
+
 
             GameStatus.status.UpdateCamera(CameraTransitions.Instance.GetCurrentCamera().name);
 
-            GameStatus.status.Save();
+            GameStatus.status.SaveFromSceneLoader(this);
         }
         else
         {
@@ -331,21 +498,6 @@ public class SceneLoader : MonoBehaviour
         return false;
     }
 
-    //public void EnemyKilled(GameObject enemyThatIsKilled)
-    //{
-    //    // As enemyThatIsKilled will be Destroyed from scene when health is less that zero we have bool array 
-    //    foreach (GameObject enemy in enemies)
-    //    {
-    //        // GameObject given is found in array
-    //        if (enemy == enemyThatIsKilled)
-    //        {
-    //            // enemies and enemiesKilled indexes are the same made in Start()
-    //            enemiesKilled[enemies.IndexOf(enemy)] = true;
-    //            break; // No need to the end
-    //        }
-    //    }
-    //}
-
     private GameObject Respawn(GameObject obj, Vector2 pos)
     {
         return Instantiate(obj, pos, Quaternion.identity);
@@ -355,6 +507,11 @@ public class SceneLoader : MonoBehaviour
     public void PlayerDeathRespawn()
     {
         Debug.Log("Respawning, atm loading scene with loaded save");
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    public void ReloadSceneOnSave()
+    {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 

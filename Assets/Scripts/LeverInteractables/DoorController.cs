@@ -49,4 +49,16 @@ public class DoorController : MonoBehaviour
     {
         return moving;
     }
+
+    public bool GetIsDoorOpen()
+    {
+        return isDoorOpen;
+    }
+
+    public void SetIsDoorOpen(bool b)
+    {
+        isDoorOpen = b;
+        if (isDoorOpen)
+            Work();
+    }
 }

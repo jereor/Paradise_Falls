@@ -21,37 +21,24 @@ public class ExplorerDroneController : MonoBehaviour
 
     [Header("What NPC Unlocks For Player")]
     [SerializeField] private bool unlocksWallJump;
+    [SerializeField] private bool unlocksDash;
+    [SerializeField] private bool unlocksGrappling;
     [SerializeField] private bool unlocksShockWaveJumpAndDive;
     [SerializeField] private bool unlocksShockWaveAttack;
     [SerializeField] private bool unlocksShieldGrind;
 
-    //[SerializeField] private bool npcWalkAround;
-    //[SerializeField] private bool isOnWalkCoolDown;
-    //[SerializeField] private float walkCoolDown;
-    //[SerializeField] private float speed;
-    //[SerializeField] private float walkDistance;
-    //[SerializeField] private Vector2 offset;
-    //[SerializeField] private Vector2 range;
-
-    //[SerializeField] LayerMask nPCLayer;
-
     private GameObject player;
     private Player playerControl;
     private GameObject hudUI;
-    //private Rigidbody2D rb;
 
     private Vector2 scale;
-    //private Vector2 spawnPosition;
 
     private int index;
-    //private float counter = 0;
 
     private bool isFacingRight;
     private bool hasBeenTalkedToBefore = false;
     private bool isInteracting = false;
     private bool isStillTalking = false;
-    //private bool gizmoPositionChange = true;
-    //private bool flippedRecently = false;
 
     [Tooltip("Child text object of this item")]
     public TMP_Text floatingText;       // This can later be changed to be static text field for all info popups in Main Canvas if need be
@@ -71,8 +58,6 @@ public class ExplorerDroneController : MonoBehaviour
         playerControl = player.GetComponent<Player>();
         hudUI = GameObject.Find("[HUD]");
         scale = new Vector2(-1, 1);
-        //spawnPosition = transform.position;
-        //rb = GetComponent<Rigidbody2D>();
 
         if (transform.localScale.x == 1)
             isFacingRight = true;
@@ -83,23 +68,7 @@ public class ExplorerDroneController : MonoBehaviour
 
         // Set text at start to ""
         floatingText.text = "";
-
-        //gizmoPositionChange = false;
     }
-
-    //private void Update()
-    //{
-    //    if (!isOnWalkCoolDown && npcWalkAround)
-    //    {
-    //        StartCoroutine(WalkAround());
-    //    }
-    //    if (flippedRecently)
-    //        counter += Time.deltaTime;
-
-    //    if (counter > 5)
-    //        flippedRecently = false;
-
-    //}
 
     private void OnBecameInvisible()
     {
@@ -168,9 +137,6 @@ public class ExplorerDroneController : MonoBehaviour
             mapController.HandleMapState();
         }
 
-        //isOnWalkCoolDown = true;
-        //StopAllCoroutines();
-
         transform.localScale = new Vector2(player.transform.position.x - transform.position.x > 0 ? 1 : -1, 0.75f);
         if (player.transform.position.x - transform.position.x > 0)
             isFacingRight = true;
@@ -220,6 +186,14 @@ public class ExplorerDroneController : MonoBehaviour
                 {
                     playerControl.UnlockJumpAndDive();
                 }
+                if(unlocksDash)
+                {
+                    playerControl.UnlockDash();
+                }
+                if(unlocksGrappling)
+                {
+                    playerControl.UnlockGrappling();
+                }
                 if(unlocksShockWaveAttack)
                 {
                     playerControl.UnlockShockwaveAttack();
@@ -237,7 +211,6 @@ public class ExplorerDroneController : MonoBehaviour
                 index = 0;
                 isInteracting = false;
                 GameObject.Find("Player").GetComponent<PlayerInteractions>().SetIsInteractingWithNPC(false);
-                //isOnWalkCoolDown = false;
             }
             else
             {
@@ -256,7 +229,6 @@ public class ExplorerDroneController : MonoBehaviour
                 index = 0;
                 isInteracting = false;
                 GameObject.Find("Player").GetComponent<PlayerInteractions>().SetIsInteractingWithNPC(false);
-                //isOnWalkCoolDown = false;
             }
             else
             {
@@ -287,36 +259,6 @@ public class ExplorerDroneController : MonoBehaviour
         }
         isStillTalking = false;
     }
-
-    //private IEnumerator WalkAround()
-    //{
-    //    isOnWalkCoolDown = true;
-    //    //for(int i = 0; i < walkDistance; i++)
-    //        transform.position = Vector2.Lerp(Vector2.right * speed * transform.localScale.x * Time.deltaTime);
-
-    //    yield return new WaitForSeconds(walkCoolDown);
-    //    if(!ExplorerDroneWalkRange() && !flippedRecently)
-    //    {
-    //        Flip();
-    //        flippedRecently = true;
-    //        counter = 0;
-    //    }
-    //    isOnWalkCoolDown = false;
-    //}
-
-    //public void Flip()
-    //{
-    //    // Character flip
-    //    isFacingRight = !isFacingRight;
-    //    Vector3 localScale = transform.localScale;
-    //    localScale.x *= -1f;
-    //    transform.localScale = localScale;
-    //}
-
-    //private bool ExplorerDroneWalkRange()
-    //{
-    //    return Physics2D.OverlapBox(new Vector2(spawnPosition.x + offset.x, spawnPosition.y + offset.y), range, 0, nPCLayer);
-    //}
 
     // Player clicks while text is still being revealed, fast forwards to the end of the sentence.
     // Otherwise begins to gradually display the next sentence.
@@ -403,14 +345,6 @@ public class ExplorerDroneController : MonoBehaviour
         }
     }
 
-    //private void OnDrawGizmosSelected()
-    //{
-    //    if(gizmoPositionChange)
-    //        Gizmos.DrawWireCube(new Vector2(transform.position.x +  offset.x, transform.position.y + offset.y), range);
-    //    else
-    //        Gizmos.DrawWireCube(new Vector2(spawnPosition.x + offset.x, spawnPosition.y + offset.y), range);
-    //}
-
     public bool GetIsInteracting()
     {
         return isInteracting;
@@ -419,6 +353,24 @@ public class ExplorerDroneController : MonoBehaviour
     public bool GetHasBeenTalkedBefore()
     {
         return hasBeenTalkedToBefore;
+    }
+
+    public int GetWhatNPCUnlocks()
+    {
+        if (unlocksWallJump)
+            return 1;
+        if (unlocksDash)
+            return 2;
+        if (unlocksGrappling)
+            return 3;
+        if (unlocksShockWaveJumpAndDive)
+            return 4;
+        if (unlocksShieldGrind)
+            return 5;
+        if (unlocksShockWaveAttack)
+            return 6;
+
+        return 0;
     }
 
     public void SetHasBeenTalkedBefore(bool b)
