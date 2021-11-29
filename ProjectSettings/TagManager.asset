@@ -56,11 +56,11 @@ TagManager:
   - name: Interior Background
     uniqueID: 3440358287
     locked: 0
-  - name: Exterior Near Background
-    uniqueID: 409960295
-    locked: 0
   - name: Interior Near Background
     uniqueID: 1545854155
+    locked: 0
+  - name: Exterior Near Background
+    uniqueID: 409960295
     locked: 0
   - name: Exterior Objects
     uniqueID: 433996785
