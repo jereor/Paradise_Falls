@@ -50,27 +50,42 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
-  - name: Background
+  - name: Exterior Background
     uniqueID: 3283211149
     locked: 0
-  - name: Near Background
+  - name: Interior Background
+    uniqueID: 3440358287
+    locked: 0
+  - name: Exterior Near Background
     uniqueID: 409960295
     locked: 0
-  - name: Objects
-    uniqueID: 2229172679
-    locked: 0
-  - name: Interior Objects
-    uniqueID: 142948381
+  - name: Interior Near Background
+    uniqueID: 1545854155
     locked: 0
   - name: Exterior Objects
     uniqueID: 433996785
     locked: 0
-  - name: Foreground
+  - name: Interior Objects
+    uniqueID: 142948381
+    locked: 0
+  - name: Exterior Foreground
     uniqueID: 97978461
     locked: 0
-  - name: Near Foreground
+  - name: Interior Foreground
+    uniqueID: 2229172679
+    locked: 0
+  - name: Exterior Near Foreground
+    uniqueID: 3601685345
+    locked: 0
+  - name: Interior Near Foreground
     uniqueID: 1236590743
     locked: 0
   - name: Hidden
     uniqueID: 4092344651
+    locked: 0
+  - name: Effects
+    uniqueID: 1670176555
+    locked: 0
+  - name: Gradient
+    uniqueID: 4230758539
     locked: 0

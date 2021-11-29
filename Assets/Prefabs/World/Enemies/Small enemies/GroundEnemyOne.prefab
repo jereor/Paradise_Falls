@@ -196,7 +196,7 @@ MonoBehaviour:
   forcedAggroTime: 4
   healthProbability: 80
   energyProbability: 80
-  amountWhenHealthIsSpawnable: 0.7
+  amountWhenResourceIsSpawnable: 0
   nextWaypointDistance: 1
   pathUpdateInterval: 0.5
   jumpableWallCheckDistance: 1
@@ -216,8 +216,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e85f99a78ea71c14bb56436ea514cc78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 10
-  debugHealth: 0
+  maxHealth: 3
+  currentHealth: 0
   blockedColor: {r: 0, g: 0, b: 1, a: 1}
   damageColor: {r: 1, g: 0, b: 0, a: 1}
   destroyWhenDead: 1
@@ -274,7 +274,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -2065794617
-  m_SortingLayer: 4
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 84999fc189417084e833565d04c1b244, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

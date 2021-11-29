@@ -4834,8 +4834,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 97978461
-  m_SortingLayer: 6
+  m_SortingLayerID: 1670176555
+  m_SortingLayer: 12
   m_SortingOrder: 0
   m_RenderMode: 1
   m_SortMode: 0
@@ -4873,6 +4873,8 @@ GameObject:
   - component: {fileID: 604414329}
   - component: {fileID: 604414330}
   - component: {fileID: 6516822958706686692}
+  - component: {fileID: 1724045041}
+  - component: {fileID: 1724045043}
   m_Layer: 3
   m_Name: Shield
   m_TagString: Untagged
@@ -4931,8 +4933,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 1670176555
+  m_SortingLayer: 12
   m_SortingOrder: 0
   m_Sprite: {fileID: -291145126494415075, guid: 7d99288bbb7840847ae005c53c548399, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -4964,6 +4966,70 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &1724045041
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 604414328}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_LightType: 1
+  m_BlendStyleIndex: 0
+  m_FalloffIntensity: 1
+  m_Color: {r: 0.5411765, g: 1, b: 0.98039216, a: 1}
+  m_Intensity: 1
+  m_LightVolumeOpacity: 0
+  m_ApplyToSortingLayers: 000000008dd3b1c38fb30fcd677f6f18cbdc235cf143de191d3885085d08d705c779de84615badd697e0b4494b39ecf32bdf8c638b402cfc
+  m_LightCookieSprite: {fileID: 0}
+  m_UseNormalMap: 1
+  m_LightOrder: 0
+  m_AlphaBlendOnOverlap: 0
+  m_ShadowIntensity: 0
+  m_ShadowVolumeIntensity: 0
+  m_PointLightInnerAngle: 360
+  m_PointLightOuterAngle: 360
+  m_PointLightInnerRadius: 0
+  m_PointLightOuterRadius: 1
+  m_PointLightDistance: 5
+  m_PointLightQuality: 1
+  m_ShapeLightParametricSides: 5
+  m_ShapeLightParametricAngleOffset: 0
+  m_ShapeLightParametricRadius: 1
+  m_ShapeLightFalloffSize: 5
+  m_ShapeLightFalloffOffset: {x: 0, y: 0}
+  m_ShapePath:
+  - {x: -0.26170322, y: -0.75149816, z: 0}
+  - {x: -0.065954834, y: -0.83533084, z: 0}
+  - {x: 0.24291465, y: -0.5579187, z: 0}
+  - {x: 0.41170824, y: -0.24906123, z: 0}
+  - {x: 0.4514244, y: 0.06862072, z: 0}
+  - {x: 0.36206314, y: 0.3642414, z: 0}
+  - {x: 0.1822709, y: 0.6014817, z: 0}
+  - {x: -0.33296922, y: 0.89371145, z: 0}
+  - {x: -0.38085186, y: 0.7867962, z: 0}
+  - {x: -0.31497905, y: 0.3062645, z: 0}
+  - {x: -0.26589802, y: -0.21105912, z: 0}
+  - {x: -0.29325315, y: -0.5888044, z: 0}
+--- !u!114 &1724045043
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 604414328}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e405ca74dfdcb0498a685f56bbbe30a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  flickerTime: 0.01
+  minIntensity: 1
+  maxIntensity: 1.3
 --- !u!1 &1691313836
 GameObject:
   m_ObjectHideFlags: 0
@@ -9799,8 +9865,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 97978461
-  m_SortingLayer: 6
+  m_SortingLayerID: 1670176555
+  m_SortingLayer: 12
   m_SortingOrder: 0
   m_RenderMode: 1
   m_SortMode: 0
@@ -9910,8 +9976,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 97978461
-  m_SortingLayer: 6
+  m_SortingLayerID: 1670176555
+  m_SortingLayer: 12
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 3af2c0d23ed25a14f8630a2212857b89, type: 3}
   m_Color: {r: 0, g: 0.84313726, b: 1, a: 1}
@@ -10514,8 +10580,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -2065794617
-  m_SortingLayer: 3
+  m_SortingLayerID: 433996785
+  m_SortingLayer: 5
   m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: 32e81b969f0cb264e9c5c166f9495551, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -10573,7 +10639,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.75, y: 1.8102989}
+  m_Size: {x: 0.75, y: 1.2}
   m_EdgeRadius: 0
 --- !u!114 &1812080132
 MonoBehaviour:
@@ -10698,7 +10764,7 @@ MonoBehaviour:
   onDie:
     m_PersistentCalls:
       m_Calls: []
-  usesHealthNumber: 1
+  usesHealthNumber: 0
   healthNumberImage: {fileID: 0}
   numberSprites:
   - {fileID: 21300000, guid: 71c3a3237d478be479860bc9c966fac5, type: 3}
@@ -15780,8 +15846,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 1670176555
+  m_SortingLayer: 12
   m_SortingOrder: 0
   m_RenderMode: 1
   m_SortMode: 0
@@ -15824,7 +15890,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &3787360598379495436
 Transform:
   m_ObjectHideFlags: 0
