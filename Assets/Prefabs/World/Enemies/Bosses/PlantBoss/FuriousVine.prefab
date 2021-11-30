@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 7765927652885292946}
   - component: {fileID: 7765927652885292949}
   m_Layer: 0
-  m_Name: AttackVine
+  m_Name: FuriousVine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -143,12 +143,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attackVineStretchDuration: 0.5
-  attackVineRotateDuration: 3
-  attackVineMoveDuration: 2
-  attackVineWaitTime: 1
+  attackVineRotateDuration: 2
+  attackVineMoveDuration: 0.5
+  attackVineWaitTime: 0.5
   attackVineStretchAmount: 5
   attackVineMoveAmount: 3
-  vineSpeed: 1
+  vineSpeed: 0.5
   isAttackVineActivated: 0
   isRotatingTowardsTarget: 0
   knockbackForce: 100

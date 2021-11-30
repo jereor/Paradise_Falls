@@ -16,18 +16,18 @@ public class AttackVineController : MonoBehaviour
 
     private Vector2 velocityPlayer;
 
-    [SerializeField] private float attackVineStretchDuration;
-    [SerializeField] private float attackVineRotateDuration;
-    [SerializeField] private float attackVineMoveDuration;
-    [SerializeField] private float attackVineWaitTime;
-    [SerializeField] private float attackVineStretchAmount;
-    [SerializeField] private float attackVineMoveAmount;
-    [SerializeField] private float vineSpeed;
+    [SerializeField] private float attackVineStretchDuration; // Duration the vine changes the local scale.
+    [SerializeField] private float attackVineRotateDuration; // Duration when it turns itself towards the player.
+    [SerializeField] private float attackVineMoveDuration; // Duration the vine moves to reveal itself from the wall.
+    [SerializeField] private float attackVineWaitTime; // Time it waits after locking it's charge direction.
+    [SerializeField] private float attackVineStretchAmount; // How far the vine reaches.
+    [SerializeField] private float attackVineMoveAmount; // How far from the spawn point it moves.
+    [SerializeField] private float vineSpeed = 1; // Local vine speed used in all other situations except when boss is spawning them personally.
 
     public bool isAttackVineActivated = false;
     public bool isRotatingTowardsTarget = false;
 
-    [SerializeField] private float knockbackForce;
+    [SerializeField] private float knockbackForce; // Knockback force it applies to the player when hit.
     private bool knockbackOnCooldown = false;
     // Start is called before the first frame update
     void Start()
@@ -37,6 +37,8 @@ public class AttackVineController : MonoBehaviour
         target = GameObject.Find("Player");
         targetRB = target.GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+
+
     }
 
     // Update is called once per frame
@@ -77,52 +79,41 @@ public class AttackVineController : MonoBehaviour
         transform.rotation = Quaternion.Slerp(transform.rotation, q, Time.deltaTime);
     }
 
+    // THe whole behaviour for the vine except the rotation.
     private IEnumerator SpawnVine()
     {
-        vineSpeed = plantController.GetVineSpeed();
+        // If the boss state is Angri, the speed is got from the boss object. Otherwise the script uses the speed given to it in inspector.
+        if(plantController.state == BigPlantController.PlantState.Angri)
+            vineSpeed = plantController.GetVineSpeed();
+
         isAttackVineActivated = true;
         //transform.position = new Vector2(Random.Range(plantBoss.transform.position.x - 5, plantBoss.transform.position.x + 5), plantBoss.transform.position.y + 15);
-        transform.DOMove((target.transform.position - transform.position).normalized * attackVineMoveAmount + transform.position, attackVineMoveDuration * vineSpeed);
-        Debug.Log((target.transform.position - transform.position));
+        transform.DOMove((target.transform.position - transform.position).normalized * attackVineMoveAmount + transform.position, attackVineMoveDuration * vineSpeed); // Moves the vine towards the player for the given amount.
         yield return new WaitForSeconds(attackVineRotateDuration * vineSpeed);
         gameObject.GetComponent<SpriteRenderer>().color = Color.red;
-        isRotatingTowardsTarget = false;
+        isRotatingTowardsTarget = false; // Stops the object rotation meaning that it's lovked in place.
         animator.SetBool("Charge", true);
-        Vector2 attackDirection = target.transform.position;
+        Vector2 attackDirection = target.transform.position; // Gets the player's last position.
         yield return new WaitForSeconds(attackVineWaitTime * vineSpeed);
-        transform.DOScaleY(attackVineStretchAmount, attackVineStretchDuration * vineSpeed);
+        transform.DOScaleY(attackVineStretchAmount, attackVineStretchDuration * vineSpeed); // After waiting the given time it stretches in the direction given.
         yield return new WaitForSeconds(attackVineStretchDuration * vineSpeed);
-        transform.DOScaleY(1, attackVineStretchDuration * vineSpeed);
+        transform.DOScaleY(1, attackVineStretchDuration * vineSpeed); // And back to normal.
         yield return new WaitForSeconds(attackVineStretchDuration * vineSpeed);
         gameObject.GetComponent<SpriteRenderer>().color = Color.white;
         animator.SetBool("Charge", false);
-        transform.DOMoveY(transform.position.y + 5, attackVineMoveDuration * vineSpeed);
+        transform.DOMove(-((target.transform.position - transform.position).normalized * attackVineMoveAmount) + transform.position, attackVineMoveDuration * vineSpeed); // Moves the vine back where it came from.
 
         yield return new WaitForSeconds(attackVineMoveDuration * vineSpeed);
         isAttackVineActivated = false;
-        plantController.attackVineInstances.Remove(gameObject);
+        plantController.attackVineInstances.Remove(gameObject); // Remove the vine from the list. Destroy the game object afterwards.
         Destroy(gameObject);
     }
 
-    //private void OnCollisionEnter2D(Collision2D collision)
-    //{
-    //    if (collision.collider.gameObject.name == "PlantBoss")
-    //    {
-    //        Debug.Log("OUCH!");
-    //        plantController.state = BigPlantController.PlantState.Stunned;
-    //    }
-
-    //    if (collision.collider.gameObject.name == "Player")
-    //    {
-    //        PlayerPushback();
-    //    }
-    //}
-
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        // AttackVine hits the boss. Stun state activated.
         if (collision.transform.name == "PlantBoss" && plantController.state != BigPlantController.PlantState.Stunned)
         {
-            Debug.Log("OUCH!");
             plantController.state = BigPlantController.PlantState.Stunned;
         }
 

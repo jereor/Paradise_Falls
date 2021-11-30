@@ -7,12 +7,16 @@ public class BigPlantController : MonoBehaviour
 {
     private GameObject target;
     private Rigidbody2D targetRB;
-    private GameObject spikyVine;
-    private SmallEnemySpawnController enemyController;
-
+    private GameObject spikyVine; // For visual purposes only.
     public Health health;
 
-    [SerializeField] private GameObject workerDroneOnePrefab;
+    [SerializeField] private GameObject hiddenBossObjects;
+
+    private Health targetHealth;
+
+    private SpikyDeathWallController deathWallController; // Phase 2 rising death wall.
+
+    [SerializeField] private GameObject workerDroneOnePrefab; // Prefabs for spawnable enemies.
     [SerializeField] private GameObject workerDroneTwoPrefab;
     private GameObject workerDroneOneInstance;
     private GameObject workerDroneTwoInstance;
@@ -22,62 +26,51 @@ public class BigPlantController : MonoBehaviour
     private GameObject flyingDroneOneInstance;
     private GameObject flyingDroneTwoInstance;
 
-    public GameObject escapePlatform;
-
-
-    [SerializeField] private GameObject attackVine;
-    public List<GameObject> attackVineInstances;
+    [SerializeField] private GameObject attackVine; // Prefab that is instantiated in Angri state.
+    public List<GameObject> attackVineInstances; // All spawned vines are stored in a list. When their part is done, 
 
     [Header("Current State")]
     public PlantState state = PlantState.Idle;
 
-    private Vector2 spikyVineStartPosition;
+    private Vector2 spikyVineStartPosition; // Vectors for the SpikyVine start and end positions.
     private Vector2 spikyVineEndPosition;
-    private Vector2 velocityPlayer;
 
-    [SerializeField] private float attackVineStretchDuration;
-    [SerializeField] private float attackVineRotateDuration;
-    [SerializeField] private float attackVineMoveDuration;
-    [SerializeField] private float attackVineWaitTime;
-    [SerializeField] private float attackVineStretchAmount;
-    [SerializeField] private float stunTime;
-    [SerializeField] private float knockbackForce;
-    public float vineSpeed;
+    private Vector2 velocityPlayer; // Player velocity for knockback.
+
+    [SerializeField] private float stunTime; // time the boss is stunned.
+    [SerializeField] private float knockbackForce; // Knockback force for player pushback.
+    public float vineSpeed = 1; // Default is 1. Scales accordingly when boss takes damage.
 
 
     private bool isCovered = false;
     private bool isRoaring = false;
     private bool isEnemiesSpawned = false;
-    private bool isAttackVineActivated = false;
-    private bool isRotatingTowardsTarget = false;
     private bool knockbackOnCooldown = false;
     private bool spawnWorkerDrones = true;
-    private bool phaseTwoActionsInitiated = false;
+    private bool isPhaseTwoTransitioning = false;
 
     void Start()
     {
         attackVineInstances = new List<GameObject>();
         target = GameObject.Find("Player");
         targetRB = target.GetComponent<Rigidbody2D>();
-        spikyVine = transform.GetChild(0).gameObject;
+        spikyVine = GameObject.Find("SpikyVine");
         spikyVineStartPosition = spikyVine.transform.position;
         spikyVineEndPosition = new Vector2(spikyVineStartPosition.x, transform.position.y);
-
+        deathWallController = GameObject.Find("SpikyDeathWall").GetComponent<SpikyDeathWallController>();
         health = GetComponent<Health>();
-
-        //attackVine = transform.GetChild(1).gameObject;
+        targetHealth = target.GetComponent<Health>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        // If bosses health goes down more that 50%, change phase. The way of handling the state variation changes most likely in the future.
+        // If bosses health goes down more that 50%, change phase.
         if (health.GetHealth() <= health.GetMaxHealth() * 0.5f)
         {
             state = PlantState.PhaseTwo;
             ChangeToDefaultLayer();
         }
-
 
         switch (state)
         {
@@ -141,12 +134,13 @@ public class BigPlantController : MonoBehaviour
         // Waits for enemies to be killed
         gameObject.GetComponent<SpriteRenderer>().color = Color.blue;
 
-        if (!isCovered)
+        if (!isCovered) // Checks if the boss is covered (visual only).
             Cover();
 
-        if (!isEnemiesSpawned)
+        if (!isEnemiesSpawned) // If enemies are not spawned, spawn some.
             SpawnEnemies();
 
+        // If the small enemy instances are NULL, change state to Angri.
         if (workerDroneOneInstance == null && workerDroneTwoInstance == null && flyingDroneOneInstance == null && flyingDroneTwoInstance == null)
         {
             isEnemiesSpawned = false;
@@ -164,16 +158,12 @@ public class BigPlantController : MonoBehaviour
 
         gameObject.GetComponent<SpriteRenderer>().color = Color.red;
 
+        // Script saves the spawned vines into a list. AttackVine script removes them one at a time when the behaviour is completed, leaving the list empty in the end.
+        // Empty list means that boss can spawn the next set of vines. This prevents that no more vines spawn until all are destroyed by the corresponding instance.
         if (attackVineInstances.Count == 0)
         {
             StartCoroutine(SpawnVine());
-            //attackVine.transform.rotation = new Quaternion(0, 0, -180,0);
-            isRotatingTowardsTarget = true;
         }
-
-        //if (isRotatingTowardsTarget)
-        //    RotateVineTowardsTheTarget();
-
 
     }
 
@@ -183,6 +173,7 @@ public class BigPlantController : MonoBehaviour
         // Returns to protected when stun ends
         gameObject.GetComponent<SpriteRenderer>().color = Color.magenta;
 
+        // Uncovers the boss (visual only) and starts the coroutine for stun state.
         if(isCovered)
         {
             Uncover();
@@ -196,14 +187,11 @@ public class BigPlantController : MonoBehaviour
         // When player hits the trigger, transition to escape sequence
         // Just big wall rising, player escaping
         // Trigger in the other end, closes the big climb room and third phase begins
-
-        if(!phaseTwoActionsInitiated)
+        if(!isPhaseTwoTransitioning)
         {
-            Cover();
-            GameObject.Find("PhaseTwoObjectActivator").GetComponent<PhaseTwoObjectActivator>().SetSpawnPlatforms(true);
-
-
+            StartCoroutine(PhaseTwoTransition()); // Everything regarding the transition is dealt in the coroutine.
         }
+
 
     }
 
@@ -254,41 +242,35 @@ public class BigPlantController : MonoBehaviour
         isCovered = false;
     }
 
+    // Spawn the enemies corresponding the bool value. One set is worker drones, other flying drones.
+    // Set the spawned enemies to boss mode and set the player to their target.
     private void SpawnEnemies()
     {
         isEnemiesSpawned = true;
-        //if(spawnWorkerDrones)
-        //{
-        //    workerDroneOneInstance = Instantiate(workerDroneOnePrefab, new Vector2(transform.position.x - 5, transform.position.y + 15), Quaternion.identity);
-        //    workerDroneTwoInstance = Instantiate(workerDroneTwoPrefab, new Vector2(transform.position.x + 5, transform.position.y + 15), Quaternion.identity);
-        //    workerDroneOneInstance.GetComponent<GroundEnemyAI>().target = target.transform;
-        //    workerDroneTwoInstance.GetComponent<GroundEnemyAI>().target = target.transform;
-        //    workerDroneOneInstance.GetComponent<GroundEnemyAI>().bossMode = true;
-        //    workerDroneTwoInstance.GetComponent<GroundEnemyAI>().bossMode = true;
-        //    spawnWorkerDrones = false;
-        //}
-        //else
-        //{
-        //    flyingDroneOneInstance = Instantiate(flyingDroneOnePrefab, new Vector2(transform.position.x - 5, transform.position.y + 15), Quaternion.identity);
-        //    flyingDroneTwoInstance = Instantiate(flyingDroneTwoPrefab, new Vector2(transform.position.x + 5, transform.position.y + 15), Quaternion.identity);
-        //    flyingDroneOneInstance.GetComponent<FlyingEnemyAI>().target = target.transform;
-        //    flyingDroneTwoInstance.GetComponent<FlyingEnemyAI>().target = target.transform;
-        //    flyingDroneOneInstance.GetComponent<FlyingEnemyAI>().bossMode = true;
-        //    flyingDroneTwoInstance.GetComponent<FlyingEnemyAI>().bossMode = true;
-        //    spawnWorkerDrones = true;
-        //}
+        if (spawnWorkerDrones)
+        {
+            workerDroneOneInstance = Instantiate(workerDroneOnePrefab, new Vector2(transform.position.x - 5, transform.position.y + 15), Quaternion.identity);
+            workerDroneTwoInstance = Instantiate(workerDroneTwoPrefab, new Vector2(transform.position.x + 5, transform.position.y + 15), Quaternion.identity);
+            workerDroneOneInstance.GetComponent<GroundEnemyAI>().target = target.transform;
+            workerDroneTwoInstance.GetComponent<GroundEnemyAI>().target = target.transform;
+            workerDroneOneInstance.GetComponent<GroundEnemyAI>().bossMode = true;
+            workerDroneTwoInstance.GetComponent<GroundEnemyAI>().bossMode = true;
+            spawnWorkerDrones = false;
+        }
+        else
+        {
+            flyingDroneOneInstance = Instantiate(flyingDroneOnePrefab, new Vector2(transform.position.x - 5, transform.position.y + 15), Quaternion.identity);
+            flyingDroneTwoInstance = Instantiate(flyingDroneTwoPrefab, new Vector2(transform.position.x + 5, transform.position.y + 15), Quaternion.identity);
+            flyingDroneOneInstance.GetComponent<FlyingEnemyAI>().target = target.transform;
+            flyingDroneTwoInstance.GetComponent<FlyingEnemyAI>().target = target.transform;
+            flyingDroneOneInstance.GetComponent<FlyingEnemyAI>().bossMode = true;
+            flyingDroneTwoInstance.GetComponent<FlyingEnemyAI>().bossMode = true;
+            spawnWorkerDrones = true;
+        }
 
     }
 
-    //private void RotateVineTowardsTheTarget()
-    //{
-    //    // Rotating object to point player
-    //    Vector3 vectorToTarget = target.transform.position - attackVine.transform.position;
-    //    float angle = Mathf.Atan2(vectorToTarget.y, vectorToTarget.x) * Mathf.Rad2Deg;
-    //    Quaternion q = Quaternion.AngleAxis(angle - 90, Vector3.forward);
-    //    attackVine.transform.rotation = Quaternion.Slerp(attackVine.transform.rotation, q, Time.deltaTime);
-    //}
-
+    // LAYER CHANGES
     private void ChangeToBossLayer()
     {
         gameObject.layer = LayerMask.NameToLayer("Boss");
@@ -301,13 +283,8 @@ public class BigPlantController : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        //if (collision.gameObject.name == "AttackVine")
-        //{
-        //    Debug.Log("OUCH!");
-        //    state = PlantState.Stunned;
-        //}
 
-        if (collision.collider.gameObject.name == "Player" && state != PlantState.Stunned)
+        if (collision.collider.gameObject.name == "Player" && state != PlantState.Stunned && !knockbackOnCooldown)
         {
             PlayerPushback();
         }
@@ -329,49 +306,56 @@ public class BigPlantController : MonoBehaviour
         StartCoroutine(KnockbackCooldown());
     }
 
-    //private IEnumerator SpawnVine()
-    //{
-    //    vineSpeed = health.GetHealth() / health.GetMaxHealth();
-    //    isAttackVineActivated = true;
-    //    attackVine.transform.position = new Vector2(Random.Range(transform.position.x - 5, transform.position.x + 5), transform.position.y + 15);
-    //    attackVine.transform.DOMoveY(attackVine.transform.position.y - 5, attackVineMoveDuration * vineSpeed);
-    //    yield return new WaitForSeconds(attackVineRotateDuration * vineSpeed);
-    //    attackVine.GetComponent<SpriteRenderer>().color = Color.red;
-    //    isRotatingTowardsTarget = false;
-    //    Vector2 attackDirection = target.transform.position;
-    //    yield return new WaitForSeconds(attackVineWaitTime * vineSpeed);
-    //    attackVine.transform.DOScaleY(attackVineStretchAmount, attackVineStretchDuration * vineSpeed);
-    //    yield return new WaitForSeconds(attackVineStretchDuration * vineSpeed);
-    //    attackVine.transform.DOScaleY(1, attackVineStretchDuration * vineSpeed);
-    //    yield return new WaitForSeconds(attackVineStretchDuration * vineSpeed);
-    //    attackVine.GetComponent<SpriteRenderer>().color = Color.white;
-    //    attackVine.transform.DOMoveY(attackVine.transform.position.y + 5, attackVineMoveDuration * vineSpeed);
 
-    //    yield return new WaitForSeconds(attackVineMoveDuration * vineSpeed);
-    //    isAttackVineActivated = false;
-    //}
-
+    // Coroutine spawns vines with a simple calculation that uses the remaining and maximum boss health as a vine spawn amount.
     private IEnumerator SpawnVine()
     {
         int spawnAmount = ((int)health.GetMaxHealth() - (int)health.GetHealth()) / 3;
-        isAttackVineActivated = true;
         vineSpeed = health.GetHealth() / health.GetMaxHealth();
-        if(spawnAmount <= 1)
+
+        // The operation would normally result in 0 as it is rounded to integer. In this case spawn only one vine.
+        if (spawnAmount <= 1)
         {
-            attackVineInstances.Add(Instantiate(attackVine, new Vector2(Random.Range(transform.position.x - 5, transform.position.x + 5), transform.position.y + 15), new Quaternion(0, 0, -180, 0)));
+            attackVineInstances.Add(Instantiate(attackVine, new Vector2(Random.Range(transform.position.x - 10, transform.position.x + 10), transform.position.y + 13), new Quaternion(0, 0, -180, 0)));
         }
         else
         {
             for (int i = 0; i < spawnAmount; i++)
             {
-                attackVineInstances.Add(Instantiate(attackVine, new Vector2(Random.Range(transform.position.x - 5, transform.position.x + 5), transform.position.y + 15), new Quaternion(0, 0, -180, 0)));
+                attackVineInstances.Add(Instantiate(attackVine, new Vector2(Random.Range(transform.position.x - 10, transform.position.x + 10), transform.position.y + 13), new Quaternion(0, 0, -180, 0)));
                 yield return new WaitForSeconds(vineSpeed);
             }
         }
+        yield return new WaitForSeconds(2);     
+    }
 
+    private IEnumerator PhaseTwoTransition()
+    {
+        isPhaseTwoTransitioning = true;
+        gameObject.GetComponent<SpriteRenderer>().color = Color.red;
+        hiddenBossObjects.SetActive(true);
+        // Simple pulsing effect for boss local scale.
+        for (int i = 0; i < 3; i++)
+        {
+            transform.DOScale(1.2f, 0.3f);
+            yield return new WaitForSeconds(0.3f);
+            transform.DOScale(1f, 0.3f);
+            yield return new WaitForSeconds(0.3f);
+        }
+        // Camera shakiiiiing
+        // -----HERE----
+
+        // Moves the boss into the ground and grows the local scale bigger during that.
+        transform.DOScale(1.5f, 2f);
+        transform.DOMove(new Vector2(transform.position.x, transform.position.y - 5), 3);
         yield return new WaitForSeconds(2);
-        isAttackVineActivated = false;
-        
+
+        // Activate platforms to let the player out of the pit.
+        GameObject.Find("PhaseTwoObjectActivator").GetComponent<PhaseTwoObjectActivator>().SetSpawnPlatforms(true);
+
+        // Death wall is rising. Better hurry up.
+        deathWallController.enabled = true;
+
     }
 
     private IEnumerator Roar()
@@ -383,6 +367,8 @@ public class BigPlantController : MonoBehaviour
         isRoaring = false;
     }
 
+    // Boss layer is changed for a certain amount of time. Hit the boss hard.
+    // Returns to protected state after.
     private IEnumerator Stun()
     {
         ChangeToBossLayer();
@@ -407,6 +393,7 @@ public class BigPlantController : MonoBehaviour
 
     }
 
+    // Vinespeed is needed in AttackVineController script.
     public float GetVineSpeed()
     {
         return vineSpeed;
