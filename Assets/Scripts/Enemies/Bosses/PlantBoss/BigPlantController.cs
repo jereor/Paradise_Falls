@@ -195,12 +195,12 @@ public class BigPlantController : MonoBehaviour
         // Platforms spawn
         // When player hits the trigger, transition to escape sequence
         // Just big wall rising, player escaping
-        // Trigger in the other end, closes the big climb room and thrid phasse begins
+        // Trigger in the other end, closes the big climb room and third phase begins
 
         if(!phaseTwoActionsInitiated)
         {
             Cover();
-            escapePlatform.SetActive(true);
+            GameObject.Find("PhaseTwoObjectActivator").GetComponent<PhaseTwoObjectActivator>().SetSpawnPlatforms(true);
 
 
         }
