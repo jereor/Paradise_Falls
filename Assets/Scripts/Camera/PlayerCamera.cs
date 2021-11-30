@@ -90,7 +90,8 @@ public class PlayerCamera : MonoBehaviour
 
     public void CameraShake(float intensity, float time)
     {
-        StartCoroutine(Shake(intensity, time));
+        if (gameObject.activeInHierarchy)
+            StartCoroutine(Shake(intensity, time));
     }
 
     private IEnumerator Shake(float intensity, float time)
