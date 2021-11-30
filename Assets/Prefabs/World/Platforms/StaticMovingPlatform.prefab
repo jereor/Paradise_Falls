@@ -69,7 +69,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 142948381
-  m_SortingLayer: 4
+  m_SortingLayer: 6
   m_SortingOrder: -1
   m_Sprite: {fileID: 4267559125302215866, guid: b1c7aba9cdf256a42991529b267aadc3, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -243,7 +243,7 @@ MonoBehaviour:
   speed: 150
   circleSize: 0.15
   moves:
-  - {x: 0, y: 17}
+  - {x: 0, y: -15}
   movesBack: []
   velocityPlayer: {x: 0, y: 0}
   knockbackForce: 40
@@ -279,7 +279,7 @@ MonoBehaviour:
   - {x: -1.5, y: 0.5, z: 0}
   m_ShapePathHash: 0
   m_Mesh: {fileID: 0}
-  m_InstanceId: 305584
+  m_InstanceId: -4702
 --- !u!1 &7202397223329539780
 GameObject:
   m_ObjectHideFlags: 0
@@ -349,7 +349,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 142948381
-  m_SortingLayer: 4
+  m_SortingLayer: 6
   m_SortingOrder: -1
   m_Sprite: {fileID: -5692151283660047582, guid: 860462c9cf2d1cc438bdede04109a365, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -464,7 +464,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 142948381
-  m_SortingLayer: 4
+  m_SortingLayer: 6
   m_SortingOrder: -1
   m_Sprite: {fileID: -4855985180144077024, guid: 860462c9cf2d1cc438bdede04109a365, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
