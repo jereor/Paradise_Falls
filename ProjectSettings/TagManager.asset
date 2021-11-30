@@ -13,6 +13,8 @@ TagManager:
   - MovingPlatform
   - Box
   - NPC
+  - HardGround
+  - SoftGround
   layers:
   - Default
   - TransparentFX
