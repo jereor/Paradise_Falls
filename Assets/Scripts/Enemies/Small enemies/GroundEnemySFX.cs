@@ -5,6 +5,10 @@ public class GroundEnemySFX : MonoBehaviour
 {
     AudioSource audioSource;
     private Health myHealthScript;
+    private GroundEnemyAI myAIScript;
+
+    [Header("MeleeSwing")]
+    public AudioClip meleeSwingSound;
 
     [Header("Taking dmg sounds")]
     public AudioClip[] takeDMGSounds;
@@ -17,6 +21,7 @@ public class GroundEnemySFX : MonoBehaviour
     {
         audioSource = gameObject.GetComponent<AudioSource>();
         myHealthScript = gameObject.GetComponent<Health>();
+        myAIScript = gameObject.GetComponent<GroundEnemyAI>();
     }
 
     void Update()
@@ -25,11 +30,19 @@ public class GroundEnemySFX : MonoBehaviour
         {
             PlayTakeDMGSound();
         }
+        if (myAIScript.getPlaySoundMelee())
+            PlayMeleeSound();
+
     }
 
     public void PlayTakeDMGSound()
     {
         audioSource.PlayOneShot(takeDMGSounds[(int)Random.Range(0, takeDMGSounds.Length - 1)]);
+    }
+
+    public void PlayMeleeSound()
+    {
+        audioSource.PlayOneShot(meleeSwingSound);
     }
 
     public void PlayDestroySound()

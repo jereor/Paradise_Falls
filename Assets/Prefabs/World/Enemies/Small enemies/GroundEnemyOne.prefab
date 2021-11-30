@@ -332,6 +332,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f2e59046aac20e4b8e6c28904b56c3d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  meleeSwingSound: {fileID: 8300000, guid: a952aedf55b93c84a921cee7c8a27201, type: 3}
   takeDMGSounds:
   - {fileID: 8300000, guid: b96eb150a664b6047b503529aee44ddb, type: 3}
   - {fileID: 8300000, guid: 6d7c74e6db2fc0e429fb4d461217a697, type: 3}
@@ -345,7 +346,6 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 6ab6005b93e32cc4588e382c23f92699, type: 3}
   - {fileID: 8300000, guid: 676da1adeff70c947b2b0ebae7c094e5, type: 3}
   - {fileID: 8300000, guid: 3eca5e7828167104ca048b3e365da9c7, type: 3}
-  destroyAudioSourceObject: {fileID: 0}
 --- !u!82 &4635168669505543238
 AudioSource:
   m_ObjectHideFlags: 0
