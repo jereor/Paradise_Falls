@@ -18,6 +18,8 @@ public class PlayerSFX : MonoBehaviour
     public Coroutine grindCoroutine;
     public Coroutine fadeCoroutine;
 
+
+    private bool playBlockSound = false;
     private bool playLandingSound = false;
     private bool playGPPullSound = false;
     private bool playShieldGrindSound = false;
@@ -84,19 +86,36 @@ public class PlayerSFX : MonoBehaviour
         // Double jump
         if (shScript.getPlaySoundJump())
             playerAudioSource.PlayOneShot(doubleJump);
+
         // Dash
         if (shScript.getPlaySoundDash())
         {
             playerAudioSource.PlayOneShot(dash);
         }
+
         // Block activation
-        if (shieldScript.getPlaySoundBlockActivate())
+        if (shieldScript.getPlaySoundBlockActivate() && !playBlockSound)
         {
             playerAudioSource.PlayOneShot(blockActivation);
             if (blockCoroutine == null)
                 blockCoroutine = StartCoroutine(PlayClipDelayed(block, blockActivation.length/2, true));
+            playBlockSound = true;
         }
-        // Parry
+        // Block end
+        if (playBlockSound && !shieldScript.Blocking)
+        {
+            // Disables loop and stops block sound playing
+            playerAudioSource.loop = false;
+            playerAudioSource.Stop();
+            playerAudioSource.clip = null;
+            if (blockCoroutine != null)
+            {
+                StopCoroutine(blockCoroutine);
+                blockCoroutine = null;
+            }
+            playBlockSound = false;
+        }
+        // Parry + (block end)
         if (shieldScript.getPlaySoundParry())
         {
             // Disables loop and stops block sound playing
@@ -108,8 +127,11 @@ public class PlayerSFX : MonoBehaviour
                 StopCoroutine(blockCoroutine);
                 blockCoroutine = null;
             }
+            playBlockSound = false;
+            // Plays parry sound
             playerAudioSource.PlayOneShot(parry);
         }
+
         // Landing sound
         if (!PlayerMovement.Instance.IsGrounded() && !playLandingSound && !PlayerMovement.Instance.getClimbing())
             playLandingSound = true;
@@ -117,6 +139,7 @@ public class PlayerSFX : MonoBehaviour
             playLandingSound = false;
         else if (PlayerMovement.Instance.IsGrounded() && playLandingSound && !PlayerMovement.Instance.getIfClimbingMovingPlatform())
             PlayPlayerLandingSound();
+
         // Grappling pull
         if (PlayerCombat.Instance.getIsPlayerBeingPulled() && !playGPPullSound) 
         {
@@ -132,11 +155,13 @@ public class PlayerSFX : MonoBehaviour
             playerAudioSource.clip = null;
             playGPPullSound = false;
         }
+
         // Melee
         if (PlayerCombat.Instance.getPlaySoundHit())
             playerAudioSource.PlayOneShot(meleeHit);
         if (PlayerCombat.Instance.getPlaySoundWPHit())
             playerAudioSource.PlayOneShot(meleeWPHit);
+
         // Shield Grind start
         if (grindScript.PipeCheck() && PlayerMovement.Instance.IsGrounded() && !playShieldGrindSound)
         {
