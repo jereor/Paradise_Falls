@@ -7,7 +7,8 @@ public class MeleeWeaponSFX : MonoBehaviour
     [Header("Impacts")]
     public AudioClip throwHitEnemy;
     public AudioClip throwHitWeakpoint;
-    public AudioClip throwHitEnvironment;
+    public AudioClip throwHitHard;
+    public AudioClip throwHitSoft;
 
     public void PlayHitEnemySound()
     {
@@ -19,8 +20,11 @@ public class MeleeWeaponSFX : MonoBehaviour
         meleeWeaponAudioSource.PlayOneShot(throwHitWeakpoint);
     }
 
-    public void PlayHitEnvironmentSound()
+    public void PlayHitEnvironmentSound(bool hitSoft)
     {
-        meleeWeaponAudioSource.PlayOneShot(throwHitEnvironment);
+        if(hitSoft)
+            meleeWeaponAudioSource.PlayOneShot(throwHitSoft);
+        else
+            meleeWeaponAudioSource.PlayOneShot(throwHitHard);
     }
 }

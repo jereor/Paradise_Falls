@@ -145,7 +145,7 @@ public class MeleeWeapon : MonoBehaviour
         {
             if (!landed || Mathf.Abs(Mathf.Abs(gameObject.transform.position.y) - Mathf.Abs(highestYpos)) > 0.5f || Mathf.Abs(Mathf.Abs(gameObject.transform.position.x) - Mathf.Abs(highestXpos)) > 0.5f)
             {
-                sfxScript.PlayHitEnvironmentSound();
+                sfxScript.PlayHitEnvironmentSound(false);
                 highestYpos = gameObject.transform.position.y;
                 highestXpos = gameObject.transform.position.x;
             }

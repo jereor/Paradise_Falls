@@ -140,7 +140,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -2065794617
-  m_SortingLayer: 3
+  m_SortingLayer: 8
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 72e8c069baa83ca4ca0662364cfd93f5, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -349,7 +349,7 @@ TrailRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -2065794617
-  m_SortingLayer: 3
+  m_SortingLayer: 8
   m_SortingOrder: 0
   m_Time: 0.1
   m_Parameters:
@@ -432,7 +432,8 @@ MonoBehaviour:
   meleeWeaponAudioSource: {fileID: 178586520685033316}
   throwHitEnemy: {fileID: 8300000, guid: 16b19b7e31ff5874488cccdff2c897af, type: 3}
   throwHitWeakpoint: {fileID: 8300000, guid: 16b19b7e31ff5874488cccdff2c897af, type: 3}
-  throwHitEnvironment: {fileID: 8300000, guid: 6d1a52e01dc65424b9bacb874e5b58b5, type: 3}
+  throwHitHard: {fileID: 8300000, guid: 0193075daa7040545ab86f37ec49763c, type: 3}
+  throwHitSoft: {fileID: 8300000, guid: cc7bdfaceb0cb104e98ec3d5f1f34c4c, type: 3}
 --- !u!82 &178586520685033316
 AudioSource:
   m_ObjectHideFlags: 0
