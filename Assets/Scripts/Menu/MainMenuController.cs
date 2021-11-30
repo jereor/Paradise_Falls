@@ -37,7 +37,26 @@ public class MainMenuController : MonoBehaviour
     private bool creditsOpen; // If these are true and ControllerInput is called with current selected EventSystem == null select creditsBackButton
     private bool warningOpen;
 
-    // Start is called before the first frame update
+
+    private void Awake()
+    {
+        //// If game finds save file show continue button
+        //if (GameStatus.status.CheckData())
+        //{
+        //    continueButton.gameObject.SetActive(true);
+        //    continueButton.Select();
+        //    GameStatus.status.Load();
+        //    settingsMenu.GetComponent<SettingsController>().mainMixer.SetFloat("MasterVolume", GameStatus.status.getLoadedData().masterVolume);
+        //    settingsMenu.GetComponent<SettingsController>().mainMixer.SetFloat("EffectVolume", GameStatus.status.getLoadedData().effectsVolume);
+        //    settingsMenu.GetComponent<SettingsController>().mainMixer.SetFloat("MusicVolume", GameStatus.status.getLoadedData().musicVolume);
+        //}
+        //else
+        //{
+        //    continueButton.gameObject.SetActive(false);
+        //    newGameButton.Select();
+        //}
+    }
+
     void Start()
     {
         gameObject.GetComponent<Canvas>().worldCamera = Camera.main;
@@ -47,6 +66,10 @@ public class MainMenuController : MonoBehaviour
         {
             continueButton.gameObject.SetActive(true);
             continueButton.Select();
+            GameStatus.status.Load();
+            settingsMenu.GetComponent<SettingsController>().mainMixer.SetFloat("MasterVolume", GameStatus.status.getLoadedData().masterVolume);
+            settingsMenu.GetComponent<SettingsController>().mainMixer.SetFloat("EffectVolume", GameStatus.status.getLoadedData().effectsVolume);
+            settingsMenu.GetComponent<SettingsController>().mainMixer.SetFloat("MusicVolume", GameStatus.status.getLoadedData().musicVolume);
         }
         else
         {

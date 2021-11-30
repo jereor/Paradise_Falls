@@ -53,10 +53,12 @@ public class SavePoint : Interactable
             {
                 Level01Loader.levelLoaderInstance.Save();
             }
-            if (SceneManager.GetActiveScene().name.Contains("Demo"))
+            else if (SceneManager.GetActiveScene().name.Contains("Demo"))
             {
-                DemoLoader.levelLoaderInstance.Save();
+                //DemoLoader.levelLoaderInstance.Save();
             }
+            else if (SceneManager.GetActiveScene().name.Contains("Paradise"))
+                SceneLoader.Instance.Save();
             saveBuffer = true;
         }
         else

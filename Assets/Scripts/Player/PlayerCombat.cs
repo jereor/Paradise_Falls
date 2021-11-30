@@ -626,6 +626,7 @@ public class PlayerCombat : MonoBehaviour
             // Breaking breakables
             if(hitBreakables.Length != 0)
             {
+                playSoundHit = true;
                 foreach (Collider2D collider in hitBreakables)
                 {
                     if (collider.TryGetComponent(out Chain chainScript))
@@ -638,10 +639,10 @@ public class PlayerCombat : MonoBehaviour
         // Normal combo hit 3 aka last hit of combo
         else if (comboIndex == 3 && !heavyHit)
         {
-            playSoundWeakPointHit = true;
-
             if (hitEnemies.Length != 0)
             {
+                playSoundHit = true;
+
                 StartCoroutine(HitSlowTime(heavySlowDuration));
                 PlayParticleEffect(comboIndex, heavyHit, hitEnemies, enemyLayer);
                 DealDamageTo(hitEnemies, Mathf.Ceil(lightDamage * lastHitMultiplier), kbOnLightLast, knockbackForceLightLast, enemyLayer);
@@ -649,6 +650,8 @@ public class PlayerCombat : MonoBehaviour
 
             if (hitBossesWeakPoint.Length != 0)
             {
+                playSoundWeakPointHit = true;
+
                 StartCoroutine(HitSlowTime(heavySlowDuration));
                 PlayParticleEffect(comboIndex, heavyHit, hitEnemies, bossWeakPointLayer);
                 // Deal damage
@@ -656,6 +659,8 @@ public class PlayerCombat : MonoBehaviour
             }
             else if (hitBosses.Length != 0)
             {
+                playSoundHit = true;
+
                 StartCoroutine(HitSlowTime(heavySlowDuration));
                 PlayParticleEffect(comboIndex, heavyHit, hitEnemies, bossLayer);
                 DealDamageTo(hitBosses, Mathf.Ceil(lightDamage * lastHitMultiplier), kbOnLightLast, knockbackForceLightLast, bossLayer);
@@ -678,10 +683,11 @@ public class PlayerCombat : MonoBehaviour
         // Heavy hit
         if (heavyHit)
         {
-            playSoundWeakPointHit = true;
             // Dealing damage to enemies
             if (hitEnemies.Length != 0)
             {
+                playSoundWeakPointHit = true;
+
                 StartCoroutine(HitSlowTime(heavySlowDuration));
                 PlayParticleEffect(comboIndex, heavyHit, hitEnemies, enemyLayer);
                 DealDamageTo(hitEnemies, heavyDamage, kbOnHeavy, knockbackForceHeavy, enemyLayer);
@@ -691,6 +697,8 @@ public class PlayerCombat : MonoBehaviour
             // If we hit weakpoint we deal only the amount from weakpoint hit and "skip" checkin hitBosses colliders (prevent from dealing weakpoint + normal damage on one hit)
             if (hitBossesWeakPoint.Length != 0)
             {
+                playSoundWeakPointHit = true;
+
                 StartCoroutine(HitSlowTime(heavySlowDuration));
                 PlayParticleEffect(comboIndex, heavyHit, hitEnemies, bossWeakPointLayer);
                 // Deal damage
@@ -700,6 +708,8 @@ public class PlayerCombat : MonoBehaviour
             }
             else if (hitBosses.Length != 0)
             {
+                playSoundWeakPointHit = true;
+
                 StartCoroutine(HitSlowTime(heavySlowDuration));
                 PlayParticleEffect(comboIndex, heavyHit, hitEnemies, bossLayer);
                 DealDamageTo(hitBosses, heavyDamage, kbOnHeavy, knockbackForceHeavy, bossLayer);
@@ -708,6 +718,8 @@ public class PlayerCombat : MonoBehaviour
             // Breaking breakables
             if (hitBreakables.Length != 0)
             {
+                playSoundWeakPointHit = true;
+
                 foreach (Collider2D collider in hitBreakables)
                 {
                     if (collider.TryGetComponent(out Chain chainScript))

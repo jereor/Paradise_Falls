@@ -60,6 +60,26 @@ public class GameStatus : MonoBehaviour
         Load();
     }
 
+    public void SaveFromSceneLoader(SceneLoader loader)
+    {
+        SaveSystem.SaveData(dataToSave);
+
+        loadedData = SaveSystem.LoadData();
+
+        if (loadedData != null)
+        {
+            // If you save without updating dataToSave you will use loadedData to overwrite old save no data loss
+            ResetDataToSave();
+
+            Debug.Log("Save loaded");
+            loader.ReloadSceneOnSave();
+        }
+        else
+        {
+            Debug.LogError("No file found or data to insert");
+        }
+    }
+
     public bool Load()
     {
         loadedData = SaveSystem.LoadData();
@@ -111,33 +131,79 @@ public class GameStatus : MonoBehaviour
     {
         dataToSave.position[0] = x;
         dataToSave.position[1] = y;
-    }
-    
+    }  
     public void UpdateBossKilled(int index, bool defeated)
     {
         dataToSave.bossesDefeated[index] = defeated;
     }
-
+    public void UpdateShield(bool b)
+    {
+        dataToSave.shield = b;
+    }
+    public void UpdateMultitool(bool b)
+    {
+        dataToSave.multitool = b;
+    }
     public void UpdateWallJump(bool b)
     {
         dataToSave.wallJump = b;
     }
-
-    public void UpdateWeapon(bool b)
+    public void UpdateDash(bool b)
     {
-        dataToSave.multitool = b;
+        dataToSave.dash = b;
     }
-
-    public void UpdateEnemyKilled(int index, bool defeated)
+    public void UpdateGrappling(bool b)
     {
-        dataToSave.enemiesDefeated[index] = defeated;
+        dataToSave.grappling = b;
     }
-
+    public void UpdateSHJump(bool b)
+    {
+        dataToSave.shJump = b;
+    }
+    public void UpdateShieldGrind(bool b)
+    {
+        dataToSave.shieldGrind = b;
+    }
+    public void UpdateSHAttack(bool b)
+    {
+        dataToSave.shAttack = b;
+    }
     public void UpdateCamera(string currentCamera)
     {
         dataToSave.camera = currentCamera;
     }
-
+    public void UpdateMapTriggers(int i, bool b)
+    {
+        dataToSave.mapTriggers[i] = b;
+    }
+    public void UpdateLevers(int i, bool b)
+    {
+        dataToSave.levers[i] = b;
+    }
+    public void UpdateDoors(int i, bool b)
+    {
+        dataToSave.doors[i] = b;
+    }
+    public void UpdateFirstBossDoors(int i, bool b)
+    {
+        dataToSave.firstBossDoors[i] = b;
+    }
+    public void UpdateMeleePickups(int i, bool b)
+    {
+        dataToSave.meleePickups[i] = b;
+    }
+    public void UpdateThrowPickups(int i, bool b)
+    {
+        dataToSave.throwPickups[i] = b;
+    }
+    public void UpdateHealthPickups(int i, bool b)
+    {
+        dataToSave.healthPickups[i] = b;
+    }
+    public void UpdateEnergyPickups(int i, bool b)
+    {
+        dataToSave.energyPickups[i] = b;
+    }
     public void UpdateMasterVolume(float volume)
     {
         dataToSave.masterVolume = volume;
@@ -149,5 +215,13 @@ public class GameStatus : MonoBehaviour
     public void UpdateMusicVolume(float volume)
     {
         dataToSave.musicVolume = volume;
+    }
+    public void UpdateFullScreen(bool b)
+    {
+        dataToSave.fullscreen = b;
+    }
+    public void UpdateResolution(int index)
+    {
+        dataToSave.resolutionIndex = index;
     }
 }

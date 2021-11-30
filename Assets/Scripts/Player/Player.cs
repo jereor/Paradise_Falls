@@ -38,6 +38,12 @@ public class Player : MonoBehaviour
     [SerializeField] private bool shockwaveAttackUnlocked = false;
     [SerializeField] private bool shieldGrindUnlocked = false;
 
+    // Pickups
+    private bool[] meleePickUps = new bool[2] { false, false };
+    private bool[] throwPickUps = new bool[2] { false, false };
+    private bool[] healthPickUps = new bool[5] { false, false, false, false, false };
+    private bool[] energyPickUps = new bool[2] { false, false };
+ 
     private InventoryPanelController inventoryController;
 
     // Component references
@@ -54,6 +60,8 @@ public class Player : MonoBehaviour
     private Coroutine blockCoroutine;
     [SerializeField] private float blockAnimTimeMultiplier; // this times block anim time = when to activate shield object, good values 1.1 - 1.5
     private bool hitInAir = false;
+
+    private bool loadBuffer = false;
 
     public enum State
     {
@@ -89,7 +97,7 @@ public class Player : MonoBehaviour
         currentState = State.Idle;
         rb = gameObject.GetComponent<Rigidbody2D>();
         animator = gameObject.GetComponent<Animator>();
-        inventoryController = GameObject.Find("[Canvas]").GetComponent<InventoryPanelController>();
+        //inventoryController = GameObject.Find("[Canvas]").GetComponent<InventoryPanelController>();
 
         TextStyleHealth.normal.textColor = Color.green;
         TextStyleEnergy.fontSize = 30;
@@ -99,6 +107,13 @@ public class Player : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (loadBuffer && (inventoryController != null || GameObject.Find("[Canvas]") != null))
+        {
+            if(inventoryController == null)
+                inventoryController = GameObject.Find("[Canvas]").GetComponent<InventoryPanelController>();
+            inventoryController.UpdateSkillView();
+        }
+
         // If game is not paused and state has changed handle state inputs
         if(inputsActive && statesChanged)
             HandleStateInputs();
@@ -355,7 +370,6 @@ public class Player : MonoBehaviour
             else
                 combatScript.DisableInputMelee();
         }
-
 
         // Shockwave attack
         if (shockwaveTool.ShockwaveAttackUsed && !animator.GetBool("isSHAttacking") && !animator.GetBool("isShieldGrinding"))
@@ -841,7 +855,7 @@ public class Player : MonoBehaviour
     public void UnlockShield()
     {
         shieldUnlocked = true;
-        inventoryController.UpdateSkillView();
+        loadBuffer = true;
     }
 
     public bool MultitoolUnlocked()
@@ -851,7 +865,7 @@ public class Player : MonoBehaviour
     public void UnlockMultitool()
     {
         multitoolUnlocked = true;
-        inventoryController.UpdateSkillView();
+        loadBuffer = true;
     }
 
     public bool WalljumpUnlocked()
@@ -861,7 +875,7 @@ public class Player : MonoBehaviour
     public void UnlockWalljump()
     {
         walljumpUnlocked = true;
-        inventoryController.UpdateSkillView();
+        loadBuffer = true;
     }
 
     public bool GrapplingUnlocked()
@@ -871,7 +885,7 @@ public class Player : MonoBehaviour
     public void UnlockGrappling()
     {
         grapplingUnlocked = true;
-        inventoryController.UpdateSkillView();
+        loadBuffer = true;
     }
 
     public bool DashUnlocked()
@@ -881,7 +895,7 @@ public class Player : MonoBehaviour
     public void UnlockDash()
     {
         dashUnlocked = true;
-        inventoryController.UpdateSkillView();
+        loadBuffer = true;
     }
 
     public bool ShockwaveJumpAndDiveUnlocked()
@@ -891,7 +905,7 @@ public class Player : MonoBehaviour
     public void UnlockJumpAndDive()
     {
         shockwaveJumpAndDiveUnlocked = true;
-        inventoryController.UpdateSkillView();
+        loadBuffer = true;
     }
 
     public bool ShockwaveAttackUnlocked()
@@ -901,7 +915,7 @@ public class Player : MonoBehaviour
     public void UnlockShockwaveAttack()
     {
         shockwaveAttackUnlocked = true;
-        inventoryController.UpdateSkillView();
+        loadBuffer = true;
     }
     public bool ShieldGrindUnlocked()
     {
@@ -910,6 +924,56 @@ public class Player : MonoBehaviour
     public void UnlockShieldGrind()
     {
         shieldGrindUnlocked = true;
-        inventoryController.UpdateSkillView();
+        loadBuffer = true;
+    }
+
+    // Pickups
+
+    public void UpdateHealthPickUps()
+    {
+        for (int i = 0; i < healthPickUps.Length; i++)
+        {
+            if(!healthPickUps[i])
+            {
+                healthPickUps[i] = true;
+                return;
+            }
+        }
+    }
+
+    public void UpdateEnergyPickUps()
+    {
+        for (int i = 0; i < energyPickUps.Length; i++)
+        {
+            if (!energyPickUps[i])
+            {
+                energyPickUps[i] = true;
+                return;
+            }
+        }
+    }
+
+    public void UpdateMeleePickUps()
+    {
+        for (int i = 0; i < meleePickUps.Length; i++)
+        {
+            if (!meleePickUps[i])
+            {
+                meleePickUps[i] = true;
+                return;
+            }
+        }
+    }
+
+    public void UpdateThrowPickUps()
+    {
+        for (int i = 0; i < throwPickUps.Length; i++)
+        {
+            if (!throwPickUps[i])
+            {
+                throwPickUps[i] = true;
+                return;
+            }
+        }
     }
 }
