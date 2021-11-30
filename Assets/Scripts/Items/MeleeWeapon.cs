@@ -339,6 +339,8 @@ public class MeleeWeapon : MonoBehaviour
     {
         // Weapon cannot deal damage aka hit enemy or ground
 
+        sfxScript.PlayPulledWeaponSound();
+
         // If set to objects child (grapplepoint) -> unchild
         gameObject.transform.parent = null;
         grapplePointRB = null;

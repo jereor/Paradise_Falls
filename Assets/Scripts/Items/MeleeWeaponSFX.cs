@@ -9,6 +9,7 @@ public class MeleeWeaponSFX : MonoBehaviour
     public AudioClip throwHitWeakpoint;
     public AudioClip throwHitHard;
     public AudioClip throwHitSoft;
+    public AudioClip pulledWeapon;
 
     public void PlayHitEnemySound()
     {
@@ -26,5 +27,12 @@ public class MeleeWeaponSFX : MonoBehaviour
             meleeWeaponAudioSource.PlayOneShot(throwHitSoft);
         else
             meleeWeaponAudioSource.PlayOneShot(throwHitHard);
+    }
+
+    public void PlayPulledWeaponSound()
+    {
+        meleeWeaponAudioSource.loop = true;
+        meleeWeaponAudioSource.clip = pulledWeapon;
+        meleeWeaponAudioSource.Play();
     }
 }
