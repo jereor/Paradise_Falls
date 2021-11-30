@@ -2051,6 +2051,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: DisappearingPlatformTIlesx4 (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 2648914181103027453, guid: 5b871f7236791ed4facbab45c3a6aac1, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2648914181103027454, guid: 5b871f7236791ed4facbab45c3a6aac1, type: 3}
       propertyPath: onTimer
       value: 1
@@ -2441,6 +2445,10 @@ PrefabInstance:
     - target: {fileID: 4407431986513774719, guid: 849cc26782221c24b8868f1ad953d02c, type: 3}
       propertyPath: m_Name
       value: 1x6Conveyor
+      objectReference: {fileID: 0}
+    - target: {fileID: 4407431986513774719, guid: 849cc26782221c24b8868f1ad953d02c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 849cc26782221c24b8868f1ad953d02c, type: 3}
@@ -17738,6 +17746,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: StaticMovingPlatform
       objectReference: {fileID: 0}
+    - target: {fileID: 7143010858897141047, guid: 773fbbab56ad39c44aac9fe665d95d2d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7143010858897141052, guid: 773fbbab56ad39c44aac9fe665d95d2d, type: 3}
       propertyPath: m_RootOrder
       value: 3
@@ -17838,6 +17850,10 @@ PrefabInstance:
     - target: {fileID: 4407431986513774719, guid: 849cc26782221c24b8868f1ad953d02c, type: 3}
       propertyPath: m_Name
       value: 1x6Conveyor
+      objectReference: {fileID: 0}
+    - target: {fileID: 4407431986513774719, guid: 849cc26782221c24b8868f1ad953d02c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 849cc26782221c24b8868f1ad953d02c, type: 3}
@@ -18740,7 +18756,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7143010858897141047, guid: 773fbbab56ad39c44aac9fe665d95d2d, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7143010858897141052, guid: 773fbbab56ad39c44aac9fe665d95d2d, type: 3}
       propertyPath: m_RootOrder
@@ -18842,6 +18858,10 @@ PrefabInstance:
     - target: {fileID: 4407431986513774719, guid: 849cc26782221c24b8868f1ad953d02c, type: 3}
       propertyPath: m_Name
       value: 1x6Conveyor (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4407431986513774719, guid: 849cc26782221c24b8868f1ad953d02c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 849cc26782221c24b8868f1ad953d02c, type: 3}
@@ -19152,6 +19172,10 @@ PrefabInstance:
     - target: {fileID: 2648914181103027453, guid: 5b871f7236791ed4facbab45c3a6aac1, type: 3}
       propertyPath: m_Name
       value: DisappearingPlatformTIlesx4 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 2648914181103027453, guid: 5b871f7236791ed4facbab45c3a6aac1, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2648914181103027454, guid: 5b871f7236791ed4facbab45c3a6aac1, type: 3}
       propertyPath: onTimer
@@ -19619,6 +19643,10 @@ PrefabInstance:
     - target: {fileID: 2648914181103027453, guid: 5b871f7236791ed4facbab45c3a6aac1, type: 3}
       propertyPath: m_Name
       value: DisappearingPlatformTIlesx4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2648914181103027453, guid: 5b871f7236791ed4facbab45c3a6aac1, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2648914181103027454, guid: 5b871f7236791ed4facbab45c3a6aac1, type: 3}
       propertyPath: onTimer
