@@ -12,6 +12,8 @@ public class PlayerSFX : MonoBehaviour
     public ShieldGrind grindScript;
     public PlayerHealth playerHealthScript;
 
+    public Rigidbody2D myRB;
+
     public Coroutine blockCoroutine;
     public Coroutine grindCoroutine;
     public Coroutine fadeCoroutine;
@@ -168,16 +170,15 @@ public class PlayerSFX : MonoBehaviour
         }
 
         // Wallslide
-        if (PlayerMovement.Instance.getWallSliding() && !playWallSlideSound)
+        if (PlayerMovement.Instance.getWallSliding() && !playWallSlideSound && myRB.velocity.y < -1f)
         {
             fadeCoroutine = StartCoroutine(FadeVolume(0f, 1f, 0.1f, false));
             playerAudioSource.clip = wallSlide;
             playerAudioSource.loop = true;
             playerAudioSource.Play();
             playWallSlideSound = true;
-            //grindCoroutine = StartCoroutine(LerpGrindPitch());
         }
-        else if(!PlayerMovement.Instance.getWallSliding() && playWallSlideSound)
+        else if(!PlayerMovement.Instance.getWallSliding() && playWallSlideSound && myRB.velocity.y > -1f)
         {
             playerAudioSource.loop = false;
             playerAudioSource.Stop();
