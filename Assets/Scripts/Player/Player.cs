@@ -8,9 +8,9 @@ using UnityEngine.InputSystem;
 public class Player : MonoBehaviour
 {
     public static Player Instance;
-    
+
     // These inputs can be checked from anywhere. Mainly to be used in PlayerMovement.
-    public float InputHorizontal { get; private set; } 
+    public float InputHorizontal { get; private set; }
     public float InputVertical { get; private set; }
 
     private GUIStyle TextStyleEnergy = new GUIStyle();
@@ -39,10 +39,10 @@ public class Player : MonoBehaviour
     [SerializeField] private bool shieldGrindUnlocked = false;
 
     // Pickups
-    private bool[] meleePickUps = new bool[2] { false, false };
-    private bool[] throwPickUps = new bool[2] { false, false };
-    private bool[] healthPickUps = new bool[5] { false, false, false, false, false };
-    private bool[] energyPickUps = new bool[2] { false, false };
+    public bool[] meleePickUps = new bool[2] { false, false };
+    public bool[] throwPickUps = new bool[2] { false, false };
+    public bool[] healthPickUps = new bool[5] { false, false, false, false, false };
+    public bool[] energyPickUps = new bool[2] { false, false };
  
     private InventoryPanelController inventoryController;
 
