@@ -10193,6 +10193,7 @@ Transform:
   - {fileID: 1928146856551811166}
   - {fileID: 3303780128735386266}
   - {fileID: 3787360598379495436}
+  - {fileID: 5488279887396005798}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -10722,6 +10723,8 @@ MonoBehaviour:
   throwInputReceived: 0
   hitPS: {fileID: 2349214408752251806, guid: c8ed0368ca7236f479fbc90600d8f484, type: 3}
   heavyHitPS: {fileID: 2349214408752251806, guid: 59a51efd3354e52458bdcd9b3912da5e, type: 3}
+  heavyReadyBlink: {fileID: 3800122561694439109, guid: a2b0892175ce55640a7be7e3c7a1e835, type: 3}
+  heavyReadyPSTransform: {fileID: 5488279887396005798}
   slowDuration: 0.01
   heavySlowDuration: 0.03
   timeScaleWhenSlowed: 0.2
@@ -15956,6 +15959,36 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &5186318985718266764
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5488279887396005798}
+  m_Layer: 0
+  m_Name: HeavyParticleTransform
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5488279887396005798
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5186318985718266764}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.6, y: 0.6, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 2646993275326716544}
+  m_RootOrder: 10
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5454362082765361711
 GameObject:
   m_ObjectHideFlags: 0
