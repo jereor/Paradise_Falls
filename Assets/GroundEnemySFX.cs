@@ -12,7 +12,6 @@ public class GroundEnemySFX : MonoBehaviour
     [Header("Destroyed sounds")]
     public AudioClip[] destroySounds;
 
-    public GameObject destroyAudioSourceObject;
     // Start is called before the first frame update
     void Start()
     {
