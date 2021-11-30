@@ -18,6 +18,20 @@ public class PlayerSFX : MonoBehaviour
     public Coroutine grindCoroutine;
     public Coroutine fadeCoroutine;
 
+    [Header("Scales for sounds")]
+    public float stepVolScale = 1f;
+    public float softLandingVolScale = 1f;
+    public float hardLandingVolScale = 1f;
+    public float meleeSwingVolScale = 1f;
+    public float meleeHitVolScale = 1f;
+    public float throwVolScale = 1f;
+    public float jumpVolScale = 1f;
+    public float doubleJumpVolScale = 1f;
+    public float dashVolScale = 1f;
+    public float shieldGrindVolScale = 1f;
+    public float blockHoldVolScale = 1f;
+    public float wallSlideVolScale = 1f;
+
 
     private bool playBlockSound = false;
     private bool playLandingSound = false;
@@ -81,16 +95,16 @@ public class PlayerSFX : MonoBehaviour
 
         // Jump from the ground
         if (PlayerMovement.Instance.getPlaySoundJump())
-            playerAudioSource.PlayOneShot(jump);
+            playerAudioSource.PlayOneShot(jump, jumpVolScale);
 
         // Double jump
         if (shScript.getPlaySoundJump())
-            playerAudioSource.PlayOneShot(doubleJump);
+            playerAudioSource.PlayOneShot(doubleJump, doubleJumpVolScale);
 
         // Dash
         if (shScript.getPlaySoundDash())
         {
-            playerAudioSource.PlayOneShot(dash);
+            playerAudioSource.PlayOneShot(dash, dashVolScale);
         }
 
         // Block activation
@@ -99,6 +113,7 @@ public class PlayerSFX : MonoBehaviour
             playerAudioSource.PlayOneShot(blockActivation);
             if (blockCoroutine == null)
                 blockCoroutine = StartCoroutine(PlayClipDelayed(block, blockActivation.length/2, true));
+            playerAudioSource.volume = blockHoldVolScale;
             playBlockSound = true;
         }
         // Block end
@@ -113,6 +128,7 @@ public class PlayerSFX : MonoBehaviour
                 StopCoroutine(blockCoroutine);
                 blockCoroutine = null;
             }
+            playerAudioSource.volume = 1f;
             playBlockSound = false;
         }
         // Parry + (block end)
@@ -127,6 +143,7 @@ public class PlayerSFX : MonoBehaviour
                 StopCoroutine(blockCoroutine);
                 blockCoroutine = null;
             }
+            playerAudioSource.volume = 1f;
             playBlockSound = false;
             // Plays parry sound
             playerAudioSource.PlayOneShot(parry);
@@ -158,16 +175,16 @@ public class PlayerSFX : MonoBehaviour
 
         // Melee
         if (PlayerCombat.Instance.getPlaySoundHit())
-            playerAudioSource.PlayOneShot(meleeHit);
+            playerAudioSource.PlayOneShot(meleeHit, meleeHitVolScale);
         if (PlayerCombat.Instance.getPlaySoundWPHit())
-            playerAudioSource.PlayOneShot(meleeWPHit);
+            playerAudioSource.PlayOneShot(meleeWPHit, meleeHitVolScale);
 
         // Shield Grind start
         if (grindScript.PipeCheck() && PlayerMovement.Instance.IsGrounded() && !playShieldGrindSound)
         {
             if (fadeCoroutine != null)
                 StopCoroutine(fadeCoroutine);
-            fadeCoroutine = StartCoroutine(FadeVolume(0f, 1f, 0.1f, false));
+            fadeCoroutine = StartCoroutine(FadeVolume(0f, shieldGrindVolScale, 0.1f, false));
             playerAudioSource.clip = shieldGrind;
             playerAudioSource.loop = true;
             playerAudioSource.Play();
@@ -180,6 +197,7 @@ public class PlayerSFX : MonoBehaviour
             playerAudioSource.loop = false;
             playerAudioSource.Stop();
             playerAudioSource.clip = null;
+            playerAudioSource.volume = 1f;
             playShieldGrindSound = false;
             StopCoroutine(grindCoroutine);
             grindCoroutine = null;
@@ -197,7 +215,7 @@ public class PlayerSFX : MonoBehaviour
         // Wallslide
         if (PlayerMovement.Instance.getWallSliding() && !playWallSlideSound && myRB.velocity.y < -1f)
         {
-            fadeCoroutine = StartCoroutine(FadeVolume(0f, 1f, 0.1f, false));
+            fadeCoroutine = StartCoroutine(FadeVolume(0f, wallSlideVolScale, 0.1f, false));
             playerAudioSource.clip = wallSlide;
             playerAudioSource.loop = true;
             playerAudioSource.Play();
@@ -208,6 +226,7 @@ public class PlayerSFX : MonoBehaviour
             playerAudioSource.loop = false;
             playerAudioSource.Stop();
             playerAudioSource.clip = null;
+            playerAudioSource.volume = 1f;
             playWallSlideSound = false;
         }
     }
@@ -262,13 +281,7 @@ public class PlayerSFX : MonoBehaviour
     public void PlayRandomPlayerStepSound()
     {
         int random = Random.Range(0, playerSteps.Length - 1);
-        playerAudioSource.PlayOneShot(playerSteps[random]);
-    }
-
-    public void PlayRandomPlayerDamagepSound()
-    {
-        int random = Random.Range(0, takingDamage.Length - 1);
-        playerAudioSource.PlayOneShot(takingDamage[random]);
+        playerAudioSource.PlayOneShot(playerSteps[random], stepVolScale);
     }
 
     public void PlayPlayerBlockSound()
@@ -279,27 +292,22 @@ public class PlayerSFX : MonoBehaviour
     public void PlayPlayerLandingSound()
     {
         if (shScript.getPlaySoundDive())
-            playerAudioSource.PlayOneShot(groundPound);
+            playerAudioSource.PlayOneShot(groundPound, hardLandingVolScale);
         else if (Player.Instance.GetWillLand())
-            playerAudioSource.PlayOneShot(landHard);
+            playerAudioSource.PlayOneShot(landHard, hardLandingVolScale);
         else if (playLandingSound)
-            playerAudioSource.PlayOneShot(landSoftly);
+            playerAudioSource.PlayOneShot(landSoftly, softLandingVolScale);
 
         playLandingSound = false;
     }
 
     public void PlayPlayerThrowSound()
     {
-        playerAudioSource.PlayOneShot(throwWeapon);
-    }
-
-    public void PlayPlayerHitSound()
-    {
-        playerAudioSource.PlayOneShot(meleeHit);
+        playerAudioSource.PlayOneShot(throwWeapon, throwVolScale);
     }
 
     public void PlayPlayerSwingSound()
     {
-        playerAudioSource.PlayOneShot(meleeSwing);
+        playerAudioSource.PlayOneShot(meleeSwing, meleeSwingVolScale);
     }
 }

@@ -10226,6 +10226,10 @@ MonoBehaviour:
   shockwaveJumpAndDiveUnlocked: 1
   shockwaveAttackUnlocked: 1
   shieldGrindUnlocked: 1
+  meleePickUps: 0000
+  throwPickUps: 0000
+  healthPickUps: 0000000000
+  energyPickUps: 0000
   animator: {fileID: 3265684260011797273}
   rb: {fileID: 0}
   inputsActive: 1
@@ -10825,6 +10829,18 @@ MonoBehaviour:
   grindScript: {fileID: 7180285044104453406}
   playerHealthScript: {fileID: 269594451}
   myRB: {fileID: 2646993275326716665}
+  stepVolScale: 0.5
+  softLandingVolScale: 0.5
+  hardLandingVolScale: 0.7
+  meleeSwingVolScale: 0.7
+  meleeHitVolScale: 0.5
+  throwVolScale: 0.7
+  jumpVolScale: 0.3
+  doubleJumpVolScale: 0.7
+  dashVolScale: 0.7
+  shieldGrindVolScale: 0.7
+  blockHoldVolScale: 0.7
+  wallSlideVolScale: 0.5
   playerSteps:
   - {fileID: 8300000, guid: e90e2bd2730bfd84ea6a7c89d2a92333, type: 3}
   - {fileID: 8300000, guid: 764cd567c6e0cb4488420b91d21a41a5, type: 3}
@@ -10837,7 +10853,7 @@ MonoBehaviour:
   dash: {fileID: 8300000, guid: da7fe22cbb121b44784b939ee8b2bfc1, type: 3}
   throwWeapon: {fileID: 8300000, guid: a952aedf55b93c84a921cee7c8a27201, type: 3}
   meleeSwing: {fileID: 8300000, guid: a952aedf55b93c84a921cee7c8a27201, type: 3}
-  meleeHit: {fileID: 8300000, guid: 16b19b7e31ff5874488cccdff2c897af, type: 3}
+  meleeHit: {fileID: 8300000, guid: 0193075daa7040545ab86f37ec49763c, type: 3}
   meleeWPHit: {fileID: 8300000, guid: 6e8b7d45025260a4ca17f5009450cb41, type: 3}
   blockActivation: {fileID: 8300000, guid: 5cf3db7522dff264c80369c9cdaae7dd, type: 3}
   block: {fileID: 8300000, guid: 1c17d72deae0fd04ea2ffe60fb98f106, type: 3}

@@ -430,8 +430,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   meleeWeaponAudioSource: {fileID: 178586520685033316}
-  throwHitEnemy: {fileID: 8300000, guid: 16b19b7e31ff5874488cccdff2c897af, type: 3}
-  throwHitWeakpoint: {fileID: 8300000, guid: 16b19b7e31ff5874488cccdff2c897af, type: 3}
+  throwHitEnemy: {fileID: 8300000, guid: 0193075daa7040545ab86f37ec49763c, type: 3}
+  throwHitWeakpoint: {fileID: 8300000, guid: 0193075daa7040545ab86f37ec49763c, type: 3}
   throwHitHard: {fileID: 8300000, guid: 0193075daa7040545ab86f37ec49763c, type: 3}
   throwHitSoft: {fileID: 8300000, guid: cc7bdfaceb0cb104e98ec3d5f1f34c4c, type: 3}
   pulledWeapon: {fileID: 8300000, guid: 7093bedea0c58414e8e66b70b5e8a94d, type: 3}
