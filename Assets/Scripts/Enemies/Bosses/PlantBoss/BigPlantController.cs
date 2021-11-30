@@ -12,10 +12,18 @@ public class BigPlantController : MonoBehaviour
 
     public Health health;
 
-    [SerializeField] private GameObject enemyOnePrefab;
-    [SerializeField] private GameObject enemyTwoPrefab;
-    private GameObject enemyOneInstance;
-    private GameObject enemyTwoInstance;
+    [SerializeField] private GameObject workerDroneOnePrefab;
+    [SerializeField] private GameObject workerDroneTwoPrefab;
+    private GameObject workerDroneOneInstance;
+    private GameObject workerDroneTwoInstance;
+
+    [SerializeField] private GameObject flyingDroneOnePrefab;
+    [SerializeField] private GameObject flyingDroneTwoPrefab;
+    private GameObject flyingDroneOneInstance;
+    private GameObject flyingDroneTwoInstance;
+
+    public GameObject escapePlatform;
+
 
     [SerializeField] private GameObject attackVine;
     public List<GameObject> attackVineInstances;
@@ -40,9 +48,11 @@ public class BigPlantController : MonoBehaviour
     private bool isCovered = false;
     private bool isRoaring = false;
     private bool isEnemiesSpawned = false;
-    public bool isAttackVineActivated = false;
-    public bool isRotatingTowardsTarget = false;
+    private bool isAttackVineActivated = false;
+    private bool isRotatingTowardsTarget = false;
     private bool knockbackOnCooldown = false;
+    private bool spawnWorkerDrones = true;
+    private bool phaseTwoActionsInitiated = false;
 
     void Start()
     {
@@ -137,7 +147,7 @@ public class BigPlantController : MonoBehaviour
         if (!isEnemiesSpawned)
             SpawnEnemies();
 
-        if (enemyOneInstance == null && enemyTwoInstance == null)
+        if (workerDroneOneInstance == null && workerDroneTwoInstance == null && flyingDroneOneInstance == null && flyingDroneTwoInstance == null)
         {
             isEnemiesSpawned = false;
             state = PlantState.Angri;
@@ -157,7 +167,7 @@ public class BigPlantController : MonoBehaviour
         if (attackVineInstances.Count == 0)
         {
             StartCoroutine(SpawnVine());
-            attackVine.transform.rotation = new Quaternion(0, 0, -180,0);
+            //attackVine.transform.rotation = new Quaternion(0, 0, -180,0);
             isRotatingTowardsTarget = true;
         }
 
@@ -186,6 +196,15 @@ public class BigPlantController : MonoBehaviour
         // When player hits the trigger, transition to escape sequence
         // Just big wall rising, player escaping
         // Trigger in the other end, closes the big climb room and thrid phasse begins
+
+        if(!phaseTwoActionsInitiated)
+        {
+            Cover();
+            escapePlatform.SetActive(true);
+
+
+        }
+
     }
 
     private void HandleChargeState()
@@ -238,10 +257,27 @@ public class BigPlantController : MonoBehaviour
     private void SpawnEnemies()
     {
         isEnemiesSpawned = true;
-        //enemyOneInstance = Instantiate(enemyOnePrefab, enemyOnePrefab.transform.position, Quaternion.identity);
-        //enemyTwoInstance = Instantiate(enemyTwoPrefab, enemyTwoPrefab.transform.position, Quaternion.identity);
-        //enemyOneInstance.GetComponent<GroundEnemyAI>().target = target.transform;
-        //enemyTwoInstance.GetComponent<GroundEnemyAI>().target = target.transform;
+        //if(spawnWorkerDrones)
+        //{
+        //    workerDroneOneInstance = Instantiate(workerDroneOnePrefab, new Vector2(transform.position.x - 5, transform.position.y + 15), Quaternion.identity);
+        //    workerDroneTwoInstance = Instantiate(workerDroneTwoPrefab, new Vector2(transform.position.x + 5, transform.position.y + 15), Quaternion.identity);
+        //    workerDroneOneInstance.GetComponent<GroundEnemyAI>().target = target.transform;
+        //    workerDroneTwoInstance.GetComponent<GroundEnemyAI>().target = target.transform;
+        //    workerDroneOneInstance.GetComponent<GroundEnemyAI>().bossMode = true;
+        //    workerDroneTwoInstance.GetComponent<GroundEnemyAI>().bossMode = true;
+        //    spawnWorkerDrones = false;
+        //}
+        //else
+        //{
+        //    flyingDroneOneInstance = Instantiate(flyingDroneOnePrefab, new Vector2(transform.position.x - 5, transform.position.y + 15), Quaternion.identity);
+        //    flyingDroneTwoInstance = Instantiate(flyingDroneTwoPrefab, new Vector2(transform.position.x + 5, transform.position.y + 15), Quaternion.identity);
+        //    flyingDroneOneInstance.GetComponent<FlyingEnemyAI>().target = target.transform;
+        //    flyingDroneTwoInstance.GetComponent<FlyingEnemyAI>().target = target.transform;
+        //    flyingDroneOneInstance.GetComponent<FlyingEnemyAI>().bossMode = true;
+        //    flyingDroneTwoInstance.GetComponent<FlyingEnemyAI>().bossMode = true;
+        //    spawnWorkerDrones = true;
+        //}
+
     }
 
     //private void RotateVineTowardsTheTarget()
@@ -263,19 +299,19 @@ public class BigPlantController : MonoBehaviour
         gameObject.layer = LayerMask.NameToLayer("Default");
     }
 
-    //private void OnCollisionEnter2D(Collision2D collision)
-    //{
-    //    //if (collision.gameObject.name == "AttackVine")
-    //    //{
-    //    //    Debug.Log("OUCH!");
-    //    //    state = PlantState.Stunned;
-    //    //}
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        //if (collision.gameObject.name == "AttackVine")
+        //{
+        //    Debug.Log("OUCH!");
+        //    state = PlantState.Stunned;
+        //}
 
-    //    //if(collision.collider.gameObject.name == "Player")
-    //    //{
-    //    //    PlayerPushback();
-    //    //}
-    //}
+        if (collision.collider.gameObject.name == "Player" && state != PlantState.Stunned)
+        {
+            PlayerPushback();
+        }
+    }
 
     // Cooldown for the player knockback.
     private IEnumerator KnockbackCooldown()
@@ -322,13 +358,13 @@ public class BigPlantController : MonoBehaviour
         vineSpeed = health.GetHealth() / health.GetMaxHealth();
         if(spawnAmount <= 1)
         {
-            attackVineInstances.Add(Instantiate(attackVine, new Vector2(Random.Range(transform.position.x - 5, transform.position.x + 5), transform.position.y + 15), Quaternion.identity));
+            attackVineInstances.Add(Instantiate(attackVine, new Vector2(Random.Range(transform.position.x - 5, transform.position.x + 5), transform.position.y + 15), new Quaternion(0, 0, -180, 0)));
         }
         else
         {
             for (int i = 0; i < spawnAmount; i++)
             {
-                attackVineInstances.Add(Instantiate(attackVine, new Vector2(Random.Range(transform.position.x - 5, transform.position.x + 5), transform.position.y + 15), Quaternion.identity));
+                attackVineInstances.Add(Instantiate(attackVine, new Vector2(Random.Range(transform.position.x - 5, transform.position.x + 5), transform.position.y + 15), new Quaternion(0, 0, -180, 0)));
                 yield return new WaitForSeconds(vineSpeed);
             }
         }

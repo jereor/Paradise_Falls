@@ -17,7 +17,7 @@ public class FlyingEnemyAI : MonoBehaviour
     public bool bossMode;
 
     [Header("Transforms")]
-    [SerializeField] private Transform target;
+    public Transform target;
     [SerializeField] private Rigidbody2D playerRB;
     [SerializeField] private GameObject bullet;
     [SerializeField] private GameObject energyItem;

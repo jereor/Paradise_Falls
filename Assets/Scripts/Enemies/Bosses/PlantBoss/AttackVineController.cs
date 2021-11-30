@@ -12,6 +12,8 @@ public class AttackVineController : MonoBehaviour
     private GameObject target;
     private Rigidbody2D targetRB;
 
+    private Animator animator;
+
     private Vector2 velocityPlayer;
 
     [SerializeField] private float attackVineStretchDuration;
@@ -19,6 +21,7 @@ public class AttackVineController : MonoBehaviour
     [SerializeField] private float attackVineMoveDuration;
     [SerializeField] private float attackVineWaitTime;
     [SerializeField] private float attackVineStretchAmount;
+    [SerializeField] private float attackVineMoveAmount;
     [SerializeField] private float vineSpeed;
 
     public bool isAttackVineActivated = false;
@@ -33,6 +36,7 @@ public class AttackVineController : MonoBehaviour
         plantController = plantBoss.GetComponent<BigPlantController>();
         target = GameObject.Find("Player");
         targetRB = target.GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
     }
 
     // Update is called once per frame
@@ -41,7 +45,6 @@ public class AttackVineController : MonoBehaviour
         if (!isAttackVineActivated)
         {
             StartCoroutine(SpawnVine());
-            transform.rotation = new Quaternion(0, 0, -180, 0);
             isRotatingTowardsTarget = true;
         }
 
@@ -78,11 +81,13 @@ public class AttackVineController : MonoBehaviour
     {
         vineSpeed = plantController.GetVineSpeed();
         isAttackVineActivated = true;
-        transform.position = new Vector2(Random.Range(plantBoss.transform.position.x - 5, plantBoss.transform.position.x + 5), plantBoss.transform.position.y + 15);
-        transform.DOMoveY(transform.position.y - 5, attackVineMoveDuration * vineSpeed);
+        //transform.position = new Vector2(Random.Range(plantBoss.transform.position.x - 5, plantBoss.transform.position.x + 5), plantBoss.transform.position.y + 15);
+        transform.DOMove((target.transform.position - transform.position).normalized * attackVineMoveAmount + transform.position, attackVineMoveDuration * vineSpeed);
+        Debug.Log((target.transform.position - transform.position));
         yield return new WaitForSeconds(attackVineRotateDuration * vineSpeed);
         gameObject.GetComponent<SpriteRenderer>().color = Color.red;
         isRotatingTowardsTarget = false;
+        animator.SetBool("Charge", true);
         Vector2 attackDirection = target.transform.position;
         yield return new WaitForSeconds(attackVineWaitTime * vineSpeed);
         transform.DOScaleY(attackVineStretchAmount, attackVineStretchDuration * vineSpeed);
@@ -90,6 +95,7 @@ public class AttackVineController : MonoBehaviour
         transform.DOScaleY(1, attackVineStretchDuration * vineSpeed);
         yield return new WaitForSeconds(attackVineStretchDuration * vineSpeed);
         gameObject.GetComponent<SpriteRenderer>().color = Color.white;
+        animator.SetBool("Charge", false);
         transform.DOMoveY(transform.position.y + 5, attackVineMoveDuration * vineSpeed);
 
         yield return new WaitForSeconds(attackVineMoveDuration * vineSpeed);
@@ -120,7 +126,7 @@ public class AttackVineController : MonoBehaviour
             plantController.state = BigPlantController.PlantState.Stunned;
         }
 
-        if (collision.transform.name == "Player")
+        if (collision.transform.name == "Player" && !knockbackOnCooldown)
         {
             PlayerPushback();
         }
