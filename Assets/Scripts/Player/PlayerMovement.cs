@@ -28,7 +28,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private bool allowCoyoteWallJump; // Allows coyoteTime = coyoteTime / 2 to jump from wall (you can move horizontaly or turn around a small distance off the wall and still jump)
     [SerializeField] private Transform ledgeCheck; // Point where Ledge Check Occupation Raycast is cast should be close to top of head
     [SerializeField] private Transform wallCheckBody; // Point where Body Check Raycast is cast
-    [SerializeField] private Transform wallCheckFeet; // Point where Feet Check Raycast is cast
+    [SerializeField] public Transform wallCheckFeet; // Point where Feet Check Raycast is cast
     [SerializeField] private float checkDistance; // Distance of raycast and ledge ClimbLedge() offset positions
     [Tooltip("Start update values from boxcollider size")]
     [SerializeField] private float climbXOffset;
@@ -499,7 +499,7 @@ public class PlayerMovement : MonoBehaviour
         else
         {
             // Move player for offset amount to X and Y directions. X dir will need localScale.x to track where player is looking
-            transform.position = new Vector2(transform.position.x + climbXOffset * transform.localScale.x, transform.position.y + climbYOffset - ledgeHitOffsetRay.distance);
+            transform.position = new Vector2(transform.position.x + climbXOffset * transform.localScale.x, transform.position.y + climbYOffset + (Mathf.Abs(wallCheckFeet.localPosition.y) - climbXOffset/2) - ledgeHitOffsetRay.distance);
         }
         shockwaveTool.CancelShockwaveDive(); // Checks if shockwave dive graphics are on and disables them
         rb.gravityScale = defaultGravityScale; // Set this to default here
@@ -601,7 +601,6 @@ public class PlayerMovement : MonoBehaviour
         //Debug.DrawRay(ledgeCheck.position, transform.right * checkDistance * transform.localScale.x, Color.red);
         // ledgeHitOffsetRayRay
         //Debug.DrawRay(ledgeCheck.position + new Vector3(transform.localScale.x * checkDistance, 0f, 0f), -transform.up * transform.localScale.x * (ledgeCheck.position - wallCheckBody.position).magnitude, Color.green);
-
         if (!Physics2D.Raycast(ledgeCheck.position, transform.right * transform.localScale.x, checkDistance, groundLayer) || !Physics2D.Raycast(ledgeCheck.position, transform.right * transform.localScale.x, checkDistance, grapplePointLayer))
         {
             // Ray FROM end of ledgeCheck ray above TO wallCheckBody ray end if groundLayer object is between ray distance is float between [0 , ~ 0.5]
@@ -610,7 +609,7 @@ public class PlayerMovement : MonoBehaviour
             if(ledgeHitOffsetRay.distance == 0f)
                 ledgeHitOffsetRay = Physics2D.Raycast(ledgeCheck.position + new Vector3(transform.localScale.x * checkDistance, 0f, 0f), -transform.up, (ledgeCheck.position - wallCheckBody.position).magnitude, grapplePointLayer);
             // Draws a box in scene if objects from groundLayer are inside this box ledge is occupied use ledgeHitOffsetRay to lower box to jsut above object we are climbing
-            Collider2D[] colliders = Physics2D.OverlapBoxAll(new Vector2(transform.position.x + climbXOffset * transform.localScale.x, transform.position.y + climbYOffset - ledgeHitOffsetRay.distance), new Vector2(GetComponent<BoxCollider2D>().size.x, GetComponent<BoxCollider2D>().size.y), 0f, groundLayer);
+            Collider2D[] colliders = Physics2D.OverlapBoxAll(new Vector2(transform.position.x + climbXOffset * transform.localScale.x, transform.position.y + climbYOffset + (Mathf.Abs(wallCheckFeet.localPosition.y) - climbXOffset / 2) - ledgeHitOffsetRay.distance), new Vector2(GetComponent<BoxCollider2D>().size.x, GetComponent<BoxCollider2D>().size.y), 0f, groundLayer);
             // No objects in array aka no overlaps with groundLayer objects
             if (colliders.Length == 0)
             {

@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7707995509388065025}
-  - component: {fileID: 7707995509388065086}
+  - component: {fileID: 3068169751001423913}
   m_Layer: 0
   m_Name: SceneLoader
   m_TagString: Untagged
@@ -31,7 +31,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7707995509388065086
+--- !u!114 &3068169751001423913
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -40,13 +40,26 @@ MonoBehaviour:
   m_GameObject: {fileID: 7707995509388065024}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dad2dd83643e3c34bad9e51a345db2ec, type: 3}
+  m_Script: {fileID: 11500000, guid: 8bc859cdfac90f14383c1a85978c89ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerPrefab: {fileID: 2646993275326716545, guid: 4154d57994558ff489a9180c3151e624, type: 3}
+  playerPrefab: {fileID: 0}
   playerObject: {fileID: 0}
   firstBossObject: {fileID: 0}
   firstBossKilled: 0
+  secondBossObject: {fileID: 0}
+  secondBossKilled: 0
+  shieldUpgrade: {fileID: 0}
+  multitoolUpgrade: {fileID: 0}
+  npcObjects: []
+  meleePickups: []
+  throwPickups: []
+  energyPickups: []
+  healthPickups: []
+  levers: []
   savePointsParent: {fileID: 0}
   savePoints: []
   respawnPoint: {x: 0, y: 0}
+  currentRespawnPoint: {fileID: 0}
+  cameras: []
+  mapTriggers: []
