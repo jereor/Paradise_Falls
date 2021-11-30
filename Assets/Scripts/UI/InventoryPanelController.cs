@@ -51,7 +51,52 @@ public class InventoryPanelController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if(maxHealthUpgradeCount != Player.Instance.healthPickUps.Length)
+        {
+            maxHealthUpgradeCount = Player.Instance.healthPickUps.Length;
+            maxEnergyUpgradeCount = Player.Instance.energyPickUps.Length;
+            maxMeleeDmgUpgradeCount = Player.Instance.meleePickUps.Length;
+            maxThrowWeaponUpgradeCount = Player.Instance.throwPickUps.Length;
+            CheckCollectibleCounts();
+        }
+    }
+
+    // Checks booleans and calls UpdateCollectibleCounts
+    public void CheckCollectibleCounts()
+    {
+        int count = 0;
+        foreach (bool collected in Player.Instance.healthPickUps)
+        {
+            if (collected)
+                count++;
+        }
+        healthUpgradeCount = count;
+
+        count = 0;
+        foreach (bool collected in Player.Instance.energyPickUps)
+        {
+            if (collected)
+                count++;
+        }
+        energyUpgradeCount = count;
+
+        count = 0;
+        foreach (bool collected in Player.Instance.meleePickUps)
+        {
+            if (collected)
+                count++;
+        }
+        meleeDmgUpgradeCount = count;
+
+        count = 0;
+        foreach (bool collected in Player.Instance.throwPickUps)
+        {
+            if (collected)
+                count++;
+        }
+        throwWeaponUpgradeCount = count;
+
+        UpdateCollectibleCounts();
     }
 
     public void OpenInventory(InputAction.CallbackContext context)
@@ -64,7 +109,7 @@ public class InventoryPanelController : MonoBehaviour
             if (MapController.MapOpen)
                 mapController.HandleMapState();
 
-            UpdateCollectibleCounts();
+            CheckCollectibleCounts();
             HandleInventoryState();
         }
     }
