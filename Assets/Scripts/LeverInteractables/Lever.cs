@@ -141,4 +141,15 @@ public class Lever : Interactable
         turning = false;
         ShowFloatingText();
     }
+
+    private IEnumerator SaveBuffer()
+    {
+        yield return new WaitForSeconds(1f);
+        @event.Invoke();
+    }
+
+    public void StartSaveBuffer()
+    {
+        StartCoroutine(SaveBuffer());
+    }
 }
