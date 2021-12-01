@@ -36,18 +36,13 @@ public class SpikyDeathWallController : MonoBehaviour
     void Update()
     {
         // Rises the wall for a given time.
-        if(counter < spikyWallRiseTime)
+        if(counter < spikyWallRiseTime && !playerSurvived)
             transform.position = Vector2.MoveTowards(transform.position, new Vector2(transform.position.x, transform.position.y + spikyWallRiseHeight), Time.deltaTime * wallSpeed);
-
-        if (!DOTween.IsTweening(transform))
-        {
-            Debug.Log("Player is probably dead.");
-        }
 
         // if the player escapes, kill the shake tween.
         if (playerSurvived)
         {
-            DOTween.Kill(transform);
+            transform.DOMove(new Vector2(transform.position.x, transform.position.y - 20), 10);
         }
     }
 
@@ -62,6 +57,17 @@ public class SpikyDeathWallController : MonoBehaviour
     public void SetPlayerSurvived(bool b)
     {
         playerSurvived = b;
+    }
+
+    public bool GetPlayerSurvived()
+    {
+        return playerSurvived;
+    }
+
+    public void StopTheWall()
+    {
+        DOTween.Kill(transform);
+
     }
 
     // Pushbacks the player when hit with riot drone collider. Uses velocity for the knockback instead of force.

@@ -5,6 +5,7 @@ using DG.Tweening;
 
 public class BigPlantController : MonoBehaviour
 {
+    [SerializeField] private bool skipToSecondPhase = false;
     private GameObject target;
     private Rigidbody2D targetRB;
     private GameObject spikyVine; // For visual purposes only.
@@ -12,9 +13,12 @@ public class BigPlantController : MonoBehaviour
 
     [SerializeField] private GameObject hiddenBossObjects;
 
+    [SerializeField] private Transform bossTeleportPoint;
+
     private Health targetHealth;
 
     private SpikyDeathWallController deathWallController; // Phase 2 rising death wall.
+    private PhaseTwoObjectActivator phaseTwoObjectActivator;
 
     [SerializeField] private GameObject workerDroneOnePrefab; // Prefabs for spawnable enemies.
     [SerializeField] private GameObject workerDroneTwoPrefab;
@@ -48,6 +52,7 @@ public class BigPlantController : MonoBehaviour
     private bool knockbackOnCooldown = false;
     private bool spawnWorkerDrones = true;
     private bool isPhaseTwoTransitioning = false;
+    private bool isPhaseThreeTransitioning = false;
 
     void Start()
     {
@@ -58,13 +63,20 @@ public class BigPlantController : MonoBehaviour
         spikyVineStartPosition = spikyVine.transform.position;
         spikyVineEndPosition = new Vector2(spikyVineStartPosition.x, transform.position.y);
         deathWallController = GameObject.Find("SpikyDeathWall").GetComponent<SpikyDeathWallController>();
+        phaseTwoObjectActivator = GameObject.Find("PhaseTwoObjectActivator").GetComponent<PhaseTwoObjectActivator>();
         health = GetComponent<Health>();
         targetHealth = target.GetComponent<Health>();
+
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (skipToSecondPhase)
+        {
+            health.TakeDamage(health.GetMaxHealth() / 2 - 1);
+            skipToSecondPhase = false;
+        }
         // If bosses health goes down more that 50%, change phase.
         if (health.GetHealth() <= health.GetMaxHealth() * 0.5f)
         {
@@ -190,6 +202,11 @@ public class BigPlantController : MonoBehaviour
         if(!isPhaseTwoTransitioning)
         {
             StartCoroutine(PhaseTwoTransition()); // Everything regarding the transition is dealt in the coroutine.
+        }
+
+        if(deathWallController.GetPlayerSurvived() && !isPhaseThreeTransitioning)
+        {
+            StartCoroutine(PhaseThreeTransition());
         }
 
 
@@ -344,7 +361,7 @@ public class BigPlantController : MonoBehaviour
         }
         // Camera shakiiiiing
         // -----HERE----
-
+        PlayerCamera.Instance.CameraShake(1.5f, 4);
         // Moves the boss into the ground and grows the local scale bigger during that.
         transform.DOScale(1.5f, 2f);
         transform.DOMove(new Vector2(transform.position.x, transform.position.y - 5), 3);
@@ -355,7 +372,32 @@ public class BigPlantController : MonoBehaviour
 
         // Death wall is rising. Better hurry up.
         deathWallController.enabled = true;
+        // Activate all triggers and platforms for the escape sequence.
+        phaseTwoObjectActivator.SpawnAllEscapeObjects();
 
+    }
+
+    private IEnumerator PhaseThreeTransition()
+    {
+        isPhaseThreeTransitioning = true;
+        target.GetComponent<Player>().HandleAllPlayerControlInputs(false);
+        transform.position = bossTeleportPoint.position;
+        PlayerCamera.Instance.CameraShake(1.5f, 5);
+        transform.DOMoveY(transform.position.y + 5, 3);
+        yield return new WaitForSeconds(5);
+        Debug.Log("MURRRR!");
+        PlayerCamera.Instance.CameraShake(1f, 3);
+        // Simple pulsing effect for boss local scale.
+        for (int i = 0; i < 3; i++)
+        {
+            transform.DOScale(1.8f, 0.3f);
+            yield return new WaitForSeconds(0.3f);
+            transform.DOScale(1.5f, 0.3f);
+            yield return new WaitForSeconds(0.3f);
+        }
+        yield return new WaitForSeconds(2);
+        target.GetComponent<Player>().HandleAllPlayerControlInputs(true);
+        state = PlantState.Charge;
     }
 
     private IEnumerator Roar()

@@ -7,14 +7,18 @@ public class PhaseTwoObjectActivator : MonoBehaviour
 {
     // Bools to determine if the platforms or vines should be spawned.
     private bool startSpawningVines = false;
-    private bool spawnEscapePlatforms = false;
+    private bool spawnAllEscapeObjects = false;
 
     private GameObject target;
     Quaternion leftSideRotation;
     Quaternion rightSideRotation;
     [SerializeField] GameObject attackVine;
 
+    [SerializeField] private GameObject vineActivator;
+    [SerializeField] private GameObject vineDisactivator;
+
     [SerializeField] private List<Transform> platforms; // List of all the spawnable platforms.
+    [SerializeField] private GameObject additionalAppearingGround;
 
     [SerializeField] private float vineSpawnSpeed; // How frequently the vines will spawn.
 
@@ -37,12 +41,6 @@ public class PhaseTwoObjectActivator : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(spawnEscapePlatforms)
-        {
-            SpawnPlatforms();
-            spawnEscapePlatforms = false;
-        }
-
         if(startSpawningVines)
         {
             StartCoroutine(SpawnVines());
@@ -65,7 +63,16 @@ public class PhaseTwoObjectActivator : MonoBehaviour
 
     public void StopSpawningVines()
     {
-        StopCoroutine(SpawnVines());
+        //StopCoroutine(SpawnVines());
+        StopAllCoroutines();
+    }
+
+    public void SpawnAllEscapeObjects()
+    {
+        SpawnPlatforms();
+        additionalAppearingGround.SetActive(true);
+        vineActivator.SetActive(true);
+        vineDisactivator.SetActive(true);
     }
 
     private void SpawnPlatforms()
@@ -83,6 +90,6 @@ public class PhaseTwoObjectActivator : MonoBehaviour
 
     public void SetSpawnPlatforms(bool b)
     {
-        spawnEscapePlatforms = b;
+        spawnAllEscapeObjects = b;
     }
 }

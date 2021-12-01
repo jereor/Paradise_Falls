@@ -146,7 +146,7 @@ MonoBehaviour:
   attackVineRotateDuration: 3
   attackVineMoveDuration: 2
   attackVineWaitTime: 1
-  attackVineStretchAmount: 5
+  attackVineStretchAmount: 6
   attackVineMoveAmount: 3
   vineSpeed: 1
   isAttackVineActivated: 0

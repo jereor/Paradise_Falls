@@ -76,7 +76,7 @@ public class AttackVineController : MonoBehaviour
         Vector3 vectorToTarget = target.transform.position - transform.position;
         float angle = Mathf.Atan2(vectorToTarget.y, vectorToTarget.x) * Mathf.Rad2Deg;
         Quaternion q = Quaternion.AngleAxis(angle - 90, Vector3.forward);
-        transform.rotation = Quaternion.Slerp(transform.rotation, q, Time.deltaTime);
+        transform.parent.rotation = Quaternion.Slerp(transform.rotation, q, Time.deltaTime);
     }
 
     // THe whole behaviour for the vine except the rotation.
@@ -88,20 +88,20 @@ public class AttackVineController : MonoBehaviour
 
         isAttackVineActivated = true;
         //transform.position = new Vector2(Random.Range(plantBoss.transform.position.x - 5, plantBoss.transform.position.x + 5), plantBoss.transform.position.y + 15);
-        transform.DOMove((target.transform.position - transform.position).normalized * attackVineMoveAmount + transform.position, attackVineMoveDuration * vineSpeed); // Moves the vine towards the player for the given amount.
+        transform.parent.DOMove((target.transform.position - transform.position).normalized * attackVineMoveAmount + transform.position, attackVineMoveDuration * vineSpeed); // Moves the vine towards the player for the given amount.
         yield return new WaitForSeconds(attackVineRotateDuration * vineSpeed);
         gameObject.GetComponent<SpriteRenderer>().color = Color.red;
         isRotatingTowardsTarget = false; // Stops the object rotation meaning that it's lovked in place.
         animator.SetBool("Charge", true);
         Vector2 attackDirection = target.transform.position; // Gets the player's last position.
         yield return new WaitForSeconds(attackVineWaitTime * vineSpeed);
-        transform.DOScaleY(attackVineStretchAmount, attackVineStretchDuration * vineSpeed); // After waiting the given time it stretches in the direction given.
+        transform.parent.DOScaleY(attackVineStretchAmount, attackVineStretchDuration * vineSpeed); // After waiting the given time it stretches in the direction given.
         yield return new WaitForSeconds(attackVineStretchDuration * vineSpeed);
-        transform.DOScaleY(1, attackVineStretchDuration * vineSpeed); // And back to normal.
+        transform.parent.DOScaleY(1, attackVineStretchDuration * vineSpeed); // And back to normal.
         yield return new WaitForSeconds(attackVineStretchDuration * vineSpeed);
         gameObject.GetComponent<SpriteRenderer>().color = Color.white;
         animator.SetBool("Charge", false);
-        transform.DOMove(-((target.transform.position - transform.position).normalized * attackVineMoveAmount) + transform.position, attackVineMoveDuration * vineSpeed); // Moves the vine back where it came from.
+        transform.parent.DOMove(-((target.transform.position - transform.position).normalized * attackVineMoveAmount) + transform.position, attackVineMoveDuration * vineSpeed); // Moves the vine back where it came from.
 
         yield return new WaitForSeconds(attackVineMoveDuration * vineSpeed);
         isAttackVineActivated = false;
