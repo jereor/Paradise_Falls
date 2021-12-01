@@ -54,13 +54,14 @@ public class SettingsController : MonoBehaviour
 
     void Update()
     {
-        if(mainMixer.GetFloat("MasterVolume", out float masterValue) && masterValue != masterVolumeSlider.value)
+        if (mainMixer.GetFloat("MasterVolume", out float masterValue) && Mathf.Pow(10f, masterValue / 20f) != masterVolumeSlider.value)
         {
-            masterVolumeSlider.value = masterValue;
+            masterVolumeSlider.value = Mathf.Pow(10f, masterValue / 20f);
+            Debug.Log(Mathf.Pow(10f, masterValue) / 20f);
             if (mainMixer.GetFloat("EffectVolume", out float effectValue))
-                effectVolumeSlider.value = effectValue;
+                effectVolumeSlider.value = Mathf.Pow(10f, effectValue / 20f);
             if (mainMixer.GetFloat("MusicVolume", out float musicValue))
-                musicVolumeSlider.value = musicValue;
+                musicVolumeSlider.value = Mathf.Pow(10f, musicValue / 20f);
         }
         // No need to save resolution since coded that it takes default resolution from the system
         //if (GameStatus.status != null && GameStatus.status.getLoadedData().resolutionIndex != currentResolutionIndex && resoLoadBuffer)
@@ -118,23 +119,23 @@ public class SettingsController : MonoBehaviour
         settingsButton.Select();
     }
 
-    public void SubmitMasterSliderValue(Slider slider)
+    public void SubmitMasterSliderValue(float sliderValue)
     {
-        mainMixer.SetFloat("MasterVolume", slider.value);
+        mainMixer.SetFloat("MasterVolume", Mathf.Log10(sliderValue) * 20);
         if(GameStatus.status != null)
-            GameStatus.status.UpdateMasterVolume(slider.value);
+            GameStatus.status.UpdateMasterVolume(Mathf.Log10(sliderValue) * 20);
     }
-    public void SubmitEffectliderValue(Slider slider)
+    public void SubmitEffectliderValue(float sliderValue)
     {
-        mainMixer.SetFloat("EffectVolume", slider.value);
+        mainMixer.SetFloat("EffectVolume", Mathf.Log10(sliderValue) * 20);
         if (GameStatus.status != null)
-            GameStatus.status.UpdateEffectVolume(slider.value);
+            GameStatus.status.UpdateEffectVolume(Mathf.Log10(sliderValue) * 20);
     }
-    public void SubmitMusicSliderValue(Slider slider)
+    public void SubmitMusicSliderValue(float sliderValue)
     {
-        mainMixer.SetFloat("MusicVolume", slider.value);
+        mainMixer.SetFloat("MusicVolume", Mathf.Log10(sliderValue) * 20);
         if (GameStatus.status != null)
-            GameStatus.status.UpdateMusicVolume(slider.value);
+            GameStatus.status.UpdateMusicVolume(Mathf.Log10(sliderValue) * 20);
     }
 
     public void SetFullscreen(bool isFullscreen)
