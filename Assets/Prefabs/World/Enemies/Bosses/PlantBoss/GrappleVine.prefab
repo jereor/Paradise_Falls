@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 343821261546781200}
   - component: {fileID: 343821261546781201}
   - component: {fileID: 343821261546781202}
-  - component: {fileID: 343821261546781205}
+  - component: {fileID: 5519477204959190588}
   m_Layer: 0
-  m_Name: FuriousVine
+  m_Name: GrappleVine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -28,7 +28,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 343821261546781198}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 3.72, z: 0}
+  m_LocalPosition: {x: 0, y: 3.276, z: 0}
   m_LocalScale: {x: 1, y: 1.1739, z: 1}
   m_Children: []
   m_Father: {fileID: 466669996046129386}
@@ -90,8 +90,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -693281951
-  m_SortingLayer: 9
+  m_SortingLayerID: -854609009
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: c5d521fba305fb24fa917ceccc12ef40, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -130,7 +130,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1.52, y: 4.99}
   m_EdgeRadius: 0
---- !u!114 &343821261546781205
+--- !u!114 &5519477204959190588
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -139,18 +139,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 343821261546781198}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f3fb085635c35642ad648176b836d2f, type: 3}
+  m_Script: {fileID: 11500000, guid: b9a8d48797807b249848fe5df53d3bb5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackVineStretchDuration: 0.5
-  attackVineRotateDuration: 2
-  attackVineMoveDuration: 0.5
-  attackVineWaitTime: 0.5
-  attackVineStretchAmount: 2.5
-  attackVineMoveAmount: 2.5
-  vineSpeed: 0.5
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  vineEndPoint: {fileID: 4759882560722405049}
+  grappleVineStretchDuration: 1
+  grappleVineRotateDuration: 2
+  grappleVineMoveDuration: 0
+  grappleVineWaitTime: 1
+  grappleVineStretchAmount: 5
+  grappleVineMoveAmount: 0
+  vineSpeed: 1
+  plantBossTransportSpeed: 3
   isAttackVineActivated: 0
   isRotatingTowardsTarget: 0
+  bossCanBeTransported: 0
   knockbackForce: 100
 --- !u!1 &1125926157888548533
 GameObject:
@@ -162,7 +168,7 @@ GameObject:
   m_Component:
   - component: {fileID: 466669996046129386}
   m_Layer: 0
-  m_Name: FuriousVine
+  m_Name: GrappleVine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -180,6 +186,37 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 343821261546781203}
+  - {fileID: 4759882560722405049}
   m_Father: {fileID: 0}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &5428792884145282531
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4759882560722405049}
+  m_Layer: 0
+  m_Name: EndPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4759882560722405049
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5428792884145282531}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 5.544, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 466669996046129386}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

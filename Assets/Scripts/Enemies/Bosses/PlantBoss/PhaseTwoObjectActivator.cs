@@ -54,9 +54,9 @@ public class PhaseTwoObjectActivator : MonoBehaviour
         for (int i = 0; i < Mathf.Infinity; i++)
         {
             // Spawns vines left and right of the player in given intervals.
-            Instantiate(attackVine, new Vector2(transform.position.x + 12, (Random.Range(target.transform.position.y - 5, target.transform.position.y + 5))), rightSideRotation);
+            Instantiate(attackVine, new Vector2(transform.position.x + 16, (Random.Range(target.transform.position.y - 5, target.transform.position.y + 5))), rightSideRotation);
             yield return new WaitForSeconds(vineSpawnSpeed);
-            Instantiate(attackVine, new Vector2(transform.position.x - 12, (Random.Range(target.transform.position.y - 5, target.transform.position.y + 5))), leftSideRotation);
+            Instantiate(attackVine, new Vector2(transform.position.x - 16, (Random.Range(target.transform.position.y - 5, target.transform.position.y + 5))), leftSideRotation);
             yield return new WaitForSeconds(vineSpawnSpeed);
         }
     }

@@ -73,10 +73,10 @@ public class AttackVineController : MonoBehaviour
     private void RotateVineTowardsTheTarget()
     {
         // Rotating object to point player
-        Vector3 vectorToTarget = target.transform.position - transform.position;
+        Vector3 vectorToTarget = target.transform.position - transform.parent.position;
         float angle = Mathf.Atan2(vectorToTarget.y, vectorToTarget.x) * Mathf.Rad2Deg;
         Quaternion q = Quaternion.AngleAxis(angle - 90, Vector3.forward);
-        transform.parent.rotation = Quaternion.Slerp(transform.rotation, q, Time.deltaTime);
+        transform.parent.rotation = Quaternion.Slerp(transform.parent.rotation, q, Time.deltaTime);
     }
 
     // THe whole behaviour for the vine except the rotation.
@@ -88,7 +88,7 @@ public class AttackVineController : MonoBehaviour
 
         isAttackVineActivated = true;
         //transform.position = new Vector2(Random.Range(plantBoss.transform.position.x - 5, plantBoss.transform.position.x + 5), plantBoss.transform.position.y + 15);
-        transform.parent.DOMove((target.transform.position - transform.position).normalized * attackVineMoveAmount + transform.position, attackVineMoveDuration * vineSpeed); // Moves the vine towards the player for the given amount.
+        transform.parent.DOMove((target.transform.position - transform.parent.position).normalized * attackVineMoveAmount + transform.parent.position, attackVineMoveDuration * vineSpeed); // Moves the vine towards the player for the given amount.
         yield return new WaitForSeconds(attackVineRotateDuration * vineSpeed);
         gameObject.GetComponent<SpriteRenderer>().color = Color.red;
         isRotatingTowardsTarget = false; // Stops the object rotation meaning that it's lovked in place.
@@ -101,12 +101,12 @@ public class AttackVineController : MonoBehaviour
         yield return new WaitForSeconds(attackVineStretchDuration * vineSpeed);
         gameObject.GetComponent<SpriteRenderer>().color = Color.white;
         animator.SetBool("Charge", false);
-        transform.parent.DOMove(-((target.transform.position - transform.position).normalized * attackVineMoveAmount) + transform.position, attackVineMoveDuration * vineSpeed); // Moves the vine back where it came from.
+        transform.parent.DOMove(-((target.transform.position - transform.parent.position).normalized * attackVineMoveAmount) + transform.parent.position, attackVineMoveDuration * vineSpeed); // Moves the vine back where it came from.
 
         yield return new WaitForSeconds(attackVineMoveDuration * vineSpeed);
         isAttackVineActivated = false;
-        plantController.attackVineInstances.Remove(gameObject); // Remove the vine from the list. Destroy the game object afterwards.
-        Destroy(gameObject);
+        plantController.attackVineInstances.Remove(gameObject.transform.parent.gameObject); // Remove the vine from the list. Destroy the game object afterwards.
+        Destroy(gameObject.transform.parent.gameObject);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

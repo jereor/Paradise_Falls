@@ -7,11 +7,15 @@ public class SpikyDeathWallController : MonoBehaviour
 {
     private Vector2 endPosition;
     private bool playerSurvived = false;
+    private bool deathWallRetreat = false;
+    [SerializeField] private float bossTeleportPointOffsetX;
+    [SerializeField] private float bossTeleportPointOffsetY;
 
     private bool knockbackOnCooldown = false;
     Vector2 velocityPlayer;
     GameObject target;
     Rigidbody2D targetRB;
+    private Transform bossTeleportPoint;
 
     [SerializeField] private float spikyWallRiseTime; // How long will the wall rise.
     [SerializeField] private float spikyWallRiseHeight;
@@ -25,6 +29,7 @@ public class SpikyDeathWallController : MonoBehaviour
     {
         target = GameObject.Find("Player");
         targetRB = target.GetComponent<Rigidbody2D>();
+        bossTeleportPoint = GameObject.Find("BossTeleportPoint").transform;
 
         // Shakes the different parts of the wall at different intervals, making it seem more realistic.
         transform.GetChild(0).DOShakePosition(spikyWallRiseTime, 0.2f, 10, 90, false, false);
@@ -39,10 +44,11 @@ public class SpikyDeathWallController : MonoBehaviour
         if(counter < spikyWallRiseTime && !playerSurvived)
             transform.position = Vector2.MoveTowards(transform.position, new Vector2(transform.position.x, transform.position.y + spikyWallRiseHeight), Time.deltaTime * wallSpeed);
 
-        // if the player escapes, kill the shake tween.
-        if (playerSurvived)
+        // Death wall retreats if the player hits the third phase trigger.
+        if (playerSurvived && !deathWallRetreat)
         {
-            transform.DOMove(new Vector2(transform.position.x, transform.position.y - 20), 10);
+            transform.DOMoveY(bossTeleportPoint.position.y + bossTeleportPointOffsetY, 3);
+            deathWallRetreat = true;
         }
     }
 
@@ -70,12 +76,26 @@ public class SpikyDeathWallController : MonoBehaviour
 
     }
 
+    public void SetForThirdPhase()
+    {
+        transform.position = new Vector2(bossTeleportPoint.position.x + bossTeleportPointOffsetX, bossTeleportPoint.position.y + bossTeleportPointOffsetY);
+        StopAllCoroutines();
+        StartCoroutine(MoveToThirdPhasePosition());
+    }
+
     // Pushbacks the player when hit with riot drone collider. Uses velocity for the knockback instead of force.
     public void PlayerPushback()
     {
         velocityPlayer = new Vector2(0, knockbackForce);
         targetRB.MovePosition(targetRB.position + velocityPlayer * Time.deltaTime);
         StartCoroutine(KnockbackCooldown());
+    }
+
+    private IEnumerator MoveToThirdPhasePosition()
+    {
+        transform.DOMoveY(transform.position.y + 5, 4);
+        yield return new WaitForSeconds(4);
+        DOTween.KillAll();
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
