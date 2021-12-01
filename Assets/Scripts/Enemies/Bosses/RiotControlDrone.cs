@@ -113,6 +113,12 @@ public class RiotControlDrone : MonoBehaviour
 
     private Quaternion batonRotation;
 
+    // SFX
+    private bool playMeleeSound = false;
+    private bool playTazerShootSound = false;
+    private bool playSeedShootSound = false;
+    private bool playStunnedSound = false;
+    private bool playChargeSound = false;
 
 
     // Start is called before the first frame update
@@ -641,6 +647,9 @@ public class RiotControlDrone : MonoBehaviour
         yield return new WaitForSeconds(chargeStepInterval);
 
         rb.AddForce(new Vector2(chargeDirection * chargeSpeed * Time.fixedDeltaTime, 0));
+
+        playChargeSound = true;
+
         if(velocity.x < 2 && velocity.x > -2 && IsTargetInHitRange())
         {
             // Player is between the wall and the riot drone. Deal huge damage and make space for the player to get out.
@@ -674,6 +683,8 @@ public class RiotControlDrone : MonoBehaviour
     private IEnumerator Stunned()
     {
         stunned = true;
+        playStunnedSound = true;
+
         yield return new WaitForSeconds(stunTime);
         stunned = false;
         chargeDirectionCalculated = false;
@@ -712,6 +723,9 @@ public class RiotControlDrone : MonoBehaviour
             gameObject.transform.GetChild(4).DORotate(new Vector3(0, 0, 90), lightAttackCoolDown);
 
         yield return new WaitForSeconds(lightAttackCoolDown);
+        
+        playMeleeSound = true;
+
         // Deal damage to player if still in range.
         if(IsTargetInHitRange())
         {
@@ -787,6 +801,9 @@ public class RiotControlDrone : MonoBehaviour
             gameObject.transform.GetChild(4).DORotate(new Vector3(0, 0, 90), heavyAttackChargeTime);
 
         yield return new WaitForSeconds(heavyAttackChargeTime);
+
+        playMeleeSound = true;
+        
         // Deal damage to player if still in range.
         if (IsTargetInHitRange())
         {
@@ -827,6 +844,9 @@ public class RiotControlDrone : MonoBehaviour
     {
         taserOnCooldown = true;
         yield return new WaitForSeconds(taserCooldown);
+
+        playTazerShootSound = true;
+        
         Instantiate(taserBeam, new Vector2(transform.position.x + (transform.localScale.x * 2), transform.position.y), Quaternion.identity);
         yield return new WaitForSeconds(taserCooldown);
         taserChanceRandomizer = UnityEngine.Random.Range(1, 101);
@@ -845,6 +865,9 @@ public class RiotControlDrone : MonoBehaviour
         for (int i = 0; i <= seedCount; i++)
         {
             yield return new WaitForSeconds(0.5f);
+
+            playSeedShootSound = true;
+
             Instantiate(seed, gameObject.transform.GetChild(2).position, Quaternion.identity); // Instantiates all seeds and shoots them towards the player.
         }
         yield return new WaitForSeconds(seedShootCooldown);
@@ -865,7 +888,9 @@ public class RiotControlDrone : MonoBehaviour
         {
             
             rb.AddForce(new Vector2(chargeDirection * walkingSpeed * Time.fixedDeltaTime, 0));
-            
+
+            playMeleeSound = true;
+
             if (IsTargetInHitRange() && !takenDamage)
             {
                 targetHealth.TakeDamage(heavyAttackDamage);
@@ -1184,5 +1209,57 @@ public class RiotControlDrone : MonoBehaviour
     public void setBoxInstance(GameObject b)
     {
         boxInstance = b;
+    }
+
+    public bool getPlaySoundMelee()
+    {
+        if (playMeleeSound)
+        {
+            playMeleeSound = false;
+            return true;
+        }
+        else
+            return false;
+    }
+
+    public bool getPlaySoundTazer()
+    {
+        if (playTazerShootSound)
+        {
+            playTazerShootSound = false;
+            return true;
+        }
+        else
+            return false;
+    }
+    public bool getPlaySoundSeed()
+    {
+        if (playSeedShootSound)
+        {
+            playSeedShootSound = false;
+            return true;
+        }
+        else
+            return false;
+    }
+    public bool getPlaySoundStunned()
+    {
+        if (playStunnedSound)
+        {
+            playStunnedSound = false;
+            return true;
+        }
+        else
+            return false;
+    }
+    public bool getPlaySoundCharge()
+    {
+        if (playChargeSound)
+        {
+            playChargeSound = false;
+            return true;
+        }
+        else
+            return false;
     }
 }
