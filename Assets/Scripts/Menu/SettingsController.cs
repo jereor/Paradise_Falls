@@ -57,7 +57,6 @@ public class SettingsController : MonoBehaviour
         if (mainMixer.GetFloat("MasterVolume", out float masterValue) && Mathf.Pow(10f, masterValue / 20f) != masterVolumeSlider.value)
         {
             masterVolumeSlider.value = Mathf.Pow(10f, masterValue / 20f);
-            Debug.Log(Mathf.Pow(10f, masterValue) / 20f);
             if (mainMixer.GetFloat("EffectVolume", out float effectValue))
                 effectVolumeSlider.value = Mathf.Pow(10f, effectValue / 20f);
             if (mainMixer.GetFloat("MusicVolume", out float musicValue))
@@ -112,8 +111,8 @@ public class SettingsController : MonoBehaviour
         _options
             .DOAnchorPos(new Vector2(0, -500), .3f)
             .SetUpdate(true);
-
-        GameStatus.status.Save();
+        if(GameStatus.status != null)
+            GameStatus.status.Save();
 
         settingsOpen = false;
         settingsButton.Select();
