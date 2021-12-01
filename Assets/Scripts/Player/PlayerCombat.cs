@@ -328,7 +328,6 @@ public class PlayerCombat : MonoBehaviour
         if (context.performed && canReceiveInputThrow)
         {
             throwAimHold = true;
-            Debug.Log(context.control.name);
 
             // Show weapon throw min distance direction
             if (isWeaponWielded)

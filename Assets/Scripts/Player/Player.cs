@@ -500,10 +500,13 @@ public class Player : MonoBehaviour
                 combatScript.EnableInputThrowAim();
 
                 shieldScript.EnableInputBlock();
-
+                    
                 // Movement
                 movementScript.EnableInputJump();
                 movementScript.EnableInputMove();
+                // SH
+                shockwaveTool.EnableInputDash();
+                shockwaveTool.EnableInputSHAttack();
                 break;
 
             // ---- RUNNING ----
@@ -517,6 +520,10 @@ public class Player : MonoBehaviour
                 // Movement
                 movementScript.EnableInputJump();
                 movementScript.EnableInputMove();
+
+                // SH
+                shockwaveTool.EnableInputDash();
+                shockwaveTool.EnableInputSHAttack();
                 break;
 
             // ---- ASCENDING ----
@@ -530,6 +537,10 @@ public class Player : MonoBehaviour
                 // Movement
                 movementScript.EnableInputJump();
                 movementScript.EnableInputMove();
+
+                // SH
+                shockwaveTool.EnableInputDash();
+                shockwaveTool.EnableInputSHAttack();
                 break;
 
             // ---- FALLING ----
@@ -543,6 +554,10 @@ public class Player : MonoBehaviour
                 // Movement
                 movementScript.EnableInputJump();
                 movementScript.EnableInputMove();
+
+                // SH
+                shockwaveTool.EnableInputDash();
+                shockwaveTool.EnableInputSHAttack();
                 break;
 
             // ---- LANDING ----
@@ -556,6 +571,10 @@ public class Player : MonoBehaviour
                 // Movement
                 movementScript.DisableInputJump();
                 movementScript.DisableInputMove();
+
+                // SH
+                shockwaveTool.DisableInputDash();
+                shockwaveTool.DisableInputSHAttack();
                 break;
 
             // ---- WALLSLIDING ----
@@ -567,6 +586,10 @@ public class Player : MonoBehaviour
                 // Movement
                 movementScript.EnableInputJump();
                 movementScript.EnableInputMove();
+
+                // SH
+                shockwaveTool.EnableInputDash();
+                shockwaveTool.EnableInputSHAttack();
                 break;
 
             // ---- CLIMBING ----
@@ -579,6 +602,10 @@ public class Player : MonoBehaviour
                 // Movement
                 movementScript.DisableInputJump();
                 movementScript.DisableInputMove();
+
+                // SH
+                shockwaveTool.DisableInputDash();
+                shockwaveTool.DisableInputSHAttack();
                 break;
 
             // ---- ATTACKING ----
@@ -589,6 +616,10 @@ public class Player : MonoBehaviour
                 // Movement
                 movementScript.DisableInputJump();
                 movementScript.DisableInputMove();
+
+                // SH
+                shockwaveTool.DisableInputDash();
+                shockwaveTool.DisableInputSHAttack();
                 break;
 
             // ---- ATTACKTRANSITION ----
@@ -600,6 +631,10 @@ public class Player : MonoBehaviour
                 // Movement
                 movementScript.EnableInputJump();
                 movementScript.EnableInputMove();
+
+                // SH
+                shockwaveTool.EnableInputDash();
+                shockwaveTool.EnableInputSHAttack();
                 break;
 
             // ---- HEAVY CHARGE ----
@@ -612,6 +647,10 @@ public class Player : MonoBehaviour
                 // Movement
                 movementScript.DisableInputJump();
                 movementScript.DisableInputMove();
+
+                // SH
+                shockwaveTool.DisableInputDash();
+                shockwaveTool.DisableInputSHAttack();
                 break;
 
             // ---- HEAVY HOLD ----
@@ -624,6 +663,10 @@ public class Player : MonoBehaviour
                 // Movement
                 movementScript.DisableInputJump();
                 movementScript.DisableInputMove();
+
+                // SH
+                shockwaveTool.DisableInputDash();
+                shockwaveTool.DisableInputSHAttack();
                 break;
 
             // ---- AIMING ----
@@ -642,6 +685,10 @@ public class Player : MonoBehaviour
 
                 movementScript.DisableInputJump();
                 movementScript.DisableInputMove();
+
+                // SH
+                shockwaveTool.DisableInputDash();
+                shockwaveTool.DisableInputSHAttack();
                 break;
 
             // ---- PARRYING ----
@@ -651,6 +698,10 @@ public class Player : MonoBehaviour
                 combatScript.DisableInputThrowAim();
 
                 movementScript.EnableInputMove();
+
+                // SH
+                shockwaveTool.DisableInputDash();
+                shockwaveTool.DisableInputSHAttack();
                 break;
 
             // ---- DASHING ----
@@ -658,6 +709,8 @@ public class Player : MonoBehaviour
                 // Combat
                 //combatScript.DisableInputMelee();
                 shieldScript.DisableInputBlock();
+
+                movementScript.EnableInputJump();
                 break;
 
             // ---- SH ATTACKING ----
@@ -680,6 +733,10 @@ public class Player : MonoBehaviour
                 shieldScript.DisableInputBlock();
 
                 movementScript.DisableInputMove();
+
+                // SH
+                shockwaveTool.EnableInputDash();
+                shockwaveTool.DisableInputSHAttack();
                 break;
 
             default:
@@ -706,6 +763,10 @@ public class Player : MonoBehaviour
             // Movement
             movementScript.DisableInputJump();
             movementScript.DisableInputMove();
+
+            // SH
+            shockwaveTool.DisableInputDash();
+            shockwaveTool.DisableInputSHAttack();
         }
         else
         {
@@ -718,6 +779,10 @@ public class Player : MonoBehaviour
             // Movement
             movementScript.EnableInputJump();
             movementScript.EnableInputMove();
+
+            // SH
+            shockwaveTool.EnableInputDash();
+            shockwaveTool.EnableInputSHAttack();
         }
     }
 
