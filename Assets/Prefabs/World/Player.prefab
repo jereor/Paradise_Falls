@@ -10527,6 +10527,22 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: df4f2461-098e-4030-9049-d9791f89dee9
     m_ActionName: GameUI/Inventory[/Keyboard/tab]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 7463911945564789779}
+        m_TargetAssemblyTypeName: PlayerCombat, Assembly-CSharp
+        m_MethodName: Aim
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 2fac39e7-5ef2-4917-befe-06f5441c1b8c
+    m_ActionName: Player/TargetPosition[/XInputControllerWindows/rightStick]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -10725,6 +10741,7 @@ MonoBehaviour:
   canReceiveInputThrow: 0
   meleeInputReceived: 0
   throwInputReceived: 0
+  controllerAimDefaultDirection: {x: 1, y: 0.25}
   hitPS: {fileID: 2349214408752251806, guid: c8ed0368ca7236f479fbc90600d8f484, type: 3}
   heavyHitPS: {fileID: 2349214408752251806, guid: 59a51efd3354e52458bdcd9b3912da5e, type: 3}
   slowDuration: 0.01

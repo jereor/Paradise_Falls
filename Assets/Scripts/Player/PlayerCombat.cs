@@ -104,6 +104,9 @@ public class PlayerCombat : MonoBehaviour
     public bool meleeInputReceived = false; // Used in transitions and idle to tell animator to start correct attack if this turns true
     public bool throwInputReceived = false;
 
+    private bool controllerUsedToInitAim = false; // True if aim is inited with leftShoulder button
+    [SerializeField] private Vector2 controllerAimDefaultDirection;
+
     Rigidbody2D rb;
 
     // Used in dash 
@@ -199,7 +202,7 @@ public class PlayerCombat : MonoBehaviour
     private void FixedUpdate()
     {
         // Update vectorToTarget only when aim button held down
-        if(throwAimHold)
+        if(throwAimHold && !controllerUsedToInitAim)
             vectorToTarget = new Vector2(mousePosRay.origin.x - gameObject.transform.position.x, mousePosRay.origin.y - gameObject.transform.position.y);
 
         // Just debug to see ray pointing to weapon
@@ -325,10 +328,13 @@ public class PlayerCombat : MonoBehaviour
         if (context.performed && canReceiveInputThrow)
         {
             throwAimHold = true;
+            Debug.Log(context.control.name);
 
             // Show weapon throw min distance direction
             if (isWeaponWielded)
             {
+                if (context.control.name.Contains("Shoulder"))
+                    controllerUsedToInitAim = true;
                 HideAllProjPoints();
 
                 // Show minDistance amount of points
@@ -339,9 +345,25 @@ public class PlayerCombat : MonoBehaviour
         if (context.canceled)
         {
             throwAimHold = false;
-
+            controllerUsedToInitAim = false;
             // We release aim button hide points
             HideAllProjPoints();
+        }
+    }
+
+    public void Aim(InputAction.CallbackContext context) // Context tells the function when the action is triggered
+    {
+        // We cant receive input OR we stop
+        if (throwAimHold && (Mathf.Abs(context.ReadValue<Vector2>().x) != 0f || Mathf.Abs(context.ReadValue<Vector2>().y) != 0f))
+        {
+            vectorToTarget = context.ReadValue<Vector2>(); // Updates the horizontal input direction
+            Debug.Log(vectorToTarget);
+        }
+
+        if (context.ReadValue<Vector2>().x == 0f)
+        {
+            if (throwAimHold && controllerUsedToInitAim)
+                vectorToTarget = new Vector2(controllerAimDefaultDirection.x * transform.localScale.x, controllerAimDefaultDirection.y);
         }
     }
 
