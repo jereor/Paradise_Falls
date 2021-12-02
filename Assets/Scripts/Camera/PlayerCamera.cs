@@ -121,6 +121,12 @@ public class PlayerCamera : MonoBehaviour
 
     private IEnumerator FadeIn(float timer)
     {
+        // Start at max values
+        colorAdjustments.postExposure.value = -10;
+        vignette.intensity.value = 1;
+        yield return new WaitForSeconds(.5f);
+
+        // Fade in / Remove black screen
         float counter = 0;
         while (counter < timer)
         {
