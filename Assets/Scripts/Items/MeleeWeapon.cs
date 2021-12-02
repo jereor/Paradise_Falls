@@ -145,7 +145,7 @@ public class MeleeWeapon : MonoBehaviour
         {
             if (!landed || Mathf.Abs(Mathf.Abs(gameObject.transform.position.y) - Mathf.Abs(highestYpos)) > 0.5f || Mathf.Abs(Mathf.Abs(gameObject.transform.position.x) - Mathf.Abs(highestXpos)) > 0.5f)
             {
-                sfxScript.PlayHitEnvironmentSound();
+                sfxScript.PlayHitEnvironmentSound(collision.gameObject.CompareTag("SoftGround"));
                 highestYpos = gameObject.transform.position.y;
                 highestXpos = gameObject.transform.position.x;
             }
@@ -338,6 +338,8 @@ public class MeleeWeapon : MonoBehaviour
     public void PullWeapon(GameObject objectThatPulls)
     {
         // Weapon cannot deal damage aka hit enemy or ground
+
+        sfxScript.PlayPulledWeaponSound();
 
         // If set to objects child (grapplepoint) -> unchild
         gameObject.transform.parent = null;

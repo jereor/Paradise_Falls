@@ -14,6 +14,8 @@ GameObject:
   - component: {fileID: 1324585190677409385}
   - component: {fileID: 1324585190677409389}
   - component: {fileID: 1324585190677409387}
+  - component: {fileID: 1912739626999689551}
+  - component: {fileID: 7410517107489587738}
   m_Layer: 7
   m_Name: CannonEnemy
   m_TagString: Enemy
@@ -81,13 +83,25 @@ MonoBehaviour:
   currentHealth: 0
   blockedColor: {r: 0, g: 0, b: 1, a: 1}
   damageColor: {r: 1, g: 0, b: 0, a: 1}
-  destroyWhenDead: 1
+  destroyWhenDead: 0
   onDie:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1324585190677409389}
         m_TargetAssemblyTypeName: CannonEnemyAI, Assembly-CSharp
         m_MethodName: SpawnHealthOrEnergy
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 7410517107489587738}
+        m_TargetAssemblyTypeName: TurretSFX, Assembly-CSharp
+        m_MethodName: PlayDestroySound
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -183,6 +197,136 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1.2381592, y: 2.0648441}
   m_EdgeRadius: 0
+--- !u!82 &1912739626999689551
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1324585190677409388}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 33464864381395215, guid: e2b3af8d1083d854383b8165ec84414f, type: 2}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 15
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0.5
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0.1388889
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &7410517107489587738
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1324585190677409388}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b177a1740eb94744c8121e9d9f3c393b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cannon1: {fileID: 8713406405896936487}
+  cannon2: {fileID: 8713406405617230176}
+  cannonBase: {fileID: 4359200597949835363}
+  shootSound: {fileID: 8300000, guid: 5cf3db7522dff264c80369c9cdaae7dd, type: 3}
+  aimSounds:
+  - {fileID: 8300000, guid: 7832a45b58c39034c9a91adda2c498e6, type: 3}
+  - {fileID: 8300000, guid: 387f7e061f4039f46a1439163e79c230, type: 3}
+  - {fileID: 8300000, guid: 64db064e144276b448f957ba2562f919, type: 3}
+  - {fileID: 8300000, guid: e94a6bc033a6ae0469d3d56ff3dd4c37, type: 3}
+  takeDMGSounds:
+  - {fileID: 8300000, guid: d0dbfd029b58ac74585b29c739362485, type: 3}
+  - {fileID: 8300000, guid: 54ea7d2ef92d2084083a99ad3190c139, type: 3}
+  - {fileID: 8300000, guid: b25dab343eab3f045a5ba113e0f55215, type: 3}
+  - {fileID: 8300000, guid: 6e583872e29a1a341a871af09f867433, type: 3}
+  - {fileID: 8300000, guid: 30c6348007e934545aa3ffa29a7d402d, type: 3}
+  - {fileID: 8300000, guid: 6f81e68b6f82462468e1e74330cd8dd2, type: 3}
+  - {fileID: 8300000, guid: 6d7c74e6db2fc0e429fb4d461217a697, type: 3}
+  - {fileID: 8300000, guid: b96eb150a664b6047b503529aee44ddb, type: 3}
+  destroySounds:
+  - {fileID: 8300000, guid: 676da1adeff70c947b2b0ebae7c094e5, type: 3}
+  - {fileID: 8300000, guid: 6ab6005b93e32cc4588e382c23f92699, type: 3}
+  - {fileID: 8300000, guid: 3eca5e7828167104ca048b3e365da9c7, type: 3}
 --- !u!1 &4359200597949835365
 GameObject:
   m_ObjectHideFlags: 0
@@ -252,7 +396,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -2065794617
-  m_SortingLayer: 3
+  m_SortingLayer: 8
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 478861a658b36c34ba09d82c5f067136, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -397,7 +541,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -2065794617
-  m_SortingLayer: 3
+  m_SortingLayer: 8
   m_SortingOrder: -1
   m_Sprite: {fileID: 21300000, guid: 43d5ccf4d3fd6c442ac85272f1a71860, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -479,7 +623,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -2065794617
-  m_SortingLayer: 3
+  m_SortingLayer: 8
   m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: 43d5ccf4d3fd6c442ac85272f1a71860, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

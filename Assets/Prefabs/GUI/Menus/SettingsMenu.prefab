@@ -622,20 +622,20 @@ MonoBehaviour:
   m_FillRect: {fileID: 3872244936795795700}
   m_HandleRect: {fileID: 1558107118554590675}
   m_Direction: 0
-  m_MinValue: -80
-  m_MaxValue: -10
+  m_MinValue: 0.0001
+  m_MaxValue: 0.3162
   m_WholeNumbers: 0
-  m_Value: -10
+  m_Value: 0.3
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 7639484391392569186}
         m_TargetAssemblyTypeName: SettingsController, Assembly-CSharp
         m_MethodName: SubmitMusicSliderValue
-        m_Mode: 2
+        m_Mode: 0
         m_Arguments:
-          m_ObjectArgument: {fileID: 9206782459215149502}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.UI.Slider, UnityEngine.UI
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -1784,20 +1784,20 @@ MonoBehaviour:
   m_FillRect: {fileID: 339738370364312545}
   m_HandleRect: {fileID: 8899557754518896592}
   m_Direction: 0
-  m_MinValue: -80
-  m_MaxValue: 0
+  m_MinValue: 0.0001
+  m_MaxValue: 1
   m_WholeNumbers: 0
-  m_Value: -18.4
+  m_Value: 0.5
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 7639484391392569186}
         m_TargetAssemblyTypeName: SettingsController, Assembly-CSharp
         m_MethodName: SubmitMasterSliderValue
-        m_Mode: 2
+        m_Mode: 0
         m_Arguments:
-          m_ObjectArgument: {fileID: 63837639925330161}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.UI.Slider, UnityEngine.UI
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -3028,20 +3028,20 @@ MonoBehaviour:
   m_FillRect: {fileID: 2920871170312392021}
   m_HandleRect: {fileID: 4177444139160129794}
   m_Direction: 0
-  m_MinValue: -80
-  m_MaxValue: 0
+  m_MinValue: 0.0001
+  m_MaxValue: 0.3162
   m_WholeNumbers: 0
-  m_Value: 0
+  m_Value: 0.3
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 7639484391392569186}
         m_TargetAssemblyTypeName: SettingsController, Assembly-CSharp
         m_MethodName: SubmitEffectliderValue
-        m_Mode: 2
+        m_Mode: 0
         m_Arguments:
-          m_ObjectArgument: {fileID: 7946598010382150425}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.UI.Slider, UnityEngine.UI
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 

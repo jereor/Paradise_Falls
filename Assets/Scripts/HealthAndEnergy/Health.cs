@@ -82,6 +82,7 @@ public class Health : MonoBehaviour
         }
         else
         {
+            playSoundHurt = true;
             StartCoroutine(HitIndication(damageColor)); // Enemy got hit.
         }
 

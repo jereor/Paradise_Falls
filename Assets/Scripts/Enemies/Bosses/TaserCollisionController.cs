@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 // Behaviour is currently mostly same as BulletBehaviour. TODO: Player gets stunned when the object is hit.
 public class TaserCollisionController : MonoBehaviour
@@ -11,7 +12,7 @@ public class TaserCollisionController : MonoBehaviour
     private Vector2 direction;
     [SerializeField] private float projectileSpeed = 5;
     [SerializeField] private float projectileDamage = 1;
-
+    public UnityEvent destroyEvent;
     // Start is called before the first frame update
     void Start()
     {
@@ -49,7 +50,13 @@ public class TaserCollisionController : MonoBehaviour
             float collisionAngle = Vector2.SignedAngle(Vector2.right, direction);
             Quaternion q = Quaternion.AngleAxis(collisionAngle, Vector3.forward);
             Instantiate(taserTrail, transform.position, Quaternion.identity);
-            Destroy(gameObject);
+            if (destroyEvent != null)
+            {
+                destroyEvent.Invoke();
+                GetComponent<ParticleSystem>().Stop();
+            }
+            else
+                Destroy(gameObject);
         }
 
     }

@@ -62,6 +62,7 @@ public class Shield : MonoBehaviour
 
     public void HitWhileParried()
     {
+        playParry = true;
         hitParried = true;
     }
 
@@ -71,8 +72,6 @@ public class Shield : MonoBehaviour
     private IEnumerator ActivateParryWindow()
     {
         Parrying = true;
-
-        playParry = true;
 
         float parryTimer = 0;
         while (parryTimer <= parryTimeWindow)

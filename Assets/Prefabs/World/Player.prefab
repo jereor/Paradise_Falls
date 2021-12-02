@@ -10226,6 +10226,10 @@ MonoBehaviour:
   shockwaveJumpAndDiveUnlocked: 1
   shockwaveAttackUnlocked: 1
   shieldGrindUnlocked: 1
+  meleePickUps: 0000
+  throwPickUps: 0000
+  healthPickUps: 0000000000
+  energyPickUps: 0000
   animator: {fileID: 3265684260011797273}
   rb: {fileID: 0}
   inputsActive: 1
@@ -10523,6 +10527,22 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: df4f2461-098e-4030-9049-d9791f89dee9
     m_ActionName: GameUI/Inventory[/Keyboard/tab]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 7463911945564789779}
+        m_TargetAssemblyTypeName: PlayerCombat, Assembly-CSharp
+        m_MethodName: Aim
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 2fac39e7-5ef2-4917-befe-06f5441c1b8c
+    m_ActionName: Player/TargetPosition[/XInputControllerWindows/rightStick]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -10721,10 +10741,9 @@ MonoBehaviour:
   canReceiveInputThrow: 0
   meleeInputReceived: 0
   throwInputReceived: 0
+  controllerAimDefaultDirection: {x: 1, y: 0.25}
   hitPS: {fileID: 2349214408752251806, guid: c8ed0368ca7236f479fbc90600d8f484, type: 3}
   heavyHitPS: {fileID: 2349214408752251806, guid: 59a51efd3354e52458bdcd9b3912da5e, type: 3}
-  heavyReadyBlink: {fileID: 3800122561694439109, guid: a2b0892175ce55640a7be7e3c7a1e835, type: 3}
-  heavyReadyPSTransform: {fileID: 5488279887396005798}
   slowDuration: 0.01
   heavySlowDuration: 0.03
   timeScaleWhenSlowed: 0.2
@@ -10826,6 +10845,19 @@ MonoBehaviour:
   shieldScript: {fileID: 1812080132}
   grindScript: {fileID: 7180285044104453406}
   playerHealthScript: {fileID: 269594451}
+  myRB: {fileID: 2646993275326716665}
+  stepVolScale: 0.5
+  softLandingVolScale: 0.5
+  hardLandingVolScale: 0.7
+  meleeSwingVolScale: 0.7
+  meleeHitVolScale: 0.5
+  throwVolScale: 0.7
+  jumpVolScale: 0.3
+  doubleJumpVolScale: 0.7
+  dashVolScale: 0.7
+  shieldGrindVolScale: 0.7
+  blockHoldVolScale: 0.7
+  wallSlideVolScale: 0.5
   playerSteps:
   - {fileID: 8300000, guid: e90e2bd2730bfd84ea6a7c89d2a92333, type: 3}
   - {fileID: 8300000, guid: 764cd567c6e0cb4488420b91d21a41a5, type: 3}
@@ -10838,7 +10870,7 @@ MonoBehaviour:
   dash: {fileID: 8300000, guid: da7fe22cbb121b44784b939ee8b2bfc1, type: 3}
   throwWeapon: {fileID: 8300000, guid: a952aedf55b93c84a921cee7c8a27201, type: 3}
   meleeSwing: {fileID: 8300000, guid: a952aedf55b93c84a921cee7c8a27201, type: 3}
-  meleeHit: {fileID: 8300000, guid: 16b19b7e31ff5874488cccdff2c897af, type: 3}
+  meleeHit: {fileID: 8300000, guid: 0193075daa7040545ab86f37ec49763c, type: 3}
   meleeWPHit: {fileID: 8300000, guid: 6e8b7d45025260a4ca17f5009450cb41, type: 3}
   blockActivation: {fileID: 8300000, guid: 5cf3db7522dff264c80369c9cdaae7dd, type: 3}
   block: {fileID: 8300000, guid: 1c17d72deae0fd04ea2ffe60fb98f106, type: 3}
