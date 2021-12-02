@@ -70,15 +70,16 @@ public class SaveData
 
         camera = "";
 
-        levers = new bool[2];
-        doors = new bool[2];
+        levers = new bool[1];
+
+        doors = new bool[9];
 
         meleePickups = new bool[2];
         throwPickups = new bool[2];
         healthPickups = new bool[5];
         energyPickups = new bool[2];
 
-        mapTriggers = new bool[2];
+        mapTriggers = new bool[11];
     }
 
     /*

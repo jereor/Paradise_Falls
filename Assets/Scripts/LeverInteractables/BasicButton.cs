@@ -19,7 +19,7 @@ public class BasicButton : Interactable
     [SerializeField] private Sprite pressedSprite;
 
     // State variables
-    private bool isUsed = false;
+    public bool isUsed = false;
     private bool pressed = false;
     private bool objectIsMoving = false;
 
@@ -109,14 +109,8 @@ public class BasicButton : Interactable
         }
     }
 
-    private IEnumerator SaveBuffer()
+    public bool GetIsUsed()
     {
-        yield return new WaitForSeconds(1f);
-        @event.Invoke();
-    }
-
-    public void StartSaveBuffer()
-    {
-        StartCoroutine(SaveBuffer());
+        return isUsed;
     }
 }
