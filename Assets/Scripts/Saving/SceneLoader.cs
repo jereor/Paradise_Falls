@@ -156,6 +156,7 @@ public class SceneLoader : MonoBehaviour
                         {
                             //Debug.Log("Found");
                             CameraTransitions.Instance.SwitchCameras(camera);
+                            PlayerCamera.Instance.CameraFadeIn(2);
                             break; // No need to check List anymore
                         }
                     }

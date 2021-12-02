@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
 public class PlayerCamera : MonoBehaviour
 {
@@ -23,10 +25,20 @@ public class PlayerCamera : MonoBehaviour
     // Cinemachine Components
     private CinemachineFramingTransposer transposer;
 
+    // Fade to Black volume
+    private Volume fadeToBlackVolume;
+    private ColorAdjustments colorAdjustments;
+    private Vignette vignette;
+
     private void Awake()
     {
         Instance = this;
         mainCam = GameObject.Find("Main Camera");
+
+        fadeToBlackVolume = GameObject.Find("Fade to Black Volume").GetComponent<Volume>();
+        fadeToBlackVolume.profile.TryGet(out colorAdjustments);
+        fadeToBlackVolume.profile.TryGet(out vignette);
+
         virtualCam = GetComponent<CinemachineVirtualCamera>();
         transposer = virtualCam.GetCinemachineComponent<CinemachineFramingTransposer>();
     }
@@ -100,5 +112,49 @@ public class PlayerCamera : MonoBehaviour
         perlin.m_AmplitudeGain = intensity;
         yield return new WaitForSeconds(time);
         perlin.m_AmplitudeGain = 0f;
+    }
+
+    public void CameraFadeIn(float timer)
+    {
+        StartCoroutine(FadeIn(timer));
+    }
+
+    private IEnumerator FadeIn(float timer)
+    {
+        // Start at max values
+        colorAdjustments.postExposure.value = -10;
+        vignette.intensity.value = 1;
+        yield return new WaitForSeconds(.5f);
+
+        // Fade in / Remove black screen
+        float counter = 0;
+        while (counter < timer)
+        {
+            counter += Time.deltaTime;
+            var newColorAdjustmentValue = Mathf.Lerp(-10, 0, counter / timer); // Interpolate to the desired value
+            var newVignetteIntensity = Mathf.Lerp(1, 0, counter / timer);
+            colorAdjustments.postExposure.value = newColorAdjustmentValue;
+            vignette.intensity.value = newVignetteIntensity;
+            yield return new WaitForEndOfFrame();
+        }
+    }
+
+    public void CameraFadeOut(float timer)
+    {
+        StartCoroutine(FadeOut(timer));
+    }
+
+    private IEnumerator FadeOut(float timer)
+    {
+        float counter = 0;
+        while (counter < timer)
+        {
+            counter += Time.deltaTime;
+            var newColorAdjustmentValue = Mathf.Lerp(0, -10, counter / timer); // Interpolate to the desired value
+            var newVignetteIntensity = Mathf.Lerp(0, 1, counter / timer);
+            colorAdjustments.postExposure.value = newColorAdjustmentValue;
+            vignette.intensity.value = newVignetteIntensity;
+            yield return new WaitForEndOfFrame();
+        }
     }
 }
