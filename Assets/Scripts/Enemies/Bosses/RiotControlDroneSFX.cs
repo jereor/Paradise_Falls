@@ -8,7 +8,6 @@ public class RiotControlDroneSFX : MonoBehaviour
     private Health myHealthScript;
     private RiotControlDrone myAIScript;
 
-    public float stepTimeCharge = 0.5f;
     private Coroutine chargeCoroutine;
     private Coroutine runCoroutine;
 
