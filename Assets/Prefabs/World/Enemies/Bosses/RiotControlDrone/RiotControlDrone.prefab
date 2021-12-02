@@ -356,11 +356,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e85f99a78ea71c14bb56436ea514cc78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 30
+  maxHealth: 5
   currentHealth: 0
   blockedColor: {r: 0, g: 0, b: 1, a: 1}
   damageColor: {r: 1, g: 0, b: 0, a: 1}
-  destroyWhenDead: 1
+  destroyWhenDead: 0
   onDie:
     m_PersistentCalls:
       m_Calls:
@@ -433,9 +433,9 @@ AudioSource:
   Priority: 128
   DopplerLevel: 1
   MinDistance: 1
-  MaxDistance: 15
+  MaxDistance: 25
   Pan2D: 0
-  rolloffMode: 0
+  rolloffMode: 1
   BypassEffects: 0
   BypassListenerEffects: 0
   BypassReverbZones: 0
@@ -483,7 +483,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0.2777778
+      value: 0.41666666
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -520,8 +520,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e91a42bea59cd5d499d46e049e3df0b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  stepTimeCharge: 0.5
   meleeSwingSound: {fileID: 8300000, guid: a952aedf55b93c84a921cee7c8a27201, type: 3}
   stunnedSound: {fileID: 8300000, guid: 58b56ceb831208c4ba823f3e8657b68a, type: 3}
+  stepSounds:
+  - {fileID: 8300000, guid: 764cd567c6e0cb4488420b91d21a41a5, type: 3}
+  - {fileID: 8300000, guid: 7399fc9f6416d7847833ed4916aefedd, type: 3}
+  - {fileID: 8300000, guid: e90e2bd2730bfd84ea6a7c89d2a92333, type: 3}
+  runSounds:
+  - {fileID: 8300000, guid: 764cd567c6e0cb4488420b91d21a41a5, type: 3}
+  - {fileID: 8300000, guid: 7399fc9f6416d7847833ed4916aefedd, type: 3}
+  - {fileID: 8300000, guid: e90e2bd2730bfd84ea6a7c89d2a92333, type: 3}
   chargeSound: {fileID: 8300000, guid: 764cd567c6e0cb4488420b91d21a41a5, type: 3}
   tazerShootSound: {fileID: 8300000, guid: 5cf3db7522dff264c80369c9cdaae7dd, type: 3}
   seedShootSound: {fileID: 8300000, guid: 447a769e8ac32c14f8a610e2967d1747, type: 3}

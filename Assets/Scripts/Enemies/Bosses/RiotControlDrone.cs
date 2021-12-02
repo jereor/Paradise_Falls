@@ -119,6 +119,8 @@ public class RiotControlDrone : MonoBehaviour
     private bool playSeedShootSound = false;
     private bool playStunnedSound = false;
     private bool playChargeSound = false;
+    private bool playStepSound = false;
+    private bool playRunSound = false;
 
 
     // Start is called before the first frame update
@@ -625,7 +627,8 @@ public class RiotControlDrone : MonoBehaviour
     //------------------------------------------------------------------------------------------------------------------------
     private IEnumerator WalkCoolDown()
     {
-        canMove = false;      
+        canMove = false;
+        playStepSound = true;
         yield return new WaitForSeconds(walkStepInterval);
         taserChanceRandomizer = UnityEngine.Random.Range(1, 101);
         backstepCounter++;
@@ -635,6 +638,7 @@ public class RiotControlDrone : MonoBehaviour
     private IEnumerator RunCoolDown()
     {
         canMove = false;
+        playRunSound = true;
         yield return new WaitForSeconds(runStepInterval);
         seedShootChanceRandomizer = UnityEngine.Random.Range(1, 101);
         canMove = true;
@@ -886,13 +890,13 @@ public class RiotControlDrone : MonoBehaviour
         yield return new WaitForSeconds(dashAttackCooldown);
         for(int i = 0; i <= dashForceCount; i++)
         {
-            
+            playStepSound = true;
             rb.AddForce(new Vector2(chargeDirection * walkingSpeed * Time.fixedDeltaTime, 0));
 
-            playMeleeSound = true;
 
             if (IsTargetInHitRange() && !takenDamage)
             {
+                playMeleeSound = true;
                 targetHealth.TakeDamage(heavyAttackDamage);
                 PlayerPushback();
                 takenDamage = true;
@@ -1186,6 +1190,22 @@ public class RiotControlDrone : MonoBehaviour
 
     }
 
+    // SFX
+
+    public float getWalkStepInterval()
+    {
+        return walkStepInterval;
+    }
+
+    public float getRunStepInterval()
+    {
+        return runStepInterval;
+    }
+    public float getChargeStepInterval()
+    {
+        return chargeStepInterval;
+    }
+
     public bool getPhaseTwoComplete()
     {
         return phaseTwoComplete;
@@ -1257,6 +1277,28 @@ public class RiotControlDrone : MonoBehaviour
         if (playChargeSound)
         {
             playChargeSound = false;
+            return true;
+        }
+        else
+            return false;
+    }
+
+    public bool getPlaySoundStep()
+    {
+        if (playStepSound)
+        {
+            playStepSound = false;
+            return true;
+        }
+        else
+            return false;
+    }
+
+    public bool getPlaySoundRun()
+    {
+        if (playRunSound)
+        {
+            playRunSound = false;
             return true;
         }
         else

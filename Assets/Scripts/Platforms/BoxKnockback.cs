@@ -29,7 +29,7 @@ public class BoxKnockback : MonoBehaviour
             collision.gameObject.GetComponent<Health>().TakeDamage(dmgToPlayer);
             dealtDmg = true;
         }
-        else if(collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
+        else if(collision.gameObject.layer == LayerMask.NameToLayer("Ground") && falling)
         {
             boxSFX.PlayHitGroundSound();
             falling = false;

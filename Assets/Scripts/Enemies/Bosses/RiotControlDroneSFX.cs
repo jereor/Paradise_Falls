@@ -8,11 +8,20 @@ public class RiotControlDroneSFX : MonoBehaviour
     private Health myHealthScript;
     private RiotControlDrone myAIScript;
 
+    public float stepTimeCharge = 0.5f;
+    private Coroutine chargeCoroutine;
+    private Coroutine runCoroutine;
+
+
     [Header("MeleeSwing")]
     public AudioClip meleeSwingSound;
 
     [Header("Stunned")]
     public AudioClip stunnedSound;
+
+    [Header("Step Sounds")]
+    public AudioClip[] stepSounds;
+    public AudioClip[] runSounds;
 
     [Header("Charge sound")]
     public AudioClip chargeSound;
@@ -51,10 +60,13 @@ public class RiotControlDroneSFX : MonoBehaviour
             PlaySeedShootSound();
         if (myAIScript.getPlaySoundStunned())
             PlayStunnedSound();
-        if (myAIScript.getPlaySoundCharge())
-            PlayeChargeSound();
-
-
+        if (myAIScript.getPlaySoundCharge() && chargeCoroutine == null)
+            chargeCoroutine = StartCoroutine(PlayChargeSound());
+        if (myAIScript.getPlaySoundStep())
+            PlayStepSound();
+        if (myAIScript.getPlaySoundRun() && runCoroutine == null)
+            runCoroutine = StartCoroutine(PlayRunSound());
+            
     }
 
     public void PlayTakeDMGSound()
@@ -82,18 +94,36 @@ public class RiotControlDroneSFX : MonoBehaviour
         audioSource.PlayOneShot(stunnedSound);
     }
 
-    public void PlayeChargeSound()
+    public void PlayStepSound()
+    {
+        audioSource.PlayOneShot(stepSounds[(int)Random.Range(0, stepSounds.Length - 1)]);
+    }
+
+    public IEnumerator PlayRunSound()
+    {
+        audioSource.PlayOneShot(runSounds[(int)Random.Range(0, runSounds.Length - 1)]);
+        yield return new WaitForSeconds(myAIScript.getRunStepInterval());
+        runCoroutine = null;
+    }
+
+    public IEnumerator PlayChargeSound()
     {
         audioSource.PlayOneShot(chargeSound);
+        yield return new WaitForSeconds(myAIScript.getRunStepInterval());
+        chargeCoroutine = null;
     }
 
     public void PlayDestroySound()
     {
         // First disable spriterenderer to "hide" enemy before destroying this gameobject (so we can play destroy sound)
-        GetComponent<SpriteRenderer>().enabled = false;
+        SpriteRenderer[] childRenderers = GetComponentsInChildren<SpriteRenderer>();
+        foreach (SpriteRenderer renderer in childRenderers)
+        {
+            renderer.enabled = false;
+        }
         // Disables script so enemy will not deal dmg while sprite is invisible
-        GetComponent<GroundEnemyAI>().enabled = false;
-        GetComponent<Collider2D>().enabled = false;
+        myAIScript.enabled = false;
+        //GetComponent<Collider2D>().enabled = false;
         // Play sound
         audioSource.Stop();
         AudioClip soundToPlay = destroySounds[(int)Random.Range(0, destroySounds.Length - 1)];
