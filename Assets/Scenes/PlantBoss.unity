@@ -2492,6 +2492,36 @@ Transform:
   m_Father: {fileID: 2060986723}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &191157745
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 191157746}
+  m_Layer: 0
+  m_Name: VineGrapplePointLeft
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &191157746
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 191157745}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -13.356001, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1882565895}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &197325891
 GameObject:
   m_ObjectHideFlags: 0
@@ -4592,6 +4622,8 @@ MonoBehaviour:
   health: {fileID: 310585228}
   hiddenBossObjects: {fileID: 1992929643}
   bossTeleportPoint: {fileID: 255877444}
+  seedShootPosition: {fileID: 1882565895}
+  seedSpawnPositions: []
   workerDroneOnePrefab: {fileID: 8401565248732910210, guid: 77600955bab6e9a42b33ced08062f9d5, type: 3}
   workerDroneTwoPrefab: {fileID: 8401565248732910210, guid: 77600955bab6e9a42b33ced08062f9d5, type: 3}
   flyingDroneOnePrefab: {fileID: 674690728015036898, guid: 41c2fc79220733a4abc856ee861da9f2, type: 3}
@@ -4600,10 +4632,18 @@ MonoBehaviour:
   grappleVine: {fileID: 1125926157888548533, guid: dc44eb6d819d39f49aa5a7214b1ada27, type: 3}
   attackVineInstances: []
   grappleVineInstances: []
+  plantSeed: {fileID: 2045461362968113728, guid: b77de6101bfcf4e44887862d0492bc74, type: 3}
+  seedGap: 0.1
+  seedFrequency: 0.05
+  seedSpeed: 0
+  seedAmount: 100
   state: 0
   stunTime: 4
   knockbackForce: 100
+  transportingToMiddleTime: 1.5
   vineSpeed: 1
+  isSetUppingForSeedShoot: 0
+  isSeedShooting: 0
 --- !u!114 &310585228
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -37016,7 +37056,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &702801726
 GameObject:
@@ -40049,6 +40089,36 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &1024086817
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1024086818}
+  m_Layer: 0
+  m_Name: VineGrapplePointRight
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1024086818
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1024086817}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 13.482, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1882565895}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1026618940 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4407431986513774690, guid: 849cc26782221c24b8868f1ad953d02c, type: 3}
@@ -45978,7 +46048,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8978081931078757661, guid: a655144b432639548a8f6b7175f6390a, type: 3}
       propertyPath: m_RootOrder
-      value: 6
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 8978081931078757661, guid: a655144b432639548a8f6b7175f6390a, type: 3}
       propertyPath: m_AnchorMax.x
@@ -47532,7 +47602,7 @@ Transform:
   - {fileID: 214768365}
   - {fileID: 2031155216}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1832486580
 GameObject:
@@ -48107,6 +48177,38 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &1882565894
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1882565895}
+  m_Layer: 0
+  m_Name: SeedShootPosition
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1882565895
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1882565894}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 30.996, y: 176.778, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 191157746}
+  - {fileID: 1024086818}
+  m_Father: {fileID: 0}
+  m_RootOrder: 22
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1887681839
 GameObject:
   m_ObjectHideFlags: 0
@@ -53409,7 +53511,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8331268383360205934, guid: aa32a5d8e61e133419ca9e29679173aa, type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8331268383360205934, guid: aa32a5d8e61e133419ca9e29679173aa, type: 3}
       propertyPath: m_LocalPosition.x

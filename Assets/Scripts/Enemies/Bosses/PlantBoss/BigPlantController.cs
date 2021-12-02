@@ -16,6 +16,9 @@ public class BigPlantController : MonoBehaviour
     [SerializeField] private GameObject hiddenBossObjects;
 
     [SerializeField] private Transform bossTeleportPoint;
+    [SerializeField] private Transform seedShootPosition;
+
+    [SerializeField] private List<Vector2> seedSpawnPositions;
 
     private Health targetHealth;
 
@@ -37,6 +40,15 @@ public class BigPlantController : MonoBehaviour
     public List<GameObject> attackVineInstances; // All spawned vines are stored in a list.
     public List<GameObject> grappleVineInstances; // All spawned vines are stored in a list.
 
+    [SerializeField] private GameObject plantSeed;
+
+    [Header("Bullet Hell variables")]
+    [SerializeField] private float seedGap;
+    [SerializeField] private float seedFrequency;
+    [SerializeField] private float seedSpeed;
+    [SerializeField] private float seedAmount;
+
+
     [Header("Current State")]
     public PlantState state = PlantState.Idle;
 
@@ -47,6 +59,7 @@ public class BigPlantController : MonoBehaviour
 
     [SerializeField] private float stunTime; // time the boss is stunned.
     [SerializeField] private float knockbackForce; // Knockback force for player pushback.
+    [SerializeField] private float transportingToMiddleTime; // Time to prepare for seedshoot.
     public float vineSpeed = 1; // Default is 1. Scales accordingly when boss takes damage.
 
 
@@ -59,9 +72,13 @@ public class BigPlantController : MonoBehaviour
     private bool isPhaseTwoInitiated = false;
     private bool isPhaseThreeTransitioning = false;
     private bool isCharging = false;
+    private bool hasCharged = false;
+    public bool isSetUppingForSeedShoot = false;
+    public bool isSeedShooting = false;
 
     void Start()
     {
+        seedSpawnPositions = new List<Vector2>();
         attackVineInstances = new List<GameObject>();
         grappleVineInstances = new List<GameObject>();
         target = GameObject.Find("Player");
@@ -225,9 +242,16 @@ public class BigPlantController : MonoBehaviour
         // Visual something to indicate that charge is coming
         // Locks to position after a while and jumps in straight line there
         // Attached to the point it was jumped
-        if(!isCharging)
+        if(!isCharging && hasCharged && grappleVineInstances.Count == 0)
         {
-            StartCoroutine(Charge());
+            state = PlantState.SeedShoot;
+            hasCharged = false;
+            return;
+        }
+
+        if(!isCharging && !hasCharged)
+        {
+            Charge();
         }
     }
 
@@ -235,6 +259,12 @@ public class BigPlantController : MonoBehaviour
     {
         // Goes to CENTER of room
         // Shoot MANY seed to everywhere
+        gameObject.GetComponent<SpriteRenderer>().color = Color.red;
+        if(!isSetUppingForSeedShoot && !isSeedShooting)
+        {
+            StartCoroutine(ShootTheSeeds());
+        }
+
     }
 
     private void HandleArtilleryState()
@@ -424,7 +454,7 @@ public class BigPlantController : MonoBehaviour
         deathWallController.SetForThirdPhase();
     }
 
-    private IEnumerator Charge()
+    private void Charge()
     {
         isCharging = true;
         rb.constraints = RigidbodyConstraints2D.None;
@@ -434,16 +464,40 @@ public class BigPlantController : MonoBehaviour
             grappleVineInstances.Add(Instantiate(grappleVine, new Vector2(Random.Range(transform.position.x - 1, transform.position.x + 1), Random.Range(transform.position.y - 1, transform.position.y + 1)), Quaternion.identity));
             grappleVineInstances[i].transform.SetParent(transform);
         }
-        yield return new WaitForSeconds(1);
     }
+
 
     private IEnumerator ShootTheSeeds()
     {
-        for(int i = 0; i < 10; i++)
+        isSeedShooting = true;
+        isSetUppingForSeedShoot = true;
+        transform.DOJump(seedShootPosition.position, 0, 0, transportingToMiddleTime);
+        yield return new WaitForSeconds(transportingToMiddleTime);
+        float amount = 1;
+        float positionModifierY = 1;
+        float positionModifierX = 0;
+        for (int i = 0; i < 10; i++)
         {
+            Instantiate(plantSeed, new Vector2(transform.position.x + positionModifierX, transform.position.y + positionModifierY), Quaternion.identity);
+            Instantiate(plantSeed, new Vector2(transform.position.x - positionModifierX, transform.position.y - positionModifierY), Quaternion.identity);
+            Instantiate(plantSeed, new Vector2(transform.position.x + positionModifierY, transform.position.y - positionModifierX), Quaternion.identity);
+            Instantiate(plantSeed, new Vector2(transform.position.x - positionModifierY, transform.position.y + positionModifierX), Quaternion.identity);
+            if(i == 9 && seedAmount > amount)
+            {
+                amount++;
+                i = -1;
+                positionModifierX = 0;
+                positionModifierY = 1;
+            }
+            else
+            {
+                positionModifierX += seedGap;
+                positionModifierY -= seedGap;
+            }
 
+            yield return new WaitForSeconds(seedFrequency);
         }
-        yield return new WaitForSeconds(0);
+        isSetUppingForSeedShoot = false;
     }
 
     private IEnumerator Roar()
@@ -495,5 +549,15 @@ public class BigPlantController : MonoBehaviour
     public bool GetisCharging()
     {
         return isCharging;
+    }
+
+    public void SetHasCharged(bool b)
+    {
+        hasCharged = b;
+    }
+
+    public bool GetIsSettingUpForSeedShoot()
+    {
+        return isSetUppingForSeedShoot;
     }
 }

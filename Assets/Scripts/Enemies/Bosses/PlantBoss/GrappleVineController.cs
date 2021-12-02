@@ -33,9 +33,10 @@ public class GrappleVineController : MonoBehaviour
     [SerializeField] private float vineSpeed = 1; // Local vine speed used in all other situations except when boss is spawning them personally.
     [SerializeField] private float plantBossTransportSpeed;
 
-    public bool isAttackVineActivated = false;
-    public bool isRotatingTowardsTarget = false;
-    public bool bossCanBeTransported = false;
+    [SerializeField] private bool isAttackVineActivated = false;
+    [SerializeField] private bool isRotatingTowardsTarget = false;
+    [SerializeField] private bool rotateTowardsTarget = true;
+    [SerializeField] private bool bossCanBeTransported = false;
 
     [SerializeField] private float knockbackForce; // Knockback force it applies to the player when hit.
     private bool knockbackOnCooldown = false;
@@ -65,13 +66,14 @@ public class GrappleVineController : MonoBehaviour
             isRotatingTowardsTarget = true;
         }
 
-        if (isRotatingTowardsTarget)
+        if (isRotatingTowardsTarget && rotateTowardsTarget)
             RotateVineTowardsTheTarget();
 
         if(bossCanBeTransported)
         {
             //plantBoss.transform.position = Vector2.MoveTowards(plantBoss.transform.position, endPointStretchedVine, Time.deltaTime * plantBossTransportSpeed);
             plantBoss.transform.DOJump(vectorToWall, 0, 0, 2);
+            bossCanBeTransported = false;
         }
     }
 
@@ -148,10 +150,12 @@ public class GrappleVineController : MonoBehaviour
         animator.SetBool("Charge", false);
         //transform.parent.DOMove(-((target.transform.position - transform.parent.position).normalized * grappleVineMoveAmount) + transform.parent.position, grappleVineMoveDuration * vineSpeed); // Moves the vine back where it came from.
         yield return new WaitForSeconds(grappleVineMoveDuration * vineSpeed);
+        yield return new WaitForSeconds(1);
 
         isAttackVineActivated = false;
-        plantController.grappleVineInstances.Remove(gameObject.transform.parent.gameObject); // Remove the vine from the list. Destroy the game object afterwards.
         plantBoss.GetComponent<BigPlantController>().SetIsCharging(false);
+        plantBoss.GetComponent<BigPlantController>().SetHasCharged(true);
+        plantController.grappleVineInstances.Remove(gameObject.transform.parent.gameObject); // Remove the vine from the list. Destroy the game object afterwards.
         Destroy(gameObject.transform.parent.gameObject);
     }
 
