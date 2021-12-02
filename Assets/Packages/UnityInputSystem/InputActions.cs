@@ -97,6 +97,14 @@ public class @InputActions : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""TargetPosition"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""2fac39e7-5ef2-4917-befe-06f5441c1b8c"",
+                    ""expectedControlType"": ""Stick"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -418,6 +426,17 @@ public class @InputActions : IInputActionCollection, IDisposable
                     ""action"": ""Jump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""55ce7538-e9de-4a81-b050-600557ad1acf"",
+                    ""path"": ""<Gamepad>/rightStick"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""TargetPosition"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -657,6 +676,7 @@ public class @InputActions : IInputActionCollection, IDisposable
         m_Player_ShockwaveAttack = m_Player.FindAction("ShockwaveAttack", throwIfNotFound: true);
         m_Player_Dash = m_Player.FindAction("Dash", throwIfNotFound: true);
         m_Player_AdvanceText = m_Player.FindAction("AdvanceText", throwIfNotFound: true);
+        m_Player_TargetPosition = m_Player.FindAction("TargetPosition", throwIfNotFound: true);
         // GameUI
         m_GameUI = asset.FindActionMap("GameUI", throwIfNotFound: true);
         m_GameUI_Pause = m_GameUI.FindAction("Pause", throwIfNotFound: true);
@@ -724,6 +744,7 @@ public class @InputActions : IInputActionCollection, IDisposable
     private readonly InputAction m_Player_ShockwaveAttack;
     private readonly InputAction m_Player_Dash;
     private readonly InputAction m_Player_AdvanceText;
+    private readonly InputAction m_Player_TargetPosition;
     public struct PlayerActions
     {
         private @InputActions m_Wrapper;
@@ -738,6 +759,7 @@ public class @InputActions : IInputActionCollection, IDisposable
         public InputAction @ShockwaveAttack => m_Wrapper.m_Player_ShockwaveAttack;
         public InputAction @Dash => m_Wrapper.m_Player_Dash;
         public InputAction @AdvanceText => m_Wrapper.m_Player_AdvanceText;
+        public InputAction @TargetPosition => m_Wrapper.m_Player_TargetPosition;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -777,6 +799,9 @@ public class @InputActions : IInputActionCollection, IDisposable
                 @AdvanceText.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAdvanceText;
                 @AdvanceText.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAdvanceText;
                 @AdvanceText.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAdvanceText;
+                @TargetPosition.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnTargetPosition;
+                @TargetPosition.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnTargetPosition;
+                @TargetPosition.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnTargetPosition;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -811,6 +836,9 @@ public class @InputActions : IInputActionCollection, IDisposable
                 @AdvanceText.started += instance.OnAdvanceText;
                 @AdvanceText.performed += instance.OnAdvanceText;
                 @AdvanceText.canceled += instance.OnAdvanceText;
+                @TargetPosition.started += instance.OnTargetPosition;
+                @TargetPosition.performed += instance.OnTargetPosition;
+                @TargetPosition.canceled += instance.OnTargetPosition;
             }
         }
     }
@@ -900,6 +928,7 @@ public class @InputActions : IInputActionCollection, IDisposable
         void OnShockwaveAttack(InputAction.CallbackContext context);
         void OnDash(InputAction.CallbackContext context);
         void OnAdvanceText(InputAction.CallbackContext context);
+        void OnTargetPosition(InputAction.CallbackContext context);
     }
     public interface IGameUIActions
     {

@@ -36,6 +36,8 @@ public class InventoryPanelController : MonoBehaviour
     public TMP_Text meleeUpgradeObject;
     public TMP_Text throwUpgradeObject;
 
+    public Button skillsButton;
+
     [SerializeField] private bool isUsingController = false;
 
     // Start is called before the first frame update
@@ -122,6 +124,7 @@ public class InventoryPanelController : MonoBehaviour
             inventoryPanel.SetActive(true);
             player.HandleAllPlayerControlInputs(false);
             InventoryIsActive = true;
+            skillsButton.Select();
         }
         else if(InventoryIsActive)
         {

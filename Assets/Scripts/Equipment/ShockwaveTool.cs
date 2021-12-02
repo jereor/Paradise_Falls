@@ -39,6 +39,9 @@ public class ShockwaveTool : MonoBehaviour
     private float nextDash = -1;
     private float timeDashed = -1;
 
+    private bool canReceiveInputSHAttack = false;
+    private bool canReceiveInputDash = false;
+
     // Booleans for PlayerPlaySound.cs
     private bool playSoundDive = false;
     private bool playSoundJump = false;
@@ -49,6 +52,9 @@ public class ShockwaveTool : MonoBehaviour
         playerScript = gameObject.transform.parent.GetComponent<Player>();
         playerMovementScript = gameObject.transform.parent.GetComponent<PlayerMovement>();
         rb = gameObject.transform.parent.GetComponent<Rigidbody2D>();
+
+        EnableInputSHAttack();
+        EnableInputDash();
     }
 
 
@@ -90,7 +96,7 @@ public class ShockwaveTool : MonoBehaviour
     // ShockwaveAttack action: Called when the ShockwaveAttack Action Button is pressed
     public void ShockwaveAttack(InputAction.CallbackContext context) // Context tells the function when the action is triggered
     {
-        if (!playerScript.ShockwaveAttackUnlocked()) return;
+        if (!playerScript.ShockwaveAttackUnlocked() || !canReceiveInputSHAttack) return;
 
         if (context.started && Time.time >= nextShockwave)
         {
@@ -109,7 +115,7 @@ public class ShockwaveTool : MonoBehaviour
 
     public void DashInput(InputAction.CallbackContext context)
     {
-        if (!playerScript.DashUnlocked()) return;
+        if (!playerScript.DashUnlocked() || !canReceiveInputDash) return;
 
         if (context.started && Time.time >= nextDash && !playerMovementScript.getClimbing() && !playerScript.GetIsBlocking() && !playerScript.GetIsAttacking() && !PlayerCombat.Instance.getHeavyBeingCharged())
         {
@@ -203,5 +209,25 @@ public class ShockwaveTool : MonoBehaviour
         }
         else
             return false;
+    }
+
+    public void EnableInputSHAttack()
+    {
+        canReceiveInputSHAttack = true;
+    }
+
+    public void DisableInputSHAttack()
+    {
+        canReceiveInputSHAttack = false;
+    }
+
+    public void EnableInputDash()
+    {
+        canReceiveInputDash = true;
+    }
+
+    public void DisableInputDash()
+    {
+        canReceiveInputDash = false;
     }
 }

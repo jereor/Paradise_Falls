@@ -16,6 +16,8 @@ GameObject:
   - component: {fileID: 404030986026735725}
   - component: {fileID: 2010709607}
   - component: {fileID: 2010709606}
+  - component: {fileID: 8906327188950244386}
+  - component: {fileID: 6375503853063611854}
   m_Layer: 7
   m_Name: FlyingEnemyOne
   m_TagString: Enemy
@@ -107,6 +109,18 @@ MonoBehaviour:
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: Die
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 6375503853063611854}
+        m_TargetAssemblyTypeName: FlyingEnemySFX, Assembly-CSharp
+        m_MethodName: PlayDestroySound
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &208985480462589908
@@ -260,3 +274,155 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!82 &8906327188950244386
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 674690728015036898}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 33464864381395215, guid: e2b3af8d1083d854383b8165ec84414f, type: 2}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1.5
+  Loop: 1
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 10
+  Pan2D: 0
+  rolloffMode: 2
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0.06666667
+      value: 1
+      inSlope: -15.005997
+      outSlope: -15.005997
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.08304037
+      value: 0.3764038
+      inSlope: -3.7514992
+      outSlope: -3.7514992
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.1535075
+      value: 0.12640381
+      inSlope: -0.9378748
+      outSlope: -0.9378748
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.5375295
+      value: 0.050842285
+      inSlope: -0.106870756
+      outSlope: -0.106870756
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.5743726
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 0.029587813
+      inSlope: -0.06669331
+      outSlope: -0.06669331
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0.5
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0.027777778
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &6375503853063611854
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 674690728015036898}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67a10fe92fcc9e546801470b6c470bc6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minVolume: 0.1
+  fadeDuration: 0.2
+  shootSound: {fileID: 8300000, guid: 1bd9a50139c025244b71be21a0f11c3e, type: 3}
+  flySound: {fileID: 8300000, guid: f19047d27858ba440a9708fc49d14f73, type: 3}
+  takeDMGSounds:
+  - {fileID: 8300000, guid: d0dbfd029b58ac74585b29c739362485, type: 3}
+  - {fileID: 8300000, guid: 54ea7d2ef92d2084083a99ad3190c139, type: 3}
+  - {fileID: 8300000, guid: b25dab343eab3f045a5ba113e0f55215, type: 3}
+  - {fileID: 8300000, guid: 6f81e68b6f82462468e1e74330cd8dd2, type: 3}
+  - {fileID: 8300000, guid: 6e583872e29a1a341a871af09f867433, type: 3}
+  - {fileID: 8300000, guid: 30c6348007e934545aa3ffa29a7d402d, type: 3}
+  - {fileID: 8300000, guid: 6d7c74e6db2fc0e429fb4d461217a697, type: 3}
+  - {fileID: 8300000, guid: b96eb150a664b6047b503529aee44ddb, type: 3}
+  destroySounds:
+  - {fileID: 8300000, guid: 6ab6005b93e32cc4588e382c23f92699, type: 3}
+  - {fileID: 8300000, guid: 676da1adeff70c947b2b0ebae7c094e5, type: 3}
+  - {fileID: 8300000, guid: 3eca5e7828167104ca048b3e365da9c7, type: 3}

@@ -69,7 +69,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 142948381
-  m_SortingLayer: 4
+  m_SortingLayer: 6
   m_SortingOrder: 2
   m_Sprite: {fileID: 7482667652216324306, guid: 48e93eef0688c4a259cb0eddcd8661f7, type: 3}
   m_Color: {r: 0.254717, g: 0.254717, b: 0.254717, a: 1}
@@ -227,6 +227,8 @@ GameObject:
   - component: {fileID: 8410908677858590964}
   - component: {fileID: 8410908677858590965}
   - component: {fileID: 8410908677858590967}
+  - component: {fileID: 2592041776191862871}
+  - component: {fileID: 880507491865753805}
   m_Layer: 0
   m_Name: RiotControlDrone
   m_TagString: Boss
@@ -354,11 +356,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e85f99a78ea71c14bb56436ea514cc78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 30
-  debugHealth: 0
+  maxHealth: 5
+  currentHealth: 0
   blockedColor: {r: 0, g: 0, b: 1, a: 1}
   damageColor: {r: 1, g: 0, b: 0, a: 1}
-  destroyWhenDead: 1
+  destroyWhenDead: 0
   onDie:
     m_PersistentCalls:
       m_Calls:
@@ -398,6 +400,153 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 880507491865753805}
+        m_TargetAssemblyTypeName: RiotControlDroneSFX, Assembly-CSharp
+        m_MethodName: PlayDestroySound
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!82 &2592041776191862871
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8410908677858590963}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 33464864381395215, guid: e2b3af8d1083d854383b8165ec84414f, type: 2}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 25
+  Pan2D: 0
+  rolloffMode: 1
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0.5
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0.41666666
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &880507491865753805
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8410908677858590963}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e91a42bea59cd5d499d46e049e3df0b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stepTimeCharge: 0.5
+  meleeSwingSound: {fileID: 8300000, guid: a952aedf55b93c84a921cee7c8a27201, type: 3}
+  stunnedSound: {fileID: 8300000, guid: 58b56ceb831208c4ba823f3e8657b68a, type: 3}
+  stepSounds:
+  - {fileID: 8300000, guid: 764cd567c6e0cb4488420b91d21a41a5, type: 3}
+  - {fileID: 8300000, guid: 7399fc9f6416d7847833ed4916aefedd, type: 3}
+  - {fileID: 8300000, guid: e90e2bd2730bfd84ea6a7c89d2a92333, type: 3}
+  runSounds:
+  - {fileID: 8300000, guid: 764cd567c6e0cb4488420b91d21a41a5, type: 3}
+  - {fileID: 8300000, guid: 7399fc9f6416d7847833ed4916aefedd, type: 3}
+  - {fileID: 8300000, guid: e90e2bd2730bfd84ea6a7c89d2a92333, type: 3}
+  chargeSound: {fileID: 8300000, guid: 764cd567c6e0cb4488420b91d21a41a5, type: 3}
+  tazerShootSound: {fileID: 8300000, guid: 5cf3db7522dff264c80369c9cdaae7dd, type: 3}
+  seedShootSound: {fileID: 8300000, guid: 447a769e8ac32c14f8a610e2967d1747, type: 3}
+  takeDMGSounds:
+  - {fileID: 8300000, guid: d0dbfd029b58ac74585b29c739362485, type: 3}
+  - {fileID: 8300000, guid: 54ea7d2ef92d2084083a99ad3190c139, type: 3}
+  - {fileID: 8300000, guid: b25dab343eab3f045a5ba113e0f55215, type: 3}
+  - {fileID: 8300000, guid: 6f81e68b6f82462468e1e74330cd8dd2, type: 3}
+  - {fileID: 8300000, guid: 6e583872e29a1a341a871af09f867433, type: 3}
+  - {fileID: 8300000, guid: 30c6348007e934545aa3ffa29a7d402d, type: 3}
+  - {fileID: 8300000, guid: 6d7c74e6db2fc0e429fb4d461217a697, type: 3}
+  - {fileID: 8300000, guid: b96eb150a664b6047b503529aee44ddb, type: 3}
+  destroySounds:
+  - {fileID: 8300000, guid: 3eca5e7828167104ca048b3e365da9c7, type: 3}
+  - {fileID: 8300000, guid: 676da1adeff70c947b2b0ebae7c094e5, type: 3}
+  - {fileID: 8300000, guid: 6ab6005b93e32cc4588e382c23f92699, type: 3}
 --- !u!1 &8410908678676369677
 GameObject:
   m_ObjectHideFlags: 0
@@ -526,7 +675,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 142948381
-  m_SortingLayer: 4
+  m_SortingLayer: 6
   m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: 06135342e0944614e93a428f071e316b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -668,7 +817,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 2
-  debugHealth: 0
+  currentHealth: 0
   blockedColor: {r: 0, g: 0, b: 1, a: 1}
   damageColor: {r: 1, g: 0, b: 0, a: 1}
   destroyWhenDead: 0

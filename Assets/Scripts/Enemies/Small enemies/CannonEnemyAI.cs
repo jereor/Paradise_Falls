@@ -55,6 +55,8 @@ public class CannonEnemyAI : MonoBehaviour
     private Seeker seeker;
     private Rigidbody2D rb;
 
+    private bool playShootSound = false;
+    private bool playAimSound = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -224,6 +226,7 @@ public class CannonEnemyAI : MonoBehaviour
 
     private void HandleAimState()
     {
+        playAimSound = true;
         Vector2 vectorToPlayer = target.transform.position - cannonTransform.position;
 
         // Angle to player
@@ -260,6 +263,7 @@ public class CannonEnemyAI : MonoBehaviour
 
         if(canShoot && staticMode) 
         {
+            playShootSound = true;
             // Instantiate a bullet prefab from enemy unit location.
             GameObject bulletObject = Instantiate(bullet, shootTransform.position, Quaternion.identity);
             bulletObject.GetComponent<BulletBehaviour>().shooter = shootTransform.gameObject;
@@ -275,6 +279,7 @@ public class CannonEnemyAI : MonoBehaviour
             hitPlayer = Physics2D.Raycast(transform.position, (target.transform.position - transform.position), (target.transform.position - transform.position).magnitude, playerLayer);
             if (hitPlayer && !hitGround)
             {
+                playShootSound = true;
                 // Instantiate a bullet prefab from enemy unit location.
                 GameObject bulletObject = Instantiate(bullet, shootTransform.position, Quaternion.identity);
                 bulletObject.GetComponent<BulletBehaviour>().shooter = this.gameObject;
@@ -294,5 +299,27 @@ public class CannonEnemyAI : MonoBehaviour
         Idle,
         Aim,
         Shoot
+    }
+
+    public bool getPlaySoundShoot()
+    {
+        if (playShootSound)
+        {
+            playShootSound = false;
+            return true;
+        }
+        else
+            return false;
+    }
+
+    public bool getPlaySoundAim()
+    {
+        if (playAimSound)
+        {
+            playAimSound = false;
+            return true;
+        }
+        else
+            return false;
     }
 }
