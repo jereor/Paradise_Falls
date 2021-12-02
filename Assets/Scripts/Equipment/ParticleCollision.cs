@@ -50,6 +50,9 @@ public class ParticleCollision : MonoBehaviour
                     ps.GetCollisionEvents(other, collisionEvents);
                     var dir = meleeScript.getDirection().x > 0 ? Vector3.forward : -Vector3.forward; // Calculate direction based on weapon direction
                     Instantiate(hitEffect, collisionEvents[0].intersection, Quaternion.LookRotation(dir*180)); // Instantiate the particles
+
+                    // Camera shake
+                    PlayerCamera.Instance.CameraShake(.8f, .5f);
                 }
                 StartCoroutine(WeaponCollisionCooldown(1));
             }

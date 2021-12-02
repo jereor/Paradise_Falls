@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
 public class PlayerCamera : MonoBehaviour
 {
@@ -23,12 +25,21 @@ public class PlayerCamera : MonoBehaviour
     // Cinemachine Components
     private CinemachineFramingTransposer transposer;
 
+    // Fade to Black volume
+    private Volume fadeToBlackVolume;
+    private ColorAdjustments colorAdjustments;
+    private Vignette vignette;
+
     private void Awake()
     {
         Instance = this;
         mainCam = GameObject.Find("Main Camera");
         virtualCam = GetComponent<CinemachineVirtualCamera>();
         transposer = virtualCam.GetCinemachineComponent<CinemachineFramingTransposer>();
+
+        fadeToBlackVolume = GetComponent<Volume>();
+        fadeToBlackVolume.profile.TryGet(out colorAdjustments);
+        fadeToBlackVolume.profile.TryGet(out vignette);
     }
 
     private void OnEnable()
@@ -100,5 +111,39 @@ public class PlayerCamera : MonoBehaviour
         perlin.m_AmplitudeGain = intensity;
         yield return new WaitForSeconds(time);
         perlin.m_AmplitudeGain = 0f;
+    }
+
+    public void CameraFadeIn(float timer)
+    {
+        StartCoroutine(FadeIn(timer));
+    }
+
+    private IEnumerator FadeIn(float timer)
+    {
+        float counter = 0;
+        while (counter < timer)
+        {
+            counter += Time.deltaTime;
+            var newColorAdjustmentValue = Mathf.Lerp(1, 0, counter / timer); // Interpolate to the desired value
+            colorAdjustments.postExposure.value = newColorAdjustmentValue;
+            yield return new WaitForEndOfFrame();
+        }
+    }
+
+    public void CameraFadeOut(float timer)
+    {
+        StartCoroutine(FadeOut(timer));
+    }
+
+    private IEnumerator FadeOut(float timer)
+    {
+        float counter = 0;
+        while (counter < timer)
+        {
+            counter += Time.deltaTime;
+            var newColorAdjustmentValue = Mathf.Lerp(0, 1, counter / timer); // Interpolate to the desired value
+            colorAdjustments.postExposure.value = newColorAdjustmentValue;
+            yield return new WaitForEndOfFrame();
+        }
     }
 }
