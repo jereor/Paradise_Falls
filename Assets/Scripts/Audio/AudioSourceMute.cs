@@ -1,8 +1,10 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Audio;
 
-// Copied from https://gamedevbeginner.com/unity-audio-optimisation-tips/ Coder John French
-// Fade added
+// Base from https://gamedevbeginner.com/unity-audio-optimisation-tips/ Coder John French
+
+// Script revamped update functionality basically same but made it to fit our game
 public class AudioSourceMute : MonoBehaviour
 {
     AudioListener audioListener;
@@ -20,6 +22,8 @@ public class AudioSourceMute : MonoBehaviour
     [Header("Sound to be played if do event")]
     public AudioClip[] shutdownSound;
     public bool destroyAfterShutdown = true;
+
+    public AudioMixerGroup shutdownGroup;
 
     void Start()
     {
@@ -131,6 +135,8 @@ public class AudioSourceMute : MonoBehaviour
         // Play sound
         audioSource.Stop();
         AudioClip soundToPlay = shutdownSound[(int)Random.Range(0, shutdownSound.Length - 1)];
+        if (shutdownGroup != null)
+            audioSource.outputAudioMixerGroup = shutdownGroup;
         audioSource.PlayOneShot(soundToPlay);
         if (destroyAfterShutdown)
             StartCoroutine(DestroyAfterSound(soundToPlay.length));
