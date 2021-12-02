@@ -119,7 +119,7 @@ public class GrappleVineController : MonoBehaviour
     {
         //If the boss state is Angri, the speed is got from the boss object.Otherwise the script uses the speed given to it in inspector.
         //if (plantController.state == BigPlantController.PlantState.Angri)
-        //    vineSpeed = plantController.GetVineSpeed();
+        vineSpeed = plantController.GetSpeedMultiplier();
 
         isAttackVineActivated = true;
         // transform.parent.DOMove((target.transform.position - transform.parent.position).normalized * grappleVineMoveAmount + transform.parent.position, grappleVineMoveDuration * vineSpeed); // Moves the vine towards the player for the given amount.

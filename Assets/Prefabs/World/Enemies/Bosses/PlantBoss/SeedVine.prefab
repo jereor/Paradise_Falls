@@ -9,12 +9,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 343821261546781203}
-  - component: {fileID: 343821261546781200}
   - component: {fileID: 343821261546781201}
   - component: {fileID: 343821261546781202}
   - component: {fileID: 7275514802303074265}
   m_Layer: 0
-  m_Name: GrappleVine
+  m_Name: SeedVine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -34,25 +33,6 @@ Transform:
   m_Father: {fileID: 466669996046129386}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &343821261546781200
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 343821261546781198}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 65811848fb60b564eab0f89ff802cb8e, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!212 &343821261546781201
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -142,23 +122,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17f57f7f4eaed784f9da444da44ce04e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 64
-  vineEndPoint: {fileID: 4759882560722405049}
-  grappleVineStretchDuration: 0
-  grappleVineRotateDuration: 0
-  grappleVineMoveDuration: 0
-  grappleVineWaitTime: 0
-  grappleVineStretchAmount: 0
-  grappleVineMoveAmount: 0
+  grappleVineStretchDuration: 1
+  grappleVineStretchAmount: 1.8
   vineSpeed: 1
-  plantBossTransportSpeed: 0
   isAttackVineActivated: 0
-  isRotatingTowardsTarget: 0
-  rotateTowardsTarget: 1
-  bossCanBeTransported: 0
-  knockbackForce: 0
 --- !u!1 &1125926157888548533
 GameObject:
   m_ObjectHideFlags: 0
