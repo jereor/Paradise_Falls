@@ -34,12 +34,13 @@ public class PlayerCamera : MonoBehaviour
     {
         Instance = this;
         mainCam = GameObject.Find("Main Camera");
-        virtualCam = GetComponent<CinemachineVirtualCamera>();
-        transposer = virtualCam.GetCinemachineComponent<CinemachineFramingTransposer>();
 
-        fadeToBlackVolume = GetComponent<Volume>();
+        fadeToBlackVolume = GameObject.Find("Fade to Black Volume").GetComponent<Volume>();
         fadeToBlackVolume.profile.TryGet(out colorAdjustments);
         fadeToBlackVolume.profile.TryGet(out vignette);
+
+        virtualCam = GetComponent<CinemachineVirtualCamera>();
+        transposer = virtualCam.GetCinemachineComponent<CinemachineFramingTransposer>();
     }
 
     private void OnEnable()
@@ -124,8 +125,10 @@ public class PlayerCamera : MonoBehaviour
         while (counter < timer)
         {
             counter += Time.deltaTime;
-            var newColorAdjustmentValue = Mathf.Lerp(1, 0, counter / timer); // Interpolate to the desired value
+            var newColorAdjustmentValue = Mathf.Lerp(-10, 0, counter / timer); // Interpolate to the desired value
+            var newVignetteIntensity = Mathf.Lerp(1, 0, counter / timer);
             colorAdjustments.postExposure.value = newColorAdjustmentValue;
+            vignette.intensity.value = newVignetteIntensity;
             yield return new WaitForEndOfFrame();
         }
     }
@@ -141,8 +144,10 @@ public class PlayerCamera : MonoBehaviour
         while (counter < timer)
         {
             counter += Time.deltaTime;
-            var newColorAdjustmentValue = Mathf.Lerp(0, 1, counter / timer); // Interpolate to the desired value
+            var newColorAdjustmentValue = Mathf.Lerp(0, -10, counter / timer); // Interpolate to the desired value
+            var newVignetteIntensity = Mathf.Lerp(0, 1, counter / timer);
             colorAdjustments.postExposure.value = newColorAdjustmentValue;
+            vignette.intensity.value = newVignetteIntensity;
             yield return new WaitForEndOfFrame();
         }
     }
