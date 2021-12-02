@@ -3,8 +3,10 @@ using UnityEngine;
 
 public class GroundEnemySFX : MonoBehaviour
 {
+    AudioListener audioListener;
     AudioSource audioSource;
     private Health myHealthScript;
+    private float distanceFromPlayer;
     private GroundEnemyAI myAIScript;
 
     private Coroutine stepCoroutine;
@@ -24,13 +26,28 @@ public class GroundEnemySFX : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        audioListener = GameObject.FindGameObjectWithTag("Player").GetComponent<AudioListener>();
         audioSource = gameObject.GetComponent<AudioSource>();
         myHealthScript = gameObject.GetComponent<Health>();
         myAIScript = gameObject.GetComponent<GroundEnemyAI>();
+
+        distanceFromPlayer = Vector3.Distance(transform.position, audioListener.transform.position);
+        if (distanceFromPlayer > audioSource.maxDistance)
+        {
+            audioSource.mute = true;
+        }
     }
 
     void Update()
     {
+        distanceFromPlayer = Vector3.Distance(transform.position, audioListener.transform.position);
+        // Player is close enough to hear my sound :)
+        if (distanceFromPlayer <= audioSource.maxDistance && audioSource.mute)
+            ToggleAudioSource(true);
+        // Player is too far away to hear my sound >:.(
+        else if (distanceFromPlayer > audioSource.maxDistance && !audioSource.mute)
+            ToggleAudioSource(false);
+
         if (myHealthScript.getPlaySoundHurt())
         {
             PlayTakeDMGSound();
@@ -42,6 +59,19 @@ public class GroundEnemySFX : MonoBehaviour
 
 
     }
+
+    public void ToggleAudioSource(bool isAudible)
+    {
+        if (!isAudible && audioSource.isPlaying)
+        {
+            audioSource.mute = true;
+        }
+        else if (isAudible && !audioSource.isPlaying)
+        {
+            audioSource.mute = false;
+        }
+    }
+
 
     public IEnumerator PlayStepSound()
     {
