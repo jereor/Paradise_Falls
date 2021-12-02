@@ -81,6 +81,8 @@ public class FlyingEnemyAI : MonoBehaviour
 
     private Quaternion startRotation;
 
+    private bool playShootSound = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -546,6 +548,7 @@ public class FlyingEnemyAI : MonoBehaviour
             hitPlayer = Physics2D.Raycast(transform.position, (target.transform.position - transform.position), (target.transform.position - transform.position).magnitude, playerLayer);
             if (hitPlayer && !hitGround)
             {
+                playShootSound = true;
                 // Instantiate a bullet prefab from enemy unit location.
                 GameObject bulletObject = Instantiate(bullet, transform.position, Quaternion.identity);
                 bulletObject.GetComponent<BulletBehaviour>().shooter = this.gameObject;
@@ -689,6 +692,7 @@ public class FlyingEnemyAI : MonoBehaviour
             hitPlayer = Physics2D.Raycast(transform.position, (target.transform.position - transform.position), (target.transform.position - transform.position).magnitude, playerLayer);
             if (hitPlayer && !hitGround)
             {
+                playShootSound = true;
                 // Instantiate a bullet prefab from enemy unit location.
                 GameObject bulletObject = Instantiate(bullet, transform.position, Quaternion.identity);
                 bulletObject.GetComponent<BulletBehaviour>().shooter = this.gameObject;
@@ -822,5 +826,16 @@ public class FlyingEnemyAI : MonoBehaviour
         BossModeShoot,
         BossModeRam,
         Die
+    }
+
+    public bool getPlaySoundShoot()
+    {
+        if (playShootSound)
+        {
+            playShootSound = false;
+            return true;
+        }
+        else
+            return false;
     }
 }

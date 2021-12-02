@@ -4,15 +4,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class CutsceneTrigger : MonoBehaviour
+[RequireComponent(typeof(BoxCollider2D))]
+public class GeneralTrigger : MonoBehaviour
 {
-    public string collideWith = "";
+    public string collideWithTag = "";
     public UnityEvent @event;
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log("Cinematic Trigger!");
-        if (other.gameObject.CompareTag(collideWith))
+        if (other.gameObject.CompareTag(collideWithTag))
             @event.Invoke();
     }
 }

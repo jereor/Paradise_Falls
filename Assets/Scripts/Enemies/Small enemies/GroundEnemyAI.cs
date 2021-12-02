@@ -100,6 +100,9 @@ public class GroundEnemyAI : MonoBehaviour
     private Seeker seeker;
     private Rigidbody2D rb;
 
+    private bool playMeleeSound = false;
+    private bool playStepSound = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -602,6 +605,7 @@ public class GroundEnemyAI : MonoBehaviour
 
     private void Move()
     {
+        playStepSound = true;
         if(IsGrounded())
             rb.AddForce(new Vector2(transform.localScale.x * speed * Time.deltaTime, 0));
 
@@ -709,6 +713,7 @@ public class GroundEnemyAI : MonoBehaviour
     private IEnumerator Attack()
     {
         canPunch = false;
+        StartCoroutine(MeleeSoundWait(punchChargeTime / 2f));
         yield return new WaitForSeconds(punchChargeTime);
         if (IsPlayerInPunchingRange())
         {
@@ -756,6 +761,12 @@ public class GroundEnemyAI : MonoBehaviour
         }
         yield return new WaitForSeconds(punchCooldown);
         canPunch = true;
+    }
+
+    public IEnumerator MeleeSoundWait(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        playMeleeSound = true;
     }
 
     public void DealDamage()
@@ -872,6 +883,34 @@ public class GroundEnemyAI : MonoBehaviour
         Staggered,
         BossModeCharge,
         BossModePunch
+    }
+
+
+    public float getWalkStepInterval()
+    {
+        return walkStepInterval;
+    }
+
+    public bool getPlaySoundStep()
+    {
+        if (playStepSound)
+        {
+            playStepSound = false;
+            return true;
+        }
+        else
+            return false;
+    }
+
+    public bool getPlaySoundMelee()
+    {
+        if (playMeleeSound)
+        {
+            playMeleeSound = false;
+            return true;
+        }
+        else
+            return false;
     }
 }
 

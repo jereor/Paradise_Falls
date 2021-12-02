@@ -20,6 +20,7 @@ public class PauseMenuController : MonoBehaviour
 
     public Button continueButton;
     public Button warningNoButton;
+    public Button skillsButton;
 
     public GameObject settingsMenu;
     public GameObject warningPopUp;
@@ -155,6 +156,8 @@ public class PauseMenuController : MonoBehaviour
                 settingsMenu.GetComponent<SettingsController>().settingsBackButton.Select();
             else if (warningOpen) // Warning panel is open select warningNoButton
                 warningNoButton.Select();
+            else if (InventoryPanelController.InventoryIsActive)
+                skillsButton.Select();
             else // PauseMenu is only one opened select continueButton
                 continueButton.Select();
         }

@@ -727,7 +727,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5627ca07fa2dbb42b8dc7bfac2b52df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  collideWith: Player
+  collideWithTag: Player
   event:
     m_PersistentCalls:
       m_Calls:
@@ -2783,6 +2783,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6dc39e2180f0ae4cb95f473b2f3baf9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  zoomOutLevel: 6.5
   yOffsetFalling: -0.5
 --- !u!1 &1611877893
 GameObject:
@@ -3536,6 +3537,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6dc39e2180f0ae4cb95f473b2f3baf9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  zoomOutLevel: 6.5
   yOffsetFalling: -0.5
 --- !u!114 &2049820520068468818
 MonoBehaviour:
@@ -3654,6 +3656,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6dc39e2180f0ae4cb95f473b2f3baf9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  zoomOutLevel: 6.5
   yOffsetFalling: -0.5
 --- !u!114 &2049820520091506069
 MonoBehaviour:
