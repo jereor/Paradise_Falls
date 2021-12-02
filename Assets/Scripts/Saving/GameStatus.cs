@@ -176,6 +176,10 @@ public class GameStatus : MonoBehaviour
     {
         dataToSave.mapTriggers[i] = b;
     }
+    public void UpdateLevers(int i, bool b)
+    {
+        dataToSave.levers[i] = b;
+    }
     public void UpdateDoors(int i, bool b)
     {
         dataToSave.doors[i] = b;

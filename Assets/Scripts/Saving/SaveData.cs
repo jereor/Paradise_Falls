@@ -35,6 +35,8 @@ public class SaveData
     public bool shieldGrind;
     public bool shAttack;
 
+    public bool[] levers;
+
     public bool[] doors;
 
     public bool[] meleePickups;
@@ -67,6 +69,8 @@ public class SaveData
         firstBossDoors = new bool[4];
 
         camera = "";
+
+        levers = new bool[1];
 
         doors = new bool[9];
 

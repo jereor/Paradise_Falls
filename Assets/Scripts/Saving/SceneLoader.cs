@@ -39,6 +39,8 @@ public class SceneLoader : MonoBehaviour
     public GameObject[] throwPickups;
     public GameObject[] energyPickups;
     public GameObject[] healthPickups;
+    [Header("Levers")]
+    public GameObject[] levers;
 
     [Header("Doors (that will be opened via buttons)")]
     public GameObject[] doors;
@@ -124,6 +126,15 @@ public class SceneLoader : MonoBehaviour
                         if (GameStatus.status.getLoadedData().energyPickups[i] && energyPickups[i].TryGetComponent(out SmallUpgradePickUp script))
                             script.SetSaveBuffer(true, playerObject);
                     }
+                }
+
+                // Levers and buttons
+                for (int i = 0; i < GameStatus.status.getLoadedData().levers.Length; i++)
+                {
+                    if (GameStatus.status.getLoadedData().levers[i] && levers[i].TryGetComponent(out BasicButton buttonScript))
+                        buttonScript.Interact();
+                    else if (GameStatus.status.getLoadedData().levers[i] && levers[i].TryGetComponent(out Lever leverScript))
+                        leverScript.Interact();
                 }
 
                 // Doors
@@ -460,6 +471,15 @@ public class SceneLoader : MonoBehaviour
             {
                 if (mapTriggers[i].TryGetComponent(out MapAreaTrigger script))
                     GameStatus.status.UpdateMapTriggers(i, script.GetFound());
+            }
+
+            // Levers and buttons
+            for (int i = 0; i < levers.Length; i++)
+            {
+                if (levers[i].TryGetComponent(out BasicButton buttonScript))
+                    GameStatus.status.UpdateLevers(i, buttonScript.GetIsUsed());
+                else if (levers[i].TryGetComponent(out Lever leverScript))
+                    GameStatus.status.UpdateLevers(i, leverScript.GetIsUsed());
             }
 
             // Doors

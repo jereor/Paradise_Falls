@@ -142,14 +142,8 @@ public class Lever : Interactable
         ShowFloatingText();
     }
 
-    private IEnumerator SaveBuffer()
+    public bool GetIsUsed()
     {
-        yield return new WaitForSeconds(1f);
-        @event.Invoke();
-    }
-
-    public void StartSaveBuffer()
-    {
-        StartCoroutine(SaveBuffer());
+        return isLeverUsed;
     }
 }
