@@ -10,7 +10,8 @@ public class Health : MonoBehaviour
 {
     [SerializeField] private float maxHealth; // Initializes max health at game start
     [SerializeField] private float currentHealth;
-
+    [SerializeField] private float blockDrainAmount;
+    private Energy energyScript;
     [Header("Block and parry")]
     public ParticleSystem blockParticles;
     public ParticleSystem parryParticles;
@@ -68,6 +69,8 @@ public class Health : MonoBehaviour
             //}
         }
 
+        energyScript = GetComponent<Energy>();
+
         fadeToBlackVolume = GameObject.Find("Fade to Black Volume").GetComponent<Volume>();
         fadeToBlackVolume.profile.TryGet(out vignette);
     }
@@ -91,6 +94,12 @@ public class Health : MonoBehaviour
                 playSoundHurtShielded = true;
                 StartCoroutine(DamagedScreenColor(vignetteTime, blockedColor)); // Player blocked the attack.
                 PlayBlockParticles();
+                // Check if blocking this hit takes rest of the energy, then set Blocking false
+                if (!energyScript.CheckForEnergy(blockDrainAmount))
+                {
+                    shield.Blocking = false;
+                }
+                energyScript.UseEnergy(blockDrainAmount);
             }
             else
             {

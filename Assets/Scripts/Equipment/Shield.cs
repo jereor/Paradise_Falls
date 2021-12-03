@@ -52,7 +52,7 @@ public class Shield : MonoBehaviour
             Blocking = true;
         }
         // Blocking cancelled
-        if (context.canceled)
+        if (context.canceled && Blocking)
         {
             StartCoroutine(ActivateParryWindow()); // Parry window activated
             //shield.SetActive(false); // Disable shield graphics

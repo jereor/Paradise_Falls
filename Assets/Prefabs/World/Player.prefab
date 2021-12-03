@@ -10781,6 +10781,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 5
   currentHealth: 5
+  blockDrainAmount: 40
   blockParticles: {fileID: 4459636447095395312, guid: 7d6213b65eabe2e40a639e1603125529, type: 3}
   parryParticles: {fileID: 4459636447095395312, guid: 55faae836c983ae4ea57f5eff5c41d77, type: 3}
   particleInstantiateTransform: {fileID: 5488279887396005798}
