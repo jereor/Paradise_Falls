@@ -10,6 +10,7 @@ public class ShockwaveTool : MonoBehaviour
     public bool ShockwaveDiveUsed { get; private set; }
     public bool ShockwaveDashUsed { get; private set; }
 
+
     [Header("Shockwave parameters")]
     [SerializeField] private float attackCooldown;
     [SerializeField] private float attackCost;
@@ -19,6 +20,7 @@ public class ShockwaveTool : MonoBehaviour
     [SerializeField] private float dashDistance; // Distance of dash
     [SerializeField] private float dashCooldown;
     [SerializeField] private float dashCost;
+    [SerializeField] private float dashLift;
 
     [Header("References")]
     [SerializeField] private ParticleSystem shockwaveAttackEffect;
@@ -26,6 +28,8 @@ public class ShockwaveTool : MonoBehaviour
     [SerializeField] private ParticleSystem shockwaveDashEffect;
     [SerializeField] private GameObject shockwaveDiveGraphics;
     [SerializeField] private Energy energyScript;
+
+    private bool lifted = true; // used in dash lift
 
     // Other references
     private Player playerScript;
@@ -121,10 +125,13 @@ public class ShockwaveTool : MonoBehaviour
         {
             if (energyScript.CheckForEnergy(dashCost))
             {
+               //rb.position = new Vector2(rb.position.x, rb.position.y + dashLift);
+
                 nextDash = Time.time + dashCooldown;
                 timeDashed = Time.time;
                 shockwaveDashEffect.Play();
                 energyScript.UseEnergy(dashCost);
+                lifted = false;
                 ShockwaveDashUsed = true;
                 posBeforeDash = transform.position;
                 horizontal = playerMovementScript.horizontal;
@@ -135,11 +142,17 @@ public class ShockwaveTool : MonoBehaviour
                 Debug.Log("Not enough energy!");
         }
     }
-
+    
     private void Dash()
     {
+        // Give player a lift from ground so we can jump in polygon collider
+        if (!lifted)
+        {
+            rb.gameObject.transform.position = new Vector2(rb.gameObject.transform.position.x, rb.gameObject.transform.position.y + dashLift);
+            lifted = true;
+        }
         // We reach the dashDistance OR time it would take to move to max dis is reached OR body OR feet are touching wall
-        if (ShockwaveDashUsed && ((posBeforeDash - transform.position).magnitude >= dashDistance || Time.time - timeDashed >= dashDistance / dashSpeed || playerMovementScript.BodyIsTouchingWall() || playerMovementScript.FeetAreTouchingWall()))
+        else if (ShockwaveDashUsed && ((posBeforeDash - transform.position).magnitude >= dashDistance || Time.time - timeDashed >= dashDistance / dashSpeed || playerMovementScript.BodyIsTouchingWall() || playerMovementScript.FeetAreTouchingWall()))
         {
             rb.velocity = Vector2.zero;
             ShockwaveDashUsed = false;
@@ -148,11 +161,13 @@ public class ShockwaveTool : MonoBehaviour
         else if (ShockwaveDashUsed)
         {
             if(horizontal != 0)
-                rb.velocity = new Vector2(transform.localScale.x * dashSpeed * horizontal, rb.velocity.y);
+                rb.velocity = new Vector2(transform.localScale.x * dashSpeed * horizontal, 0f);
             else if(playerScript.IsFacingRight())
-                rb.velocity = new Vector2(transform.localScale.x * dashSpeed * 1f, rb.velocity.y);
+                rb.velocity = new Vector2(transform.localScale.x * dashSpeed * 1f, 0f);
             else
-                rb.velocity = new Vector2(transform.localScale.x * dashSpeed * -1f, rb.velocity.y);
+                rb.velocity = new Vector2(transform.localScale.x * dashSpeed * -1f, 0f);
+            // Add static force to rb to keep it floating in same height
+            rb.AddForce(new Vector2(0f, Physics2D.gravity.y * rb.mass), ForceMode2D.Force);
         }
     }
 
