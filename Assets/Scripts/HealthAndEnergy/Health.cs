@@ -132,7 +132,15 @@ public class Health : MonoBehaviour
     {
         Time.timeScale = timeScaleWhenSlowed;
 
-        yield return new WaitForSeconds(duration);
+        float counter = 0;
+        while (counter < duration)
+        {
+            Debug.Log(Time.timeScale);
+            counter += Time.deltaTime;
+            float newTimeScale = Mathf.Lerp(timeScaleWhenSlowed, 1f, counter / duration);
+            Time.timeScale = newTimeScale;
+            yield return new WaitForEndOfFrame();
+        }
 
         Time.timeScale = 1f;
     }
@@ -144,13 +152,9 @@ public class Health : MonoBehaviour
 
         // Fade in / Remove black screen
         float counter = 0;
-        while (counter < duration)
-        {
-            counter += Time.deltaTime;
-            var newVignetteIntensity = Mathf.Lerp(0, vignetteIntensity, counter / duration);
-            vignette.intensity.value = newVignetteIntensity;
-            yield return new WaitForEndOfFrame();
-        }
+        // Set intensity instantly to desired vignette value
+        vignette.intensity.value = vignetteIntensity;
+        // Lerp vignette intensity to zero
         counter = 0f;
         while (counter < duration)
         {

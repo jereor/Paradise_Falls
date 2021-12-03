@@ -10782,11 +10782,11 @@ MonoBehaviour:
   maxHealth: 5
   currentHealth: 5
   vignetteIntensity: 0.2
-  vignetteTime: 0.2
-  blockedColor: {r: 0.35283017, g: 0.35283017, b: 1, a: 1}
+  vignetteTime: 0.15
+  blockedColor: {r: 0, g: 0, b: 1, a: 1}
   damageColor: {r: 1, g: 0, b: 0, a: 1}
-  slowDuration: 0.01
-  timeScaleWhenSlowed: 0.2
+  slowDuration: 0.15
+  timeScaleWhenSlowed: 0.1
   destroyWhenDead: 1
   onDie:
     m_PersistentCalls:
