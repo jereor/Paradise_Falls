@@ -101,7 +101,6 @@ public class GroundEnemyAI : MonoBehaviour
     private Rigidbody2D rb;
 
     private bool playMeleeSound = false;
-    private bool playStepSound = false;
 
     // Start is called before the first frame update
     void Start()
@@ -605,7 +604,6 @@ public class GroundEnemyAI : MonoBehaviour
 
     private void Move()
     {
-        playStepSound = true;
         if(IsGrounded())
             rb.AddForce(new Vector2(transform.localScale.x * speed * Time.deltaTime, 0));
 
@@ -883,23 +881,6 @@ public class GroundEnemyAI : MonoBehaviour
         Staggered,
         BossModeCharge,
         BossModePunch
-    }
-
-
-    public float getWalkStepInterval()
-    {
-        return walkStepInterval;
-    }
-
-    public bool getPlaySoundStep()
-    {
-        if (playStepSound)
-        {
-            playStepSound = false;
-            return true;
-        }
-        else
-            return false;
     }
 
     public bool getPlaySoundMelee()
