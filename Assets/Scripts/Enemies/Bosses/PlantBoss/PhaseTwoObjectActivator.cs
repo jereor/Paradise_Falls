@@ -22,6 +22,11 @@ public class PhaseTwoObjectActivator : MonoBehaviour
 
     [SerializeField] private float vineSpawnSpeed; // How frequently the vines will spawn.
 
+    [SerializeField] private GameObject doorOne;
+    [SerializeField] private GameObject doorTwo;
+    [SerializeField] private GameObject boostPlantLeft;
+    [SerializeField] private GameObject boostPlantRight;
+
     void Start()
     {
         target = GameObject.Find("Player");
@@ -81,6 +86,24 @@ public class PhaseTwoObjectActivator : MonoBehaviour
         {
             platform.gameObject.SetActive(true);
         }
+    }
+
+    public void OpenDoors()
+    {
+        doorOne.GetComponent<DoorController>().Work();
+        doorTwo.GetComponent<DoorController>().Work();
+    }
+
+    public void SpawnBoostPlants()
+    {
+        boostPlantLeft.SetActive(true);
+        boostPlantRight.SetActive(true);
+    }
+
+    public void DeactivateBoostPlants()
+    {
+        boostPlantLeft.SetActive(false);
+        boostPlantRight.SetActive(false);
     }
 
     public void SetStartSpawningVines(bool b)

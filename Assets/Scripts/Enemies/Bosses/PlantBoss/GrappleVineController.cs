@@ -72,7 +72,7 @@ public class GrappleVineController : MonoBehaviour
         if(bossCanBeTransported)
         {
             //plantBoss.transform.position = Vector2.MoveTowards(plantBoss.transform.position, endPointStretchedVine, Time.deltaTime * plantBossTransportSpeed);
-            plantBoss.transform.DOJump(vectorToWall, 0, 0, 2);
+            plantBoss.transform.DOJump(vectorToWall, 0, 0, 2 * vineSpeed);
             bossCanBeTransported = false;
         }
     }
@@ -95,35 +95,24 @@ public class GrappleVineController : MonoBehaviour
 
     private void RotateVineTowardsTheTarget()
     {
-        //if(target.transform.position.y >= plantBoss.transform.position.y)
-        //{
-            // Rotating object to point player
-            Vector3 vectorToTarget = target.transform.position - transform.parent.position;
-            float angle = Mathf.Atan2(vectorToTarget.y, vectorToTarget.x) * Mathf.Rad2Deg;
-            Quaternion q = Quaternion.AngleAxis(angle - 90, Vector3.forward);
-            transform.parent.rotation = Quaternion.Slerp(transform.parent.rotation, q, 1);
-        //}
-        //else if(target.transform.position.y < plantBoss.transform.position.y)
-        //{
-        //    // Rotating object to point above the player because of the plant bosses' big collider.
-        //    Vector3 vectorToTarget = new Vector2(target.transform.position.x - transform.parent.position.x, 0);
-        //    float angle = Mathf.Atan2(vectorToTarget.y, vectorToTarget.x) * Mathf.Rad2Deg;
-        //    Quaternion q = Quaternion.AngleAxis(angle - 90, Vector3.forward);
-        //    transform.parent.rotation = Quaternion.Slerp(transform.parent.rotation, q, Time.deltaTime);
-        //}
+
+        // Rotating object to point walls
+        Vector3 vectorToTarget = target.transform.position - transform.parent.position;
+        float angle = Mathf.Atan2(vectorToTarget.y, vectorToTarget.x) * Mathf.Rad2Deg;
+        Quaternion q = Quaternion.AngleAxis(angle - 90, Vector3.forward);
+        transform.parent.rotation = Quaternion.Slerp(transform.parent.rotation, q, 1);
+
 
     }
 
     // THe whole behaviour for the vine except the rotation.
     private IEnumerator SpawnVine()
     {
-        //If the boss state is Angri, the speed is got from the boss object.Otherwise the script uses the speed given to it in inspector.
-        //if (plantController.state == BigPlantController.PlantState.Angri)
         vineSpeed = plantController.GetSpeedMultiplier();
 
         isAttackVineActivated = true;
         // transform.parent.DOMove((target.transform.position - transform.parent.position).normalized * grappleVineMoveAmount + transform.parent.position, grappleVineMoveDuration * vineSpeed); // Moves the vine towards the player for the given amount.
-        transform.parent.DOScaleY(1,3);
+        transform.parent.DOScaleY(1,3 * vineSpeed);
         yield return new WaitForSeconds(3);
 
         gameObject.GetComponent<SpriteRenderer>().color = Color.red;
@@ -150,10 +139,9 @@ public class GrappleVineController : MonoBehaviour
         animator.SetBool("Charge", false);
         //transform.parent.DOMove(-((target.transform.position - transform.parent.position).normalized * grappleVineMoveAmount) + transform.parent.position, grappleVineMoveDuration * vineSpeed); // Moves the vine back where it came from.
         yield return new WaitForSeconds(grappleVineMoveDuration * vineSpeed);
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(1 * vineSpeed);
 
         isAttackVineActivated = false;
-        plantBoss.GetComponent<BigPlantController>().SetIsCharging(false);
         plantBoss.GetComponent<BigPlantController>().SetHasCharged(true);
         plantController.grappleVineInstances.Remove(gameObject.transform.parent.gameObject); // Remove the vine from the list. Destroy the game object afterwards.
         Destroy(gameObject.transform.parent.gameObject);

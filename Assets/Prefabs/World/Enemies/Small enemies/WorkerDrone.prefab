@@ -49,7 +49,7 @@ GameObject:
   - component: {fileID: 1042559154614542453}
   - component: {fileID: 4635168669505543238}
   m_Layer: 7
-  m_Name: GroundEnemyOne
+  m_Name: WorkerDrone
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

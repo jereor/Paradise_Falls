@@ -13,6 +13,8 @@ public class BigPlantController : MonoBehaviour
     public Health health;
     private Rigidbody2D rb;
 
+
+
     [SerializeField] private GameObject hiddenBossObjects;
 
     [SerializeField] private Transform bossTeleportPoint;
@@ -25,13 +27,11 @@ public class BigPlantController : MonoBehaviour
     private SpikyDeathWallController deathWallController; // Phase 2 rising death wall.
     private PhaseTwoObjectActivator phaseTwoObjectActivator;
 
-    [SerializeField] private GameObject workerDroneOnePrefab; // Prefabs for spawnable enemies.
-    [SerializeField] private GameObject workerDroneTwoPrefab;
+    [SerializeField] private GameObject workerDronePrefab; // Prefabs for spawnable enemies.
     private GameObject workerDroneOneInstance;
     private GameObject workerDroneTwoInstance;
 
-    [SerializeField] private GameObject flyingDroneOnePrefab;
-    [SerializeField] private GameObject flyingDroneTwoPrefab;
+    [SerializeField] private GameObject flyingDronePrefab;
     private GameObject flyingDroneOneInstance;
     private GameObject flyingDroneTwoInstance;
 
@@ -42,6 +42,7 @@ public class BigPlantController : MonoBehaviour
     public List<GameObject> grappleVineInstances; // All spawned vines are stored in a list.
 
     [SerializeField] private GameObject plantSeed;
+    [SerializeField] private GameObject slowSeed;
 
     [Header("Bullet Hell variables")]
     [SerializeField] private float seedGap;
@@ -67,7 +68,10 @@ public class BigPlantController : MonoBehaviour
     [SerializeField] private float artilleryWobbleTime; // how long the Tweenings and yield returns will last in Artiller state
     public float vineSpeed = 1; // Default is 1. Scales accordingly when boss takes damage.
     public float speedMultiplier = 1; // Default is 1. Scales accordingly when boss takes damage.
-    public float healthAtPhaseThreeTransition; // Used to calculate the phase three speed multiplier.
+    private float healthAtPhaseThreeTransition; // Used to calculate the phase three speed multiplier.
+    private int seedCount = 1; // Used in a function to scale the seed amount with the boss health. Less health = more seeds.
+    [SerializeField] private int chargeProbability = 1;
+    private int timeToArtillery = 0;
 
 
     private bool isCovered = false;
@@ -84,6 +88,7 @@ public class BigPlantController : MonoBehaviour
     public bool isSeedShooting = false;
     public bool isArtillerying = false;
     public bool hasArtilleryed = false;
+    private bool isDead = false;
 
     void Start()
     {
@@ -100,10 +105,10 @@ public class BigPlantController : MonoBehaviour
         health = GetComponent<Health>();
         targetHealth = target.GetComponent<Health>();
         rb = GetComponent<Rigidbody2D>();
-        if (skipToSecondPhase)
-        {
-            health.TakeDamage(health.GetMaxHealth() / 2 - 1);
-        }
+        //if (skipToSecondPhase)
+        //{
+        //    health.TakeDamage(health.GetMaxHealth() / 2 - 1);
+        //}
         rightVineRotation.eulerAngles = new Vector3(0, 0, 90);
         leftVineRotation.eulerAngles = new Vector3(0, 0, -90);
     }
@@ -111,13 +116,40 @@ public class BigPlantController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(health.GetHealth() <= 0 && !isDead)
+        {
+            StopAllCoroutines();
+            DOTween.PauseAll();
+            //for (int i = 0; i < grappleVineInstances.Count; i++)
+            //{
+            //    Destroy(grappleVineInstances[i]);
+            //}
 
+            //Destroy(GameObject.Find("SlowSeed"));
+            var obj = GameObject.FindGameObjectsWithTag("EnemyProjectile");
+            if(obj != null)
+            {
+                foreach (GameObject o in obj)
+                {
+                    Destroy(o.gameObject);
+                }
+            }
+
+            state = PlantState.Die;
+        }
         // If bosses health goes down more that 50%, change phase.
         if ((health.GetHealth() <= health.GetMaxHealth() * 0.5f && !isPhaseTwoInitiated) || (skipToSecondPhase && !isPhaseTwoInitiated))
         {
+            //health.TakeDamage(health.GetMaxHealth() - 1);
             state = PlantState.PhaseTwo;
             ChangeToDefaultLayer();
             isPhaseTwoInitiated = true;
+        }
+
+        if (timeToArtillery >= 5)
+        {
+            state = PlantState.Artillery;
+            timeToArtillery = 0;
         }
 
         switch (state)
@@ -160,6 +192,10 @@ public class BigPlantController : MonoBehaviour
 
             case PlantState.LightAttack:
                 HandleLightAttackState();
+                break;
+
+            case PlantState.Die:
+                HandleDie();
                 break;
 
             case PlantState.PlayerIsDead:
@@ -243,6 +279,7 @@ public class BigPlantController : MonoBehaviour
         if(deathWallController.GetPlayerSurvived() && !isPhaseThreeTransitioning)
         {
             healthAtPhaseThreeTransition = health.GetHealth();
+            phaseTwoObjectActivator.SpawnBoostPlants();
             StartCoroutine(PhaseThreeTransition());
         }
 
@@ -254,16 +291,22 @@ public class BigPlantController : MonoBehaviour
         // Visual something to indicate that charge is coming
         // Locks to position after a while and jumps in straight line there
         // Attached to the point it was jumped
-        if(!isCharging && hasCharged && grappleVineInstances.Count == 0)
+        if(hasCharged && grappleVineInstances.Count == 0)
         {
-            state = PlantState.SeedShoot;
+            int i = Random.Range(1, 11);
+            if (i <= chargeProbability)
+                state = PlantState.Charge;
+            else
+                state = PlantState.SeedShoot;
             hasCharged = false;
+            isCharging = false;
+            timeToArtillery++;
             return;
         }
 
         if(!isCharging && !hasCharged)
         {
-            speedMultiplier = health.GetHealth() / healthAtPhaseThreeTransition;
+            ChangeSpeedMultiplier();
             Charge();
         }
     }
@@ -275,19 +318,16 @@ public class BigPlantController : MonoBehaviour
         gameObject.GetComponent<SpriteRenderer>().color = Color.blue;
         if(!isSetUppingForSeedShoot && !isSeedShooting)
         {
-            speedMultiplier = health.GetHealth() / healthAtPhaseThreeTransition;
+            SeedAmountValueChanger();
+            ChangeSpeedMultiplier();
             StartCoroutine(ShootTheSeeds());
         }
 
         if(!isSetUppingForSeedShoot && isSeedShooting && grappleVineInstances.Count == 0)
         {
             isSeedShooting = false;
-            int i = Random.Range(0, 2);
-            if (i == 0)
-                state = PlantState.Charge;
-            else
-                state = PlantState.Artillery;
-
+            state = PlantState.Charge;
+            timeToArtillery++;
             return;
         }
     }
@@ -300,7 +340,8 @@ public class BigPlantController : MonoBehaviour
 
         if (!isArtillerying && !hasArtilleryed)
         {
-            speedMultiplier = health.GetHealth() / healthAtPhaseThreeTransition;
+            SeedAmountValueChanger();
+            ChangeSpeedMultiplier();
             ChangeToBossLayer();
             StartCoroutine(Artillery());
         }
@@ -309,12 +350,7 @@ public class BigPlantController : MonoBehaviour
         {
             hasArtilleryed = false;
             ChangeToDefaultLayer();
-            int i = Random.Range(0, 2);
-            if (i == 0)
-                state = PlantState.Charge;
-            else
-                state = PlantState.SeedShoot;
-
+            state = PlantState.Charge;
             return;
         }
     }
@@ -333,6 +369,15 @@ public class BigPlantController : MonoBehaviour
     private void HandlePlayerIsDeadState()
     {
         // Dead player :)
+    }
+
+    private void HandleDie()
+    {
+        if(!isDead)
+        {
+            isDead = true;
+            StartCoroutine(BossIsDead());
+        }
     }
 
     private void Cover()
@@ -358,8 +403,8 @@ public class BigPlantController : MonoBehaviour
         {
             if (spawnWorkerDrones)
             {
-                workerDroneOneInstance = Instantiate(workerDroneOnePrefab, new Vector2(transform.position.x - 5, transform.position.y + 15), Quaternion.identity);
-                workerDroneTwoInstance = Instantiate(workerDroneTwoPrefab, new Vector2(transform.position.x + 5, transform.position.y + 15), Quaternion.identity);
+                workerDroneOneInstance = Instantiate(workerDronePrefab, new Vector2(transform.position.x - 5, transform.position.y + 15), Quaternion.identity);
+                workerDroneTwoInstance = Instantiate(workerDronePrefab, new Vector2(transform.position.x + 5, transform.position.y + 15), Quaternion.identity);
                 workerDroneOneInstance.GetComponent<GroundEnemyAI>().target = target.transform;
                 workerDroneTwoInstance.GetComponent<GroundEnemyAI>().target = target.transform;
                 workerDroneOneInstance.GetComponent<GroundEnemyAI>().bossMode = true;
@@ -368,8 +413,8 @@ public class BigPlantController : MonoBehaviour
             }
             else
             {
-                flyingDroneOneInstance = Instantiate(flyingDroneOnePrefab, new Vector2(transform.position.x - 5, transform.position.y + 15), Quaternion.identity);
-                flyingDroneTwoInstance = Instantiate(flyingDroneTwoPrefab, new Vector2(transform.position.x + 5, transform.position.y + 15), Quaternion.identity);
+                flyingDroneOneInstance = Instantiate(flyingDronePrefab, new Vector2(transform.position.x - 5, transform.position.y + 15), Quaternion.identity);
+                flyingDroneTwoInstance = Instantiate(flyingDronePrefab, new Vector2(transform.position.x + 5, transform.position.y + 15), Quaternion.identity);
                 flyingDroneOneInstance.GetComponent<FlyingEnemyAI>().target = target.transform;
                 flyingDroneTwoInstance.GetComponent<FlyingEnemyAI>().target = target.transform;
                 flyingDroneOneInstance.GetComponent<FlyingEnemyAI>().bossMode = true;
@@ -395,7 +440,7 @@ public class BigPlantController : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
 
-        if (collision.collider.gameObject.name == "Player" && state != PlantState.Stunned && !knockbackOnCooldown)
+        if (collision.collider.gameObject.name == "Player" && !knockbackOnCooldown && (state != PlantState.Stunned || state != PlantState.Artillery))
         {
             PlayerPushback();
         }
@@ -412,6 +457,25 @@ public class BigPlantController : MonoBehaviour
         knockbackOnCooldown = true;
         yield return new WaitForSeconds(0.5f);
         knockbackOnCooldown = false;
+    }
+
+    private void ChangeSpeedMultiplier()
+    {
+        float variable = 1 - health.GetHealth() / healthAtPhaseThreeTransition;
+        speedMultiplier = 1 - variable / 2;
+    }
+
+    private void SeedAmountValueChanger()
+    {
+        if (health.GetHealth() / healthAtPhaseThreeTransition < 1)
+            seedCount = 1;
+        if (health.GetHealth() / healthAtPhaseThreeTransition < 0.8)
+            seedCount = 2;
+        if (health.GetHealth() / healthAtPhaseThreeTransition < 0.6)
+            seedCount = 3;
+        if (health.GetHealth() / healthAtPhaseThreeTransition < 0.4)
+            seedCount = 4;
+
     }
 
     // Pushbacks the player when hit with riot drone collider. Uses velocity for the knockback instead of force.
@@ -515,7 +579,6 @@ public class BigPlantController : MonoBehaviour
     private IEnumerator Artillery()
     {
         isArtillerying = true;
-        gameObject.GetComponent<SpriteRenderer>().color = Color.blue;
         int a = Random.Range(0, 2);
         if(a == 0)
             transform.DOJump(seedShootPosition.GetChild(0).position, 0, 0, transportingToMiddleTime * 2 * speedMultiplier);
@@ -523,17 +586,26 @@ public class BigPlantController : MonoBehaviour
             transform.DOJump(seedShootPosition.GetChild(1).position, 0, 0, transportingToMiddleTime * 2 * speedMultiplier);
 
         yield return new WaitForSeconds(transportingToMiddleTime * 2 * speedMultiplier);
-
+        //int amount = seedCount;
 
         for (int  i = 0; i < 5; i++)
         {
-            transform.DOScaleY(1.5f, artilleryWobbleTime * speedMultiplier);
+            for(int e = 0; e < seedCount; e++)
+                Instantiate(slowSeed, new Vector2(Random.Range(seedShootPosition.GetChild(2).position.x - 12, seedShootPosition.GetChild(2).position.x + 12), seedShootPosition.GetChild(2).position.y), Quaternion.identity);
+            
+            transform.DOScaleX(1.5f, artilleryWobbleTime * speedMultiplier);
             transform.DOScaleY(1.3f, artilleryWobbleTime * speedMultiplier);
             yield return new WaitForSeconds(artilleryWobbleTime * speedMultiplier);
+            for (int u = 0; u < seedCount; u++)
+                Instantiate(slowSeed, new Vector2(Random.Range(seedShootPosition.GetChild(2).position.x - 12, seedShootPosition.GetChild(2).position.x + 12), seedShootPosition.GetChild(2).position.y), Quaternion.identity);
+            
             transform.DOScaleX(1.3f, artilleryWobbleTime * speedMultiplier);
             transform.DOScaleY(1.5f, artilleryWobbleTime * speedMultiplier);
             yield return new WaitForSeconds(artilleryWobbleTime * speedMultiplier);
         }
+        for (int d = 0; d < seedCount; d++)
+            Instantiate(slowSeed, new Vector2(Random.Range(seedShootPosition.GetChild(2).position.x - 12, seedShootPosition.GetChild(2).position.x + 12), seedShootPosition.GetChild(2).position.y), Quaternion.identity);
+        
         transform.DOScaleX(1.5f, artilleryWobbleTime * speedMultiplier);
         yield return new WaitForSeconds(artilleryWobbleTime * speedMultiplier);
 
@@ -563,25 +635,27 @@ public class BigPlantController : MonoBehaviour
         yield return new WaitForSeconds(2);
 
         float amount = 1;
-        float positionModifierY = 1;
-        float positionModifierX = 0;
+        //float positionModifierY = 1;
+        //float positionModifierX = 0;
         for (int i = 0; i < 10; i++)
         {
-            Instantiate(plantSeed, new Vector2(transform.position.x + positionModifierX, transform.position.y + positionModifierY), Quaternion.identity);
-            Instantiate(plantSeed, new Vector2(transform.position.x - positionModifierX, transform.position.y - positionModifierY), Quaternion.identity);
-            Instantiate(plantSeed, new Vector2(transform.position.x + positionModifierY, transform.position.y - positionModifierX), Quaternion.identity);
-            Instantiate(plantSeed, new Vector2(transform.position.x - positionModifierY, transform.position.y + positionModifierX), Quaternion.identity);
-            if(i == 9 && seedAmount > amount)
+            float positionModifierY = Random.Range(-1f, 1f);
+            float positionModifierX = Random.Range(-1f, 1f);
+            Instantiate(plantSeed, new Vector2(transform.position.x + Random.Range(0f, 1f), transform.position.y + Random.Range(0f, 1f)), Quaternion.identity);
+            Instantiate(plantSeed, new Vector2(transform.position.x - Random.Range(0f, 1f), transform.position.y - Random.Range(0f, 1f)), Quaternion.identity);
+            Instantiate(plantSeed, new Vector2(transform.position.x + Random.Range(0f, 1f), transform.position.y - Random.Range(0f, 1f)), Quaternion.identity);
+            Instantiate(plantSeed, new Vector2(transform.position.x - Random.Range(0f, 1f), transform.position.y + Random.Range(0f, 1f)), Quaternion.identity);
+            if(i == 9 && seedCount * seedAmount > amount)
             {
                 amount++;
                 i = -1;
-                positionModifierX = 0;
-                positionModifierY = 1;
+                //positionModifierX = 0;
+                //positionModifierY = 1;
             }
             else
             {
-                positionModifierX += seedGap;
-                positionModifierY -= seedGap;
+                //positionModifierX += seedGap;
+                //positionModifierY -= seedGap;
             }
 
             yield return new WaitForSeconds(seedFrequency * speedMultiplier);
@@ -589,6 +663,32 @@ public class BigPlantController : MonoBehaviour
         yield return new WaitForSeconds(2);
         isSetUppingForSeedShoot = false;
         yield return new WaitForSeconds(2);
+    }
+
+    private IEnumerator BossIsDead()
+    {
+        transform.DOJump(seedShootPosition.position, 0, 0, transportingToMiddleTime * 2);
+        yield return new WaitForSeconds(transportingToMiddleTime * 2);
+        PlayerCamera.Instance.CameraShake(0.7f, 5);
+        for (int i = 0; i < 5; i++)
+        {
+            gameObject.GetComponent<SpriteRenderer>().color = Color.blue;
+            transform.DOScaleX(1.5f, (artilleryWobbleTime * speedMultiplier) / 2);
+            transform.DOScaleY(1.3f, (artilleryWobbleTime * speedMultiplier) / 2);
+            yield return new WaitForSeconds((artilleryWobbleTime * speedMultiplier) / 2);
+            gameObject.GetComponent<SpriteRenderer>().color = Color.red;
+            transform.DOScaleX(1.3f, (artilleryWobbleTime * speedMultiplier) / 2);
+            transform.DOScaleY(1.5f, (artilleryWobbleTime * speedMultiplier) / 2);
+            yield return new WaitForSeconds((artilleryWobbleTime * speedMultiplier) / 2);
+            gameObject.GetComponent<SpriteRenderer>().color = Color.black;
+            yield return new WaitForSeconds((artilleryWobbleTime * speedMultiplier) / 2);
+        }
+        gameObject.GetComponent<SpriteRenderer>().color = Color.red;
+        transform.DOScale(2.5f, 2);
+        yield return new WaitForSeconds(2);
+        phaseTwoObjectActivator.OpenDoors();
+        phaseTwoObjectActivator.DeactivateBoostPlants();
+        Destroy(gameObject);
     }
 
     private IEnumerator Roar()
@@ -607,7 +707,8 @@ public class BigPlantController : MonoBehaviour
         ChangeToBossLayer();
         yield return new WaitForSeconds(stunTime);
         ChangeToDefaultLayer();
-        state = PlantState.Protected;
+        if(health.GetHealth() > health.GetMaxHealth() * 0.5f)
+            state = PlantState.Protected;
     }
 
     public enum PlantState
@@ -622,6 +723,7 @@ public class BigPlantController : MonoBehaviour
         Artillery,
         EvilLaugh,
         LightAttack,
+        Die,
         PlayerIsDead
 
     }

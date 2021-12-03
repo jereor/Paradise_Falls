@@ -15,6 +15,7 @@ TagManager:
   - NPC
   - HardGround
   - SoftGround
+  - EnemyProjectile
   layers:
   - Default
   - TransparentFX
