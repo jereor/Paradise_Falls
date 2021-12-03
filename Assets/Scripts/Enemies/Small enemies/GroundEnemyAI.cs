@@ -16,7 +16,7 @@ public class GroundEnemyAI : MonoBehaviour
     private Health health;
 
     [Header("Transforms")]
-    [SerializeField] private Transform target;
+    public Transform target;
     [SerializeField] private Rigidbody2D playerRB;
     [SerializeField] private Transform groundDetection;
     [SerializeField] private GameObject energyItem;
@@ -28,6 +28,7 @@ public class GroundEnemyAI : MonoBehaviour
     [SerializeField] private Transform groundCheck; // GameObject attached to player that checks if touching ground
     [SerializeField] private float checkRadius; // Radius for ground checks
     [SerializeField] LayerMask groundLayer; // Chosen layer that is recognized as ground in ground checks
+    [SerializeField] LayerMask pipeLayer;
 
     [SerializeField] LayerMask playerLayer;
 
@@ -101,7 +102,6 @@ public class GroundEnemyAI : MonoBehaviour
     private Rigidbody2D rb;
 
     private bool playMeleeSound = false;
-    private bool playStepSound = false;
 
     // Start is called before the first frame update
     void Start()
@@ -339,6 +339,16 @@ public class GroundEnemyAI : MonoBehaviour
         }
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.layer == LayerMask.NameToLayer("ShieldGrindPipe"))
+        {
+            Debug.Log("YEs");
+            //Physics2D.IgnoreCollision(collision.gameObject.GetComponent<Collider2D>(), groundCollider);
+            //Physics2D.IgnoreCollision(collision.gameObject.GetComponent<Collider2D>(), pipeCollider);
+        }
+    }
+
     private void HandleChargeState(Vector2 force)
     {
         if (stunned) enemyState = EnemyState.Stunned;
@@ -529,6 +539,20 @@ public class GroundEnemyAI : MonoBehaviour
     // Returns true if ground check detects ground
     private bool IsGrounded()
     {
+        // Check if enemy will fall through pipe
+        if(Physics2D.OverlapCircle(groundCheck.position, checkRadius, pipeLayer) != null)
+        {
+            // Get colliders that are on pipe prefab
+            List<Collider2D> colliders = new List<Collider2D>();
+            colliders.Add(Physics2D.OverlapCircle(groundCheck.position, checkRadius, pipeLayer));
+            colliders.Add(Physics2D.OverlapCircle(groundCheck.position, checkRadius, groundLayer));
+            // Ignore collisions between these colliders
+            foreach (var collider in colliders)
+            {
+                Physics2D.IgnoreCollision(GetComponent<Collider2D>(), collider);
+            }
+        }
+
         return Physics2D.OverlapCircle(groundCheck.position, checkRadius, groundLayer);
     }
 
@@ -605,7 +629,6 @@ public class GroundEnemyAI : MonoBehaviour
 
     private void Move()
     {
-        playStepSound = true;
         if(IsGrounded())
             rb.AddForce(new Vector2(transform.localScale.x * speed * Time.deltaTime, 0));
 
@@ -883,23 +906,6 @@ public class GroundEnemyAI : MonoBehaviour
         Staggered,
         BossModeCharge,
         BossModePunch
-    }
-
-
-    public float getWalkStepInterval()
-    {
-        return walkStepInterval;
-    }
-
-    public bool getPlaySoundStep()
-    {
-        if (playStepSound)
-        {
-            playStepSound = false;
-            return true;
-        }
-        else
-            return false;
     }
 
     public bool getPlaySoundMelee()
