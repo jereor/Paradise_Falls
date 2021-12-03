@@ -64,6 +64,8 @@ public class Shield : MonoBehaviour
     {
         playParry = true;
         hitParried = true;
+
+        GetComponent<Health>().PlayParryParticles();
     }
 
     // Activated when Shield button is released

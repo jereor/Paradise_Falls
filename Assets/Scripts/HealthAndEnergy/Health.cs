@@ -11,12 +11,17 @@ public class Health : MonoBehaviour
     [SerializeField] private float maxHealth; // Initializes max health at game start
     [SerializeField] private float currentHealth;
 
+    [Header("Block and parry")]
+    public ParticleSystem blockParticles;
+    public ParticleSystem parryParticles;
+    public Transform particleInstantiateTransform;
+
     private SpriteRenderer rndr;
     [Header("Vignette flash when damaged")]
     [SerializeField] private float vignetteIntensity;
     [SerializeField] private float vignetteTime;
-    [SerializeField] private Color blockedColor = Color.blue; // Block indication color.
-    [SerializeField] private Color damageColor = Color.red; // Damage indication color.
+    [SerializeField] private Color blockedColor; // Block indication color.
+    [SerializeField] private Color damageColor; // Damage indication color.
 
     // Fade to Black volume (use vignette to flash image red when damaged)
     private Volume fadeToBlackVolume;
@@ -51,8 +56,6 @@ public class Health : MonoBehaviour
     // Prevent assigning health at or below zero at the start
     private void Start()
     {
-        blockedColor = Color.blue;
-        damageColor = Color.red;
         currentHealth = (maxHealth > 0 ? maxHealth : 1);
         maxHealth = currentHealth;
         rndr = GetComponent<SpriteRenderer>();
@@ -87,12 +90,14 @@ public class Health : MonoBehaviour
                 amount -= shield.ProtectionAmount;
                 playSoundHurtShielded = true;
                 StartCoroutine(DamagedScreenColor(vignetteTime, blockedColor)); // Player blocked the attack.
+                PlayBlockParticles();
             }
             else
             {
                 playSoundHurt = true;
                 StartCoroutine(DamagedSlowTime(slowDuration));
                 StartCoroutine(DamagedScreenColor(vignetteTime, damageColor)); // Player got hit.
+                StartCoroutine(HitIndication(damageColor));
             }
 
             if (amount < 0) amount = 0;
@@ -114,6 +119,17 @@ public class Health : MonoBehaviour
             if (destroyWhenDead)
                 Destroy(gameObject);
         }
+    }
+
+    // Called from shield.cs HitWhileParried()
+    public void PlayParryParticles()
+    {
+        Instantiate(parryParticles, particleInstantiateTransform.position, Quaternion.identity);
+    }
+
+    public void PlayBlockParticles()
+    {
+        Instantiate(blockParticles, particleInstantiateTransform.position, Quaternion.identity);
     }
 
     // Enemy gets hit
