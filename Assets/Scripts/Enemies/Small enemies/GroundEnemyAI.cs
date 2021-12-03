@@ -16,7 +16,7 @@ public class GroundEnemyAI : MonoBehaviour
     private Health health;
 
     [Header("Transforms")]
-    [SerializeField] private Transform target;
+    public Transform target;
     [SerializeField] private Rigidbody2D playerRB;
     [SerializeField] private Transform groundDetection;
     [SerializeField] private GameObject energyItem;
