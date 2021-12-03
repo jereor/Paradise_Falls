@@ -52,7 +52,7 @@ public class Shield : MonoBehaviour
             Blocking = true;
         }
         // Blocking cancelled
-        if (context.canceled)
+        if (context.canceled && Blocking)
         {
             StartCoroutine(ActivateParryWindow()); // Parry window activated
             //shield.SetActive(false); // Disable shield graphics
@@ -64,6 +64,8 @@ public class Shield : MonoBehaviour
     {
         playParry = true;
         hitParried = true;
+
+        GetComponent<Health>().PlayParryParticles();
     }
 
     // Activated when Shield button is released

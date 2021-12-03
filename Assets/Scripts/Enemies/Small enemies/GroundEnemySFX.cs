@@ -9,7 +9,6 @@ public class GroundEnemySFX : MonoBehaviour
     private float distanceFromPlayer;
     private GroundEnemyAI myAIScript;
 
-    private Coroutine stepCoroutine;
 
     [Header("Step sounds")]
     public AudioClip[] stepSounds;
@@ -54,10 +53,6 @@ public class GroundEnemySFX : MonoBehaviour
         }
         if (myAIScript.getPlaySoundMelee())
             PlayMeleeSound();
-        if (myAIScript.getPlaySoundStep() && stepCoroutine == null)
-            stepCoroutine = StartCoroutine(PlayStepSound());
-
-
     }
 
     public void ToggleAudioSource(bool isAudible)
@@ -73,11 +68,9 @@ public class GroundEnemySFX : MonoBehaviour
     }
 
 
-    public IEnumerator PlayStepSound()
+    public void PlayStepSound()
     {
         audioSource.PlayOneShot(stepSounds[(int)Random.Range(0, stepSounds.Length - 1)], 0.5f);
-        yield return new WaitForSeconds(myAIScript.getWalkStepInterval());
-        stepCoroutine = null;
     }
 
     public void PlayTakeDMGSound()
