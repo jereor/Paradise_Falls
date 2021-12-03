@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
 public class Health : MonoBehaviour
 {
@@ -10,8 +12,19 @@ public class Health : MonoBehaviour
     [SerializeField] private float currentHealth;
 
     private SpriteRenderer rndr;
+    [Header("Vignette flash when damaged")]
+    [SerializeField] private float vignetteIntensity;
+    [SerializeField] private float vignetteTime;
     [SerializeField] private Color blockedColor = Color.blue; // Block indication color.
     [SerializeField] private Color damageColor = Color.red; // Damage indication color.
+
+    // Fade to Black volume (use vignette to flash image red when damaged)
+    private Volume fadeToBlackVolume;
+    private Vignette vignette;
+
+    [Header("Time slow on hit")]
+    [SerializeField] private float slowDuration;
+    [SerializeField] private float timeScaleWhenSlowed;
 
     [Tooltip("Enable if you want this script to destroy the gameobject after health reaches zero")]
     public bool destroyWhenDead;
@@ -43,7 +56,7 @@ public class Health : MonoBehaviour
         currentHealth = (maxHealth > 0 ? maxHealth : 1);
         maxHealth = currentHealth;
         rndr = GetComponent<SpriteRenderer>();
-        if(rndr == null) // If gameobject has not SpriteRenderer, search from childs.
+        if (rndr == null) // If gameobject has not SpriteRenderer, search from childs.
         {
             rndr = GetComponentInChildren<SpriteRenderer>();
             //if(rndr == null)
@@ -51,6 +64,9 @@ public class Health : MonoBehaviour
             //    rndr = GetComponentInParent<SpriteRenderer>();
             //}
         }
+
+        fadeToBlackVolume = GameObject.Find("Fade to Black Volume").GetComponent<Volume>();
+        fadeToBlackVolume.profile.TryGet(out vignette);
     }
 
     /// <summary>
@@ -70,12 +86,13 @@ public class Health : MonoBehaviour
             {
                 amount -= shield.ProtectionAmount;
                 playSoundHurtShielded = true;
-                StartCoroutine(HitIndication(blockedColor)); // Player blocked the attack.
+                StartCoroutine(DamagedScreenColor(vignetteTime, blockedColor)); // Player blocked the attack.
             }
             else
             {
                 playSoundHurt = true;
-                StartCoroutine(HitIndication(damageColor)); // Player got hit.
+                StartCoroutine(DamagedSlowTime(slowDuration));
+                StartCoroutine(DamagedScreenColor(vignetteTime, damageColor)); // Player got hit.
             }
 
             if (amount < 0) amount = 0;
@@ -99,6 +116,7 @@ public class Health : MonoBehaviour
         }
     }
 
+    // Enemy gets hit
     IEnumerator HitIndication(Color color)
     {
         if(rndr != null)
@@ -107,6 +125,42 @@ public class Health : MonoBehaviour
             yield return new WaitForSeconds(0.1f);
             rndr.color = Color.white;
         }
+    }
+
+    // Player gets hit
+    private IEnumerator DamagedSlowTime(float duration)
+    {
+        Time.timeScale = timeScaleWhenSlowed;
+
+        yield return new WaitForSeconds(duration);
+
+        Time.timeScale = 1f;
+    }
+    private IEnumerator DamagedScreenColor(float duration, Color vigColor)
+    {
+        // Take default value 
+        ColorParameter defaultColor = vignette.color;
+        vignette.color.Override(vigColor);
+
+        // Fade in / Remove black screen
+        float counter = 0;
+        while (counter < duration)
+        {
+            counter += Time.deltaTime;
+            var newVignetteIntensity = Mathf.Lerp(0, vignetteIntensity, counter / duration);
+            vignette.intensity.value = newVignetteIntensity;
+            yield return new WaitForEndOfFrame();
+        }
+        counter = 0f;
+        while (counter < duration)
+        {
+            counter += Time.deltaTime;
+            var newVignetteIntensity = Mathf.Lerp(vignetteIntensity, 0, counter / duration);
+            vignette.intensity.value = newVignetteIntensity;
+            yield return new WaitForEndOfFrame();
+        }
+        // Set back to default value
+        vignette.color = defaultColor;
     }
 
     // Setter for new CurrentHealth amount.
