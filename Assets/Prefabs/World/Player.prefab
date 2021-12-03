@@ -10043,6 +10043,7 @@ MonoBehaviour:
   dashDistance: 3
   dashCooldown: 1
   dashCost: 10
+  dashLift: 0.5
   shockwaveAttackEffect: {fileID: 1691313839}
   shockwaveJumpEffect: {fileID: 212109729}
   shockwaveDashEffect: {fileID: 5702174841178822961}
