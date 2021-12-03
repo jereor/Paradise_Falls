@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
+
+// TODO: Collider to trigger
+// light attack state
+// player can damage boss in every state
+
 public class BigPlantController : MonoBehaviour
 {
     [SerializeField] private bool skipToSecondPhase = false;
