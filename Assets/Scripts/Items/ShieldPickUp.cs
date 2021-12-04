@@ -1,11 +1,13 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ShieldPickUp : Interactable
 {
     [Header("Variables from This script")]
     [SerializeField] private bool playerIsClose;
     [SerializeField] private GameObject playerObject;
-
+    [SerializeField] private InventoryPanelController inventoryPanelController;
+    [SerializeField] private Button shieldSkillButton;
 
     private void Start()
     {
@@ -54,6 +56,9 @@ public class ShieldPickUp : Interactable
             playerObject.GetComponent<Player>().UnlockShield();
             // Destroy this item from scene
             Destroy(gameObject);
+            // Open inventory and show the shield
+            inventoryPanelController.CallOpenInventory();
+            shieldSkillButton.onClick.Invoke();
         }
     }
 

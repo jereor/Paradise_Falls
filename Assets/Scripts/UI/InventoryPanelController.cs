@@ -104,16 +104,19 @@ public class InventoryPanelController : MonoBehaviour
     public void OpenInventory(InputAction.CallbackContext context)
     {
         if(context.started && !playerInteractions.GetisInteractingWithNPC() && !PauseMenuController.GameIsPaused)
-        {
-            if (PauseMenuController.GameIsPaused)
-                pauseController.HandlePauseState();
+            CallOpenInventory();
+    }
 
-            if (MapController.MapOpen)
-                mapController.HandleMapState();
+    public void CallOpenInventory()
+    {
+        if (PauseMenuController.GameIsPaused)
+            pauseController.HandlePauseState();
 
-            CheckCollectibleCounts();
-            HandleInventoryState();
-        }
+        if (MapController.MapOpen)
+            mapController.HandleMapState();
+
+        CheckCollectibleCounts();
+        HandleInventoryState();
     }
 
     public void HandleInventoryState()
