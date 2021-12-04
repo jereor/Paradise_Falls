@@ -16,7 +16,6 @@ public class ExplorerDroneController : MonoBehaviour
     [SerializeField] private GameObject textBox;
     [SerializeField] private TextMeshProUGUI textDisplay;
 
-
     [Header("Things To Say")]
     [SerializeField] private string[] sentences;
     [SerializeField] private string[] sentencesWhenTalkedBefore;
@@ -208,7 +207,7 @@ public class ExplorerDroneController : MonoBehaviour
                 inventoryPanelController.CallOpenInventory();
                 inventoryUnlockSkillButton.onClick.Invoke();
 
-                playerControl.HandleAllPlayerControlInputs(true);
+                //playerControl.HandleAllPlayerControlInputs(true); Disabled so player can not move while in inventory (JereO)
                 textBox.GetComponent<RectTransform>().DOAnchorPos(new Vector2(0, -200), .3f);
                 player.GetComponent<PlayerInteractions>().AllowTextAdvance(false);
                 textDisplay.text = "";
