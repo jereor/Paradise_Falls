@@ -56,7 +56,7 @@ public class MultitoolPickUp : Interactable
             playerObject.GetComponent<Player>().UnlockMultitool();
             // Destroy this item from scene
             Destroy(gameObject);
-            // Open inventory and show the shield
+            // Open inventory and show the multitool
             inventoryPanelController.CallOpenInventory();
             multitoolSkillButton.onClick.Invoke();
         }

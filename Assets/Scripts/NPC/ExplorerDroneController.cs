@@ -1,13 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using DG.Tweening;
 using TMPro;
 using UnityEngine.InputSystem;
 
 public class ExplorerDroneController : MonoBehaviour
 {
-    public MapController mapController;
+    [SerializeField] private MapController mapController;
+    [SerializeField] private InventoryPanelController inventoryPanelController;
+    [SerializeField] private Button inventoryUnlockSkillButton;
 
     [Header("Text Boxes")]
     [SerializeField] private GameObject textBox;
@@ -202,6 +205,8 @@ public class ExplorerDroneController : MonoBehaviour
                 {
                     playerControl.UnlockShieldGrind();
                 }
+                inventoryPanelController.CallOpenInventory();
+                inventoryUnlockSkillButton.onClick.Invoke();
 
                 playerControl.HandleAllPlayerControlInputs(true);
                 textBox.GetComponent<RectTransform>().DOAnchorPos(new Vector2(0, -200), .3f);
