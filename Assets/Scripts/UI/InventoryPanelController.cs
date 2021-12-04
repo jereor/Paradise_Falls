@@ -115,6 +115,7 @@ public class InventoryPanelController : MonoBehaviour
         if (MapController.MapOpen)
             mapController.HandleMapState();
 
+        UpdateControlScheme();
         CheckCollectibleCounts();
         HandleInventoryState();
     }
