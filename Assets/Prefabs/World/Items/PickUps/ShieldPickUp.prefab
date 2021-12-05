@@ -74,8 +74,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+    rgba: 4294960384
+  m_fontColor: {r: 0, g: 0.8980392, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -160,14 +160,14 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3648299027465705152}
-  m_LocalRotation: {x: -0, y: -0, z: -0.4728514, w: 0.8811422}
+  m_LocalRotation: {x: 0, y: 0, z: -0.7071068, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 3648299027424905993}
   m_Father: {fileID: 3648299028270185770}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -90}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
@@ -191,7 +191,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 25
-  m_SortingLayerID: 0
+  m_SortingLayerID: -64208757
   m_SortingOrder: 10
   m_TargetDisplay: 0
 --- !u!114 &3648299027465705155
@@ -247,6 +247,8 @@ GameObject:
   - component: {fileID: 3648299028270185771}
   - component: {fileID: 3648299028270185774}
   - component: {fileID: 3648299028270185773}
+  - component: {fileID: 488143350}
+  - component: {fileID: 488143349}
   m_Layer: 0
   m_Name: ShieldPickUp
   m_TagString: Untagged
@@ -306,9 +308,9 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingLayerID: 409960295
+  m_SortingLayer: 4
+  m_SortingOrder: 1
   m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -378,3 +380,69 @@ MonoBehaviour:
   interactedText: Interacted
   playerIsClose: 0
   playerObject: {fileID: 0}
+  inventoryPanelController: {fileID: 0}
+  shieldSkillButton: {fileID: 0}
+--- !u!114 &488143350
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3648299028270185769}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_LightType: 1
+  m_BlendStyleIndex: 0
+  m_FalloffIntensity: 1
+  m_Color: {r: 0.5411765, g: 1, b: 0.98039216, a: 1}
+  m_Intensity: 1
+  m_LightVolumeOpacity: 0
+  m_ApplyToSortingLayers: 000000008dd3b1c38fb30fcd677f6f18cbdc235cf143de191d3885085d08d705c779de84615badd697e0b4494b39ecf32bdf8c638b402cfc
+  m_LightCookieSprite: {fileID: 0}
+  m_UseNormalMap: 1
+  m_LightOrder: 0
+  m_AlphaBlendOnOverlap: 0
+  m_ShadowIntensity: 0
+  m_ShadowVolumeIntensity: 0
+  m_PointLightInnerAngle: 360
+  m_PointLightOuterAngle: 360
+  m_PointLightInnerRadius: 0
+  m_PointLightOuterRadius: 1
+  m_PointLightDistance: 5
+  m_PointLightQuality: 1
+  m_ShapeLightParametricSides: 5
+  m_ShapeLightParametricAngleOffset: 0
+  m_ShapeLightParametricRadius: 1
+  m_ShapeLightFalloffSize: 5
+  m_ShapeLightFalloffOffset: {x: 0, y: 0}
+  m_ShapePath:
+  - {x: -0.26170322, y: -0.75149816, z: 0}
+  - {x: -0.065954834, y: -0.83533084, z: 0}
+  - {x: 0.24291465, y: -0.5579187, z: 0}
+  - {x: 0.41170824, y: -0.24906123, z: 0}
+  - {x: 0.4514244, y: 0.06862072, z: 0}
+  - {x: 0.36206314, y: 0.3642414, z: 0}
+  - {x: 0.1822709, y: 0.6014817, z: 0}
+  - {x: -0.33296922, y: 0.89371145, z: 0}
+  - {x: -0.38085186, y: 0.7867962, z: 0}
+  - {x: -0.31497905, y: 0.3062645, z: 0}
+  - {x: -0.26589802, y: -0.21105912, z: 0}
+  - {x: -0.29325315, y: -0.5888044, z: 0}
+--- !u!114 &488143349
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3648299028270185769}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e405ca74dfdcb0498a685f56bbbe30a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  flickerTime: 0.01
+  minIntensity: 1
+  maxIntensity: 1.3

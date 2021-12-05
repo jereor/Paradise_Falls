@@ -35,7 +35,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 1}
-  m_SizeDelta: {x: 2, y: 2}
+  m_SizeDelta: {x: 4.1976, y: 2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3607895714917058659
 CanvasRenderer:
@@ -74,8 +74,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+    rgba: 4294960384
+  m_fontColor: {r: 0, g: 0.89879274, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -233,8 +233,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -2065794617
-  m_SortingLayer: 3
+  m_SortingLayerID: 142948381
+  m_SortingLayer: 6
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 4bff78b549de9914daf310ded3a839d3, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -262,7 +262,7 @@ MonoBehaviour:
   itemEvent:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3275251045672316729}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: AudioSourceMute, Assembly-CSharp
         m_MethodName: PlayShutdownSound
         m_Mode: 1
@@ -272,7 +272,7 @@ MonoBehaviour:
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 0
+          m_BoolArgument: 1
         m_CallState: 2
   floatingText: {fileID: 3607895714917058658}
   showFloatingText: 1
@@ -286,6 +286,7 @@ MonoBehaviour:
       m_Calls: []
   isMultiUse: 0
   pressedSprite: {fileID: 21300000, guid: 7b2b18363a052384880cd7b0ad3fff82, type: 3}
+  isUsed: 0
 --- !u!82 &6515800906527985866
 AudioSource:
   m_ObjectHideFlags: 0
@@ -404,6 +405,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 16ed2a520f51dfc4eaba259bc66635b3, type: 3}
   - {fileID: 8300000, guid: 3314904800cf8da4893acc74a4ad3be8, type: 3}
   destroyAfterShutdown: 0
+  shutdownGroup: {fileID: 0}
 --- !u!1 &3607895715702450345
 GameObject:
   m_ObjectHideFlags: 0
@@ -461,7 +463,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 25
-  m_SortingLayerID: 0
+  m_SortingLayerID: -64208757
   m_SortingOrder: 10
   m_TargetDisplay: 0
 --- !u!114 &3607895715702450340
