@@ -17,8 +17,8 @@ public class PlayerInteractions : MonoBehaviour
         // context.started = onButtonDown only event is invoked only once
         if (context.started && canInteract && objectToInteract != null && !PauseMenuController.GameIsPaused && !InventoryPanelController.InventoryIsActive)
         {
-            //Debug.Log("Trying to interact");
-            //Debug.Log(objectToInteract.GetComponent<Interactable>());
+            if (objectToInteract.GetComponent<Lever>() // Return if the object is a lever and player does not have multitool
+                && (!Player.Instance.MultitoolUnlocked() || !PlayerCombat.Instance.getWeaponWielded())) return;
             objectToInteract.GetComponent<Interactable>().itemEvent.Invoke();   // Invoke virtual function event call this virtual function is modified in item scripts to do something 
         }
         else if(context.started && isNPC && objectToInteract != null && !PauseMenuController.GameIsPaused && !InventoryPanelController.InventoryIsActive)

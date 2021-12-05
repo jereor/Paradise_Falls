@@ -10219,14 +10219,14 @@ MonoBehaviour:
   energyScript: {fileID: 8760275387346948364}
   shieldScript: {fileID: 1812080132}
   grindScript: {fileID: 7180285044104453406}
-  shieldUnlocked: 1
-  multitoolUnlocked: 1
-  walljumpUnlocked: 1
-  grapplingUnlocked: 1
-  dashUnlocked: 1
-  shockwaveJumpAndDiveUnlocked: 1
-  shockwaveAttackUnlocked: 1
-  shieldGrindUnlocked: 1
+  shieldUnlocked: 0
+  multitoolUnlocked: 0
+  walljumpUnlocked: 0
+  grapplingUnlocked: 0
+  dashUnlocked: 0
+  shockwaveJumpAndDiveUnlocked: 0
+  shockwaveAttackUnlocked: 0
+  shieldGrindUnlocked: 0
   meleePickUps: 0000
   throwPickUps: 0000
   healthPickUps: 0000000000
@@ -10521,7 +10521,19 @@ MonoBehaviour:
     m_ActionId: 83bd5f33-bc2d-4d93-bce7-256c464c19ae
     m_ActionName: Player/Dash[/Keyboard/leftShift]
   - m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: -4342889769223962116}
+        m_TargetAssemblyTypeName: PlayerInteractions, Assembly-CSharp
+        m_MethodName: AdvanceText
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_ActionId: de2c38ef-f5a0-4216-a7cf-c5c1787e7d18
     m_ActionName: Player/AdvanceText[/Mouse/leftButton]
   - m_PersistentCalls:

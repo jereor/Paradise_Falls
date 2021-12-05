@@ -68,7 +68,7 @@ public class Lever : Interactable
     {
         // Lever functionality. Call for the attached objects' functionality here.
         // If player doesn't have the tool for using lever spots, return.
-        if (!GameObject.Find("Player").GetComponent<PlayerCombat>().getWeaponWielded()){ return; }
+        if (!GameObject.Find("Player").GetComponent<PlayerCombat>().getWeaponWielded()) return;
         if(!turning && !isLeverUsed)
         {
             foreach (GameObject movingObject in objectsToInteractWith)
