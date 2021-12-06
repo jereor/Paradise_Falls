@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class SmallUpgradePickUp : Interactable
 {
@@ -16,6 +18,8 @@ public class SmallUpgradePickUp : Interactable
     [SerializeField] private Upgrade myEnum;
     [SerializeField] private bool playerIsClose;
     [SerializeField] private GameObject playerObject;
+    [SerializeField] private InventoryPanelController inventoryPanelController;
+    [SerializeField] private Button collectibleButton;
 
     [Header("Upgrade amounts(change these only on prefab, amount that is added when picked up)")]
     [SerializeField] private float lightDamage;
@@ -30,7 +34,7 @@ public class SmallUpgradePickUp : Interactable
     void Start()
     {
         UpdateTextBinding();
-
+        
         HideFloatingText();
 
         itemEvent.AddListener(Interact);
@@ -80,6 +84,9 @@ public class SmallUpgradePickUp : Interactable
             UpgradeEnum();
             // Destroy this item from scene
             Destroy(gameObject);
+            // Open inventory and show the upgrade
+            inventoryPanelController.CallOpenInventory();
+            collectibleButton.onClick.Invoke();
         }
     }
 
