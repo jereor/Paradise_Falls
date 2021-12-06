@@ -10219,14 +10219,14 @@ MonoBehaviour:
   energyScript: {fileID: 8760275387346948364}
   shieldScript: {fileID: 1812080132}
   grindScript: {fileID: 7180285044104453406}
-  shieldUnlocked: 0
-  multitoolUnlocked: 0
-  walljumpUnlocked: 0
-  grapplingUnlocked: 0
-  dashUnlocked: 0
-  shockwaveJumpAndDiveUnlocked: 0
-  shockwaveAttackUnlocked: 0
-  shieldGrindUnlocked: 0
+  shieldUnlocked: 1
+  multitoolUnlocked: 1
+  walljumpUnlocked: 1
+  grapplingUnlocked: 1
+  dashUnlocked: 1
+  shockwaveJumpAndDiveUnlocked: 1
+  shockwaveAttackUnlocked: 1
+  shieldGrindUnlocked: 1
   meleePickUps: 0000
   throwPickUps: 0000
   healthPickUps: 0000000000
@@ -20819,8 +20819,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 1670176555
+  m_SortingLayer: 12
   m_SortingOrder: 0
   m_RenderMode: 0
   m_SortMode: 0
