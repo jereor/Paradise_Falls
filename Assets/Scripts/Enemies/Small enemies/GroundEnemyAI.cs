@@ -551,6 +551,7 @@ public class GroundEnemyAI : MonoBehaviour
             // Ignore collisions between these colliders
             foreach (var collider in colliders)
             {
+                Debug.Log(collider.gameObject.name);
                 Physics2D.IgnoreCollision(GetComponent<Collider2D>(), collider);
             }
             return false;
