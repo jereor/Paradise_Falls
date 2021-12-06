@@ -13,6 +13,8 @@ public class MusicManager : MonoBehaviour
 
     public static MusicManager instance;
 
+    public string currentlyPlaying = "";
+
     private void Awake()
     {
         if (instance == null)
@@ -29,7 +31,7 @@ public class MusicManager : MonoBehaviour
         track02.loop = true;
 
 
-        SwapTrack(defaultTrack);
+        //SwapTrack(defaultTrack);
     }
 
 
@@ -52,12 +54,14 @@ public class MusicManager : MonoBehaviour
         float timeToFade = 1.25f;
         float timeElapsed = 0f;
 
+        // Audio source 1 aka track01 ins playing we need to fade out track01 and fade in track02
         if (isPlayingTrack01)
         {
             track02.clip = newClip;
+            currentlyPlaying = newClip.name;
             track02.Play();
 
-            while(timeElapsed < timeToFade)
+            while (timeElapsed < timeToFade)
             {
                 track02.volume = Mathf.Lerp(0, 1, timeElapsed / timeToFade);
                 track01.volume = Mathf.Lerp(1, 0, timeElapsed / timeToFade);
@@ -70,6 +74,7 @@ public class MusicManager : MonoBehaviour
         else
         {
             track01.clip = newClip;
+            currentlyPlaying = newClip.name;
             track01.Play();
 
             while (timeElapsed < timeToFade)
