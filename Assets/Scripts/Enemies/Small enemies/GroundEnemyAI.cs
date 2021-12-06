@@ -16,7 +16,7 @@ public class GroundEnemyAI : MonoBehaviour
     private Health health;
 
     [Header("Transforms")]
-    public Transform target;
+    public GameObject target;
     [SerializeField] private Rigidbody2D playerRB;
     [SerializeField] private Transform groundDetection;
     [SerializeField] private GameObject energyItem;
@@ -108,7 +108,8 @@ public class GroundEnemyAI : MonoBehaviour
     {
         // Set speed and state to charge that if bossMode is true enemy starts at charge state with charge speed
 
-
+        target = GameObject.Find("Player");
+        playerRB = target.GetComponent<Rigidbody2D>();
         seeker = GetComponent<Seeker>();
         rb = GetComponent<Rigidbody2D>();
         _targetHealth = target.GetComponent<Health>();
@@ -138,7 +139,7 @@ public class GroundEnemyAI : MonoBehaviour
     void UpdatePath()
     {
         if (seeker.IsDone())
-            seeker.StartPath(rb.position, target.position, OnPathComplete);
+            seeker.StartPath(rb.position, target.transform.position, OnPathComplete);
     }
 
     //Draws gizmos for enemy's "territory".
@@ -249,7 +250,8 @@ public class GroundEnemyAI : MonoBehaviour
             }
 
             // Checks only for ground ahead, jumpable obstacles and walls.
-            ObstacleCheck();
+            if(!bossMode || enemyState != EnemyState.Charge || enemyState != EnemyState.Punch)
+                ObstacleCheck();
 
 
             switch (enemyState)
@@ -549,8 +551,10 @@ public class GroundEnemyAI : MonoBehaviour
             // Ignore collisions between these colliders
             foreach (var collider in colliders)
             {
+                Debug.Log(collider.gameObject.name);
                 Physics2D.IgnoreCollision(GetComponent<Collider2D>(), collider);
             }
+            return false;
         }
 
         return Physics2D.OverlapCircle(groundCheck.position, checkRadius, groundLayer);

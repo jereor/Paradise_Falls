@@ -17,7 +17,7 @@ public class FlyingEnemyAI : MonoBehaviour
     public bool bossMode;
 
     [Header("Transforms")]
-    public Transform target;
+    public GameObject target;
     [SerializeField] private Rigidbody2D playerRB;
     [SerializeField] private GameObject bullet;
     [SerializeField] private GameObject energyItem;
@@ -93,6 +93,8 @@ public class FlyingEnemyAI : MonoBehaviour
             speed = chargeSpeed;
         }
 
+        target = GameObject.Find("Player");
+        playerRB = target.GetComponent<Rigidbody2D>();
         seeker = GetComponent<Seeker>();
         rb = GetComponent<Rigidbody2D>();
         _targetHealth = target.GetComponent<Health>();
@@ -112,7 +114,7 @@ public class FlyingEnemyAI : MonoBehaviour
     void UpdatePathToPlayer()
     {
         if (seeker.IsDone())
-            seeker.StartPath(rb.position, target.position, OnPathComplete);
+            seeker.StartPath(rb.position, target.transform.position, OnPathComplete);
     }
 
     void UpdatePathReturn()
