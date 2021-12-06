@@ -358,8 +358,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 5
   currentHealth: 0
+  blockDrainAmount: 0
+  blockParticles: {fileID: 0}
+  parryParticles: {fileID: 0}
+  particleInstantiateTransform: {fileID: 0}
+  vignetteIntensity: 0
+  vignetteTime: 0
   blockedColor: {r: 0, g: 0, b: 1, a: 1}
   damageColor: {r: 1, g: 0, b: 0, a: 1}
+  slowDuration: 0
+  timeScaleWhenSlowed: 0
   destroyWhenDead: 0
   onDie:
     m_PersistentCalls:
@@ -425,7 +433,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
   m_Volume: 1
-  m_Pitch: 1
+  m_Pitch: 0.8
   Loop: 0
   Mute: 0
   Spatialize: 0
@@ -520,7 +528,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e91a42bea59cd5d499d46e049e3df0b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stepTimeCharge: 0.5
   meleeSwingSound: {fileID: 8300000, guid: a952aedf55b93c84a921cee7c8a27201, type: 3}
   stunnedSound: {fileID: 8300000, guid: 58b56ceb831208c4ba823f3e8657b68a, type: 3}
   stepSounds:
@@ -818,8 +825,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 2
   currentHealth: 0
+  blockDrainAmount: 0
+  blockParticles: {fileID: 0}
+  parryParticles: {fileID: 0}
+  particleInstantiateTransform: {fileID: 0}
+  vignetteIntensity: 0
+  vignetteTime: 0
   blockedColor: {r: 0, g: 0, b: 1, a: 1}
   damageColor: {r: 1, g: 0, b: 0, a: 1}
+  slowDuration: 0
+  timeScaleWhenSlowed: 0
   destroyWhenDead: 0
   onDie:
     m_PersistentCalls:
