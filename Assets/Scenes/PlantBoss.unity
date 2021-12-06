@@ -309,7 +309,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 8838499440958543038}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 79788b29d131d684289e04f34d0a7469, type: 3}
   m_Name: 
@@ -30092,11 +30092,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2646993275326716544, guid: 4154d57994558ff489a9180c3151e624, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 23.184
+      value: 30.492
       objectReference: {fileID: 0}
     - target: {fileID: 2646993275326716544, guid: 4154d57994558ff489a9180c3151e624, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 170.604
+      value: 50.274002
       objectReference: {fileID: 0}
     - target: {fileID: 2646993275326716544, guid: 4154d57994558ff489a9180c3151e624, type: 3}
       propertyPath: m_LocalPosition.z
@@ -30299,6 +30299,10 @@ PrefabInstance:
       propertyPath: movementScript
       value: 
       objectReference: {fileID: 268907418}
+    - target: {fileID: 5547387544731393138, guid: 8f290bfe0722b1f44bdaa70ca8d405aa, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6225638974950085924, guid: 8f290bfe0722b1f44bdaa70ca8d405aa, type: 3}
       propertyPath: m_Mesh
       value: 
@@ -30952,11 +30956,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8838499441252086581, guid: 16f030dbb1d9cde469f4ad9ed2600e5a, type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8838499441252086581, guid: 16f030dbb1d9cde469f4ad9ed2600e5a, type: 3}
       propertyPath: skipSmallEnemies
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8838499441252086581, guid: 16f030dbb1d9cde469f4ad9ed2600e5a, type: 3}
       propertyPath: bossTeleportPoint
@@ -30972,7 +30976,7 @@ PrefabInstance:
       objectReference: {fileID: 1882565895}
     - target: {fileID: 8838499441252086581, guid: 16f030dbb1d9cde469f4ad9ed2600e5a, type: 3}
       propertyPath: skipToSecondPhase
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8838499441252086583, guid: 16f030dbb1d9cde469f4ad9ed2600e5a, type: 3}
       propertyPath: m_RootOrder

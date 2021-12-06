@@ -553,6 +553,7 @@ public class GroundEnemyAI : MonoBehaviour
             {
                 Physics2D.IgnoreCollision(GetComponent<Collider2D>(), collider);
             }
+            return false;
         }
 
         return Physics2D.OverlapCircle(groundCheck.position, checkRadius, groundLayer);
