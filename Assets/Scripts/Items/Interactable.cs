@@ -45,7 +45,7 @@ public class Interactable : MonoBehaviour
     public void UpdateTextBinding()
     {
         // Get the input key for interact action
-        textToShow = textToShow.Replace("#", inputActions.FindAction("Interact").controls.ToArray()[0].name);
+        textToShow = textToShow.Replace("#", inputActions.FindAction("Interact").controls.ToArray()[0].name.ToUpper());
     }
 
     // Makes text object visible, called from item script when player comes close
