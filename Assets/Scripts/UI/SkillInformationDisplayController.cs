@@ -35,7 +35,7 @@ public class SkillInformationDisplayController : MonoBehaviour
         UpdateTextBinding();
     }
 
-    // Updates # to correct key
+    // Updates #, & and % to correct key respectively.
     private void UpdateTextBinding()
     {
         if(!isUsingController)
@@ -43,8 +43,6 @@ public class SkillInformationDisplayController : MonoBehaviour
             if (buttonToUseDisplay.Contains("#"))
                 buttonToUseDisplay = buttonToUseDisplay.Replace("#", InputActionRebindingExtensions.GetBindingDisplayString(inputActions.FindAction(skillName[0]), 0));
 
-
-            // Get the input key for interact action
             if (buttonToUseDisplay.Contains("&"))
                 buttonToUseDisplay = buttonToUseDisplay.Replace("&", InputActionRebindingExtensions.GetBindingDisplayString(inputActions.FindAction(skillName[1]), 0));
 
@@ -56,8 +54,6 @@ public class SkillInformationDisplayController : MonoBehaviour
             if (buttonToUseDisplay.Contains("#"))
                 buttonToUseDisplay = buttonToUseDisplay.Replace("#", InputActionRebindingExtensions.GetBindingDisplayString(inputActions.FindAction(skillName[0]), 1));
 
-
-            // Get the input key for interact action
             if (buttonToUseDisplay.Contains("&"))
                 buttonToUseDisplay = buttonToUseDisplay.Replace("&", InputActionRebindingExtensions.GetBindingDisplayString(inputActions.FindAction(skillName[1]), 1));
 

@@ -84,6 +84,8 @@ public class BigPlantController : MonoBehaviour
     [SerializeField] private float lightAttackCircleRadius = 2;
     [SerializeField] private float lightAttackCooldown = 2;
 
+    private float tempHealth = 0;
+
 
     private bool isCovered = false;
     private bool isRoaring = false;
@@ -134,6 +136,14 @@ public class BigPlantController : MonoBehaviour
         {
             HandlePlayerIsDeadState();
             return;
+        }
+
+        if(state == PlantState.Stunned && health.GetHealth() <= tempHealth - 8f && health.GetHealth() > health.GetMaxHealth() * 0.5f)
+        {
+            tempHealth = 0;
+            StopCoroutine(Stun());
+            ChangeToDefaultLayer();
+            state = PlantState.Protected;
         }
 
 
@@ -283,6 +293,7 @@ public class BigPlantController : MonoBehaviour
         // Uncovers the boss (visual only) and starts the coroutine for stun state.
         if(isCovered)
         {
+            tempHealth = health.GetHealth();
             Uncover();
             StartCoroutine(Stun());
         }
@@ -431,7 +442,6 @@ public class BigPlantController : MonoBehaviour
     private IEnumerator Cover()
     {
         isCovered = true;
-        gameObject.GetComponent<CircleCollider2D>().radius = 2f;
         spikyVine.transform.DOMove(spikyVineEndPosition, 1);
         yield return new WaitForSeconds(1);
         gameObject.GetComponent<CircleCollider2D>().radius = 2f;
