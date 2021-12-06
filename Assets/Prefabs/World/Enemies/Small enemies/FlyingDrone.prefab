@@ -81,8 +81,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 1
   currentHealth: 0
+  blockDrainAmount: 0
+  blockParticles: {fileID: 0}
+  parryParticles: {fileID: 0}
+  particleInstantiateTransform: {fileID: 0}
+  playerIsInvincible: 0
+  vignetteIntensity: 0
+  vignetteTime: 0
   blockedColor: {r: 0, g: 0, b: 1, a: 1}
   damageColor: {r: 1, g: 0, b: 0, a: 1}
+  slowDuration: 0
+  timeScaleWhenSlowed: 0
   destroyWhenDead: 0
   onDie:
     m_PersistentCalls:
@@ -155,7 +164,7 @@ MonoBehaviour:
   rotateAmount: 15
   explosionPower: 4
   roamingRange: {x: 24.23, y: 13.74}
-  roamingOffset: {x: 7.9, y: -9.4}
+  roamingOffset: {x: 0, y: 0}
   aggroDistance: 8
   shootingDistance: 4.02
   wallCheckDistance: 0.5

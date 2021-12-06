@@ -56,10 +56,10 @@ Material:
     - _Radius: 0.08
     - _RemovedSegments: 0
     - _Rotation: 0
-    - _SegmentCount: 5
+    - _SegmentCount: 9
     - _SegmentSpacing: 0.002
     m_Colors:
-    - _Color: {r: 1, g: 0.7664156, b: 0, a: 0}
+    - _Color: {r: 0, g: 1, b: 0, a: 1}
     - _Flip: {r: 1, g: 1, b: 1, a: 1}
     - _RendererColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []

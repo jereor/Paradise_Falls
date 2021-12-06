@@ -17,6 +17,8 @@ public class Health : MonoBehaviour
     public ParticleSystem parryParticles;
     public Transform particleInstantiateTransform;
 
+    public bool playerIsInvincible = false;
+
     private SpriteRenderer rndr;
     [Header("Vignette flash when damaged")]
     [SerializeField] private float vignetteIntensity;
@@ -83,6 +85,7 @@ public class Health : MonoBehaviour
     virtual public void TakeDamage(float amount)
     {
         if (IsDead()) return; // If the script is still active, don't invoke onDie more than once
+        if (playerIsInvincible) return;
 
         // If this object has a shield and they are currently blocking, reduce damage
         if (gameObject.TryGetComponent(out Shield shield))
@@ -106,7 +109,7 @@ public class Health : MonoBehaviour
                 playSoundHurt = true;
                 StartCoroutine(DamagedSlowTime(slowDuration));
                 StartCoroutine(DamagedScreenColor(vignetteTime, damageColor)); // Player got hit.
-                StartCoroutine(HitIndication(damageColor));
+                //StartCoroutine(HitIndication(damageColor));
             }
 
             if (amount < 0) amount = 0;
@@ -118,6 +121,13 @@ public class Health : MonoBehaviour
         }
 
         currentHealth -= amount;
+
+        if (transform.name == "Player" && !playerIsInvincible && amount > 0)
+        {
+            StartCoroutine(Invincibility());
+        }
+
+
 
         TakingDamage?.Invoke(this, EventArgs.Empty);
 
@@ -150,6 +160,25 @@ public class Health : MonoBehaviour
             yield return new WaitForSeconds(0.1f);
             rndr.color = Color.white;
         }
+    }
+
+    IEnumerator Invincibility()
+    {
+        playerIsInvincible = true;
+        transform.gameObject.layer = LayerMask.NameToLayer("PlayerInvincible");
+        Color tmp = rndr.color;
+        for(int i = 0; i < 10; i++)
+        {
+            tmp.a = 0.3f;
+            rndr.color = tmp;
+            yield return new WaitForSeconds(0.1f);
+            tmp.a = 1f;
+            rndr.color = tmp;
+            yield return new WaitForSeconds(0.1f);
+        }
+        transform.gameObject.layer = LayerMask.NameToLayer("Player");
+        playerIsInvincible = false;
+        
     }
 
     // Player gets hit

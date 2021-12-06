@@ -29,7 +29,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8838499441252086584}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 28.12, y: 31.95, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -129,14 +129,17 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8838499441252086584}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 79788b29d131d684289e04f34d0a7469, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skipToSecondPhase: 1
-  skipSmallEnemies: 1
+  skipToSecondPhase: 0
+  skipSmallEnemies: 0
   health: {fileID: 8838499441252086578}
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 8
   hiddenBossObjects: {fileID: 0}
   bossTeleportPoint: {fileID: 0}
   seedShootPosition: {fileID: 0}
@@ -146,6 +149,7 @@ MonoBehaviour:
   attackVine: {fileID: 5969140961597626194, guid: 545eaa162f1816e40bd39d21d9212b5d, type: 3}
   grappleVine: {fileID: 1125926157888548533, guid: dc44eb6d819d39f49aa5a7214b1ada27, type: 3}
   seedVine: {fileID: 1125926157888548533, guid: 3751de268d0450e4d8f6b1a1e6f73b4d, type: 3}
+  swingVine: {fileID: 1125926157888548533, guid: c343dec6507bbf8428de2d1ff02fbbdd, type: 3}
   attackVineInstances: []
   grappleVineInstances: []
   plantSeed: {fileID: 2045461362968113728, guid: b77de6101bfcf4e44887862d0492bc74, type: 3}
@@ -162,10 +166,9 @@ MonoBehaviour:
   vineSpeed: 1
   speedMultiplier: 1
   chargeProbability: 8
-  isSetUppingForSeedShoot: 0
-  isSeedShooting: 0
-  isArtillerying: 0
-  hasArtilleryed: 0
+  knockbackCooldown: 1
+  lightAttackCircleRadius: 3.5
+  lightAttackCooldown: 2
 --- !u!114 &8838499441252086578
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -180,8 +183,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 30
   currentHealth: 0
+  blockDrainAmount: 0
+  blockParticles: {fileID: 0}
+  parryParticles: {fileID: 0}
+  particleInstantiateTransform: {fileID: 0}
+  playerIsInvincible: 0
+  vignetteIntensity: 0
+  vignetteTime: 0
   blockedColor: {r: 0, g: 0, b: 1, a: 1}
   damageColor: {r: 1, g: 0, b: 0, a: 1}
+  slowDuration: 0
+  timeScaleWhenSlowed: 0
   destroyWhenDead: 0
   onDie:
     m_PersistentCalls:
