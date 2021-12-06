@@ -156,30 +156,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &129927133 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2055667790811584650, guid: 8f290bfe0722b1f44bdaa70ca8d405aa, type: 3}
-  m_PrefabInstance: {fileID: 7405320281501524287}
-  m_PrefabAsset: {fileID: 0}
---- !u!95 &129927137
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 129927133}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 6815f758460c8e946bf580cc21cc1a9f, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &165691679
 GameObject:
   m_ObjectHideFlags: 0
@@ -28002,30 +27978,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb5d3b4f4e25e4a4bab9bbe76ca99bb0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &761708521 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2055667789709348524, guid: 8f290bfe0722b1f44bdaa70ca8d405aa, type: 3}
-  m_PrefabInstance: {fileID: 7405320281501524287}
-  m_PrefabAsset: {fileID: 0}
---- !u!95 &761708525
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 761708521}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 6815f758460c8e946bf580cc21cc1a9f, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!114 &874149489 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1367333549, guid: a655144b432639548a8f6b7175f6390a, type: 3}
@@ -30343,30 +30295,6 @@ PrefabInstance:
       propertyPath: movementScript
       value: 
       objectReference: {fileID: 268907418}
-    - target: {fileID: 2055667789709348522, guid: 8f290bfe0722b1f44bdaa70ca8d405aa, type: 3}
-      propertyPath: m_SpriteTilingProperty.oldSize.x
-      value: 3.4133334
-      objectReference: {fileID: 0}
-    - target: {fileID: 2055667789709348522, guid: 8f290bfe0722b1f44bdaa70ca8d405aa, type: 3}
-      propertyPath: m_SpriteTilingProperty.oldSize.y
-      value: 3.4133334
-      objectReference: {fileID: 0}
-    - target: {fileID: 2055667789709348523, guid: 8f290bfe0722b1f44bdaa70ca8d405aa, type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: 1333d8b2164cf84429c196d6dbaf60cb, type: 3}
-    - target: {fileID: 2055667789709348523, guid: 8f290bfe0722b1f44bdaa70ca8d405aa, type: 3}
-      propertyPath: m_Color.b
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2055667789709348523, guid: 8f290bfe0722b1f44bdaa70ca8d405aa, type: 3}
-      propertyPath: m_Color.g
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2055667789709348523, guid: 8f290bfe0722b1f44bdaa70ca8d405aa, type: 3}
-      propertyPath: m_Color.r
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 2055667790552431942, guid: 8f290bfe0722b1f44bdaa70ca8d405aa, type: 3}
       propertyPath: movementScript
       value: 
