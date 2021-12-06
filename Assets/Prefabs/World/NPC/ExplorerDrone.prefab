@@ -72,9 +72,9 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingLayerID: -1011756147
+  m_SortingLayer: 1
+  m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: fc15155af8b75db4a9e9e27291e46584, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -145,12 +145,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e59eb745fa737694ab961ed64fa87863, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mapController: {fileID: 0}
+  inventoryPanelController: {fileID: 0}
+  inventoryUnlockSkillButton: {fileID: 0}
   textBox: {fileID: 0}
   textDisplay: {fileID: 0}
-  sentences: []
-  sentencesWhenTalkedBefore: []
+  sentences:
+  - Woah! Where did you come from?
+  - Oh, me? I ended up here while running away from those creepy drones down there.
+  - I found this equipment while on my travels around this godforsaken "paradise"
+    they call it. Hopefully you find better use for it since I'm no acrobat of any
+    kind.
+  sentencesWhenTalkedBefore:
+  - Stay safe! I'm going to rest here for a while now that I have the chance.
   typingSpeed: 0.02
-  unlocksWallJump: 0
+  unlocksWallJump: 1
+  unlocksDash: 0
+  unlocksGrappling: 0
   unlocksShockWaveJumpAndDive: 0
   unlocksShockWaveAttack: 0
   unlocksShieldGrind: 0
@@ -234,8 +245,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+    rgba: 4294960384
+  m_fontColor: {r: 0, g: 0.8980392, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -351,7 +362,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 25
-  m_SortingLayerID: 0
+  m_SortingLayerID: -64208757
   m_SortingOrder: 10
   m_TargetDisplay: 0
 --- !u!114 &5226606987269155688

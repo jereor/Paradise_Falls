@@ -45,8 +45,8 @@ public class SkillInformationDisplayController : MonoBehaviour
 
 
             // Get the input key for interact action
-            if (buttonToUseDisplay.Contains("¤"))
-                buttonToUseDisplay = buttonToUseDisplay.Replace("¤", InputActionRebindingExtensions.GetBindingDisplayString(inputActions.FindAction(skillName[1]), 0));
+            if (buttonToUseDisplay.Contains("ï¿½"))
+                buttonToUseDisplay = buttonToUseDisplay.Replace("ï¿½", InputActionRebindingExtensions.GetBindingDisplayString(inputActions.FindAction(skillName[1]), 0));
 
             if (buttonToUseDisplay.Contains("%"))
                 buttonToUseDisplay = buttonToUseDisplay.Replace("%", InputActionRebindingExtensions.GetBindingDisplayString(inputActions.FindAction(skillName[2]), 0));
@@ -58,8 +58,8 @@ public class SkillInformationDisplayController : MonoBehaviour
 
 
             // Get the input key for interact action
-            if (buttonToUseDisplay.Contains("¤"))
-                buttonToUseDisplay = buttonToUseDisplay.Replace("¤", InputActionRebindingExtensions.GetBindingDisplayString(inputActions.FindAction(skillName[1]), 1));
+            if (buttonToUseDisplay.Contains("ï¿½"))
+                buttonToUseDisplay = buttonToUseDisplay.Replace("ï¿½", InputActionRebindingExtensions.GetBindingDisplayString(inputActions.FindAction(skillName[1]), 1));
 
             if (buttonToUseDisplay.Contains("%"))
                 buttonToUseDisplay = buttonToUseDisplay.Replace("%", InputActionRebindingExtensions.GetBindingDisplayString(inputActions.FindAction(skillName[2]), 1));

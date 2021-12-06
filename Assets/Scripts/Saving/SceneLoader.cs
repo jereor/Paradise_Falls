@@ -154,9 +154,7 @@ public class SceneLoader : MonoBehaviour
                         // Compare strings if found SwitchCameras to it
                         if (camera.name.Equals(GameStatus.status.getLoadedData().camera))
                         {
-                            //Debug.Log("Found");
                             CameraTransitions.Instance.SwitchCameras(camera);
-                            PlayerCamera.Instance.CameraFadeIn(2);
                             break; // No need to check List anymore
                         }
                     }
@@ -204,6 +202,8 @@ public class SceneLoader : MonoBehaviour
         {
             Debug.Log("No GameStatus object in scene if testing: either start from MainMenu or drag player prefab to scene");
         }
+
+        PlayerCamera.Instance.CameraFadeIn(1);
     }
 
     // Update is called once per frame

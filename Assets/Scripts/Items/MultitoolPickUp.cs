@@ -1,11 +1,13 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MultitoolPickUp : Interactable
 {
     [Header("Variables from This script")]
     [SerializeField] private bool playerIsClose;
     [SerializeField] private GameObject playerObject;
-
+    [SerializeField] private InventoryPanelController inventoryPanelController;
+    [SerializeField] private Button multitoolSkillButton;
 
     private void Start()
     {
@@ -54,6 +56,9 @@ public class MultitoolPickUp : Interactable
             playerObject.GetComponent<Player>().UnlockMultitool();
             // Destroy this item from scene
             Destroy(gameObject);
+            // Open inventory and show the multitool
+            inventoryPanelController.CallOpenInventory();
+            multitoolSkillButton.onClick.Invoke();
         }
     }
 

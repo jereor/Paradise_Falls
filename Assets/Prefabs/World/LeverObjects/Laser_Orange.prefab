@@ -171,10 +171,10 @@ MonoBehaviour:
   m_ShapeLightFalloffSize: 3
   m_ShapeLightFalloffOffset: {x: 0, y: 0}
   m_ShapePath:
-  - {x: -0.06414795, y: -0.93899536, z: 0}
-  - {x: 0.06820679, y: -0.9389963, z: 0}
-  - {x: 0.20245361, y: -0.24414921, z: 0}
-  - {x: 0.20245361, y: 0.42126846, z: 0}
+  - {x: -0.06726074, y: -0.98575497, z: 0}
+  - {x: 0.06820679, y: -0.9829159, z: 0}
+  - {x: 0.080581665, y: 0.99249077, z: 0}
+  - {x: 0.20245361, y: 0.99249077, z: 0}
   - {x: 0.055145264, y: 0.9611654, z: 0}
   - {x: -0.046081543, y: 0.9611645, z: 0}
   - {x: -0.20419312, y: 0.42126846, z: 0}
@@ -310,6 +310,7 @@ MonoBehaviour:
   shutdownSound:
   - {fileID: 8300000, guid: a6323439abbb4e44a84aa0b1f6674421, type: 3}
   destroyAfterShutdown: 1
+  shutdownGroup: {fileID: 0}
 --- !u!1 &8491049302000229919
 GameObject:
   m_ObjectHideFlags: 0

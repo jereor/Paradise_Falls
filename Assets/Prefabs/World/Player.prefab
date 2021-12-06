@@ -222,7 +222,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 0, g: 0.84313726, b: 1, a: 1}
+      maxColor: {r: 1, g: 1, b: 1, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -1538,7 +1538,7 @@ ParticleSystem:
     uvChannelMask: -1
     rowMode: 1
     sprites:
-    - sprite: {fileID: 21300000, guid: e989e95abdcbdd1438e0dd926def92d1, type: 3}
+    - sprite: {fileID: 21300000, guid: 3611287c7d89e4348adbb46c201e5f04, type: 3}
     flipU: 0
     flipV: 0
   VelocityModule:
@@ -4849,7 +4849,7 @@ ParticleSystemRenderer:
   m_ShadowBias: 0
   m_RenderAlignment: 0
   m_Pivot: {x: 0, y: 0, z: 0}
-  m_Flip: {x: 0, y: 0, z: 0}
+  m_Flip: {x: 1, y: 0, z: 0}
   m_UseCustomVertexStreams: 0
   m_EnableGPUInstancing: 1
   m_ApplyActiveColorSpace: 1
@@ -5253,7 +5253,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 0, g: 0.84313726, b: 1, a: 1}
+      maxColor: {r: 1, g: 1, b: 1, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -6569,7 +6569,7 @@ ParticleSystem:
     uvChannelMask: -1
     rowMode: 1
     sprites:
-    - sprite: {fileID: 21300000, guid: e989e95abdcbdd1438e0dd926def92d1, type: 3}
+    - sprite: {fileID: 21300000, guid: 3611287c7d89e4348adbb46c201e5f04, type: 3}
     flipU: 0
     flipV: 0
   VelocityModule:
@@ -9880,7 +9880,7 @@ ParticleSystemRenderer:
   m_ShadowBias: 0
   m_RenderAlignment: 0
   m_Pivot: {x: 0, y: 0, z: 0}
-  m_Flip: {x: 0, y: 0, z: 0}
+  m_Flip: {x: 1, y: 0, z: 0}
   m_UseCustomVertexStreams: 0
   m_EnableGPUInstancing: 1
   m_ApplyActiveColorSpace: 1
@@ -10219,14 +10219,14 @@ MonoBehaviour:
   energyScript: {fileID: 8760275387346948364}
   shieldScript: {fileID: 1812080132}
   grindScript: {fileID: 7180285044104453406}
-  shieldUnlocked: 1
-  multitoolUnlocked: 1
-  walljumpUnlocked: 1
-  grapplingUnlocked: 1
-  dashUnlocked: 1
-  shockwaveJumpAndDiveUnlocked: 1
-  shockwaveAttackUnlocked: 1
-  shieldGrindUnlocked: 1
+  shieldUnlocked: 0
+  multitoolUnlocked: 0
+  walljumpUnlocked: 0
+  grapplingUnlocked: 0
+  dashUnlocked: 0
+  shockwaveJumpAndDiveUnlocked: 0
+  shockwaveAttackUnlocked: 0
+  shieldGrindUnlocked: 0
   meleePickUps: 0000
   throwPickUps: 0000
   healthPickUps: 0000000000
@@ -10521,7 +10521,19 @@ MonoBehaviour:
     m_ActionId: 83bd5f33-bc2d-4d93-bce7-256c464c19ae
     m_ActionName: Player/Dash[/Keyboard/leftShift]
   - m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: -4342889769223962116}
+        m_TargetAssemblyTypeName: PlayerInteractions, Assembly-CSharp
+        m_MethodName: AdvanceText
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_ActionId: de2c38ef-f5a0-4216-a7cf-c5c1787e7d18
     m_ActionName: Player/AdvanceText[/Mouse/leftButton]
   - m_PersistentCalls:
@@ -10781,8 +10793,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 5
   currentHealth: 5
-  blockedColor: {r: 0, g: 0, b: 1, a: 1}
+  blockDrainAmount: 40
+  blockParticles: {fileID: 4459636447095395312, guid: 7d6213b65eabe2e40a639e1603125529, type: 3}
+  parryParticles: {fileID: 4459636447095395312, guid: 55faae836c983ae4ea57f5eff5c41d77, type: 3}
+  particleInstantiateTransform: {fileID: 5488279887396005798}
+  vignetteIntensity: 0.25
+  vignetteTime: 0.15
+  blockedColor: {r: 0.27058825, g: 0.7058824, b: 0.6666667, a: 1}
   damageColor: {r: 1, g: 0, b: 0, a: 1}
+  slowDuration: 0.15
+  timeScaleWhenSlowed: 0.1
   destroyWhenDead: 1
   onDie:
     m_PersistentCalls:
@@ -11270,7 +11290,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 0, g: 0.84313726, b: 1, a: 1}
+      maxColor: {r: 1, g: 1, b: 1, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -12586,7 +12606,7 @@ ParticleSystem:
     uvChannelMask: -1
     rowMode: 1
     sprites:
-    - sprite: {fileID: 21300000, guid: e989e95abdcbdd1438e0dd926def92d1, type: 3}
+    - sprite: {fileID: 21300000, guid: 3611287c7d89e4348adbb46c201e5f04, type: 3}
     flipU: 0
     flipV: 0
   VelocityModule:
@@ -15897,7 +15917,7 @@ ParticleSystemRenderer:
   m_ShadowBias: 0
   m_RenderAlignment: 0
   m_Pivot: {x: 0, y: 0, z: 0}
-  m_Flip: {x: 0, y: 0, z: 0}
+  m_Flip: {x: 1, y: 0, z: 0}
   m_UseCustomVertexStreams: 0
   m_EnableGPUInstancing: 1
   m_ApplyActiveColorSpace: 1
@@ -16002,7 +16022,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5488279887396005798}
   m_Layer: 0
-  m_Name: HeavyParticleTransform
+  m_Name: ShieldPSTransform
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -16016,7 +16036,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5186318985718266764}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.6, y: 0.6, z: 1}
+  m_LocalPosition: {x: 1, y: 0.5, z: 1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2646993275326716544}
