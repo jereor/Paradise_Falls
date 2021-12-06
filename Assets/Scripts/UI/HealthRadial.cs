@@ -69,6 +69,16 @@ public class HealthRadial : MonoBehaviour
         currentSegments = playerHealth.GetHealth();
         removedSegments = playerHealth.GetMaxHealth() - playerHealth.GetHealth();
 
+        // Update color
+        if (currentSegments >= Mathf.Abs(maxSegments / 4 * 3)) // At full health or close
+            radialColor = Color.green;
+        else if (currentSegments >= Mathf.Abs(maxSegments / 2)) // At half health or above
+            radialColor = Color.yellow;
+        else if (currentSegments <= Mathf.Abs(maxSegments / 4)) // At critical health
+            radialColor = Color.red;
+        else // Above critical but below half health
+            radialColor = new Color(1, 0.64705882352f, 0); // orange color
+
         // Update shader material properties
         healthRadialMaterial.SetFloat("_SegmentCount", maxSegments);
         healthRadialMaterial.SetFloat("_RemovedSegments", removedSegments);
