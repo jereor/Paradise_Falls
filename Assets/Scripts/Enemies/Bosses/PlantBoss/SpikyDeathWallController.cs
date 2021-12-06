@@ -15,6 +15,7 @@ public class SpikyDeathWallController : MonoBehaviour
     Vector2 velocityPlayer;
     GameObject target;
     Rigidbody2D targetRB;
+    Health targetHealth;
     private Transform bossTeleportPoint;
 
     [SerializeField] private float spikyWallRiseTime; // How long will the wall rise.
@@ -28,6 +29,7 @@ public class SpikyDeathWallController : MonoBehaviour
     void Start()
     {
         target = GameObject.Find("Player");
+        targetHealth = target.GetComponent<Health>();
         targetRB = target.GetComponent<Rigidbody2D>();
         bossTeleportPoint = GameObject.Find("BossTeleportPoint").transform;
 
@@ -103,6 +105,7 @@ public class SpikyDeathWallController : MonoBehaviour
         if (collision.transform.name == "Player" && !knockbackOnCooldown)
         {
             PlayerPushback();
+            targetHealth.TakeDamage(1);
         }
     }
 
@@ -111,6 +114,7 @@ public class SpikyDeathWallController : MonoBehaviour
         if (collision.transform.name == "Player" && !knockbackOnCooldown)
         {
             PlayerPushback();
+            targetHealth.TakeDamage(1);
         }
     }
 }

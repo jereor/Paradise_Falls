@@ -11,6 +11,7 @@ public class AttackVineController : MonoBehaviour
 
     private GameObject target;
     private Rigidbody2D targetRB;
+    private Health targetHealth;
 
     private Animator animator;
 
@@ -36,6 +37,7 @@ public class AttackVineController : MonoBehaviour
         plantController = plantBoss.GetComponent<BigPlantController>();
         target = GameObject.Find("Player");
         targetRB = target.GetComponent<Rigidbody2D>();
+        targetHealth = target.GetComponent<Health>();
         animator = GetComponent<Animator>();
 
 
@@ -120,6 +122,7 @@ public class AttackVineController : MonoBehaviour
         if (collision.transform.name == "Player" && !knockbackOnCooldown)
         {
             PlayerPushback();
+            targetHealth.TakeDamage(1);
         }
     }
 }

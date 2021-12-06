@@ -20,7 +20,6 @@ public class GrappleVineController : MonoBehaviour
     private Vector2 vectorToWall;
     private Vector2 endPointStretchedVine;
     [SerializeField] private Transform vineEndPoint;
-    RaycastHit2D hit;
 
     private Quaternion grappleVineRotation;
 
@@ -119,7 +118,6 @@ public class GrappleVineController : MonoBehaviour
         isRotatingTowardsTarget = false; // Stops the object rotation meaning that it's locked in place.
         animator.SetBool("Charge", true);
         vectorToWall = target.transform.position;
-        hit = Physics2D.Raycast(plantBoss.transform.position, (target.transform.position - plantBoss.transform.position).normalized, 0, groundLayer);
         transform.parent.DOScaleY(0.5f, grappleVineWaitTime * vineSpeed);
         
 

@@ -92,7 +92,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1367333548
 RectTransform:
   m_ObjectHideFlags: 0
@@ -239,7 +239,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerHealth: {fileID: 0}
-  maxSegments: 5
+  maxSegments: 9
   removedSegments: 0
   radialColor: {r: 1, g: 0.7664156, b: 0, a: 0}
 --- !u!1 &1959287134
@@ -839,6 +839,10 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: df4f2461-098e-4030-9049-d9791f89dee9
     m_ActionName: GameUI/Inventory[/Keyboard/tab]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 2fac39e7-5ef2-4917-befe-06f5441c1b8c
+    m_ActionName: Player/TargetPosition
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: GameUI
@@ -3179,6 +3183,12 @@ PrefabInstance:
       propertyPath: m_sharedMaterial
       value: 
       objectReference: {fileID: 2140032, guid: dc36b3fdc14f47ebb36fd484a67e268a, type: 2}
+    - target: {fileID: 2275900308990889035, guid: a85e2fede70a9e14bb4c021e7c6a568f, type: 3}
+      propertyPath: buttonToUseDisplay
+      value: Press # to swing the weapon. Press % and hold # to do a heavy attack.
+        Hold & and # simultaneously to charge a throw towards the desired direction.
+        Release the # to send the weapon flying.
+      objectReference: {fileID: 0}
     - target: {fileID: 2275900308990889035, guid: a85e2fede70a9e14bb4c021e7c6a568f, type: 3}
       propertyPath: inventoryController
       value: 

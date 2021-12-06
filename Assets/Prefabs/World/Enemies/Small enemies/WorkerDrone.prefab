@@ -187,7 +187,7 @@ MonoBehaviour:
   jumpChargeInterval: 0.5
   punchChargeTime: 0.6
   punchCooldown: 0.4
-  attackPower: 2
+  attackPower: 1
   staggerTime: 0.3
   stunTime: 1.5
   roamingRange: {x: 33.45, y: 5.01}
@@ -227,6 +227,7 @@ MonoBehaviour:
   blockParticles: {fileID: 0}
   parryParticles: {fileID: 0}
   particleInstantiateTransform: {fileID: 0}
+  playerIsInvincible: 0
   vignetteIntensity: 0
   vignetteTime: 0
   blockedColor: {r: 0, g: 0, b: 1, a: 1}

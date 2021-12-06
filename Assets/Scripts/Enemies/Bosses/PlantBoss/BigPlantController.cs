@@ -17,8 +17,9 @@ public class BigPlantController : MonoBehaviour
     private GameObject spikyVine; // For visual purposes only.
     public Health health;
     private Rigidbody2D rb;
+    private CircleCollider2D bossCollider;
 
-
+    [SerializeField] private LayerMask playerLayer;
 
     [SerializeField] private GameObject hiddenBossObjects;
 
@@ -43,8 +44,10 @@ public class BigPlantController : MonoBehaviour
     [SerializeField] private GameObject attackVine; // Prefab that is instantiated in Angri state.
     [SerializeField] private GameObject grappleVine; // Prefab that is instantiated in Charge state.
     [SerializeField] private GameObject seedVine; // Prefab that is instantiated in Charge state.
+    [SerializeField] private GameObject swingVine; // Prefab that is instantiated in LightAttack function.
     public List<GameObject> attackVineInstances; // All spawned vines are stored in a list.
     public List<GameObject> grappleVineInstances; // All spawned vines are stored in a list.
+    private GameObject swingVineInstance;
 
     [SerializeField] private GameObject plantSeed;
     [SerializeField] private GameObject slowSeed;
@@ -77,6 +80,9 @@ public class BigPlantController : MonoBehaviour
     private int seedCount = 1; // Used in a function to scale the seed amount with the boss health. Less health = more seeds.
     [SerializeField] private int chargeProbability = 1;
     private int timeToArtillery = 0;
+    [SerializeField] private float knockbackCooldown = 0.5f;
+    [SerializeField] private float lightAttackCircleRadius = 2;
+    [SerializeField] private float lightAttackCooldown = 2;
 
 
     private bool isCovered = false;
@@ -89,11 +95,13 @@ public class BigPlantController : MonoBehaviour
     private bool isPhaseThreeTransitioning = false;
     private bool isCharging = false;
     private bool hasCharged = false;
-    public bool isSetUppingForSeedShoot = false;
-    public bool isSeedShooting = false;
-    public bool isArtillerying = false;
-    public bool hasArtilleryed = false;
+    private bool isSetUppingForSeedShoot = false;
+    private bool isSeedShooting = false;
+    private bool isArtillerying = false;
+    private bool hasArtilleryed = false;
     private bool isDead = false;
+    private bool lightAttackOnCooldown = false;
+    private bool isPhaseThree = false;
 
     void Start()
     {
@@ -102,6 +110,7 @@ public class BigPlantController : MonoBehaviour
         grappleVineInstances = new List<GameObject>();
         target = GameObject.Find("Player");
         targetRB = target.GetComponent<Rigidbody2D>();
+        bossCollider = GetComponent<CircleCollider2D>();
         spikyVine = GameObject.Find("SpikyVine");
         spikyVineStartPosition = spikyVine.transform.position;
         spikyVineEndPosition = new Vector2(spikyVineStartPosition.x, transform.position.y);
@@ -121,14 +130,25 @@ public class BigPlantController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (target == null)
+        {
+            HandlePlayerIsDeadState();
+            return;
+        }
+
+
         if(health.GetHealth() <= 0 && !isDead)
         {
             StopAllCoroutines();
             DOTween.PauseAll();
-            //for (int i = 0; i < grappleVineInstances.Count; i++)
-            //{
-            //    Destroy(grappleVineInstances[i]);
-            //}
+            if(grappleVineInstances != null)
+            {
+                for (int i = 0; i < grappleVineInstances.Count; i++)
+                {
+                    Destroy(grappleVineInstances[i]);
+                }
+            }
+
 
             //Destroy(GameObject.Find("SlowSeed"));
             var obj = GameObject.FindGameObjectsWithTag("EnemyProjectile");
@@ -155,6 +175,12 @@ public class BigPlantController : MonoBehaviour
         {
             state = PlantState.Artillery;
             timeToArtillery = 0;
+        }
+
+        if(isPhaseThree && IsTargetInHitRange() && state != PlantState.Artillery && state != PlantState.Die && !lightAttackOnCooldown)
+        {
+            Debug.Log("Attacking!");
+            StartCoroutine(LightAttack());
         }
 
         switch (state)
@@ -195,16 +221,8 @@ public class BigPlantController : MonoBehaviour
                 HandleEvilLaughState();
                 break;
 
-            case PlantState.LightAttack:
-                HandleLightAttackState();
-                break;
-
             case PlantState.Die:
                 HandleDie();
-                break;
-
-            case PlantState.PlayerIsDead:
-                HandlePlayerIsDeadState();
                 break;
         }
     }
@@ -224,7 +242,7 @@ public class BigPlantController : MonoBehaviour
         gameObject.GetComponent<SpriteRenderer>().color = Color.blue;
 
         if (!isCovered) // Checks if the boss is covered (visual only).
-            Cover();
+            StartCoroutine(Cover());
 
         if (!isEnemiesSpawned) // If enemies are not spawned, spawn some.
             SpawnEnemies();
@@ -283,8 +301,11 @@ public class BigPlantController : MonoBehaviour
 
         if(deathWallController.GetPlayerSurvived() && !isPhaseThreeTransitioning)
         {
+            //bossCollider.isTrigger = true;
+            isPhaseThree = true;
             healthAtPhaseThreeTransition = health.GetHealth();
             phaseTwoObjectActivator.SpawnBoostPlants();
+            ChangeToBossLayer();
             StartCoroutine(PhaseThreeTransition());
         }
 
@@ -296,7 +317,8 @@ public class BigPlantController : MonoBehaviour
         // Visual something to indicate that charge is coming
         // Locks to position after a while and jumps in straight line there
         // Attached to the point it was jumped
-        if(hasCharged && grappleVineInstances.Count == 0)
+        gameObject.GetComponent<SpriteRenderer>().color = Color.red;
+        if (hasCharged && grappleVineInstances.Count == 0)
         {
             int i = Random.Range(1, 11);
             if (i <= chargeProbability)
@@ -346,15 +368,13 @@ public class BigPlantController : MonoBehaviour
         if (!isArtillerying && !hasArtilleryed)
         {
             SeedAmountValueChanger();
-            ChangeSpeedMultiplier();
-            ChangeToBossLayer();
+            ChangeSpeedMultiplier();           
             StartCoroutine(Artillery());
         }
 
         if(hasArtilleryed)
         {
             hasArtilleryed = false;
-            ChangeToDefaultLayer();
             state = PlantState.Charge;
             return;
         }
@@ -374,6 +394,16 @@ public class BigPlantController : MonoBehaviour
     private void HandlePlayerIsDeadState()
     {
         // Dead player :)
+        Debug.Log("Player died.");
+        StopAllCoroutines();
+        DOTween.PauseAll();
+        if(grappleVineInstances.Count > 0)
+        {
+            for (int i = 0; i < grappleVineInstances.Count; i++)
+            {
+                Destroy(grappleVineInstances[i]);
+            }
+        }
     }
 
     private void HandleDie()
@@ -381,15 +411,31 @@ public class BigPlantController : MonoBehaviour
         if(!isDead)
         {
             isDead = true;
+            bossCollider.enabled = false;
             StartCoroutine(BossIsDead());
         }
     }
 
-    private void Cover()
+    private bool IsTargetInHitRange()
     {
+        return Physics2D.OverlapCircle(transform.position, lightAttackCircleRadius, playerLayer);
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, lightAttackCircleRadius);
+
+    }
+
+    private IEnumerator Cover()
+    {
+        isCovered = true;
         gameObject.GetComponent<CircleCollider2D>().radius = 2f;
         spikyVine.transform.DOMove(spikyVineEndPosition, 1);
-        isCovered = true;
+        yield return new WaitForSeconds(1);
+        gameObject.GetComponent<CircleCollider2D>().radius = 2f;
+        
     }
 
     private void Uncover()
@@ -410,8 +456,8 @@ public class BigPlantController : MonoBehaviour
             {
                 workerDroneOneInstance = Instantiate(workerDronePrefab, new Vector2(transform.position.x - 5, transform.position.y + 15), Quaternion.identity);
                 workerDroneTwoInstance = Instantiate(workerDronePrefab, new Vector2(transform.position.x + 5, transform.position.y + 15), Quaternion.identity);
-                workerDroneOneInstance.GetComponent<GroundEnemyAI>().target = target.transform;
-                workerDroneTwoInstance.GetComponent<GroundEnemyAI>().target = target.transform;
+                //workerDroneOneInstance.GetComponent<GroundEnemyAI>().target = target.transform;
+                //workerDroneTwoInstance.GetComponent<GroundEnemyAI>().target = target.transform;
                 workerDroneOneInstance.GetComponent<GroundEnemyAI>().bossMode = true;
                 workerDroneTwoInstance.GetComponent<GroundEnemyAI>().bossMode = true;
                 spawnWorkerDrones = false;
@@ -420,8 +466,8 @@ public class BigPlantController : MonoBehaviour
             {
                 flyingDroneOneInstance = Instantiate(flyingDronePrefab, new Vector2(transform.position.x - 5, transform.position.y + 15), Quaternion.identity);
                 flyingDroneTwoInstance = Instantiate(flyingDronePrefab, new Vector2(transform.position.x + 5, transform.position.y + 15), Quaternion.identity);
-                flyingDroneOneInstance.GetComponent<FlyingEnemyAI>().target = target.transform;
-                flyingDroneTwoInstance.GetComponent<FlyingEnemyAI>().target = target.transform;
+                //flyingDroneOneInstance.GetComponent<FlyingEnemyAI>().target = target.tr.transform;
+                //flyingDroneTwoInstance.GetComponent<FlyingEnemyAI>().target = target.transform;
                 flyingDroneOneInstance.GetComponent<FlyingEnemyAI>().bossMode = true;
                 flyingDroneTwoInstance.GetComponent<FlyingEnemyAI>().bossMode = true;
                 spawnWorkerDrones = true;
@@ -445,22 +491,50 @@ public class BigPlantController : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
 
-        if (collision.collider.gameObject.name == "Player" && !knockbackOnCooldown && (state != PlantState.Stunned || state != PlantState.Artillery))
+        if (collision.collider.gameObject.name == "Player" && !knockbackOnCooldown && state != PlantState.Stunned && state != PlantState.Artillery)
         {
             PlayerPushback();
+            targetHealth.TakeDamage(1);
         }
 
-        if(collision.collider.gameObject.layer == LayerMask.NameToLayer("Ground"))
+        //if(collision.collider.gameObject.layer == LayerMask.NameToLayer("Ground"))
+        //{
+        //    rb.constraints = RigidbodyConstraints2D.FreezeAll;
+        //}
+    }
+
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        if (collision.gameObject.name == "Player" && !knockbackOnCooldown && state != PlantState.Stunned && state != PlantState.Artillery)
         {
-            rb.constraints = RigidbodyConstraints2D.FreezeAll;
+            PlayerPushback();
+            targetHealth.TakeDamage(1);
         }
     }
+
+    //private void OnTriggerEnter2D(Collider2D collision)
+    //{
+    //    if (collision.gameObject.name == "Player" && !knockbackOnCooldown && state != PlantState.Stunned && state != PlantState.Artillery)
+    //    {
+    //        PlayerPushback();
+    //        targetHealth.TakeDamage(1);
+    //    }
+    //}
+
+    //private void OnTriggerStay2D(Collider2D collision)
+    //{
+    //    if (collision.gameObject.name == "Player" && !knockbackOnCooldown && state != PlantState.Stunned && state != PlantState.Artillery)
+    //    {
+    //        PlayerPushback();
+    //        targetHealth.TakeDamage(1);
+    //    }
+    //}
 
     // Cooldown for the player knockback.
     private IEnumerator KnockbackCooldown()
     {
         knockbackOnCooldown = true;
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(knockbackCooldown);
         knockbackOnCooldown = false;
     }
 
@@ -491,6 +565,15 @@ public class BigPlantController : MonoBehaviour
         StartCoroutine(KnockbackCooldown());
     }
 
+    private IEnumerator LightAttack()
+    {
+        lightAttackOnCooldown = true;
+        swingVineInstance = Instantiate(swingVine, transform.position, Quaternion.identity);
+        swingVineInstance.transform.SetParent(transform);
+        yield return new WaitForSeconds(lightAttackCooldown);
+        lightAttackOnCooldown = false;
+    }
+
 
     // Coroutine spawns vines with a simple calculation that uses the remaining and maximum boss health as a vine spawn amount.
     private IEnumerator SpawnVine()
@@ -517,7 +600,6 @@ public class BigPlantController : MonoBehaviour
     private IEnumerator PhaseTwoTransition()
     {
         isPhaseTwoTransitioning = true;
-        gameObject.GetComponent<SpriteRenderer>().color = Color.red;
         hiddenBossObjects.SetActive(true);
         // Simple pulsing effect for boss local scale.
         for (int i = 0; i < 3; i++)
@@ -689,8 +771,20 @@ public class BigPlantController : MonoBehaviour
             yield return new WaitForSeconds((artilleryWobbleTime * speedMultiplier) / 2);
         }
         gameObject.GetComponent<SpriteRenderer>().color = Color.red;
-        transform.DOScale(2.5f, 2);
-        yield return new WaitForSeconds(2);
+        transform.DOScale(2.5f, 1);
+        Color tmp = transform.GetComponent<SpriteRenderer>().color;
+        float endValue = 0;
+        float duration = 1;
+        float elapsedTime = 0;
+        float startValue = GetComponent<SpriteRenderer>().color.a;
+        while (elapsedTime < duration)
+        {
+            elapsedTime += Time.deltaTime;
+            float newAlpha = Mathf.Lerp(startValue, endValue, elapsedTime / duration);
+            GetComponent<SpriteRenderer>().color = new Color(GetComponent<SpriteRenderer>().color.r, GetComponent<SpriteRenderer>().color.g, GetComponent<SpriteRenderer>().color.b, newAlpha);
+            yield return null;
+        }
+        yield return new WaitForSeconds(1);
         phaseTwoObjectActivator.OpenDoors();
         phaseTwoObjectActivator.DeactivateBoostPlants();
         Destroy(gameObject);
@@ -727,10 +821,7 @@ public class BigPlantController : MonoBehaviour
         SeedShoot,
         Artillery,
         EvilLaugh,
-        LightAttack,
         Die,
-        PlayerIsDead
-
     }
 
     // Vinespeed is needed in AttackVineController script.
@@ -762,5 +853,10 @@ public class BigPlantController : MonoBehaviour
     public bool GetIsSettingUpForSeedShoot()
     {
         return isSetUppingForSeedShoot;
+    }
+
+    public bool GetKockbackOnCooldown()
+    {
+        return knockbackOnCooldown;
     }
 }
