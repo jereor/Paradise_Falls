@@ -79,7 +79,7 @@ public class SaveData
         healthPickups = new bool[5];
         energyPickups = new bool[2];
 
-        mapTriggers = new bool[11];
+        mapTriggers = new bool[19];
     }
 
     /*
