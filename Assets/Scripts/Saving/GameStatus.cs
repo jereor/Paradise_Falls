@@ -188,10 +188,6 @@ public class GameStatus : MonoBehaviour
     {
         dataToSave.firstBossDoors[i] = b;
     }
-    public void UpdateSecondBossDoors(int i, bool b)
-    {
-        dataToSave.secondBossDoors[i] = b;
-    }
     public void UpdateMeleePickups(int i, bool b)
     {
         dataToSave.meleePickups[i] = b;

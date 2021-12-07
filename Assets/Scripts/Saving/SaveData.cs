@@ -26,7 +26,6 @@ public class SaveData
 
     public bool[] firstBossDoors;
 
-    public bool[] secondBossDoors;
 
     public bool shield;
     public bool multitool;
@@ -66,11 +65,10 @@ public class SaveData
         // If problems arise with arrays hardcode initialize sizes here
         position = new float[2];
 
-        bossesDefeated = new bool[2];
+        bossesDefeated = new bool[1];
 
         firstBossDoors = new bool[4];
 
-        secondBossDoors = new bool[2];
         camera = "";
 
         levers = new bool[11];
@@ -79,7 +77,7 @@ public class SaveData
 
         meleePickups = new bool[2];
         throwPickups = new bool[2];
-        healthPickups = new bool[5];
+        healthPickups = new bool[4];
         energyPickups = new bool[2];
 
         mapTriggers = new bool[19];

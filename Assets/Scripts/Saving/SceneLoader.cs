@@ -16,11 +16,6 @@ public class SceneLoader : MonoBehaviour
     public DoorController[] bossDoors;
     public GameObject[] bossTriggers;
 
-
-    public GameObject secondBossObject;
-    public DoorController[] secondBossDoors;
-    public GameObject[] secondBossTriggers;
-
     [Header("Upgrades")]
     public GameObject shieldUpgrade;
     public GameObject multitoolUpgrade;
@@ -181,22 +176,6 @@ public class SceneLoader : MonoBehaviour
             for (int i = 0; i < bossDoors.Length; i++)
             {
                 bossDoors[i].GetComponent<DoorController>().SetIsDoorOpen(GameStatus.status.getLoadedData().firstBossDoors[i]);
-            }
-
-
-            // 2. Boss
-            if (GameStatus.status.getLoadedData().bossesDefeated[1] == true)
-            {
-                foreach (GameObject trigger in bossTriggers)
-                {
-                    Destroy(trigger);
-                }
-                Destroy(secondBossObject);
-            }
-            // 2. Boss doors
-            for (int i = 0; i < secondBossDoors.Length; i++)
-            {
-                secondBossDoors[i].GetComponent<DoorController>().SetIsDoorOpen(GameStatus.status.getLoadedData().secondBossDoors[i]);
             }
 
             if (savePointsParent != null)
@@ -417,17 +396,6 @@ public class SceneLoader : MonoBehaviour
             for (int i = 0; i < bossDoors.Length; i++)
             {
                 GameStatus.status.UpdateFirstBossDoors(i, bossDoors[i].GetComponent<DoorController>().GetIsDoorOpen());
-            }
-
-            // 2. Boss
-            if (secondBossObject != null)
-                GameStatus.status.UpdateBossKilled(1, false);
-            else
-                GameStatus.status.UpdateBossKilled(1, true);
-            // 2. boss doors
-            for (int i = 0; i < secondBossDoors.Length; i++)
-            {
-                GameStatus.status.UpdateSecondBossDoors(i, secondBossDoors[i].GetComponent<DoorController>().GetIsDoorOpen());
             }
 
             //GameStatus.status.UpdateBossKilled(1, secondBossKilled);
