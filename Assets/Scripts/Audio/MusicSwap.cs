@@ -31,4 +31,9 @@ public class MusicSwap : MonoBehaviour
     //        MusicManager.instance.ReturnToDefault();
     //    }
     //}
+
+    public void StartMusic()
+    {
+        MusicManager.instance.SwapTrack(newTrack, maxVolume);
+    }
 }

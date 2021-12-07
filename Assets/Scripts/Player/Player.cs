@@ -41,7 +41,7 @@ public class Player : MonoBehaviour
     // Pickups
     public bool[] meleePickUps = new bool[2] { false, false };
     public bool[] throwPickUps = new bool[2] { false, false };
-    public bool[] healthPickUps = new bool[5] { false, false, false, false, false };
+    public bool[] healthPickUps = new bool[4] { false, false, false, false};
     public bool[] energyPickUps = new bool[2] { false, false };
  
     private InventoryPanelController inventoryController;

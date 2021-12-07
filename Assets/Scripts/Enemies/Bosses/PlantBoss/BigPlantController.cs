@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using UnityEngine.Events;
 
 
 // TODO: Collider to trigger
@@ -104,6 +105,12 @@ public class BigPlantController : MonoBehaviour
     private bool isDead = false;
     private bool lightAttackOnCooldown = false;
     private bool isPhaseThree = false;
+
+    public UnityEvent firstPhaseMusic;
+    public UnityEvent climbPhaseMusic;
+    public UnityEvent lastPhaseMusic;
+    public UnityEvent victoryMusic;
+
 
     void Start()
     {
@@ -308,6 +315,7 @@ public class BigPlantController : MonoBehaviour
         if(!isPhaseTwoTransitioning)
         {
             StartCoroutine(PhaseTwoTransition()); // Everything regarding the transition is dealt in the coroutine.
+            climbPhaseMusic.Invoke();
         }
 
         if(deathWallController.GetPlayerSurvived() && !isPhaseThreeTransitioning)
@@ -318,6 +326,7 @@ public class BigPlantController : MonoBehaviour
             phaseTwoObjectActivator.SpawnBoostPlants();
             ChangeToBossLayer();
             StartCoroutine(PhaseThreeTransition());
+            lastPhaseMusic.Invoke();
         }
 
 
@@ -797,6 +806,9 @@ public class BigPlantController : MonoBehaviour
         yield return new WaitForSeconds(1);
         phaseTwoObjectActivator.OpenDoors();
         phaseTwoObjectActivator.DeactivateBoostPlants();
+
+        victoryMusic.Invoke();
+
         Destroy(gameObject);
     }
 
@@ -807,6 +819,7 @@ public class BigPlantController : MonoBehaviour
         yield return new WaitForSeconds(2);
         state = PlantState.Protected;
         isRoaring = false;
+        firstPhaseMusic.Invoke();
     }
 
     // Boss layer is changed for a certain amount of time. Hit the boss hard.

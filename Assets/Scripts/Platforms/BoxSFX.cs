@@ -10,6 +10,8 @@ public class BoxSFX : MonoBehaviour
     public AudioClip[] hitGround;
     public AudioClip breaking;
 
+    private float oneShotVolume = 0.4f;
+
     private void Start()
     {
         audioSource = gameObject.GetComponent<AudioSource>();
@@ -17,16 +19,16 @@ public class BoxSFX : MonoBehaviour
 
     public void PlayChainCutSound()
     {
-        audioSource.PlayOneShot(chainCut);
+        audioSource.PlayOneShot(chainCut, oneShotVolume);
     }
 
     public void PlayHitGroundSound()
     {
-        audioSource.PlayOneShot(hitGround[(int)Random.Range(0, hitGround.Length - 1)]);
+        audioSource.PlayOneShot(hitGround[(int)Random.Range(0, hitGround.Length - 1)], oneShotVolume);
     }
 
     public void PlayBreakingSound()
     {
-        audioSource.PlayOneShot(breaking);
+        audioSource.PlayOneShot(breaking, oneShotVolume);
     }
 }
