@@ -356,7 +356,7 @@ public class PlayerCombat : MonoBehaviour
         if (throwAimHold && (Mathf.Abs(context.ReadValue<Vector2>().x) != 0f || Mathf.Abs(context.ReadValue<Vector2>().y) != 0f))
         {
             vectorToTarget = context.ReadValue<Vector2>(); // Updates the horizontal input direction
-            Debug.Log(vectorToTarget);
+            //Debug.Log(vectorToTarget);
         }
 
         if (context.ReadValue<Vector2>().x == 0f)
