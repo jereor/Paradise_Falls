@@ -198,7 +198,7 @@ public class SceneLoader : MonoBehaviour
             {
                 secondBossDoors[i].GetComponent<DoorController>().SetIsDoorOpen(GameStatus.status.getLoadedData().secondBossDoors[i]);
             }
- 
+
             if (savePointsParent != null)
             {
                 // Make list of savePoints
@@ -246,7 +246,6 @@ public class SceneLoader : MonoBehaviour
             Player.Instance.UnlockMultitool();
             Destroy(multitoolUpgrade);
         }
-
         // Rest are from NPC
         // WallJump
         if (GameStatus.status.getLoadedData().wallJump)
@@ -322,7 +321,7 @@ public class SceneLoader : MonoBehaviour
         {
             // Walljump
             if (script.GetWhatNPCUnlocks() == 1)
-            { 
+            {
                 script.SetHasBeenTalkedBefore(true);
                 return true;
             }
@@ -445,7 +444,7 @@ public class SceneLoader : MonoBehaviour
             GameStatus.status.UpdateDash(Player.Instance.DashUnlocked());
 
             // Grappling
-            GameStatus.status.UpdateWallJump(Player.Instance.GrapplingUnlocked());
+            GameStatus.status.UpdateGrappling(Player.Instance.GrapplingUnlocked());
 
             // SH jump
             GameStatus.status.UpdateSHJump(Player.Instance.ShockwaveJumpAndDiveUnlocked());
