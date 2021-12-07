@@ -16,10 +16,6 @@ public class SceneLoader : MonoBehaviour
     public DoorController[] bossDoors;
     public GameObject[] bossTriggers;
 
-
-    public GameObject secondBossObject;
-    public bool secondBossKilled;
-
     [Header("Upgrades")]
     public GameObject shieldUpgrade;
     public GameObject multitoolUpgrade;
@@ -88,15 +84,13 @@ public class SceneLoader : MonoBehaviour
                 // Compares loaded data and gives Player pickup upgrade and destroys that object what was saved or calls NPC functions
                 CheckUpgrades();
 
-                // Compares loaded data and gives Player pickup upgrade and destroys that object what was saved
-                CheckPickups();
-
                 // Map triggers
                 for (int i = 0; i < GameStatus.status.getLoadedData().mapTriggers.Length; i++)
                 {
                     mapTriggers[i].GetComponent<MapAreaTrigger>().SetFound(GameStatus.status.getLoadedData().mapTriggers[i]);
                 }
 
+                // Compares loaded data and gives Player pickup upgrade and destroys that object what was saved
                 // Pick ups
                 for (int i = 0; i < GameStatus.status.getLoadedData().meleePickups.Length; i++)
                 {
@@ -182,13 +176,6 @@ public class SceneLoader : MonoBehaviour
                 bossDoors[i].GetComponent<DoorController>().SetIsDoorOpen(GameStatus.status.getLoadedData().firstBossDoors[i]);
             }
 
-            if (secondBossObject != null && GameStatus.status.getLoadedData().bossesDefeated[0] == true)
-            {
-                // Do something to not show boss
-
-                Destroy(secondBossObject);
-                secondBossKilled = GameStatus.status.getLoadedData().bossesDefeated[0];
-            }
             if (savePointsParent != null)
             {
                 // Make list of savePoints
@@ -236,7 +223,6 @@ public class SceneLoader : MonoBehaviour
             Player.Instance.UnlockMultitool();
             Destroy(multitoolUpgrade);
         }
-
         // Rest are from NPC
         // WallJump
         if (GameStatus.status.getLoadedData().wallJump)
@@ -312,7 +298,8 @@ public class SceneLoader : MonoBehaviour
         {
             // Walljump
             if (script.GetWhatNPCUnlocks() == 1)
-            { 
+            {
+                Debug.Log("Found");
                 script.SetHasBeenTalkedBefore(true);
                 return true;
             }
@@ -424,7 +411,7 @@ public class SceneLoader : MonoBehaviour
             GameStatus.status.UpdateDash(Player.Instance.DashUnlocked());
 
             // Grappling
-            GameStatus.status.UpdateWallJump(Player.Instance.GrapplingUnlocked());
+            GameStatus.status.UpdateGrappling(Player.Instance.GrapplingUnlocked());
 
             // SH jump
             GameStatus.status.UpdateSHJump(Player.Instance.ShockwaveJumpAndDiveUnlocked());

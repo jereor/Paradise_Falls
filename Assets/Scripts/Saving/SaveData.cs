@@ -26,6 +26,7 @@ public class SaveData
 
     public bool[] firstBossDoors;
 
+
     public bool shield;
     public bool multitool;
     public bool wallJump;
@@ -70,16 +71,16 @@ public class SaveData
 
         camera = "";
 
-        levers = new bool[1];
+        levers = new bool[11];
 
-        doors = new bool[9];
+        doors = new bool[15];
 
         meleePickups = new bool[2];
         throwPickups = new bool[2];
-        healthPickups = new bool[5];
+        healthPickups = new bool[4];
         energyPickups = new bool[2];
 
-        mapTriggers = new bool[19];
+        mapTriggers = new bool[23];
     }
 
     /*
