@@ -10229,7 +10229,7 @@ MonoBehaviour:
   shieldGrindUnlocked: 0
   meleePickUps: 0000
   throwPickUps: 0000
-  healthPickUps: 0000000000
+  healthPickUps: 00000000
   energyPickUps: 0000
   animator: {fileID: 3265684260011797273}
   rb: {fileID: 0}
@@ -10797,6 +10797,7 @@ MonoBehaviour:
   blockParticles: {fileID: 4459636447095395312, guid: 7d6213b65eabe2e40a639e1603125529, type: 3}
   parryParticles: {fileID: 4459636447095395312, guid: 55faae836c983ae4ea57f5eff5c41d77, type: 3}
   particleInstantiateTransform: {fileID: 5488279887396005798}
+  playerIsInvincible: 0
   vignetteIntensity: 0.25
   vignetteTime: 0.15
   blockedColor: {r: 0.27058825, g: 0.7058824, b: 0.6666667, a: 1}

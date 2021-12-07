@@ -84,15 +84,13 @@ public class SceneLoader : MonoBehaviour
                 // Compares loaded data and gives Player pickup upgrade and destroys that object what was saved or calls NPC functions
                 CheckUpgrades();
 
-                // Compares loaded data and gives Player pickup upgrade and destroys that object what was saved
-                CheckPickups();
-
                 // Map triggers
                 for (int i = 0; i < GameStatus.status.getLoadedData().mapTriggers.Length; i++)
                 {
                     mapTriggers[i].GetComponent<MapAreaTrigger>().SetFound(GameStatus.status.getLoadedData().mapTriggers[i]);
                 }
 
+                // Compares loaded data and gives Player pickup upgrade and destroys that object what was saved
                 // Pick ups
                 for (int i = 0; i < GameStatus.status.getLoadedData().meleePickups.Length; i++)
                 {

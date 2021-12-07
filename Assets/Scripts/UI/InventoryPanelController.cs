@@ -55,6 +55,7 @@ public class InventoryPanelController : MonoBehaviour
     {
         if(maxHealthUpgradeCount != Player.Instance.healthPickUps.Length)
         {
+            Debug.Log("Invi update" + Player.Instance.healthPickUps.Length);
             maxHealthUpgradeCount = Player.Instance.healthPickUps.Length;
             maxEnergyUpgradeCount = Player.Instance.energyPickUps.Length;
             maxMeleeDmgUpgradeCount = Player.Instance.meleePickUps.Length;
