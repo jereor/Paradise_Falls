@@ -66,10 +66,11 @@ public class SaveData
         // If problems arise with arrays hardcode initialize sizes here
         position = new float[2];
 
-        bossesDefeated = new bool[1];
+        bossesDefeated = new bool[2];
 
         firstBossDoors = new bool[4];
 
+        secondBossDoors = new bool[2];
         camera = "";
 
         levers = new bool[11];

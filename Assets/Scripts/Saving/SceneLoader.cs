@@ -322,6 +322,7 @@ public class SceneLoader : MonoBehaviour
             // Walljump
             if (script.GetWhatNPCUnlocks() == 1)
             {
+                Debug.Log("Found");
                 script.SetHasBeenTalkedBefore(true);
                 return true;
             }
