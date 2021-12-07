@@ -35,6 +35,11 @@ public class SkillInformationDisplayController : MonoBehaviour
         UpdateTextBinding();
     }
 
+    //private void FixedUpdate()
+    //{
+    //    UpdateTextBinding();
+    //}
+
     // Updates #, & and % to correct key respectively.
     private void UpdateTextBinding()
     {
@@ -69,7 +74,9 @@ public class SkillInformationDisplayController : MonoBehaviour
 
     public void UpdateButtonToUse()
     {
+        UpdateTextBinding();
         buttonToUseDisplayAsset.text = buttonToUseDisplay;
+        
     }
 
     public void UpdateAnimationDisplay()

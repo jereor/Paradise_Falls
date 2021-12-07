@@ -7,6 +7,7 @@ public class TaserTrailController : MonoBehaviour
     private GameObject target;
     private float lifeTimer = 0;
     [SerializeField] private float lifeTime = 1;
+    [SerializeField] private float damageToPlayer = 1;
 
     // Start is called before the first frame update
     void Start()
@@ -27,7 +28,7 @@ public class TaserTrailController : MonoBehaviour
     {
         if (collision.tag == "Player")
         {
-            target.GetComponent<Health>().TakeDamage(1); // Player takes damage
+            target.GetComponent<Health>().TakeDamage(damageToPlayer); // Player takes damage
             Destroy(gameObject);
         }
 

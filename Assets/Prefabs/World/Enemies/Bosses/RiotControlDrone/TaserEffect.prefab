@@ -4882,7 +4882,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   taserTrail: {fileID: 1001943959086207533, guid: b3b153a6d74ba6e4b85154abb78ebcfb, type: 3}
   projectileSpeed: 5
-  projectileDamage: 0
+  projectileDamage: 1
   destroyEvent:
     m_PersistentCalls:
       m_Calls:
@@ -5051,3 +5051,4 @@ MonoBehaviour:
   shutdownSound:
   - {fileID: 8300000, guid: 5cf3db7522dff264c80369c9cdaae7dd, type: 3}
   destroyAfterShutdown: 1
+  shutdownGroup: {fileID: 0}
