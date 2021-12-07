@@ -18,7 +18,8 @@ public class SceneLoader : MonoBehaviour
 
 
     public GameObject secondBossObject;
-    public bool secondBossKilled;
+    public DoorController[] secondBossDoors;
+    public GameObject[] secondBossTriggers;
 
     [Header("Upgrades")]
     public GameObject shieldUpgrade;
@@ -182,13 +183,22 @@ public class SceneLoader : MonoBehaviour
                 bossDoors[i].GetComponent<DoorController>().SetIsDoorOpen(GameStatus.status.getLoadedData().firstBossDoors[i]);
             }
 
-            if (secondBossObject != null && GameStatus.status.getLoadedData().bossesDefeated[0] == true)
-            {
-                // Do something to not show boss
 
+            // 2. Boss
+            if (GameStatus.status.getLoadedData().bossesDefeated[1] == true)
+            {
+                foreach (GameObject trigger in bossTriggers)
+                {
+                    Destroy(trigger);
+                }
                 Destroy(secondBossObject);
-                secondBossKilled = GameStatus.status.getLoadedData().bossesDefeated[0];
             }
+            // 2. Boss doors
+            for (int i = 0; i < secondBossDoors.Length; i++)
+            {
+                secondBossDoors[i].GetComponent<DoorController>().SetIsDoorOpen(GameStatus.status.getLoadedData().secondBossDoors[i]);
+            }
+ 
             if (savePointsParent != null)
             {
                 // Make list of savePoints
@@ -407,6 +417,17 @@ public class SceneLoader : MonoBehaviour
             for (int i = 0; i < bossDoors.Length; i++)
             {
                 GameStatus.status.UpdateFirstBossDoors(i, bossDoors[i].GetComponent<DoorController>().GetIsDoorOpen());
+            }
+
+            // 2. Boss
+            if (secondBossObject != null)
+                GameStatus.status.UpdateBossKilled(1, false);
+            else
+                GameStatus.status.UpdateBossKilled(1, true);
+            // 2. boss doors
+            for (int i = 0; i < secondBossDoors.Length; i++)
+            {
+                GameStatus.status.UpdateSecondBossDoors(i, secondBossDoors[i].GetComponent<DoorController>().GetIsDoorOpen());
             }
 
             //GameStatus.status.UpdateBossKilled(1, secondBossKilled);
