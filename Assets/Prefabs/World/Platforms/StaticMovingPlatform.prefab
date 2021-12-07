@@ -241,7 +241,7 @@ MonoBehaviour:
   platformRenderers: []
   waitTime: 1
   speed: 150
-  circleSize: 0.15
+  circleSize: 0.2
   moves:
   - {x: 0, y: -15}
   movesBack: []

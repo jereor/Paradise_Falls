@@ -90,6 +90,7 @@ public class BulletBehaviour : MonoBehaviour
         {
             reflected = true;
             target = shooter;
+            transform.Rotate(0, 0, 180);
             rb.velocity = Vector2.zero;
             Vector2 force = (target.transform.position - transform.position).normalized * bulletSpeed;
             rb.AddForce(force, ForceMode2D.Impulse);

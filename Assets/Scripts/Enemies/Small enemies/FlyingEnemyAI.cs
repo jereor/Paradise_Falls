@@ -172,9 +172,11 @@ public class FlyingEnemyAI : MonoBehaviour
         {
             transform.position = spawnPosition;
             isTargetInBehaviourRange = false;
+            seeker.enabled = false;
         }
         else
         {
+            seeker.enabled = true;
             isTargetInBehaviourRange = true;
         }
 

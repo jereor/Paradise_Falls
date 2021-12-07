@@ -1,0 +1,300 @@
+fileFormatVersion: 2
+guid: bec65173575165d4c805a26271fd7bed
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 2625427364689407134
+    second: riotdrone_walk_sheet_0
+  - first:
+      213: 3886209357876534833
+    second: riotdrone_walk_sheet_1
+  - first:
+      213: 3863193024121054417
+    second: riotdrone_walk_sheet_2
+  - first:
+      213: 8673738382159160081
+    second: riotdrone_walk_sheet_3
+  - first:
+      213: -5342909568807355234
+    second: riotdrone_walk_sheet_4
+  - first:
+      213: 6663267461141011081
+    second: riotdrone_walk_sheet_5
+  - first:
+      213: 767060538946621394
+    second: riotdrone_walk_sheet_6
+  - first:
+      213: 6718880597288177546
+    second: riotdrone_walk_sheet_7
+  externalObjects: {}
+  serializedVersion: 11
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: riotdrone_walk_sheet_0
+      rect:
+        serializedVersion: 2
+        x: 14
+        y: 9
+        width: 160
+        height: 257
+      alignment: 9
+      pivot: {x: 0.60015696, y: 0.5784461}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e9ce6ef27446f6420800000000000000
+      internalID: 2625427364689407134
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: riotdrone_walk_sheet_1
+      rect:
+        serializedVersion: 2
+        x: 197
+        y: 9
+        width: 156
+        height: 254
+      alignment: 9
+      pivot: {x: 0.592784, y: 0.57530224}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 13e970b22d69ee530800000000000000
+      internalID: 3886209357876534833
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: riotdrone_walk_sheet_2
+      rect:
+        serializedVersion: 2
+        x: 377
+        y: 9
+        width: 155
+        height: 261
+      alignment: 9
+      pivot: {x: 0.5867124, y: 0.5871469}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1d4a08d5691dc9530800000000000000
+      internalID: 3863193024121054417
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: riotdrone_walk_sheet_3
+      rect:
+        serializedVersion: 2
+        x: 554
+        y: 9
+        width: 144
+        height: 261
+      alignment: 9
+      pivot: {x: 0.5753869, y: 0.5871469}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 113a4476a1f4f5870800000000000000
+      internalID: 8673738382159160081
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: riotdrone_walk_sheet_4
+      rect:
+        serializedVersion: 2
+        x: 734
+        y: 9
+        width: 146
+        height: 256
+      alignment: 9
+      pivot: {x: 0.5601915, y: 0.57471395}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e9cb33c1e0c2ad5b0800000000000000
+      internalID: -5342909568807355234
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: riotdrone_walk_sheet_5
+      rect:
+        serializedVersion: 2
+        x: 914
+        y: 10
+        width: 149
+        height: 255
+      alignment: 9
+      pivot: {x: 0.5936738, y: 0.56689805}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 98a9ab0d37ea87c50800000000000000
+      internalID: 6663267461141011081
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: riotdrone_walk_sheet_6
+      rect:
+        serializedVersion: 2
+        x: 1113
+        y: 17
+        width: 145
+        height: 251
+      alignment: 9
+      pivot: {x: 0.5891273, y: 0.56178564}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2df02210f7525aa00800000000000000
+      internalID: 767060538946621394
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: riotdrone_walk_sheet_7
+      rect:
+        serializedVersion: 2
+        x: 1294
+        y: 16
+        width: 154
+        height: 254
+      alignment: 9
+      pivot: {x: 0.57720554, y: 0.56716144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a8f40a91e424e3d50800000000000000
+      internalID: 6718880597288177546
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+  spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -183,9 +183,11 @@ public class GroundEnemyAI : MonoBehaviour
         {
             transform.position = spawnPosition;
             isTargetInBehaviourRange = false;
+            seeker.enabled = false;
         }
         else
         {
+            seeker.enabled = true;
             isTargetInBehaviourRange = true;
         }
 
