@@ -189,7 +189,7 @@ public class Health : MonoBehaviour
         float counter = 0;
         while (counter < duration)
         {
-            Debug.Log(Time.timeScale);
+            //Debug.Log(Time.timeScale);
             counter += Time.deltaTime;
             float newTimeScale = Mathf.Lerp(timeScaleWhenSlowed, 1f, counter / duration);
             Time.timeScale = newTimeScale;
