@@ -76,7 +76,7 @@ public class SaveData
 
         levers = new bool[11];
 
-        doors = new bool[15];
+        doors = new bool[16];
 
         meleePickups = new bool[2];
         throwPickups = new bool[2];
