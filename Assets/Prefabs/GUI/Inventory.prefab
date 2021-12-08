@@ -17,7 +17,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &3546740579105702350
 RectTransform:
   m_ObjectHideFlags: 0
@@ -93,7 +93,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &4606374675714521938
 RectTransform:
   m_ObjectHideFlags: 0
@@ -303,7 +303,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1663451039312907574
 RectTransform:
   m_ObjectHideFlags: 0
@@ -379,7 +379,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &4498871065182546246
 RectTransform:
   m_ObjectHideFlags: 0
@@ -723,7 +723,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &5756007088726783467
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1067,7 +1067,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1657404559394543054
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1143,7 +1143,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &4282672876105740528
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1621,7 +1621,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &8955857500181712071
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1790,9 +1790,9 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -17, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &8017278844082096540
 CanvasRenderer:
@@ -2049,7 +2049,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -8168641651382813611, guid: 1bccab7bd9d595e48919a5d3ea6ef80e, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 719a33c34028dfd428113320f2c28ac1, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -2178,7 +2178,7 @@ MonoBehaviour:
   inventoryController: {fileID: 0}
   skillNameInfo: Grappling
   skillNameDisplayAsset: {fileID: 9169047162654388073}
-  animationToDisplay: {fileID: -8168641651382813611, guid: 1bccab7bd9d595e48919a5d3ea6ef80e, type: 3}
+  animationToDisplay: {fileID: 21300000, guid: 719a33c34028dfd428113320f2c28ac1, type: 3}
   animationToDisplayAsset: {fileID: 8017278843906479543}
   informationToDisplay: Throw Multitool to grapple points to make a platform out
     of it. Grapple point can also be used to gravitate player towards to the point
@@ -2294,7 +2294,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: e989e95abdcbdd1438e0dd926def92d1, type: 3}
+  m_Sprite: {fileID: 403093118483246721, guid: 244b91731b990674395cffab36bc7001, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -2423,7 +2423,7 @@ MonoBehaviour:
   inventoryController: {fileID: 0}
   skillNameInfo: Shockwave Jump
   skillNameDisplayAsset: {fileID: 9169047162654388073}
-  animationToDisplay: {fileID: 21300000, guid: e989e95abdcbdd1438e0dd926def92d1, type: 3}
+  animationToDisplay: {fileID: 403093118483246721, guid: 244b91731b990674395cffab36bc7001, type: 3}
   animationToDisplayAsset: {fileID: 8017278843906479543}
   informationToDisplay: This electrical impulse pushes the user upwards for a distance
     equal to a normal jump. The only difference being that it can be used midair.
@@ -3408,7 +3408,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &8017278844992113317
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3651,7 +3651,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8017278845099822147}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2a4db7a114972834c8e4117be1d82ba3, type: 3}
   m_Name: 
@@ -3761,7 +3761,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: e989e95abdcbdd1438e0dd926def92d1, type: 3}
+  m_Sprite: {fileID: -622013801933464910, guid: 1bccab7bd9d595e48919a5d3ea6ef80e, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -3890,7 +3890,7 @@ MonoBehaviour:
   inventoryController: {fileID: 0}
   skillNameInfo: Shockwave Attack
   skillNameDisplayAsset: {fileID: 9169047162654388073}
-  animationToDisplay: {fileID: 21300000, guid: e989e95abdcbdd1438e0dd926def92d1, type: 3}
+  animationToDisplay: {fileID: -622013801933464910, guid: 1bccab7bd9d595e48919a5d3ea6ef80e, type: 3}
   animationToDisplayAsset: {fileID: 8017278843906479543}
   informationToDisplay: This electromagnetic impulse pushes enemies away giving the
     user a momentarily breather. What other purposes could it have? Probably not
@@ -3969,7 +3969,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: e989e95abdcbdd1438e0dd926def92d1, type: 3}
+  m_Sprite: {fileID: 7892416597174367820, guid: 7cca8ea80e601784191e7ed445714f24, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -4098,7 +4098,7 @@ MonoBehaviour:
   inventoryController: {fileID: 0}
   skillNameInfo: Dash
   skillNameDisplayAsset: {fileID: 9169047162654388073}
-  animationToDisplay: {fileID: 21300000, guid: e989e95abdcbdd1438e0dd926def92d1, type: 3}
+  animationToDisplay: {fileID: 7892416597174367820, guid: 7cca8ea80e601784191e7ed445714f24, type: 3}
   animationToDisplayAsset: {fileID: 8017278843906479543}
   informationToDisplay: Gain horizontal speed while using this ability. Can be used
     to gain access to otherwise unreachable destinations.
@@ -4850,7 +4850,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 6920226707029659177, guid: 7d99288bbb7840847ae005c53c548399, type: 3}
+  m_Sprite: {fileID: -4370051819294616441, guid: 244b91731b990674395cffab36bc7001, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -4979,7 +4979,7 @@ MonoBehaviour:
   inventoryController: {fileID: 0}
   skillNameInfo: Shield Grind
   skillNameDisplayAsset: {fileID: 9169047162654388073}
-  animationToDisplay: {fileID: 6920226707029659177, guid: 7d99288bbb7840847ae005c53c548399, type: 3}
+  animationToDisplay: {fileID: -4370051819294616441, guid: 244b91731b990674395cffab36bc7001, type: 3}
   animationToDisplayAsset: {fileID: 8017278843906479543}
   informationToDisplay: Feeling the sea breeze yet? This ability allows Cambot to
     surf on the pipes giving a pleasant fast-travel method to the destination (or
@@ -5058,7 +5058,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 3af2c0d23ed25a14f8630a2212857b89, type: 3}
+  m_Sprite: {fileID: -6276306153960997564, guid: 244b91731b990674395cffab36bc7001, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -5187,7 +5187,7 @@ MonoBehaviour:
   inventoryController: {fileID: 0}
   skillNameInfo: Shockwave Dive
   skillNameDisplayAsset: {fileID: 9169047162654388073}
-  animationToDisplay: {fileID: 21300000, guid: 3af2c0d23ed25a14f8630a2212857b89, type: 3}
+  animationToDisplay: {fileID: -6276306153960997564, guid: 244b91731b990674395cffab36bc7001, type: 3}
   animationToDisplayAsset: {fileID: 8017278843906479543}
   informationToDisplay: Dive towards the ground. This high speed ability can be useful
     in certain conditions and locations.
@@ -5424,7 +5424,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &8575986160205045352
 RectTransform:
   m_ObjectHideFlags: 0
