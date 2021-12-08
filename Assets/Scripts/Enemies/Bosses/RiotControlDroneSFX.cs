@@ -115,13 +115,13 @@ public class RiotControlDroneSFX : MonoBehaviour
     public void PlayDestroySound()
     {
         // First disable spriterenderer to "hide" enemy before destroying this gameobject (so we can play destroy sound)
-        SpriteRenderer[] childRenderers = GetComponentsInChildren<SpriteRenderer>();
-        foreach (SpriteRenderer renderer in childRenderers)
-        {
-            renderer.enabled = false;
-        }
+        //SpriteRenderer[] childRenderers = GetComponentsInChildren<SpriteRenderer>();
+        //foreach (SpriteRenderer renderer in childRenderers)
+        //{
+        //    renderer.enabled = false;
+        //}
         // Disables script so enemy will not deal dmg while sprite is invisible
-        myAIScript.enabled = false;
+        //myAIScript.enabled = false;
         //GetComponent<Collider2D>().enabled = false;
         // Play sound
         audioSource.Stop();
@@ -134,6 +134,6 @@ public class RiotControlDroneSFX : MonoBehaviour
     private IEnumerator DestroyAfterSound(float duration)
     {
         yield return new WaitForSeconds(duration);
-        Destroy(gameObject);
+        //Destroy(gameObject);
     }
 }
