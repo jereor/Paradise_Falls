@@ -20,7 +20,7 @@ public class RiotPhaseTwoPlatformController : MonoBehaviour
     [SerializeField] Transform spawnerRight;
     [SerializeField] private GameObject workerDrone;
     [SerializeField] private GameObject flyingDrone;
-    [SerializeField] private List<GameObject> droneInstances;
+    public List<GameObject> droneInstances;
 
 
     // Start is called before the first frame update
@@ -56,16 +56,6 @@ public class RiotPhaseTwoPlatformController : MonoBehaviour
             buttons.Add(button);
         }
 
-    }
-
-    private void FixedUpdate()
-    {
-        if(GameObject.Find("RiotControlDrone") == null)
-        {
-
-            foreach (GameObject enemy in droneInstances)
-                Destroy(enemy);
-        }
     }
 
     public void ActivateFirstSet() // Activate first set of boxes and enemies.
@@ -155,14 +145,6 @@ public class RiotPhaseTwoPlatformController : MonoBehaviour
         GameObject.Find("RiotControlDrone").GetComponent<RiotControlDrone>().setPhaseTwoComplete(true);
     }
 
-    private IEnumerator WaitBeforeUpdatingAStar()
-    {
-        yield return new WaitForSeconds(1);
-        foreach (Transform platform in firstBoxes)
-        {
-
-        }
-    }
 }
 
 // Activate platforms -> Button press -> Laser Shoots -> Platforms disappear -> Next set appears -> Repeat

@@ -1469,10 +1469,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 199612155, guid: a655144b432639548a8f6b7175f6390a, type: 3}
-      propertyPath: buttonToUseDisplay
-      value: Hold # and press & to pull player towards the point.
-      objectReference: {fileID: 0}
     - target: {fileID: 724879226, guid: a655144b432639548a8f6b7175f6390a, type: 3}
       propertyPath: energyScript
       value: 
@@ -2797,15 +2793,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2646993275326716551, guid: 4154d57994558ff489a9180c3151e624, type: 3}
       propertyPath: dashUnlocked
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2646993275326716551, guid: 4154d57994558ff489a9180c3151e624, type: 3}
       propertyPath: shieldUnlocked
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2646993275326716551, guid: 4154d57994558ff489a9180c3151e624, type: 3}
       propertyPath: walljumpUnlocked
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2646993275326716551, guid: 4154d57994558ff489a9180c3151e624, type: 3}
       propertyPath: grapplingUnlocked
@@ -3021,6 +3017,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1738336891}
     - target: {fileID: 7405320282133220080, guid: 8f290bfe0722b1f44bdaa70ca8d405aa, type: 3}
+      propertyPath: vineSpawnSpeed
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7405320282133220080, guid: 8f290bfe0722b1f44bdaa70ca8d405aa, type: 3}
       propertyPath: vineDisactivator
       value: 
       objectReference: {fileID: 1841769133}
@@ -3155,18 +3155,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1766905158}
     m_Modifications:
-    - target: {fileID: 8838499441252086578, guid: 16f030dbb1d9cde469f4ad9ed2600e5a, type: 3}
-      propertyPath: maxHealth
-      value: 35
-      objectReference: {fileID: 0}
-    - target: {fileID: 8838499441252086581, guid: 16f030dbb1d9cde469f4ad9ed2600e5a, type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8838499441252086581, guid: 16f030dbb1d9cde469f4ad9ed2600e5a, type: 3}
-      propertyPath: skipSmallEnemies
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 8838499441252086581, guid: 16f030dbb1d9cde469f4ad9ed2600e5a, type: 3}
       propertyPath: bossTeleportPoint
       value: 
@@ -3179,10 +3167,6 @@ PrefabInstance:
       propertyPath: seedShootPosition
       value: 
       objectReference: {fileID: 1882565895}
-    - target: {fileID: 8838499441252086581, guid: 16f030dbb1d9cde469f4ad9ed2600e5a, type: 3}
-      propertyPath: skipToSecondPhase
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 8838499441252086583, guid: 16f030dbb1d9cde469f4ad9ed2600e5a, type: 3}
       propertyPath: m_RootOrder
       value: 0

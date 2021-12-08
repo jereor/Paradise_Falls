@@ -46,6 +46,7 @@ public class BigPlantController : MonoBehaviour
     [SerializeField] private GameObject grappleVine; // Prefab that is instantiated in Charge state.
     [SerializeField] private GameObject seedVine; // Prefab that is instantiated in Charge state.
     [SerializeField] private GameObject swingVine; // Prefab that is instantiated in LightAttack function.
+    [SerializeField] private GameObject specialVine; // Prefab that is instantiated in LightAttack function.
     public List<GameObject> attackVineInstances; // All spawned vines are stored in a list.
     public List<GameObject> grappleVineInstances; // All spawned vines are stored in a list.
     private GameObject swingVineInstance;
@@ -87,12 +88,15 @@ public class BigPlantController : MonoBehaviour
 
     private float tempHealth = 0;
 
+    [SerializeField] private int vineSpawnCounter = 0;
+
 
     private bool isCovered = false;
     private bool isRoaring = false;
     private bool isEnemiesSpawned = false;
     private bool knockbackOnCooldown = false;
     private bool spawnWorkerDrones = true;
+    private bool isAttackVineSpawned = false;
     private bool isPhaseTwoTransitioning = false;
     private bool isPhaseTwoInitiated = false;
     private bool isPhaseThreeTransitioning = false;
@@ -288,6 +292,7 @@ public class BigPlantController : MonoBehaviour
         {
             StartCoroutine(SpawnVine());
         }
+
 
     }
 
@@ -601,19 +606,33 @@ public class BigPlantController : MonoBehaviour
         vineSpeed = health.GetHealth() / health.GetMaxHealth();
 
         // The operation would normally result in 0 as it is rounded to integer. In this case spawn only one vine.
-        if (spawnAmount <= 1)
+        if(vineSpawnCounter >= 5)
+        {
+            attackVineInstances.Add(Instantiate(specialVine, new Vector2(Random.Range(transform.position.x - 10, transform.position.x + 10), transform.position.y + 18), new Quaternion(0, 0, -180, 0)));
+            isAttackVineSpawned = true;
+        }
+        else if (spawnAmount <= 1 && vineSpawnCounter < 5)
         {
             attackVineInstances.Add(Instantiate(attackVine, new Vector2(Random.Range(transform.position.x - 10, transform.position.x + 10), transform.position.y + 18), new Quaternion(0, 0, -180, 0)));
+            vineSpawnCounter++;
         }
-        else
+        else if(vineSpawnCounter < 5)
         {
             for (int i = 0; i < spawnAmount; i++)
             {
                 attackVineInstances.Add(Instantiate(attackVine, new Vector2(Random.Range(transform.position.x - 10, transform.position.x + 10), transform.position.y + 18), new Quaternion(0, 0, -180, 0)));
                 yield return new WaitForSeconds(vineSpeed);
             }
+            vineSpawnCounter++;
         }
-        yield return new WaitForSeconds(2);     
+        if(isAttackVineSpawned)
+        {
+            vineSpawnCounter = 0;
+            isAttackVineSpawned = false;
+        }
+            
+
+        yield return new WaitForSeconds(2);
     }
 
     private IEnumerator PhaseTwoTransition()
