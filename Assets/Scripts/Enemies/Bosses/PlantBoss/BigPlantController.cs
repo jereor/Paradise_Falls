@@ -602,7 +602,7 @@ public class BigPlantController : MonoBehaviour
     // Coroutine spawns vines with a simple calculation that uses the remaining and maximum boss health as a vine spawn amount.
     private IEnumerator SpawnVine()
     {
-        int spawnAmount = ((int)health.GetMaxHealth() - (int)health.GetHealth()) / 3;
+        int spawnAmount = ((int)health.GetMaxHealth() - (int)health.GetHealth()) / 4;
         vineSpeed = health.GetHealth() / health.GetMaxHealth();
 
         // The operation would normally result in 0 as it is rounded to integer. In this case spawn only one vine.
