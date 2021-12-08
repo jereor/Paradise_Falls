@@ -239,7 +239,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerHealth: {fileID: 0}
-  maxSegments: 9
+  maxSegments: 6
   removedSegments: 0
   radialColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!1 &1959287134
@@ -3304,8 +3304,16 @@ PrefabInstance:
       objectReference: {fileID: 1183976563}
     - target: {fileID: 2275900308990889035, guid: a85e2fede70a9e14bb4c021e7c6a568f, type: 3}
       propertyPath: informationToDisplay
-      value: Swing or throw at your enemies to deal damage. Use on gray boxes to
-        open laser doors.
+      value: Swing or throw at your enemies to deal damage. Use $ on gray lever boxes
+        to open laser doors.
+      objectReference: {fileID: 0}
+    - target: {fileID: 2275900308990889035, guid: a85e2fede70a9e14bb4c021e7c6a568f, type: 3}
+      propertyPath: skillName.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2275900308990889035, guid: a85e2fede70a9e14bb4c021e7c6a568f, type: 3}
+      propertyPath: skillName.Array.data[3]
+      value: Interact
       objectReference: {fileID: 0}
     - target: {fileID: 2855706076484409174, guid: a85e2fede70a9e14bb4c021e7c6a568f, type: 3}
       propertyPath: m_fontAsset
@@ -3908,7 +3916,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9169047164288164452, guid: a85e2fede70a9e14bb4c021e7c6a568f, type: 3}
       propertyPath: buttonToUseDisplay
-      value: Press @ midair to jump. Press downwards and @ midair to dive.
+      value: Press # midair to jump. Press downwards and # midair to dive.
       objectReference: {fileID: 0}
     - target: {fileID: 9169047164288164452, guid: a85e2fede70a9e14bb4c021e7c6a568f, type: 3}
       propertyPath: inventoryController

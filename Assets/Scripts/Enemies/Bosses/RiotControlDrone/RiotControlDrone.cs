@@ -908,6 +908,7 @@ public class RiotControlDrone : MonoBehaviour
     private IEnumerator BossIsDead()
     {
         ChangeToDefaultLayer();
+        rb.constraints = RigidbodyConstraints2D.FreezeAll;
         yield return new WaitForSeconds(1);
         PlayerCamera.Instance.CameraShake(0.7f, 4);
         for (int i = 0; i < 5; i++)
