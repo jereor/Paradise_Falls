@@ -103,6 +103,8 @@ public class Player : MonoBehaviour
         TextStyleEnergy.fontSize = 30;
         TextStyleHealth.fontSize = 30;
         TextStyleEnergy.normal.textColor = Color.red;
+
+        HandleAllPlayerControlInputs(false);
     }
 
     private void FixedUpdate()

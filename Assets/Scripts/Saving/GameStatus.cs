@@ -232,4 +232,9 @@ public class GameStatus : MonoBehaviour
     {
         dataToSave.enableExteriors = b;
     }
+
+    public void UpdateInitSave(bool b)
+    {
+        dataToSave.initSaveDone = b;
+    }
 }
