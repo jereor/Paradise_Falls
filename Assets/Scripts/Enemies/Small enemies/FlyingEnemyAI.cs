@@ -154,8 +154,8 @@ public class FlyingEnemyAI : MonoBehaviour
             path = p;
             currentWaypoint = 0;
         }
-        else 
-            Debug.Log("Error");
+        //else 
+        //    Debug.Log("Error");
     }
 
     // Update is called once per frame

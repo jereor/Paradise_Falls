@@ -243,7 +243,7 @@ public class MainMenuController : MonoBehaviour
         while (!operation.isDone)
         {
             float progress = Mathf.Clamp01(operation.progress / 0.9f);
-            Debug.Log("Loading: " + progress);
+            //Debug.Log("Loading: " + progress);
 
             yield return null;
         }

@@ -62,7 +62,7 @@ public class SceneLoader : MonoBehaviour
         if (GameStatus.status != null)
         {
             // SCENE INITIALIZATION --- could be done in Awake too test which is better
-            Debug.Log("Binds for save tests(alpha keys): 0 save, 9 checksave, 8 delete, 7 load, O respawn, P kill boss");
+            //Debug.Log("Binds for save tests(alpha keys): 0 save, 9 checksave, 8 delete, 7 load, O respawn, P kill boss");
             //Debug.Log("Player spawning to: " + GameStatus.status.getLoadedData().position[0] + ", " + GameStatus.status.getLoadedData().position[1]);
 
             // Set respawn point as loaded position
@@ -514,7 +514,7 @@ public class SceneLoader : MonoBehaviour
     // Lazy version for respawn load scene again with loaded data works as Save function updates saveData only
     public void PlayerDeathRespawn()
     {
-        Debug.Log("Respawning, atm loading scene with loaded save");
+        //Debug.Log("Respawning, atm loading scene with loaded save");
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 

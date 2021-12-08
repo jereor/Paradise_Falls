@@ -4,6 +4,9 @@ public class ConveyorBelt : MonoBehaviour
 {
     [SerializeField] private float speed;
 
+    private Transform playerTransform;
+    private float maxDistance = 30f;
+
     [Header("Used if button/lever can shut belt off")]
     [Tooltip("Collider from last right sprite")]
     [SerializeField] private Collider2D rightEndPointCollider; // Only one will be enough
@@ -11,6 +14,28 @@ public class ConveyorBelt : MonoBehaviour
     [SerializeField] private Animator[] animators;
 
     private bool stopped = false;
+
+    private void Start()
+    {
+        playerTransform = GameObject.FindGameObjectWithTag("Player").transform;   
+    }
+
+    private void Update()
+    {
+        // Check if player is too far away to even hear this no need to play animation
+        // Stops animations and audio fro this object once
+        if((gameObject.transform.position - playerTransform.position).magnitude > maxDistance && !stopped)
+        {
+            // Stops
+            Stop();
+        }
+        // Resumes animations and audio for this object
+        else if((gameObject.transform.position - playerTransform.position).magnitude <= maxDistance && stopped)
+        {
+            // Resumes
+            Stop();
+        }
+    }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
