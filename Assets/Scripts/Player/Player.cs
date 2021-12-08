@@ -394,6 +394,8 @@ public class Player : MonoBehaviour
         // LedgeChecks return true
         if (movementScript.getClimbing() && !animator.GetBool("isAttacking") && !animator.GetBool("hCharging") && !animator.GetBool("isBlocking") && !animator.GetBool("isParrying"))
         {
+            if (shieldScript.Blocking)
+                shieldScript.Blocking = false;
             animator.SetBool("isClimbing", true);
         }
 
@@ -467,7 +469,7 @@ public class Player : MonoBehaviour
         }
 
         // Blocking 
-        if (shieldScript.Blocking && !animator.GetBool("isAttacking") && !animator.GetBool("isAiming") && !animator.GetBool("isThrowing") && !animator.GetBool("willLand") && !animator.GetBool("isShieldGrinding"))
+        if (shieldScript.Blocking && !animator.GetBool("isAttacking") && !animator.GetBool("isAiming") && !animator.GetBool("isThrowing") && !animator.GetBool("willLand") && !animator.GetBool("isShieldGrinding") && !animator.GetBool("isClimbing"))
         {
             if (animator.GetBool("isRunning"))
             {
