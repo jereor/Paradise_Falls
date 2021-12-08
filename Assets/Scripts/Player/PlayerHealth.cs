@@ -66,4 +66,12 @@ public class PlayerHealth : Health
             healthNumberImage.gameObject.SetActive(false);
         }
     }
+
+    public void RespawnOnDie()
+    {
+        if(GameStatus.status != null && SceneLoader.Instance != null)
+        {
+            SceneLoader.Instance.PlayerDeathRespawn();
+        }
+    }
 }

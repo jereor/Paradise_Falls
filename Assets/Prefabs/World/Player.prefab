@@ -10804,10 +10804,22 @@ MonoBehaviour:
   damageColor: {r: 1, g: 0, b: 0, a: 1}
   slowDuration: 0.15
   timeScaleWhenSlowed: 0.1
-  destroyWhenDead: 1
+  destroyWhenDead: 0
   onDie:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 269594451}
+        m_TargetAssemblyTypeName: PlayerHealth, Assembly-CSharp
+        m_MethodName: RespawnOnDie
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   usesHealthNumber: 0
   healthNumberImage: {fileID: 0}
   numberSprites:

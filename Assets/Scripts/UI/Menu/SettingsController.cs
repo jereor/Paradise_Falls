@@ -14,6 +14,8 @@ public class SettingsController : MonoBehaviour
     public Button settingsButton;
     public TMP_Dropdown resolutionDropdown;
     public Toggle fullscreenToggle;
+    public Toggle exteriorToggle;
+    public Toggle interiorToggle;
 
     // Sliders
     public Slider masterVolumeSlider;
@@ -27,6 +29,8 @@ public class SettingsController : MonoBehaviour
 
     private bool resoLoadBuffer = true;
     private bool fullscreenLoadBuffer = true;
+    private bool interiorsLoadBuffer = true;
+    private bool exteriorsLoadBuffer = true;
 
     // Start is called before the first frame update
     void Start()
@@ -72,12 +76,22 @@ public class SettingsController : MonoBehaviour
         //    resolutionDropdown.RefreshShownValue();
         //    resoLoadBuffer = false;
         //}
-        if (fullscreenToggle.gameObject.activeInHierarchy && GameStatus.status != null && GameStatus.status.getLoadedData().fullscreen != Screen.fullScreen && fullscreenLoadBuffer)
+        if (fullscreenToggle.gameObject.activeInHierarchy && GameStatus.status != null && fullscreenLoadBuffer)
         {
-            Screen.fullScreen = GameStatus.status.getLoadedData().fullscreen;
-            if (fullscreenToggle.isOn != GameStatus.status.getLoadedData().fullscreen)
-                fullscreenToggle.isOn = GameStatus.status.getLoadedData().fullscreen;
+            //Screen.fullScreen = GameStatus.status.getLoadedData().fullscreen;
+            fullscreenToggle.isOn = Screen.fullScreen;
             fullscreenLoadBuffer = false;
+        }
+
+        if (interiorToggle.gameObject.activeInHierarchy && GameStatus.status != null && GameStatus.status.getLoadedData().enableInteriors != interiorToggle.isOn && interiorsLoadBuffer)
+        {
+            interiorToggle.isOn = GameStatus.status.getLoadedData().enableInteriors;
+            interiorsLoadBuffer = false;
+        }
+        if (exteriorToggle.gameObject.activeInHierarchy && GameStatus.status != null && GameStatus.status.getLoadedData().enableExteriors != exteriorToggle.isOn && exteriorsLoadBuffer)
+        {
+            exteriorToggle.isOn = GameStatus.status.getLoadedData().enableExteriors;
+            exteriorsLoadBuffer = false;
         }
     }
 
@@ -114,6 +128,7 @@ public class SettingsController : MonoBehaviour
         if(GameStatus.status != null)
             GameStatus.status.Save();
 
+
         settingsOpen = false;
         settingsButton.Select();
     }
@@ -142,6 +157,15 @@ public class SettingsController : MonoBehaviour
         Screen.fullScreen = isFullscreen;
         if (GameStatus.status != null)
             GameStatus.status.UpdateFullScreen(isFullscreen);
+    }
+
+    public void SetInteriorShadows(bool isEnabled)
+    {
+        GameStatus.status.UpdateInteriors(isEnabled);
+    }
+    public void SetExteriorShadows(bool isEnabled)
+    {
+        GameStatus.status.UpdateExteriors(isEnabled);
     }
 
     public void SetResolution(int resolutionIndex)

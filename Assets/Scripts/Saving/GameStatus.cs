@@ -224,4 +224,12 @@ public class GameStatus : MonoBehaviour
     {
         dataToSave.resolutionIndex = index;
     }
+    public void UpdateInteriors(bool b)
+    {
+        dataToSave.enableInteriors = b;
+    }
+    public void UpdateExteriors(bool b)
+    {
+        dataToSave.enableExteriors = b;
+    }
 }

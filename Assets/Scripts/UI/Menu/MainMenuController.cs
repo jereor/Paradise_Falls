@@ -70,6 +70,7 @@ public class MainMenuController : MonoBehaviour
             settingsMenu.GetComponent<SettingsController>().mainMixer.SetFloat("MasterVolume", GameStatus.status.getLoadedData().masterVolume);
             settingsMenu.GetComponent<SettingsController>().mainMixer.SetFloat("EffectVolume", GameStatus.status.getLoadedData().effectsVolume);
             settingsMenu.GetComponent<SettingsController>().mainMixer.SetFloat("MusicVolume", GameStatus.status.getLoadedData().musicVolume);
+            Screen.fullScreen = GameStatus.status.getLoadedData().fullscreen;
         }
         else
         {
@@ -243,7 +244,7 @@ public class MainMenuController : MonoBehaviour
         while (!operation.isDone)
         {
             float progress = Mathf.Clamp01(operation.progress / 0.9f);
-            Debug.Log("Loading: " + progress);
+            //Debug.Log("Loading: " + progress);
 
             yield return null;
         }
