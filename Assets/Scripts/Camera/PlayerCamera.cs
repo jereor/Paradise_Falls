@@ -128,6 +128,7 @@ public class PlayerCamera : MonoBehaviour
 
         // Fade in / Remove black screen
         float counter = 0;
+
         while (counter < timer)
         {
             counter += Time.deltaTime;
@@ -137,6 +138,7 @@ public class PlayerCamera : MonoBehaviour
             vignette.intensity.value = newVignetteIntensity;
             yield return new WaitForEndOfFrame();
         }
+        Player.Instance.HandleAllPlayerControlInputs(true);
     }
 
     public void CameraFadeOut(float timer)
