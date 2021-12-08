@@ -53,6 +53,9 @@ public class SkillInformationDisplayController : MonoBehaviour
 
             if (buttonToUseDisplay.Contains("%"))
                 buttonToUseDisplay = buttonToUseDisplay.Replace("%", "<color=#A93229>" + InputActionRebindingExtensions.GetBindingDisplayString(inputActions.FindAction(skillName[2]), 0) + "</color> / <color=#A93229>" + InputActionRebindingExtensions.GetBindingDisplayString(inputActions.FindAction(skillName[2]), 1) + "</color>");
+
+            if (informationToDisplay.Contains("$"))
+                informationToDisplay = informationToDisplay.Replace("$", "<color=#A93229>" + InputActionRebindingExtensions.GetBindingDisplayString(inputActions.FindAction(skillName[3]), 0) + "</color> / <color=#A93229>" + InputActionRebindingExtensions.GetBindingDisplayString(inputActions.FindAction(skillName[3]), 1) + "</color>");
         }
         else if(isUsingController)
         {

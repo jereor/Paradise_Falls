@@ -907,7 +907,8 @@ public class RiotControlDrone : MonoBehaviour
 
     private IEnumerator BossIsDead()
     {
-        ChangeToPassableLayer();
+        ChangeToDefaultLayer();
+        rb.constraints = RigidbodyConstraints2D.FreezeAll;
         yield return new WaitForSeconds(1);
         PlayerCamera.Instance.CameraShake(0.7f, 4);
         for (int i = 0; i < 5; i++)
@@ -934,6 +935,7 @@ public class RiotControlDrone : MonoBehaviour
             transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(transform.GetChild(0).GetComponent<SpriteRenderer>().color.r, transform.GetChild(0).GetComponent<SpriteRenderer>().color.g, transform.GetChild(0).GetComponent<SpriteRenderer>().color.b, newAlpha);
             yield return null;
         }
+        phaseTwoPlatformController.OpenDoors();
         yield return new WaitForSeconds(1);
 
         //victoryMusic.Invoke();
