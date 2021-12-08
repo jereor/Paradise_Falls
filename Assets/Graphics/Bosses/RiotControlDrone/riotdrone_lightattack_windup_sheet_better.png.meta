@@ -1,0 +1,252 @@
+fileFormatVersion: 2
+guid: 73c52cbcd1774ae47857adbbdd6491cd
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 3382152588318316217
+    second: riotdrone_lightattack_windup_sheet_better_0
+  - first:
+      213: 2281813909609912075
+    second: riotdrone_lightattack_windup_sheet_better_1
+  - first:
+      213: 4416818495180712364
+    second: riotdrone_lightattack_windup_sheet_better_2
+  - first:
+      213: -5706826056046230305
+    second: riotdrone_lightattack_windup_sheet_better_3
+  - first:
+      213: 417663296239661623
+    second: riotdrone_lightattack_windup_sheet_better_4
+  - first:
+      213: -3417819655371299736
+    second: riotdrone_lightattack_windup_sheet_better_5
+  externalObjects: {}
+  serializedVersion: 11
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: riotdrone_lightattack_windup_sheet_better_0
+      rect:
+        serializedVersion: 2
+        x: 27
+        y: 4
+        width: 191
+        height: 316
+      alignment: 9
+      pivot: {x: 0.43159986, y: 0.4636681}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9b691e21cd1dfee20800000000000000
+      internalID: 3382152588318316217
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: riotdrone_lightattack_windup_sheet_better_1
+      rect:
+        serializedVersion: 2
+        x: 257
+        y: 7
+        width: 190
+        height: 314
+      alignment: 9
+      pivot: {x: 0.43332344, y: 0.46595827}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b0718d549a1aaaf10800000000000000
+      internalID: 2281813909609912075
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: riotdrone_lightattack_windup_sheet_better_2
+      rect:
+        serializedVersion: 2
+        x: 468
+        y: 6
+        width: 189
+        height: 317
+      alignment: 9
+      pivot: {x: 0.43444663, y: 0.46253386}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ca92f922501bb4d30800000000000000
+      internalID: 4416818495180712364
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: riotdrone_lightattack_windup_sheet_better_3
+      rect:
+        serializedVersion: 2
+        x: 657
+        y: 6
+        width: 261
+        height: 260
+      alignment: 9
+      pivot: {x: 0.71387255, y: 0.56547433}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fd4cb6620f74dc0b0800000000000000
+      internalID: -5706826056046230305
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: riotdrone_lightattack_windup_sheet_better_4
+      rect:
+        serializedVersion: 2
+        x: 939
+        y: 6
+        width: 260
+        height: 260
+      alignment: 9
+      pivot: {x: 0.7116497, y: 0.5639517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 73275181e86dbc500800000000000000
+      internalID: 417663296239661623
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: riotdrone_lightattack_windup_sheet_better_5
+      rect:
+        serializedVersion: 2
+        x: 1219
+        y: 6
+        width: 260
+        height: 260
+      alignment: 9
+      pivot: {x: 0.7116497, y: 0.5639517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 864ee3fb1277190d0800000000000000
+      internalID: -3417819655371299736
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+  spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

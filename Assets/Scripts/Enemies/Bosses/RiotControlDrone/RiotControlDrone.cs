@@ -696,34 +696,18 @@ public class RiotControlDrone : MonoBehaviour
     private IEnumerator LightAttack()
     {
         canAttack = false;
-        //gameObject.GetComponentsInChildren<SpriteRenderer>()[0].color = Color.blue;
 
-        float collisionAngle = Vector2.SignedAngle(Vector2.right, Vector2.up);
-        Quaternion q = Quaternion.AngleAxis(collisionAngle, Vector3.forward);
-        //if (!isFacingRight && !isEnraged)
-        //    gameObject.transform.GetChild(5).DORotate(new Vector3(0, 0, -90), lightAttackCoolDown); // Simple visual effect for baton so player knows when to hit and not.
-        //else if (isFacingRight && !isEnraged)
-        //    gameObject.transform.GetChild(5).DORotate(new Vector3(0, 0, 90), lightAttackCoolDown);
-
-        //if (!isFacingRight && isEnraged)
-        //    gameObject.transform.GetChild(4).DORotate(new Vector3(0, 0, -90), lightAttackCoolDown); // Simple visual effect for baton so player knows when to hit and not.
-        //else if (isFacingRight && isEnraged)
-        //    gameObject.transform.GetChild(4).DORotate(new Vector3(0, 0, 90), lightAttackCoolDown);
-
+        riotAnimator.SetBool("LightAttackCharge", true);
         yield return new WaitForSeconds(lightAttackCoolDown);
         
         playMeleeSound = true;
-
+        riotAnimator.SetBool("LightAttackCharge", false);
+        riotAnimator.SetBool("LightAttackSwing", true);
         // Deal damage to player if still in range.
-        if(IsTargetInHitRange())
+        if (IsTargetInHitRange())
         {
             targetHealth.TakeDamage(lightAttackDamage);
             PlayerPushback();
-            //if (!isEnraged)
-            //    gameObject.transform.GetChild(5).rotation = batonRotation;
-
-            //if (isEnraged)
-            //    gameObject.transform.GetChild(4).rotation = batonRotation;
             yield return new WaitForSeconds(lightAttackCoolDown);
 
         }
@@ -731,12 +715,6 @@ public class RiotControlDrone : MonoBehaviour
         {
             Destroy(boxInstance);
             boxInstance = null;
-
-            //if (!isEnraged)
-            //    gameObject.transform.GetChild(5).rotation = batonRotation;
-
-            //if (isEnraged)
-            //    gameObject.transform.GetChild(4).rotation = batonRotation;
 
             yield return new WaitForSeconds(lightAttackCoolDown);
             if (!isEnraged)
@@ -748,12 +726,6 @@ public class RiotControlDrone : MonoBehaviour
         }
         else
         {
-            //if (!isEnraged)
-            //    gameObject.transform.GetChild(5).rotation = batonRotation;
-
-            //if (isEnraged)
-            //    gameObject.transform.GetChild(4).rotation = batonRotation;
-
             yield return new WaitForSeconds(lightAttackCoolDown);
             if (!isEnraged)
             {
@@ -763,7 +735,7 @@ public class RiotControlDrone : MonoBehaviour
                 state = RiotState.PhaseThreeMoving;
 
         }
-        //gameObject.GetComponentsInChildren<SpriteRenderer>()[0].color = Color.white;
+        riotAnimator.SetBool("LightAttackSwing", false);
         attackRandomizer = UnityEngine.Random.Range(1, 101);
         canAttack = true;
     }
@@ -771,45 +743,24 @@ public class RiotControlDrone : MonoBehaviour
     private IEnumerator HeavyAttack()
     {
         canAttack = false;
-        gameObject.GetComponentsInChildren<SpriteRenderer>()[0].color = Color.magenta;
-
-        float collisionAngle = Vector2.SignedAngle(Vector2.right, Vector2.up);
-        Quaternion q = Quaternion.AngleAxis(collisionAngle, Vector3.forward);
-        //if (!isFacingRight && !isEnraged)
-        //    gameObject.transform.GetChild(5).DORotate(new Vector3(0, 0, -90), heavyAttackChargeTime); // Simple visual effect for baton so player knows when to hit and not.
-        //else if(isFacingRight && !isEnraged)
-        //    gameObject.transform.GetChild(5).DORotate(new Vector3(0, 0, 90), heavyAttackChargeTime);
-
-        //if (!isFacingRight && isEnraged)
-        //    gameObject.transform.GetChild(4).DORotate(new Vector3(0, 0, -90), heavyAttackChargeTime); // Simple visual effect for baton so player knows when to hit and not.
-        //else if (isFacingRight && isEnraged)
-        //    gameObject.transform.GetChild(4).DORotate(new Vector3(0, 0, 90), heavyAttackChargeTime);
+        riotAnimator.SetBool("HeavyAttackCharge", true);
 
         yield return new WaitForSeconds(heavyAttackChargeTime);
 
         playMeleeSound = true;
-        
+        riotAnimator.SetBool("HeavyAttackSwing", true);
+        riotAnimator.SetBool("HeavyAttackCharge", false);
         // Deal damage to player if still in range.
         if (IsTargetInHitRange())
         {
             targetHealth.TakeDamage(heavyAttackDamage);
             PlayerPushback();
-            //if (!isEnraged)
-            //    gameObject.transform.GetChild(5).rotation = batonRotation;
-
-            //if (isEnraged)
-            //    gameObject.transform.GetChild(4).rotation = batonRotation;
             yield return new WaitForSeconds(heavyAttackCoolDown);
 
             
         }
         else
         {
-            //if (!isEnraged)
-            //    gameObject.transform.GetChild(5).rotation = batonRotation;
-
-            //if (isEnraged)
-            //    gameObject.transform.GetChild(4).rotation = batonRotation;
             yield return new WaitForSeconds(heavyAttackCoolDown);
             if (!isEnraged)
             {
@@ -818,7 +769,7 @@ public class RiotControlDrone : MonoBehaviour
             else 
                 state = RiotState.PhaseThreeMoving;
         }
-
+        riotAnimator.SetBool("HeavyAttackSwing", false);
         gameObject.GetComponentsInChildren<SpriteRenderer>()[0].color = Color.white;
         attackRandomizer = UnityEngine.Random.Range(1, 101);
         canAttack = true;
@@ -1032,7 +983,7 @@ public class RiotControlDrone : MonoBehaviour
             riotAnimator.SetBool("Idle", true);
             riotAnimator.SetBool("Stunned", false);
             riotAnimator.SetBool("TaserShoot", false);
-            riotAnimator.SetBool("LightAttack", false);
+            riotAnimator.SetBool("LightAttackSwing", false);
             riotAnimator.SetBool("BackStepping", false);
         }
 
@@ -1041,7 +992,7 @@ public class RiotControlDrone : MonoBehaviour
             riotAnimator.SetBool("SlowWalk", true);
             riotAnimator.SetBool("Stunned", false);
             riotAnimator.SetBool("TaserShoot", false);
-            riotAnimator.SetBool("LightAttack", false);
+            riotAnimator.SetBool("LightAttackSwing", false);
             riotAnimator.SetBool("BackStepping", false);
         }
 
@@ -1053,13 +1004,12 @@ public class RiotControlDrone : MonoBehaviour
             riotAnimator.SetBool("TaserShoot", false);
             riotAnimator.SetBool("SlowWalk", false);
             riotAnimator.SetBool("BackStepping", false);
-            riotAnimator.SetBool("LightAttack", false);
+            riotAnimator.SetBool("LightAttackSwing", false);
 
         }
 
         if (state == RiotState.Attack)
         {
-            riotAnimator.SetBool("LightAttack", true);
             riotAnimator.SetBool("Idle", false);
             riotAnimator.SetBool("Stunned", false);
             riotAnimator.SetBool("TaserShoot", false);
@@ -1076,6 +1026,8 @@ public class RiotControlDrone : MonoBehaviour
             riotAnimator.SetBool("Stunned", false);
             riotAnimator.SetBool("SlowWalk", false);
             riotAnimator.SetBool("BackStepping", false);
+            riotAnimator.SetBool("LightAttackCharge", false);
+            riotAnimator.SetBool("LightAttackSwing", false);
 
         }
 
@@ -1086,6 +1038,8 @@ public class RiotControlDrone : MonoBehaviour
             riotAnimator.SetBool("TaserShoot", false);
             riotAnimator.SetBool("Idle", false);
             riotAnimator.SetBool("SlowWalk", false);
+            riotAnimator.SetBool("LightAttackCharge", false);
+            riotAnimator.SetBool("LightAttackSwing", false);
 
         }
 
@@ -1094,6 +1048,8 @@ public class RiotControlDrone : MonoBehaviour
             riotAnimator.SetBool("BackStepping", true);
             riotAnimator.SetBool("ShieldCharge", false);
             riotAnimator.SetBool("LightAttack", false);
+            riotAnimator.SetBool("LightAttackCharge", false);
+            riotAnimator.SetBool("LightAttackSwing", false);
 
 
         }
@@ -1124,17 +1080,16 @@ public class RiotControlDrone : MonoBehaviour
         if (state == RiotState.PhaseThreeMoving)
         {
             riotAnimator.SetBool("Run", true);
-            riotAnimator.SetBool("LightAttack", false);
-            riotAnimator.SetBool("HeavyAttack", false);
             riotAnimator.SetBool("Stunned", false);
             riotAnimator.SetBool("ShieldCharge", false);
             riotAnimator.SetBool("SeedShoot", false);
             riotAnimator.SetBool("TaserShoot", false);
+            riotAnimator.SetBool("HeavyAttackSwing", false);
+            riotAnimator.SetBool("LightAttackSwing", false);
         }
 
         if (state == RiotState.PhaseThreeAttack)
         {
-            riotAnimator.SetBool("LightAttack", true); // Placeholder, change false when right animations
             riotAnimator.SetBool("Idle", false); 
             riotAnimator.SetBool("Stunned", false);
             riotAnimator.SetBool("ShieldCharge", false);
@@ -1148,11 +1103,11 @@ public class RiotControlDrone : MonoBehaviour
             riotAnimator.SetBool("SeedShoot", true);
             riotAnimator.SetBool("TaserShoot", true); // Placeholder
             riotAnimator.SetBool("Idle", false);
-            riotAnimator.SetBool("LightAttack", false);
-            riotAnimator.SetBool("HeavyAttack", false);
             riotAnimator.SetBool("Stunned", false);
             riotAnimator.SetBool("ShieldCharge", false);
             riotAnimator.SetBool("Run", false);
+            riotAnimator.SetBool("HeavyAttackSwing", false);
+            riotAnimator.SetBool("LightAttackSwing", false);
         }
 
         if (state == RiotState.DashAttack)
@@ -1161,21 +1116,21 @@ public class RiotControlDrone : MonoBehaviour
             riotAnimator.SetBool("ShieldCharge", true); // Placeholder, change false when right animations
             riotAnimator.SetBool("Stunned", false);
             riotAnimator.SetBool("Run", false);
-            riotAnimator.SetBool("LightAttack", false);
-            riotAnimator.SetBool("HeavyAttack", false);
             riotAnimator.SetBool("SeedShoot", false);
             riotAnimator.SetBool("TaserShoot", false);
+            riotAnimator.SetBool("HeavyAttackSwing", false);
+            riotAnimator.SetBool("LightAttackSwing", false);
         }
         if(state == RiotState.Die)
         {
             riotAnimator.SetBool("SeedShoot", false);
             riotAnimator.SetBool("TaserShoot", false); // Placeholder
             riotAnimator.SetBool("Idle", false);
-            riotAnimator.SetBool("LightAttack", false);
-            riotAnimator.SetBool("HeavyAttack", false);
             riotAnimator.SetBool("Stunned", true);
             riotAnimator.SetBool("ShieldCharge", false);
             riotAnimator.SetBool("Run", false);
+            riotAnimator.SetBool("HeavyAttackSwing", false);
+            riotAnimator.SetBool("LightAttackSwing", false);
         }
     }
 
