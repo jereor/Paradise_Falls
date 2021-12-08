@@ -45,14 +45,14 @@ public class SkillInformationDisplayController : MonoBehaviour
     {
         if(!isUsingController)
         {
-            if (buttonToUseDisplay.Contains("#"))
-                buttonToUseDisplay = buttonToUseDisplay.Replace("#", InputActionRebindingExtensions.GetBindingDisplayString(inputActions.FindAction(skillName[0]), 0));
+            if (buttonToUseDisplay.Contains("@"))
+                buttonToUseDisplay = buttonToUseDisplay.Replace("@", "<color=#A93229>" + InputActionRebindingExtensions.GetBindingDisplayString(inputActions.FindAction(skillName[0]), 0) + "</color> / <color=#A93229>" + InputActionRebindingExtensions.GetBindingDisplayString(inputActions.FindAction(skillName[0]), 1) + "</color>");
 
             if (buttonToUseDisplay.Contains("&"))
-                buttonToUseDisplay = buttonToUseDisplay.Replace("&", InputActionRebindingExtensions.GetBindingDisplayString(inputActions.FindAction(skillName[1]), 0));
+                buttonToUseDisplay = buttonToUseDisplay.Replace("&", "<color=#A93229>" + InputActionRebindingExtensions.GetBindingDisplayString(inputActions.FindAction(skillName[1]), 0) + "</color> / <color=#A93229>" + InputActionRebindingExtensions.GetBindingDisplayString(inputActions.FindAction(skillName[1]), 1) + "</color>");
 
             if (buttonToUseDisplay.Contains("%"))
-                buttonToUseDisplay = buttonToUseDisplay.Replace("%", InputActionRebindingExtensions.GetBindingDisplayString(inputActions.FindAction(skillName[2]), 0));
+                buttonToUseDisplay = buttonToUseDisplay.Replace("%", "<color=#A93229>" + InputActionRebindingExtensions.GetBindingDisplayString(inputActions.FindAction(skillName[2]), 0) + "</color> / <color=#A93229>" + InputActionRebindingExtensions.GetBindingDisplayString(inputActions.FindAction(skillName[2]), 1) + "</color>");
         }
         else if(isUsingController)
         {
