@@ -758,7 +758,7 @@ AudioListener:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 529286132}
-  m_Enabled: 0
+  m_Enabled: 1
 --- !u!20 &529286134
 Camera:
   m_ObjectHideFlags: 0
@@ -1731,6 +1731,7 @@ MonoBehaviour:
     - 0
     bossesDefeated: 00
     firstBossDoors: 00000000
+    initSaveDone: 0
     shield: 0
     multitool: 0
     wallJump: 0
@@ -1760,6 +1761,7 @@ MonoBehaviour:
     - 0
     bossesDefeated: 00
     firstBossDoors: 00000000
+    initSaveDone: 0
     shield: 0
     multitool: 0
     wallJump: 0
