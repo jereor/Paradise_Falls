@@ -114,12 +114,12 @@ public class PlayerCamera : MonoBehaviour
         perlin.m_AmplitudeGain = 0f;
     }
 
-    public void CameraFadeIn(float timer)
+    public void CameraFadeIn(float timer, bool giveControls)
     {
-        StartCoroutine(FadeIn(timer));
+        StartCoroutine(FadeIn(timer, giveControls));
     }
 
-    private IEnumerator FadeIn(float timer)
+    private IEnumerator FadeIn(float timer, bool giveControls)
     {
         // Start at max values
         colorAdjustments.postExposure.value = -10;
@@ -128,6 +128,7 @@ public class PlayerCamera : MonoBehaviour
 
         // Fade in / Remove black screen
         float counter = 0;
+
         while (counter < timer)
         {
             counter += Time.deltaTime;
@@ -137,6 +138,8 @@ public class PlayerCamera : MonoBehaviour
             vignette.intensity.value = newVignetteIntensity;
             yield return new WaitForEndOfFrame();
         }
+        if (giveControls)
+            Player.Instance.HandleAllPlayerControlInputs(true);
     }
 
     public void CameraFadeOut(float timer)

@@ -217,7 +217,7 @@ public class SceneLoader : MonoBehaviour
             Debug.Log("No GameStatus object in scene if testing: either start from MainMenu or drag player prefab to scene");
         }
 
-        PlayerCamera.Instance.CameraFadeIn(1);
+        PlayerCamera.Instance.CameraFadeIn(1, true);
     }
 
     // Update is called once per frame
