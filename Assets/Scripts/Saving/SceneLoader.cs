@@ -211,6 +211,11 @@ public class SceneLoader : MonoBehaviour
                     savePoints.Add(savePointsParent.transform.GetChild(i).gameObject);
                 }
             }
+
+            if (!GameStatus.status.getLoadedData().initSaveDone)
+            {
+                Save();
+            }
         }
         else
         {
@@ -407,7 +412,7 @@ public class SceneLoader : MonoBehaviour
 
     public void Save()
     {
-        if (CheckIfPlayerAtSavePoint())
+        if (CheckIfPlayerAtSavePoint() || !GameStatus.status.getLoadedData().initSaveDone)
         {
             // Here update dataToSave 
             GameStatus.status.UpdatePlayerPosition(respawnPoint.x, respawnPoint.y);
@@ -506,8 +511,9 @@ public class SceneLoader : MonoBehaviour
                     GameStatus.status.UpdateDoors(i, true);
             }
 
-
             GameStatus.status.UpdateCamera(CameraTransitions.Instance.GetCurrentCamera().name);
+
+            GameStatus.status.UpdateInitSave(true);
 
             GameStatus.status.SaveFromSceneLoader(this);
         }

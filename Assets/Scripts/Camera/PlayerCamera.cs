@@ -116,6 +116,8 @@ public class PlayerCamera : MonoBehaviour
 
     public void CameraFadeIn(float timer, bool giveControls)
     {
+        if (Time.timeScale != 1f)
+            Time.timeScale = 1f;
         StartCoroutine(FadeIn(timer, giveControls));
     }
 
