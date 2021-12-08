@@ -26,6 +26,7 @@ public class SaveData
 
     public bool[] firstBossDoors;
 
+    public bool initSaveDone = false;
 
     public bool shield;
     public bool multitool;
