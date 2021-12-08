@@ -7,6 +7,11 @@ public class SceneLoader : MonoBehaviour
 {
     public static SceneLoader Instance;
 
+    [Header("Parents of shadow objects")]
+    public GameObject exteriorShadowsParent;
+    public GameObject interiorShadowsParent;
+    public List<GameObject> freeformLights;
+
     [Header("Player Objects")]
     public GameObject playerPrefab; // Prefab if we need to instantiate player
     public GameObject playerObject; // Assigned on Start()
@@ -69,6 +74,28 @@ public class SceneLoader : MonoBehaviour
             respawnPoint = new Vector2(GameStatus.status.getLoadedData().position[0], GameStatus.status.getLoadedData().position[1]);
             if (GameObject.Find("Player").activeInHierarchy)
             {
+                // Shadows
+                // Interiors
+                if (!GameStatus.status.getLoadedData().enableInteriors)
+                {
+                    foreach (Transform iChilds in interiorShadowsParent.transform)
+                    {
+                        iChilds.gameObject.SetActive(false);
+                    }
+                }
+                // Exteriors
+                if (!GameStatus.status.getLoadedData().enableExteriors)
+                {
+                    foreach (Transform eChilds in exteriorShadowsParent.transform)
+                    {
+                        eChilds.gameObject.SetActive(false);
+                    }
+                    foreach (GameObject light in freeformLights)
+                    {
+                        light.SetActive(false);
+                    }
+                }
+
                 // Player respawnPosition
                 playerObject = GameObject.Find("Player");
                 // If there was zero vector loaded, set new respawn point as currentRespawnPoint (default) 

@@ -51,8 +51,10 @@ public class SaveData
     public float effectsVolume;
     public float musicVolume;
 
-    public bool fullscreen;
+    public bool fullscreen = true;
     public int resolutionIndex = 0;
+    public bool enableInteriors = false;
+    public bool enableExteriors = true;
 
     public bool[] mapTriggers;
 
