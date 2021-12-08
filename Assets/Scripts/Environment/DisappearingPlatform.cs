@@ -19,12 +19,6 @@ public class DisappearingPlatform : MonoBehaviour
     private float counter;
     [SerializeField] private float timeBeforeTransition;
 
-    private void Awake()
-    {
-
-
-    }
-
     // Start is called before the first frame update
     void Start()
     {
@@ -35,24 +29,15 @@ public class DisappearingPlatform : MonoBehaviour
         if (enabledOnStart)
         {
             boxCollider.enabled = true;
+            spriteRenderer.sortingLayerName = "Interior Foreground";
             transitionAnimator.SetBool("AppearedOnStartBlock", true);
         }
         else
         {
             boxCollider.enabled = false;
+            spriteRenderer.sortingLayerName = "Interior Near Background";
             transitionAnimator.SetBool("DisappearedOnStartBlock", true);
         }
-
-        //if(enabledOnStart)
-        //{
-        //    transitionAnimator.SetBool("Appear", true);
-        //    transitionAnimator.SetBool("Disappear", false);
-        //}
-        //else
-        //{
-        //    transitionAnimator.SetBool("Disappear", true);
-        //    transitionAnimator.SetBool("Appear", false);
-        //}
     }
 
     // Update is called once per frame
@@ -76,11 +61,6 @@ public class DisappearingPlatform : MonoBehaviour
                 transitionAnimator.SetBool("Disappear", false);
             }
 
-            //if (boxCollider.enabled == true)
-            //    spriteRenderer.sprite = appearedBlock;
-            //else if (boxCollider.enabled == false)
-            //    spriteRenderer.sprite = disappearedBlock;
-
             counter = 0;
         }
     }
@@ -88,6 +68,11 @@ public class DisappearingPlatform : MonoBehaviour
     // Enable or disable the collider.
     public void EnableDisableBoxCollider()
     {
+        if(boxCollider.enabled)
+            spriteRenderer.sortingLayerName = "Interior Near Background";
+        else
+            spriteRenderer.sortingLayerName = "Interior Foreground";
+
         boxCollider.enabled = !boxCollider.enabled;
     }
 
@@ -115,7 +100,6 @@ public class DisappearingPlatform : MonoBehaviour
         }
         else
         {
-            //spriteRenderer.enabled = true;
             gameObject.SetActive(true);
             transitionAnimator.SetBool("Appear", true);
             transitionAnimator.SetBool("Disappear", false);
@@ -127,6 +111,5 @@ public class DisappearingPlatform : MonoBehaviour
     {
         yield return new WaitForSeconds(waitT);
         gameObject.SetActive(false);
-        //spriteRenderer.enabled = false;
     }
 }

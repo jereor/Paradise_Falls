@@ -150,6 +150,7 @@ MonoBehaviour:
   grappleVine: {fileID: 1125926157888548533, guid: dc44eb6d819d39f49aa5a7214b1ada27, type: 3}
   seedVine: {fileID: 1125926157888548533, guid: 3751de268d0450e4d8f6b1a1e6f73b4d, type: 3}
   swingVine: {fileID: 1125926157888548533, guid: c343dec6507bbf8428de2d1ff02fbbdd, type: 3}
+  specialVine: {fileID: 5969140961597626194, guid: 2ee0afe2db8a6894ba6d6b011d953d36, type: 3}
   attackVineInstances: []
   grappleVineInstances: []
   plantSeed: {fileID: 2045461362968113728, guid: b77de6101bfcf4e44887862d0492bc74, type: 3}
@@ -169,6 +170,19 @@ MonoBehaviour:
   knockbackCooldown: 1
   lightAttackCircleRadius: 3.5
   lightAttackCooldown: 2
+  vineSpawnCounter: 0
+  firstPhaseMusic:
+    m_PersistentCalls:
+      m_Calls: []
+  climbPhaseMusic:
+    m_PersistentCalls:
+      m_Calls: []
+  lastPhaseMusic:
+    m_PersistentCalls:
+      m_Calls: []
+  victoryMusic:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &8838499441252086578
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -181,7 +195,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e85f99a78ea71c14bb56436ea514cc78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 30
+  maxHealth: 35
   currentHealth: 0
   blockDrainAmount: 0
   blockParticles: {fileID: 0}

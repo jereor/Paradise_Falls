@@ -206,7 +206,7 @@ public class MainMenuController : MonoBehaviour
             .DOFade(0, .3f)
             .SetUpdate(true);
         credits
-            .DOAnchorPos(new Vector2(0, -50), .3f)
+            .DOAnchorPos(new Vector2(0, -40), .3f)
             .SetUpdate(true);
 
         creditsOpen = true;

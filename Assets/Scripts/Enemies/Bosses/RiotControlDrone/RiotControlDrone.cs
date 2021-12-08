@@ -16,6 +16,7 @@ public class RiotControlDrone : MonoBehaviour
     [SerializeField] private Rigidbody2D playerRB;
     [SerializeField] private GameObject doorOne;
     [SerializeField] private Animator riotAnimator;
+    [SerializeField] private RiotPhaseTwoPlatformController phaseTwoPlatformController;
 
     [Header("Current State")]
     public RiotState state = RiotState.Idle;
@@ -97,6 +98,7 @@ public class RiotControlDrone : MonoBehaviour
     private bool isWaiting = false;
     public bool spawnEnemies = false;
     private bool phaseTwoComplete = false;
+    private bool isDead = false;
 
     private bool chargeDirectionCalculated;
 
@@ -131,6 +133,7 @@ public class RiotControlDrone : MonoBehaviour
         targetHealth = target.GetComponent<Health>();
         rb = GetComponent<Rigidbody2D>();
         health = GetComponent<Health>();
+        phaseTwoPlatformController = GameObject.Find("RiotPhaseTwoController").GetComponent<RiotPhaseTwoPlatformController>();
 
         riotAnimator = transform.GetChild(0).GetComponent<Animator>();
 
@@ -149,6 +152,8 @@ public class RiotControlDrone : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+
+
         if (target == null && state != RiotState.PlayerIsDead) 
         {
             canStart = false;
@@ -161,10 +166,19 @@ public class RiotControlDrone : MonoBehaviour
         if(target != null)
             vectorToTarget = (target.transform.position - transform.position).normalized;
 
+        if (health.GetHealth() <= 0 && !isDead)
+        {
+            StopAllCoroutines();
+            DOTween.PauseAll();
+            foreach (GameObject enemy in phaseTwoPlatformController.droneInstances)
+                Destroy(enemy);
+            state = RiotState.Die;
+        }
+
         velocity = rb.velocity;
 
         // Flip the localscale of the boss to the moving direction.
-        if(state != RiotState.ShieldCharge && state != RiotState.Backstepping)
+        if(state != RiotState.ShieldCharge && state != RiotState.Backstepping && !isDead)
         {
             if (!isFacingRight && rb.velocity.x > 5f)
                 Flip();
@@ -173,7 +187,7 @@ public class RiotControlDrone : MonoBehaviour
         }
 
         // Flip the localscale towards the player when backstepping.
-        if (state == RiotState.Backstepping)
+        if (state == RiotState.Backstepping && !isDead)
         {
             if (isFacingRight && rb.velocity.x > 5f)
                 Flip();
@@ -182,7 +196,7 @@ public class RiotControlDrone : MonoBehaviour
         }
 
         // If bosses health goes down more that 50%, change phase. The way of handling the state variation changes most likely in the future.
-        if (health.GetHealth() <= health.GetMaxHealth() * 0.5f && changePhase)
+        if (health.GetHealth() <= health.GetMaxHealth() * 0.5f && changePhase && !isDead)
         {
 
             changePhase = false;
@@ -252,6 +266,10 @@ public class RiotControlDrone : MonoBehaviour
 
             case RiotState.DashAttack:
                 HandleDashAttack();
+                break;
+
+            case RiotState.Die:
+                HandleDie();
                 break;
 
             // PLAYER IS DEAD
@@ -411,6 +429,7 @@ public class RiotControlDrone : MonoBehaviour
             stunned = false;
             chargeDirectionCalculated = false;
             ChangeToDefaultLayer();
+            riotAnimator.SetBool("Stunned", true);
             StartCoroutine(Wait(3));
         }
         
@@ -421,6 +440,8 @@ public class RiotControlDrone : MonoBehaviour
         
         if (!isWaiting)
         {
+            riotAnimator.SetBool("FastRun", true);
+            riotAnimator.SetBool("Stunned", false);
             isEnraged = true;
             ChangeToPassableLayer();
             rb.AddForce(new Vector2(1,0) * runningSpeed * Time.fixedDeltaTime);
@@ -454,55 +475,6 @@ public class RiotControlDrone : MonoBehaviour
             return;
         }
     }
-
-    //private void HandleWaveOne()
-    //{
-    //    if(phaseTwoComplete || isWaveOneEnemiesDestroyed) { return; }
-
-    //    //if(!isWaiting)
-    //    //{
-    //    //    StartCoroutine(Wait(3));
-    //    //}
-
-    //    if(!isWaiting && !isWaveOneEnemiesDestroyed)
-    //    {
-    //        if(bossEnemies[0] != null && bossEnemies[1] != null)
-    //        {
-    //            bossEnemies[0].SetActive(true);
-    //            bossEnemies[1].SetActive(true);
-    //        }
-
-    //        if(bossEnemies[0] == null && bossEnemies[1] == null)
-    //        {
-    //            isWaveOneEnemiesDestroyed = true;
-    //        }
-            
-    //    }
-    //}
-
-    //private void HandleWaveTwo()
-    //{
-    //    if (!isWaveOneEnemiesDestroyed || phaseTwoComplete || isWaveTwoEnemiesDestroyed) { return; }
-
-    //    //if (!isWaiting)
-    //    //{
-    //    //    StartCoroutine(Wait(3));
-    //    //}
-
-    //    if (!isWaiting && !isWaveTwoEnemiesDestroyed)
-    //    {
-    //        if (bossEnemies[2] != null && bossEnemies[3] != null)
-    //        {
-    //            bossEnemies[2].SetActive(true);
-    //            bossEnemies[3].SetActive(true);
-    //        }
-    //        if (bossEnemies[2] == null && bossEnemies[3] == null)
-    //        {
-    //            isWaveTwoEnemiesDestroyed = true;
-    //        }
-
-    //    }
-    //}
 
     private void HandlePhaseThreeMoving()
     {
@@ -574,6 +546,18 @@ public class RiotControlDrone : MonoBehaviour
             StartCoroutine(DashAttack());
         }
 
+    }
+    private void HandleDie()
+    {
+        if(!isDead)
+        {
+            isDead = true;
+            bodyCollider.enabled = false;
+            headCollider.enabled = false;
+            phaseTwoKnockbackBox.enabled = false;
+            StartCoroutine(BossIsDead());
+
+        }
     }
 
     private void HandlePlayerIsDead()
@@ -921,6 +905,42 @@ public class RiotControlDrone : MonoBehaviour
         flashingRed = false;
     }
 
+    private IEnumerator BossIsDead()
+    {
+        ChangeToPassableLayer();
+        yield return new WaitForSeconds(1);
+        PlayerCamera.Instance.CameraShake(0.7f, 4);
+        for (int i = 0; i < 5; i++)
+        {
+            transform.GetChild(0).GetComponent<SpriteRenderer>().color = Color.white;
+            transform.DOScaleX(1.15f, 0.2f);
+            transform.DOScaleY(1f, 0.2f);
+            yield return new WaitForSeconds(0.2f);
+            transform.GetChild(0).GetComponent<SpriteRenderer>().color = Color.red;
+            transform.DOScaleX(1f, 0.2f);
+            transform.DOScaleY(1.15f, 0.2f);
+            yield return new WaitForSeconds(0.2f);
+        }
+        transform.DOScaleX(1.15f, 0.2f);
+        transform.GetChild(0).GetComponent<SpriteRenderer>().color = Color.white;
+        float endValue = 0;
+        float duration = 1;
+        float elapsedTime = 0;
+        float startValue = transform.GetChild(0).GetComponent<SpriteRenderer>().color.a;
+        while (elapsedTime < duration)
+        {
+            elapsedTime += Time.deltaTime;
+            float newAlpha = Mathf.Lerp(startValue, endValue, elapsedTime / duration);
+            transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(transform.GetChild(0).GetComponent<SpriteRenderer>().color.r, transform.GetChild(0).GetComponent<SpriteRenderer>().color.g, transform.GetChild(0).GetComponent<SpriteRenderer>().color.b, newAlpha);
+            yield return null;
+        }
+        yield return new WaitForSeconds(1);
+
+        //victoryMusic.Invoke();
+
+        Destroy(gameObject);
+    }
+
     // Overlaps for various checks.
     private bool IsTargetInHitRange()
     {
@@ -1081,11 +1101,12 @@ public class RiotControlDrone : MonoBehaviour
 
         if (state == RiotState.PhaseTwoRun)
         {
-            riotAnimator.SetBool("PhaseTwoRun", true);
-            riotAnimator.SetBool("Run", true); // Placeholder
+            riotAnimator.SetBool("PhaseTwoRun", false);
+            riotAnimator.SetBool("Run", false); // Placeholder
             riotAnimator.SetBool("ShieldCharge", false);
-            riotAnimator.SetBool("Stunned", false);
+            //riotAnimator.SetBool("Stunned", false);
             riotAnimator.SetBool("BackStepping", false);
+            riotAnimator.SetBool("SlowWalk", false);
         }
 
         // PHASE THREE
@@ -1095,9 +1116,7 @@ public class RiotControlDrone : MonoBehaviour
         {
             riotAnimator.SetBool("PhaseThreeStun", true);
             riotAnimator.SetBool("Stunned", true); // placeholder
-            riotAnimator.SetBool("ShieldCharge", false);
-            riotAnimator.SetBool("BackStepping", false);
-            riotAnimator.SetBool("Run", false);
+            riotAnimator.SetBool("FastRun", false);
         }
 
         if (state == RiotState.PhaseThreeMoving)
@@ -1144,6 +1163,17 @@ public class RiotControlDrone : MonoBehaviour
             riotAnimator.SetBool("HeavyAttack", false);
             riotAnimator.SetBool("SeedShoot", false);
             riotAnimator.SetBool("TaserShoot", false);
+        }
+        if(state == RiotState.Die)
+        {
+            riotAnimator.SetBool("SeedShoot", false);
+            riotAnimator.SetBool("TaserShoot", false); // Placeholder
+            riotAnimator.SetBool("Idle", false);
+            riotAnimator.SetBool("LightAttack", false);
+            riotAnimator.SetBool("HeavyAttack", false);
+            riotAnimator.SetBool("Stunned", true);
+            riotAnimator.SetBool("ShieldCharge", false);
+            riotAnimator.SetBool("Run", false);
         }
     }
 
@@ -1195,6 +1225,7 @@ public class RiotControlDrone : MonoBehaviour
         PhaseThreeMoving,
         PhaseThreeAttack,
         DashAttack,
+        Die,
         PlayerIsDead
 
     }

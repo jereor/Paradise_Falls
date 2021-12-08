@@ -91,15 +91,19 @@ public class BackAndForthMovingBox : MonoBehaviour
         // Sets the collider inactive if bool is true.
         if (colliderDisabledAtStart)
         {
+            chainController.clawPart.GetComponent<SpriteRenderer>().sortingLayerName = "Interior Near Background";
+            chainController.chainMount.GetComponent<SpriteRenderer>().sortingLayerName = "Interior Near Background";
             // Box sprites
             foreach (SpriteRenderer renderer in boxRenderers)
             {
                 renderer.color = Color.grey;
+                renderer.sortingLayerName = "Interior Near Background";
             }
             boxCollider.enabled = false;
             // Chains
             foreach (GameObject chain in chainController.getChains())
             {
+                chain.GetComponent<SpriteRenderer>().sortingLayerName = "Interior Near Background";
                 chain.GetComponent<SpriteRenderer>().color = Color.grey;
                 chain.GetComponent<BoxCollider2D>().enabled = false;
             }
@@ -270,16 +274,21 @@ public class BackAndForthMovingBox : MonoBehaviour
         boxCollider.enabled = !boxCollider.enabled;
         if(boxCollider.enabled && cuttableChain)
         {
+            chainController.clawPart.GetComponent<SpriteRenderer>().sortingLayerName = "Interior Foreground";
+            chainController.chainMount.GetComponent<SpriteRenderer>().sortingLayerName = "Interior Foreground";
+            chainController.chainMount.GetComponent<SpriteRenderer>().sortingOrder = 1;
             // Box sprites
             foreach (SpriteRenderer renderer in boxRenderers)
             {
                 renderer.color = Color.white;
+                renderer.sortingLayerName = "Interior Foreground";
             }
             // Chains
             foreach (GameObject chain in chainController.getChains())
             {
                 if (chain != null)
                 {
+                    chain.GetComponent<SpriteRenderer>().sortingLayerName = "Interior Foreground";
                     chain.GetComponent<SpriteRenderer>().color = Color.red;
                     chain.GetComponent<BoxCollider2D>().enabled = true;
                 }
@@ -287,16 +296,21 @@ public class BackAndForthMovingBox : MonoBehaviour
         }
         else if(boxCollider.enabled && !cuttableChain)
         {
+            chainController.clawPart.GetComponent<SpriteRenderer>().sortingLayerName = "Interior Foreground";
+            chainController.chainMount.GetComponent<SpriteRenderer>().sortingLayerName = "Interior Foreground";
+            chainController.chainMount.GetComponent<SpriteRenderer>().sortingOrder = 1;
             // Box sprites
             foreach (SpriteRenderer renderer in boxRenderers)
             {
                 renderer.color = Color.white;
+                renderer.sortingLayerName = "Interior Foreground";
             }
             // Chains
             foreach (GameObject chain in chainController.getChains())
             {
                 if (chain != null)
                 {
+                    chain.GetComponent<SpriteRenderer>().sortingLayerName = "Interior Foreground";
                     chain.GetComponent<SpriteRenderer>().color = Color.black;
                     chain.GetComponent<BoxCollider2D>().enabled = false;
                 }
@@ -304,16 +318,21 @@ public class BackAndForthMovingBox : MonoBehaviour
         }
         else
         {
+            chainController.clawPart.GetComponent<SpriteRenderer>().sortingLayerName = "Interior Near Background";
+            chainController.chainMount.GetComponent<SpriteRenderer>().sortingLayerName = "Interior Near Background";
+            chainController.chainMount.GetComponent<SpriteRenderer>().sortingOrder = 1;
             // Box sprites
             foreach (SpriteRenderer renderer in boxRenderers)
             {
                 renderer.color = Color.grey;
+                renderer.sortingLayerName = "Interior Near Background";
             }
             // Chains
             foreach (GameObject chain in chainController.getChains())
             {
                 if (chain != null)
                 {
+                    chain.GetComponent<SpriteRenderer>().sortingLayerName = "Interior Near Background";
                     chain.GetComponent<SpriteRenderer>().color = Color.grey;
                     chain.GetComponent<BoxCollider2D>().enabled = false;
                 }
