@@ -9,16 +9,28 @@ public class CreditsPanelController : MonoBehaviour
 {
     public GameObject thanksPanel;
     public GameObject creditsPanel;
-
+    public GameObject backgroundImage;
     public Button thanksContinueButton;
     public Button creditsContinueButton;
 
-    private int buttonPresses = 0;
     public void RollCredits()
     {
         Player.Instance.HandleAllPlayerControlInputs(false);
-        creditsPanel.SetActive(true);
-        StartCoroutine(ShowButton(3f, thanksContinueButton));
+
+        PlayerCamera.Instance.CameraFadeOut(1);
+        StartCoroutine(WaitForFadeOut(1));
+    }
+
+    private IEnumerator WaitForFadeOut(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+
+        PlayerCamera.Instance.CameraFadeIn(1, false);
+
+        backgroundImage.SetActive(true);
+        thanksPanel.SetActive(true);
+        thanksContinueButton.gameObject.SetActive(false);
+        StartCoroutine(ShowButton(5f, thanksContinueButton));
     }
 
     private IEnumerator ShowButton(float duration, Button button)
@@ -28,14 +40,15 @@ public class CreditsPanelController : MonoBehaviour
         button.Select();
     }
 
-    public void ContinueButton()
+    public void AdvanceThanks()
     {
-            thanksPanel.SetActive(false);
-            creditsPanel.SetActive(true);          
+        thanksPanel.SetActive(false);
+        creditsPanel.SetActive(true);
+        creditsContinueButton.gameObject.SetActive(false);
 
-            EventSystem.current.SetSelectedGameObject(null);
-            thanksContinueButton.gameObject.SetActive(false);
-            StartCoroutine(ShowButton(3f, creditsContinueButton));
+        EventSystem.current.SetSelectedGameObject(null);
+        thanksContinueButton.gameObject.SetActive(false);
+        StartCoroutine(ShowButton(5f, creditsContinueButton));
     }
 
     public void ToMainMenu()
