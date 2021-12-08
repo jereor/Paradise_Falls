@@ -461,7 +461,8 @@ public class MeleeWeapon : MonoBehaviour
     {
         float pushbackX = target.transform.position.x - from.transform.position.x;
         Vector2 knockbackDirection = new Vector2(pushbackX, Mathf.Abs(pushbackX / 4)).normalized;
-        target.GetComponent<Rigidbody2D>().AddForce(knockbackDirection * knockbackForce);
+        if(target.TryGetComponent(out Rigidbody2D targetrb))
+            targetrb.AddForce(knockbackDirection * knockbackForce);
     }
 
     // Called as event from player if interacted or when weapon is pulled and hits player
