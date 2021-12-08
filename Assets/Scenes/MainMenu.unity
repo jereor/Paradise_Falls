@@ -763,6 +763,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Title
       objectReference: {fileID: 0}
+    - target: {fileID: 6965766873517889361, guid: 89296c6eba73e6d4a8554e48cdd55677, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 9211225546806559072, guid: 89296c6eba73e6d4a8554e48cdd55677, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -2601,6 +2605,7 @@ MonoBehaviour:
     - 0
     - 0
     bossesDefeated: 00
+    firstBossDoors: 00000000
     shield: 0
     multitool: 0
     wallJump: 0
@@ -2610,6 +2615,7 @@ MonoBehaviour:
     shieldGrind: 0
     shAttack: 0
     levers: 
+    doors: 000000000000000000000000000000
     meleePickups: 
     throwPickups: 
     energyPickups: 
@@ -2618,12 +2624,15 @@ MonoBehaviour:
     masterVolume: 0
     effectsVolume: 0
     musicVolume: 0
+    fullscreen: 0
+    resolutionIndex: 0
     mapTriggers: 
   loadedData:
     position:
     - 0
     - 0
     bossesDefeated: 00
+    firstBossDoors: 00000000
     shield: 0
     multitool: 0
     wallJump: 0
@@ -2633,6 +2642,7 @@ MonoBehaviour:
     shieldGrind: 0
     shAttack: 0
     levers: 
+    doors: 000000000000000000000000000000
     meleePickups: 
     throwPickups: 
     energyPickups: 
@@ -2641,6 +2651,8 @@ MonoBehaviour:
     masterVolume: 0
     effectsVolume: 0
     musicVolume: 0
+    fullscreen: 0
+    resolutionIndex: 0
     mapTriggers: 
 --- !u!4 &1462657396
 Transform:
