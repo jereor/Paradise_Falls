@@ -7,6 +7,11 @@ public class SceneLoader : MonoBehaviour
 {
     public static SceneLoader Instance;
 
+    [Header("Parents of shadow objects")]
+    public GameObject exteriorShadowsParent;
+    public GameObject interiorShadowsParent;
+    public List<GameObject> freeformLights;
+
     [Header("Player Objects")]
     public GameObject playerPrefab; // Prefab if we need to instantiate player
     public GameObject playerObject; // Assigned on Start()
@@ -62,13 +67,35 @@ public class SceneLoader : MonoBehaviour
         if (GameStatus.status != null)
         {
             // SCENE INITIALIZATION --- could be done in Awake too test which is better
-            Debug.Log("Binds for save tests(alpha keys): 0 save, 9 checksave, 8 delete, 7 load, O respawn, P kill boss");
+            //Debug.Log("Binds for save tests(alpha keys): 0 save, 9 checksave, 8 delete, 7 load, O respawn, P kill boss");
             //Debug.Log("Player spawning to: " + GameStatus.status.getLoadedData().position[0] + ", " + GameStatus.status.getLoadedData().position[1]);
 
             // Set respawn point as loaded position
             respawnPoint = new Vector2(GameStatus.status.getLoadedData().position[0], GameStatus.status.getLoadedData().position[1]);
             if (GameObject.Find("Player").activeInHierarchy)
             {
+                // Shadows
+                // Interiors
+                if (!GameStatus.status.getLoadedData().enableInteriors)
+                {
+                    foreach (Transform iChilds in interiorShadowsParent.transform)
+                    {
+                        iChilds.gameObject.SetActive(false);
+                    }
+                }
+                // Exteriors
+                if (!GameStatus.status.getLoadedData().enableExteriors)
+                {
+                    foreach (Transform eChilds in exteriorShadowsParent.transform)
+                    {
+                        eChilds.gameObject.SetActive(false);
+                    }
+                    foreach (GameObject light in freeformLights)
+                    {
+                        light.SetActive(false);
+                    }
+                }
+
                 // Player respawnPosition
                 playerObject = GameObject.Find("Player");
                 // If there was zero vector loaded, set new respawn point as currentRespawnPoint (default) 
@@ -514,7 +541,7 @@ public class SceneLoader : MonoBehaviour
     // Lazy version for respawn load scene again with loaded data works as Save function updates saveData only
     public void PlayerDeathRespawn()
     {
-        Debug.Log("Respawning, atm loading scene with loaded save");
+        //Debug.Log("Respawning, atm loading scene with loaded save");
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 

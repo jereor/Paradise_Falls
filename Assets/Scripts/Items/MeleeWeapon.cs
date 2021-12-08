@@ -354,7 +354,6 @@ public class MeleeWeapon : MonoBehaviour
         //Layer to PulledWeapon.
         gameObject.layer = 15;
 
-
         pullingObject = objectThatPulls;
         beingPulled = true;           
     }

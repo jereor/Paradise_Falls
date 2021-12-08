@@ -59,7 +59,7 @@ public class Player : MonoBehaviour
 
     private Coroutine blockCoroutine;
     [SerializeField] private float blockAnimTimeMultiplier; // this times block anim time = when to activate shield object, good values 1.1 - 1.5
-    private bool hitInAir = false;
+    private bool hitInAirBuffer = false;
 
     private bool loadBuffer = false;
 
@@ -312,10 +312,12 @@ public class Player : MonoBehaviour
             if (combatScript.meleeInputReceived && !combatScript.heavyHold && !animator.GetBool("isClimbing") && !combatScript.getComboOnCooldown() && !animator.GetBool("isBlocking"))
             {
                 // Air attack only once in air time reseted when landed Player.cs
-                if (!hitInAir)
+                if (!hitInAirBuffer)
                 {
-                    hitInAir = true;
+                    hitInAirBuffer = true;
                     animator.Play("AirAttack");
+                    // Set the time double so player will not be able to spam air attack in air
+                    StartCoroutine(AirAttackBuffer(GetClipAnimTime("AirAttack") + GetClipAnimTime("AirAttack")));
                 }
             }
 
@@ -394,6 +396,8 @@ public class Player : MonoBehaviour
         // LedgeChecks return true
         if (movementScript.getClimbing() && !animator.GetBool("isAttacking") && !animator.GetBool("hCharging") && !animator.GetBool("isBlocking") && !animator.GetBool("isParrying"))
         {
+            if (shieldScript.Blocking)
+                shieldScript.Blocking = false;
             animator.SetBool("isClimbing", true);
         }
 
@@ -411,7 +415,6 @@ public class Player : MonoBehaviour
         // We are in air and we land with rb velocity downwards or zero OR we are on moving platform
         if (animator.GetBool("jump") && movementScript.IsGrounded() && rb.velocity.y >= -0.2f && rb.velocity.y <= 0.2f || movementScript.getIfOnMovingPlatform())
         {
-            hitInAir = false;
             animator.SetBool("jump", false);
             // Landing animation
             if (movementScript.getWillLand())
@@ -467,7 +470,7 @@ public class Player : MonoBehaviour
         }
 
         // Blocking 
-        if (shieldScript.Blocking && !animator.GetBool("isAttacking") && !animator.GetBool("isAiming") && !animator.GetBool("isThrowing") && !animator.GetBool("willLand") && !animator.GetBool("isShieldGrinding"))
+        if (shieldScript.Blocking && !animator.GetBool("isAttacking") && !animator.GetBool("isAiming") && !animator.GetBool("isThrowing") && !animator.GetBool("willLand") && !animator.GetBool("isShieldGrinding") && !animator.GetBool("isClimbing"))
         {
             if (animator.GetBool("isRunning"))
             {
@@ -891,6 +894,12 @@ public class Player : MonoBehaviour
     {
         yield return new WaitForSeconds(parryTime);
         animator.SetBool("isParrying", false);
+    }
+
+    private IEnumerator AirAttackBuffer(float attackTime)
+    {
+        yield return new WaitForSeconds(attackTime);
+        hitInAirBuffer = false;
     }
 
     //private void OnGUI()

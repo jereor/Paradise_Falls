@@ -80,6 +80,7 @@ public class PlayerMovement : MonoBehaviour
     private float defaultGravityScale;
     private ShockwaveTool shockwaveTool;
     private Energy energyScript;
+    private Shield shieldScript;
 
     // Others
     RaycastHit2D ledgeHitOffsetRay;
@@ -99,6 +100,8 @@ public class PlayerMovement : MonoBehaviour
         energyScript = gameObject.GetComponent<Energy>();
         PlayerCamera.Instance.ChangeCameraOffset(0.2f, false, 1);
         defaultGravityScale = rb.gravityScale;
+
+        shieldScript = gameObject.GetComponent<Shield>();
 
         EnableInputMove();
         EnableInputJump();
@@ -341,7 +344,7 @@ public class PlayerMovement : MonoBehaviour
         if (getMovingPlatformRigidbody() != null && !shockwaveTool.ShockwaveDashUsed)
         {
             // Climbing the platform
-            if (getIfClimbingMovingPlatform())
+            if (getIfClimbingMovingPlatform() && !shieldScript.Blocking && !shieldScript.Parrying)
             {
                 if (rb.gravityScale != movingPlatformRB.gravityScale)
                 {
@@ -742,6 +745,7 @@ public class PlayerMovement : MonoBehaviour
 
     public bool getIfClimbingMovingPlatform()
     {
+        movingPlatformRaycastHit = Physics2D.Raycast(wallCheckBody.position, transform.right * transform.localScale.x, checkDistance + 1f, groundLayer);
         if (movingPlatformRaycastHit.transform != null && movingPlatformRaycastHit.transform.gameObject.CompareTag("MovingPlatform"))
             return true;
 

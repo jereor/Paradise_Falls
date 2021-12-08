@@ -104,8 +104,8 @@ public class CannonEnemyAI : MonoBehaviour
         {
             path = p;
         }
-        else
-            Debug.Log("Error");
+        //else
+        //    Debug.Log("Error");
     }
 
     // Update is called once per frame

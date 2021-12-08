@@ -1042,7 +1042,7 @@ public class PlayerCombat : MonoBehaviour
             gameObject.GetComponent<Rigidbody2D>().gravityScale = 0f;
             gameObject.GetComponent<Rigidbody2D>().velocity = vectorToTargetWeapon.normalized * playerPullForce * Time.deltaTime;
         }
-        else if (weaponInstance != null && weaponInstanceScript.getAttachedToGrapplePoint())
+        else if (weaponInstance != null && weaponInstanceScript.getAttachedToGrapplePoint() && !weaponInstanceScript.getBeingPulled())
         {
             weaponInstance.layer = LayerMask.NameToLayer("Ground");
         }
