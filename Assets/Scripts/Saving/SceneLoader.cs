@@ -228,17 +228,17 @@ public class SceneLoader : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // Later from interaction
-        if (Input.GetKeyDown(KeyCode.Alpha0))
-        {
-            Save();
-        }
+        //// Later from interaction
+        //if (Input.GetKeyDown(KeyCode.Alpha0))
+        //{
+        //    Save();
+        //}
 
-        // FOR DEBUGGING -- Respawn 
-        if (Input.GetKeyDown(KeyCode.O))
-        {
-            PlayerDeathRespawn();
-        }
+        //// FOR DEBUGGING -- Respawn 
+        //if (Input.GetKeyDown(KeyCode.O))
+        //{
+        //    PlayerDeathRespawn();
+        //}
     }
 
     private void CheckUpgrades()
