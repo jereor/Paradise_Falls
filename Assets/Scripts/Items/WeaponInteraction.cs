@@ -12,7 +12,7 @@ public class WeaponInteraction : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         // If Weapon has landed and Collided with Player
-        if (collision.gameObject.layer == LayerMask.NameToLayer("Player") && leftPlayersCollider)
+        if ((collision.gameObject.layer == LayerMask.NameToLayer("Player") || collision.gameObject.layer == LayerMask.NameToLayer("PlayerInvincible")) && leftPlayersCollider)
         {
             weaponScript.Interact(collision.gameObject);
         }
@@ -28,7 +28,7 @@ public class WeaponInteraction : MonoBehaviour
 
     private void OnTriggerStay2D(Collider2D collision)
     {
-        if (collision.gameObject.layer == LayerMask.NameToLayer("Player") && weaponScript.getLanded())
+        if ((collision.gameObject.layer == LayerMask.NameToLayer("Player") || collision.gameObject.layer == LayerMask.NameToLayer("PlayerInvincible")) && weaponScript.getLanded())
         {
             weaponScript.Interact(collision.gameObject);
         }
