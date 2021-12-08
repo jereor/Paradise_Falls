@@ -22,6 +22,10 @@ public class RiotPhaseTwoPlatformController : MonoBehaviour
     [SerializeField] private GameObject flyingDrone;
     public List<GameObject> droneInstances;
 
+    [SerializeField] private GameObject entranceDoor;
+    [SerializeField] private GameObject secondMiddleDoor;
+    [SerializeField] private GameObject exitDoor;
+
 
     // Start is called before the first frame update
     void Start()
@@ -143,6 +147,13 @@ public class RiotPhaseTwoPlatformController : MonoBehaviour
         }
         buttons[2].transform.gameObject.SetActive(false);
         GameObject.Find("RiotControlDrone").GetComponent<RiotControlDrone>().setPhaseTwoComplete(true);
+    }
+
+    public void OpenDoors()
+    {
+        entranceDoor.GetComponent<DoorController>().Work();
+        secondMiddleDoor.GetComponent<DoorController>().Work();
+        exitDoor.GetComponent<DoorController>().Work();
     }
 
 }

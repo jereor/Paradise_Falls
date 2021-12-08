@@ -433,5 +433,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89c659c8a1a1de74f8f82efa4ffa73a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  endPosition: {x: 0, y: 4}
+  endPosition: {x: 0, y: -4}
   moveTime: 5
